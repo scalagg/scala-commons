@@ -19,21 +19,11 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    maven {
-        url = 'https://repo.dmulloy2.net/nexus/repository/public'
-    }
-
-    maven {
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-
-    maven {
-        url = 'https://jitpack.io'
-    }
-
-    maven {
-        url = 'http://maven.enginehub.org/repo/'
-    }
+    maven { url = 'https://repo.dmulloy2.net/nexus/repository/public' }
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'http://maven.enginehub.org/repo/' }
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
 }
 
 dependencies {
@@ -49,13 +39,19 @@ dependencies {
     compile 'com.github.azbh111:ProtocolLib:4.4.0'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT'
-    compileOnly 'com.minexd:paper:1.8.8'
-    compileOnly 'com.minexd:paper-api:1.8.8'
     compileOnly 'com.github.joeleoli:pidgin:1.0'
+    compile "co.aikar:acf-paper:0.5.0-SNAPSHOT"
     compileOnly fileTree(dir: 'lib', include: '*.jar')
 }
 
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
 compileKotlin {
+    kotlinOptions.javaParameters = true
     kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -74,6 +70,8 @@ shadowJar {
     exclude '**/*.kotlin_metadata'
 //    exclude '**/*.kotlin_module'
     exclude '**/*.kotlin_builtins'
+    relocate 'co.aikar.commands', 'net.evilblock.cubed.acf'
+    relocate 'co.aikar.locales', 'net.evilblock.cubed.locales'
     archiveFileName = "cubed-${project.name}-${version}.jar"
 }
 
@@ -93,4 +91,3 @@ tasks.withType(Jar) {
     def home = System.properties['user.home']
     destinationDirectory = file("$home/Desktop/@MineXD/shared/global")
 }
-
