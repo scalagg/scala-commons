@@ -15,7 +15,7 @@ object NBTUtil {
 
     private val NBT_BASE_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTBase")!!
     private val NBT_NUMBER_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTBase\$NBTNumber")!!
-//    private val NBT_NUMBER_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTNumber")!! // 1.12 class
+    private val NBT_NUMBER_CLASS_1_12: Class<*> = MinecraftReflection.getNMSClass("NBTNumber")!! // 1.12 class
     private val NBT_INT_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagInt")!!
     private val NBT_LONG_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagLong")!!
     private val NBT_DOUBLE_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagDouble")!!
@@ -26,7 +26,7 @@ object NBTUtil {
 
     private val NBT_TAG_STRING_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagString")!!
     private val NBT_TAG_STRING_READ_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "a_")!!
-//    private val NBT_TAG_STRING_READ_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_")!! // 1.12 method
+    private val NBT_TAG_STRING_READ_METHOD_1_12: Method = Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_")!! // 1.12 method
 
     private val NBT_TAG_COMPOUND_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagCompound")!!
     private val HAS_KEY_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "hasKey", String::class.java)!!

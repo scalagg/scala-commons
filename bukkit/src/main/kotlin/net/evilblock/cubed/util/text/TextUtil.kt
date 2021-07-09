@@ -132,7 +132,52 @@ object TextUtil {
             compensated += spaceLength
         }
 
-        player.sendMessage(sb.toString() + message)
+        player.sendMessage(sb.toString() + message.replace("%PLAYER%", player.displayName))
+    }
+
+    @JvmStatic
+    fun getCentered(message: String): String {
+        if (message.isEmpty() || message.isBlank()) {
+            return ""
+        }
+
+        var message = ChatColor.translateAlternateColorCodes('&', message)
+        var messagePxSize = 0
+        var previousCode = false
+        var isBold = false
+
+        for (c in message.toCharArray()) {
+            if (c == '§') {
+                previousCode = true
+                continue
+            } else if (previousCode) {
+                previousCode = false
+
+                if (c == 'l' || c == 'L') {
+                    isBold = true
+                    continue
+                } else {
+                    isBold = false
+                }
+            } else {
+                val dFI: DefaultFontInfo = DefaultFontInfo.getDefaultFontInfo(c)
+                messagePxSize += if (isBold) dFI.boldLength else dFI.length
+                messagePxSize++
+            }
+        }
+
+        val halvedMessageSize = messagePxSize / 2
+        val toCompensate = CENTER_PX - halvedMessageSize
+        val spaceLength: Int = DefaultFontInfo.SPACE.length + 1
+        var compensated = 0
+
+        val sb = StringBuilder()
+        while (compensated < toCompensate) {
+            sb.append(" ")
+            compensated += spaceLength
+        }
+
+        return sb.toString() + message
     }
 
 }

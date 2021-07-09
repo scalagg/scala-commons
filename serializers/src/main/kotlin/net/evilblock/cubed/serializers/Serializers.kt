@@ -24,5 +24,4 @@ object Serializers {
             gson = gsonBuilder.create()
         }
     }
-
 }

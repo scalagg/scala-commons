@@ -27,7 +27,8 @@ dependencies {
     implementation 'redis.clients:jedis:3.5.1'
     implementation 'org.mongodb:mongodb-driver:3.10.2'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'net.evilblock:pidgin:1.2'
+
+    implementation fileTree(dir: 'lib', include: '*.jar')
 }
 
 compileKotlin {

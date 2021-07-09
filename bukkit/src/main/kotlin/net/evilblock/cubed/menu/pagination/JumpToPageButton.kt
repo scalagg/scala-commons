@@ -8,32 +8,34 @@
 package net.evilblock.cubed.menu.pagination
 
 import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.util.CC
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryView
 
-class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu) : Button() {
+class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu, private val current: Boolean) : Button() {
 
     override fun getName(player: Player): String {
         return "§ePage " + this.page
     }
 
     override fun getDescription(player: Player): List<String> {
-        return listOf()
+        return if (current) listOf("   ", CC.GREEN + "This is the current page.") else listOf(CC.GRAY + "Click to switch to this page!")
     }
 
     override fun getMaterial(player: Player): Material {
-        return Material.BOOK
+        return if (current) Material.ENCHANTED_BOOK else Material.BOOK
     }
 
     override fun getAmount(player: Player): Int {
         return this.page
     }
 
-    override fun clicked(player: Player, i: Int, clickType: ClickType, view: InventoryView) {
-        menu.modPage(player, page - menu.page)
-        playNeutral(player)
+    override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+        if (!current) {
+            menu.modPage(player, page - menu.page)
+//        playNeutral(player)
+        }
     }
-
 }

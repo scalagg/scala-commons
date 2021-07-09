@@ -32,16 +32,17 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72'
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'org.reflections:reflections:0.9.11'
-    compileOnly 'com.squareup.okhttp:okhttp:2.7.5'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'mkremins:fanciful:1.0-SNAPSHOT'
-    compile 'com.github.azbh111:ProtocolLib:4.4.0'
+    compileOnly 'com.squareup.okhttp:okhttp:2.7.5'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT'
-    compileOnly 'com.github.joeleoli:pidgin:1.0'
-    compile "co.aikar:acf-paper:0.5.0-SNAPSHOT"
     compileOnly fileTree(dir: 'lib', include: '*.jar')
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compile 'com.github.azbh111:ProtocolLib:4.4.0'
+    compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
+    compile 'com.github.cryptomorin:XSeries:8.2.0'
 }
 
 compileJava {
@@ -66,13 +67,13 @@ idea {
 }
 
 shadowJar {
-    classifier = null
+    classifier = 'all'
     exclude '**/*.kotlin_metadata'
 //    exclude '**/*.kotlin_module'
     exclude '**/*.kotlin_builtins'
     relocate 'co.aikar.commands', 'net.evilblock.cubed.acf'
     relocate 'co.aikar.locales', 'net.evilblock.cubed.locales'
-    archiveFileName = "cubed-${project.name}-${version}.jar"
+    archiveFileName = "cubed-${project.name}-${project.version}.jar"
 }
 
 publishing {
@@ -87,7 +88,7 @@ processResources {
     filter ReplaceTokens, tokens: ["plugin.version": project.version ]
 }
 
-tasks.withType(Jar) {
-    def home = System.properties['user.home']
-    destinationDirectory = file("$home/Desktop/@MineXD/shared/global")
-}
+//tasks.withType(Jar) {
+//    def home = System.properties['user.home']
+//    destinationDirectory = file("$home/Desktop/@MineXD/shared/global")
+//}

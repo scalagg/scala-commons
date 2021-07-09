@@ -18,6 +18,8 @@ object ScoreboardHandler {
 
     internal val scoreboards: MutableMap<UUID, Scoreboard> = ConcurrentHashMap()
 
+    internal lateinit var scoreboardOverride: ScoreboardOverride
+
     @JvmStatic
     fun configure(titleGetter: TitleGetter, scoreGetter: ScoreGetter) {
         this.titleGetter = titleGetter

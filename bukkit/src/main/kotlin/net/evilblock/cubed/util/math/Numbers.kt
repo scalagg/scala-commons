@@ -243,43 +243,43 @@ object Numbers {
         }
     }
 
-    @JvmStatic
-    fun numberToBigDecimal(number: Number): BigDecimal {
-        return when (number) {
-            is BigInteger -> {
-                return number.toBigDecimal()
-            }
-            is BigDecimal -> {
-                return number
-            }
-            is Float -> {
-                BigDecimal(number.toString())
-            }
-            is Double -> {
-                BigDecimal(number)
-            }
-            else -> {
-                BigDecimal(number.toString())
-            }
-        }
-    }
-
-    @JvmStatic
-    fun sum(col: Collection<BigInteger>): BigInteger {
-        var sum = BigInteger.ZERO
-        for (i in col) {
-            sum += i
-        }
-        return sum
-    }
-
-    @JvmStatic
-    fun sum(col: Collection<BigDecimal>): BigDecimal {
-        var sum = BigDecimal.ZERO
-        for (i in col) {
-            sum += i
-        }
-        return sum
-    }
+//    @JvmStatic
+//    fun numberToBigDecimal(number: Number): BigDecimal {
+//        return when (number) {
+//            is BigInteger -> {
+//                return number.toBigDecimal()
+//            }
+//            is BigDecimal -> {
+//                return number
+//            }
+//            is Float -> {
+//                BigDecimal(number.toString())
+//            }
+//            is Double -> {
+//                BigDecimal(number)
+//            }
+//            else -> {
+//                BigDecimal(number.toString())
+//            }
+//        }
+//    }
+//
+//    @JvmStatic
+//    fun sum(col: Collection<BigInteger>): BigInteger {
+//        var sum = BigInteger.ZERO
+//        for (i in col) {
+//            sum += i
+//        }
+//        return sum
+//    }
+//
+//    @JvmStatic
+//    fun sum(col: Collection<BigDecimal>): BigDecimal {
+//        var sum = BigDecimal.ZERO
+//        for (i in col) {
+//            sum += i
+//        }
+//        return sum
+//    }
 
 }

@@ -64,7 +64,7 @@ public class AStar2 {
 		this.open.put(t.getUID(), t);
 		this.processAdjacentTiles(t);
 
-		this.endUID = new StringBuilder().append(ex - sx).append(ey - sy).append(ez - sz).toString();
+		this.endUID = String.valueOf(ex - sx) + (ey - sy) + (ez - sz);
 	}
 
 	public Location getEndLocation() {
@@ -144,12 +144,11 @@ public class AStar2 {
 
 		// get lowest F cost square
 		for (Tile t : open.values()) {
+			t.calculateBoth(sx, sy, sz, ex, ey, ez, true);
 			if (f == 0) {
-				t.calculateBoth(sx, sy, sz, ex, ey, ez, true);
 				f = t.getF();
 				drop = t;
 			} else {
-				t.calculateBoth(sx, sy, sz, ex, ey, ez, true);
 				double posF = t.getF();
 				if (posF < f) {
 					f = posF;
@@ -237,7 +236,7 @@ public class AStar2 {
 	}
 
 	private Tile isOnOpenList(Tile t) {
-		return (open.containsKey(t.getUID()) ? open.get(t.getUID()) : null);
+		return (open.getOrDefault(t.getUID(), null));
 		/*
 		 * for (Tile o : open) { if (o.equals(t)) { return o; } } return null;
 		 */
@@ -256,7 +255,7 @@ public class AStar2 {
 			if (b.getRelative(0, 1, 0).getTypeId() == 107) {
 				// fench gate check, if closed continue
 				Gate g = new Gate(b.getRelative(0, 1, 0).getData());
-				return (g.isOpen() ? (b.getRelative(0, 2, 0).getTypeId() == 0) : false);
+				return (g.isOpen() && (b.getRelative(0, 2, 0).getTypeId() == 0));
 			}
 			return (canBlockBeWalkedThrough(b.getRelative(0, 1, 0).getTypeId()) && b.getRelative(0, 2, 0).getTypeId() == 0);
 
@@ -282,7 +281,7 @@ public class AStar2 {
 				|| id == 76 || id == 78);
 	}
 
-	public class InvalidPathException extends Exception {
+	public static class InvalidPathException extends Exception {
 		private final boolean s, e;
 
 		public InvalidPathException(boolean s, boolean e) {

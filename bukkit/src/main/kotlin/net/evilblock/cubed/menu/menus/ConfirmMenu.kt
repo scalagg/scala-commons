@@ -17,7 +17,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Material
 import java.util.HashMap
 
-class ConfirmMenu(
+open class ConfirmMenu(
     private val title: String = "Are you sure?",
     private val extraInfo: List<String> = emptyList(),
     private val confirm: Boolean = true,

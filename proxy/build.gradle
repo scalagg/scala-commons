@@ -10,9 +10,7 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    maven {
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
+//    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
 }
 
 dependencies {
@@ -21,7 +19,9 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    compileOnly 'net.md-5:bungeecord-api:1.11-SNAPSHOT'
+//    compileOnly 'net.md-5:bungeecord-api:1.11-SNAPSHOT'
+
+    compileOnly fileTree(dir: 'lib', include: '*.jar')
 }
 
 compileKotlin {

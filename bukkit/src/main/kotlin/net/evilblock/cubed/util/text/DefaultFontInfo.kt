@@ -1,6 +1,5 @@
 package net.evilblock.cubed.util.text
 
-
 enum class DefaultFontInfo(val character: Char, val length: Int) {
 
     A('A', 5),
@@ -112,5 +111,4 @@ enum class DefaultFontInfo(val character: Char, val length: Int) {
             return DEFAULT
         }
     }
-
 }

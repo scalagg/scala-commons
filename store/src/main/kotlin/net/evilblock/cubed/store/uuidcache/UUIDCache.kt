@@ -144,5 +144,4 @@ abstract class UUIDCache {
             return Optional.ofNullable(null)
         }
     }
-
 }

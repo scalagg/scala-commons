@@ -7,22 +7,31 @@
 
 package net.evilblock.cubed.util.bukkit
 
+import com.cryptomorin.xseries.XMaterial
+import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
-import org.bukkit.inventory.meta.LeatherArmorMeta
-import java.util.stream.Collectors
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
+import java.util.function.BiConsumer
+import java.util.stream.Collectors
 
 class ItemBuilder(private val item: ItemStack) {
 
     constructor(material: Material): this(ItemStack(material))
     constructor(material: Material, amount: Int): this(ItemStack(material, amount))
+    constructor(material: XMaterial): this(ItemStack(material.parseMaterial()))
+    constructor(material: XMaterial, amount: Int): this(ItemStack(material.parseMaterial(), amount))
 
     fun amount(amount: Int): ItemBuilder {
         item.amount = amount
@@ -69,6 +78,24 @@ class ItemBuilder(private val item: ItemStack) {
         return this
     }
 
+    fun addToLore(parts: ArrayList<String>): ItemBuilder {
+        var meta = item.itemMeta
+        if (meta == null) {
+            meta = Bukkit.getItemFactory().getItemMeta(item.type)
+        }
+
+        var lore: MutableList<String>? = meta!!.lore
+        if (lore == null) {
+            lore = arrayListOf()
+        }
+
+        lore.addAll(parts.stream().map { part -> ChatColor.translateAlternateColorCodes('&', part) }.collect(Collectors.toList()))
+
+        meta.lore = lore
+        item.itemMeta = meta
+        return this
+    }
+
     fun setLore(l: Collection<String>): ItemBuilder {
         val lore = ArrayList<String>()
         val meta = item.getItemMeta()
@@ -81,6 +108,13 @@ class ItemBuilder(private val item: ItemStack) {
     fun color(color: Color): ItemBuilder {
         val meta = item.itemMeta as? LeatherArmorMeta ?: throw UnsupportedOperationException("Cannot set color of a non-leather armor item.")
         meta.color = color
+        item.itemMeta = meta
+        return this
+    }
+
+    fun owner(owner: String): ItemBuilder {
+        val meta = item.itemMeta as? SkullMeta ?: throw UnsupportedOperationException("Cannot set owner of a non-skull item.")
+        meta.owner = owner
         item.itemMeta = meta
         return this
     }
@@ -108,6 +142,30 @@ class ItemBuilder(private val item: ItemStack) {
         return item.clone()
     }
 
+    fun toButton(): Button {
+        return Button.placeholder(item)
+    }
+
+    fun toButton(consumer: BiConsumer<Player?, ClickType?>): Button {
+        return object : Button() {
+            override fun getButtonItem(player: Player): ItemStack {
+                return this@ItemBuilder.build()
+            }
+
+            override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+                consumer.accept(player, clickType)
+            }
+        }
+    }
+
+//    fun toUpdatingButton(consumer: BiConsumer<Player?, ClickType?>): Button {
+//        return object : Button() {
+//            override fun getButtonItem(player: Player): ItemStack {
+//                return this@ItemBuilder.build()
+//            }
+//        }
+//    }
+
     companion object {
         @JvmStatic
         fun of (material: Material): ItemBuilder {
@@ -116,6 +174,16 @@ class ItemBuilder(private val item: ItemStack) {
 
         @JvmStatic
         fun of (material: Material, amount: Int): ItemBuilder {
+            return ItemBuilder(material, amount)
+        }
+
+        @JvmStatic
+        fun of (material: XMaterial): ItemBuilder {
+            return ItemBuilder(material, 1)
+        }
+
+        @JvmStatic
+        fun of (material: XMaterial, amount: Int): ItemBuilder {
             return ItemBuilder(material, amount)
         }
 
