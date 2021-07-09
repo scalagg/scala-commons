@@ -212,49 +212,49 @@ class Cubed : JavaPlugin() {
     }
 
     private fun loadCommands() {
-        CommandHandler.load()
-
-        CommandHandler.registerClass(CubedCommands.javaClass)
-
-        CommandHandler.registerClass(FindUsernameCommand.javaClass)
-        CommandHandler.registerClass(FindUUIDCommand.javaClass)
-
-        CommandHandler.registerClass(EntityFixNullWorldsCommand.javaClass)
-        CommandHandler.registerClass(EntityImportCommand.javaClass)
-        CommandHandler.registerClass(EntityExportCommand.javaClass)
-        CommandHandler.registerClass(EntityFastEditCommand.javaClass)
-        CommandHandler.registerClass(EntityManageCommand.javaClass)
-        CommandHandler.registerClass(EntityNearbyCommand.javaClass)
-        CommandHandler.registerClass(EntitySaveCommand.javaClass)
-        CommandHandler.registerClass(EntityStatsCommand.javaClass)
-        CommandHandler.registerClass(EntityTeleportCommand.javaClass)
-
-        CommandHandler.registerClass(NpcCreateCommand.javaClass)
-        CommandHandler.registerClass(NpcSpawnCommand.javaClass)
-        CommandHandler.registerClass(NpcDeleteNearCommand.javaClass)
-        CommandHandler.registerClass(NpcManageCommand.javaClass)
-
-        CommandHandler.registerClass(HologramCreateCommand.javaClass)
-        CommandHandler.registerClass(HologramManageCommand.javaClass)
-
-        CommandHandler.registerClass(NametagStatsCommand.javaClass)
-        CommandHandler.registerClass(NametagDebugCommand.javaClass)
-
-        CommandHandler.registerClass(MenuTemplateEditorCommand.javaClass)
-        CommandHandler.registerClass(MenuTemplateViewCommand.javaClass)
-
-        CommandHandler.registerClass(ScoreboardPreviewCommand.javaClass)
-        CommandHandler.registerClass(ScoreboardPreviewEditorCommand.javaClass)
-        CommandHandler.registerClass(ScoreboardReloadAllCommand.javaClass)
-
-        CommandHandler.registerClass(PosterPlaceCommand.javaClass)
-
-        CommandHandler.registerParameterType(Entity::class.java, EntityParameterType())
-        CommandHandler.registerParameterType(NpcEntity::class.java, NpcEntityParameterType())
-        CommandHandler.registerParameterType(NpcTexture::class.java, NpcTexture.NpcTextureParameterType)
-        CommandHandler.registerParameterType(MenuTemplate::class.java, MenuTemplate.TemplateParameterType())
-
-        logger.info("Loaded command handler")
+//        CommandHandler.load()
+//
+//        CommandHandler.registerClass(CubedCommands.javaClass)
+//
+//        CommandHandler.registerClass(FindUsernameCommand.javaClass)
+//        CommandHandler.registerClass(FindUUIDCommand.javaClass)
+//
+//        CommandHandler.registerClass(EntityFixNullWorldsCommand.javaClass)
+//        CommandHandler.registerClass(EntityImportCommand.javaClass)
+//        CommandHandler.registerClass(EntityExportCommand.javaClass)
+//        CommandHandler.registerClass(EntityFastEditCommand.javaClass)
+//        CommandHandler.registerClass(EntityManageCommand.javaClass)
+//        CommandHandler.registerClass(EntityNearbyCommand.javaClass)
+//        CommandHandler.registerClass(EntitySaveCommand.javaClass)
+//        CommandHandler.registerClass(EntityStatsCommand.javaClass)
+//        CommandHandler.registerClass(EntityTeleportCommand.javaClass)
+//
+//        CommandHandler.registerClass(NpcCreateCommand.javaClass)
+//        CommandHandler.registerClass(NpcSpawnCommand.javaClass)
+//        CommandHandler.registerClass(NpcDeleteNearCommand.javaClass)
+//        CommandHandler.registerClass(NpcManageCommand.javaClass)
+//
+//        CommandHandler.registerClass(HologramCreateCommand.javaClass)
+//        CommandHandler.registerClass(HologramManageCommand.javaClass)
+//
+//        CommandHandler.registerClass(NametagStatsCommand.javaClass)
+//        CommandHandler.registerClass(NametagDebugCommand.javaClass)
+//
+//        CommandHandler.registerClass(MenuTemplateEditorCommand.javaClass)
+//        CommandHandler.registerClass(MenuTemplateViewCommand.javaClass)
+//
+//        CommandHandler.registerClass(ScoreboardPreviewCommand.javaClass)
+//        CommandHandler.registerClass(ScoreboardPreviewEditorCommand.javaClass)
+//        CommandHandler.registerClass(ScoreboardReloadAllCommand.javaClass)
+//
+//        CommandHandler.registerClass(PosterPlaceCommand.javaClass)
+//
+//        CommandHandler.registerParameterType(Entity::class.java, EntityParameterType())
+//        CommandHandler.registerParameterType(NpcEntity::class.java, NpcEntityParameterType())
+//        CommandHandler.registerParameterType(NpcTexture::class.java, NpcTexture.NpcTextureParameterType)
+//        CommandHandler.registerParameterType(MenuTemplate::class.java, MenuTemplate.TemplateParameterType())
+//
+//        logger.info("Loaded command handler")
     }
 
     private fun loadHandlers() {

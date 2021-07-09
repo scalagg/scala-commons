@@ -54,36 +54,36 @@ object CommandHandler {
     }
 
     fun load() {
-        registerParameterType(Boolean::class.java, BooleanParameterType())
-        registerParameterType(Integer::class.java, IntegerParameterType())
-        registerParameterType(Int::class.java, IntegerParameterType())
-        registerParameterType(Double::class.java, DoubleParameterType())
-        registerParameterType(Long::class.java, LongParameterType())
-        registerParameterType(Float::class.java, FloatParameterType())
-        registerParameterType(String::class.java, StringParameterType())
-        registerParameterType(ChatColor::class.java, ChatColorParameterType())
-        registerParameterType(Enchantment::class.java, EnchantmentParameterType())
-        registerParameterType(ItemFlag::class.java, ItemFlagParameterType())
-
-        val equipmentSlotClass = try {
-            Class.forName("org.bukkit.inventory.EquipmentSlot")
-        } catch (e: Exception) {
-            null
-        }
-
-        if (equipmentSlotClass != null) {
-            registerParameterType(equipmentSlotClass, EquipmentSlotParameterType())
-        }
-
-        registerParameterType(GameMode::class.java, GameModeParameterType())
-        registerParameterType(Player::class.java, PlayerParameterType())
-        registerParameterType(World::class.java, WorldParameterType())
-        registerParameterType(OfflinePlayer::class.java, OfflinePlayerParameterType())
-        registerParameterType(OfflinePlayerWrapper::class.java, OfflinePlayerWrapperParameterType())
-        registerParameterType(UUID::class.java, UUIDParameterType())
-        registerParameterType(Duration::class.java, Duration.DurationParameterType())
-
-        swapCommandMap()
+//        registerParameterType(Boolean::class.java, BooleanParameterType())
+//        registerParameterType(Integer::class.java, IntegerParameterType())
+//        registerParameterType(Int::class.java, IntegerParameterType())
+//        registerParameterType(Double::class.java, DoubleParameterType())
+//        registerParameterType(Long::class.java, LongParameterType())
+//        registerParameterType(Float::class.java, FloatParameterType())
+//        registerParameterType(String::class.java, StringParameterType())
+//        registerParameterType(ChatColor::class.java, ChatColorParameterType())
+//        registerParameterType(Enchantment::class.java, EnchantmentParameterType())
+//        registerParameterType(ItemFlag::class.java, ItemFlagParameterType())
+//
+//        val equipmentSlotClass = try {
+//            Class.forName("org.bukkit.inventory.EquipmentSlot")
+//        } catch (e: Exception) {
+//            null
+//        }
+//
+//        if (equipmentSlotClass != null) {
+//            registerParameterType(equipmentSlotClass, EquipmentSlotParameterType())
+//        }
+//
+//        registerParameterType(GameMode::class.java, GameModeParameterType())
+//        registerParameterType(Player::class.java, PlayerParameterType())
+//        registerParameterType(World::class.java, WorldParameterType())
+//        registerParameterType(OfflinePlayer::class.java, OfflinePlayerParameterType())
+//        registerParameterType(OfflinePlayerWrapper::class.java, OfflinePlayerWrapperParameterType())
+//        registerParameterType(UUID::class.java, UUIDParameterType())
+//        registerParameterType(Duration::class.java, Duration.DurationParameterType())
+//
+//        swapCommandMap()
     }
 
     fun registerParameterType(clazz: Class<*>, parameterType: ParameterType<*>) {
