@@ -291,22 +291,22 @@ object ItemUtils {
         return getBukkitCopy(nmsCopy)
     }
 
-    @JvmStatic
-    fun addUUIDToItemTag(itemStack: ItemStack, key: String, uuid: UUID, preserve: Boolean = false): ItemStack {
-        val nmsCopy = getNmsCopy(itemStack)
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-
-        NBTUtil.setUUID(tag, key, uuid)
-
-        if (preserve) {
-            preserveItemNBT(nmsCopy, tag, "${key}Most")
-            preserveItemNBT(nmsCopy, tag, "${key}Least")
-        }
-
-        NBTUtil.setTag(nmsCopy, tag)
-
-        return getBukkitCopy(nmsCopy)
-    }
+//    @JvmStatic
+//    fun addUUIDToItemTag(itemStack: ItemStack, key: String, uuid: UUID, preserve: Boolean = false): ItemStack {
+//        val nmsCopy = getNmsCopy(itemStack)
+//        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+//
+//        NBTUtil.setUUID(tag, key, uuid)
+//
+//        if (preserve) {
+//            preserveItemNBT(nmsCopy, tag, "${key}Most")
+//            preserveItemNBT(nmsCopy, tag, "${key}Least")
+//        }
+//
+//        NBTUtil.setTag(nmsCopy, tag)
+//
+//        return getBukkitCopy(nmsCopy)
+//    }
 
     @JvmStatic
     fun preserveItemNBT(itemStack: ItemStack, key: String): ItemStack {

@@ -9,9 +9,10 @@ package net.evilblock.cubed.menu.pagination
 
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.entity.Player
-import java.util.HashMap
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -42,6 +43,10 @@ abstract class PaginatedMenu : Menu() {
 
     override fun getButtons(player: Player): MutableMap<Int, Button> {
         val buttons = HashMap<Int, Button>()
+
+        for (i in 1..7) {
+            buttons[i] = ItemBuilder(Material.STAINED_GLASS_PANE).data(7.toShort()).name(" ").toButton()
+        }
 
         val pageButtonSlots = getPageButtonSlots()
         if (pageButtonSlots != null) {

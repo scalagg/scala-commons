@@ -1,6 +1,5 @@
 package net.evilblock.cubed.store.uuidcache.listener
 
-import com.google.gson.JsonObject
 import com.solexgames.redis.annotation.Subscription
 import com.solexgames.redis.handler.JedisHandler
 import com.solexgames.redis.json.JsonAppender

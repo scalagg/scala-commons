@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
@@ -60,7 +61,7 @@ class Scoreboard(private val player: Player) {
     }
 
     fun update() {
-        val override = ScoreboardHandler.scoreboardOverride;
+        val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride.apply(this.player)
 
         val title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.titleGetter.getTitle(player) else ScoreboardHandler.titleGetter.getTitle(player))
@@ -91,7 +92,9 @@ class Scoreboard(private val player: Player) {
             this.objective.displayName = title
         }
 
-        for (line in lines) {
+        for (s in lines) {
+            val line = ChatColor.values()[nextValue].toString() + CC.WHITE + s
+
             if (line.length > 48) {
                 throw IllegalArgumentException("Line is too long! Offending line: ${line.replace(ChatColor.COLOR_CHAR, '&')}")
             }

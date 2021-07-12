@@ -1,6 +1,6 @@
 debug: false
 
-redis-connection-uri: "redis://localhost:6379"
+redis-connection-uri: "redis://localhost:6379?db=0"
 mongo-connection-uri: "mongodb://root:w7KjHDzvLxzFDzgwGvXwbQAGDQCFh54kW8cK8NmF4m7JV3@127.0.0.1:27017/SGSoftware?authSource=admin"
 
 backups: true
