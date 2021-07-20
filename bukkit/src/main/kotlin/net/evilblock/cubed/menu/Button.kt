@@ -8,6 +8,7 @@
 package net.evilblock.cubed.menu
 
 import com.google.common.base.Joiner
+import net.evilblock.cubed.util.Color
 import org.apache.commons.lang.StringUtils
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -67,7 +68,7 @@ abstract class Button {
                 }
             }
 
-            meta.lore = getDescription(player)
+            meta.lore = Color.translate(getDescription(player))
 
             val appliedMeta = applyMetadata(player, meta) ?: meta
             buttonItem.itemMeta = appliedMeta

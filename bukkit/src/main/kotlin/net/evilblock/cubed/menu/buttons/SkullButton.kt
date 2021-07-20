@@ -7,15 +7,13 @@
 
 package net.evilblock.cubed.menu.buttons
 
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.Button
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import java.util.*
 
-open class SkullButton(private val owner: UUID) : Button() {
+open class SkullButton(private val owner: String) : Button() {
 
     override fun getMaterial(player: Player): Material {
         return Material.SKULL_ITEM
@@ -30,7 +28,7 @@ open class SkullButton(private val owner: UUID) : Button() {
 
         if (item.hasItemMeta() && item.itemMeta is SkullMeta) {
             val meta = item.itemMeta as SkullMeta
-            meta.owner = Cubed.instance.uuidCache.name(owner)
+            meta.owner = owner
             item.itemMeta = meta
         }
 

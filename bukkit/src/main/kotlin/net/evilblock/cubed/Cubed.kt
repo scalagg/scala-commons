@@ -7,31 +7,21 @@
 
 package net.evilblock.cubed
 
-import net.evilblock.cubed.nametag.NametagListener
 import com.comphenix.protocol.ProtocolLibrary
 import net.evilblock.cubed.backup.BackupHandler
-import net.evilblock.cubed.command.CommandHandler
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
-import net.evilblock.cubed.entity.command.*
-import net.evilblock.cubed.entity.command.parameter.EntityParameterType
-import net.evilblock.cubed.entity.hologram.command.HologramCreateCommand
-import net.evilblock.cubed.entity.hologram.command.HologramManageCommand
 import net.evilblock.cubed.entity.hologram.personalized.PersonalizedHologramTask
 import net.evilblock.cubed.entity.hologram.updating.UpdatingHologramTask
 import net.evilblock.cubed.entity.listener.EntityWatcherListeners
 import net.evilblock.cubed.entity.living.listener.LivingEntityListeners
-import net.evilblock.cubed.entity.npc.NpcEntity
-import net.evilblock.cubed.entity.npc.command.*
-import net.evilblock.cubed.entity.npc.command.parameter.NpcEntityParameterType
 import net.evilblock.cubed.entity.npc.listener.NpcEntityTeamUpdatesListeners
 import net.evilblock.cubed.entity.npc.strategy.NpcStrategyLogic
-import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.entity.packet.EntityPacketAdapter
-import net.evilblock.cubed.entity.tool.EntityPortTool
 import net.evilblock.cubed.entity.tool.EntityMoveTool
+import net.evilblock.cubed.entity.tool.EntityPortTool
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
 import net.evilblock.cubed.logging.ErrorHandler
 import net.evilblock.cubed.logging.LogHandler
@@ -44,35 +34,24 @@ import net.evilblock.cubed.menu.protocol.MenuPacketAdapter
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateButton
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
-import net.evilblock.cubed.menu.template.command.MenuTemplateEditorCommand
-import net.evilblock.cubed.menu.template.command.MenuTemplateViewCommand
 import net.evilblock.cubed.nametag.NametagHandler
+import net.evilblock.cubed.nametag.NametagListener
 import net.evilblock.cubed.nametag.update.NametagUpdatesListeners
-import net.evilblock.cubed.nametag.command.NametagDebugCommand
-import net.evilblock.cubed.nametag.command.NametagStatsCommand
 import net.evilblock.cubed.plugin.PluginFramework
 import net.evilblock.cubed.poster.PosterHandler
-import net.evilblock.cubed.poster.command.PosterPlaceCommand
 import net.evilblock.cubed.poster.placed.PlacedPosterHandler
 import net.evilblock.cubed.scoreboard.ScoreboardListeners
 import net.evilblock.cubed.scoreboard.ScoreboardThread
-import net.evilblock.cubed.scoreboard.command.ScoreboardReloadAllCommand
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
-import net.evilblock.cubed.scoreboard.preview.command.ScoreboardPreviewCommand
-import net.evilblock.cubed.scoreboard.preview.command.ScoreboardPreviewEditorCommand
 import net.evilblock.cubed.serialize.BlockVectorAdapter
 import net.evilblock.cubed.serialize.ItemStackAdapter
 import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.store.uuidcache.UUIDCache
-import net.evilblock.cubed.store.uuid.listener.UUIDCacheListeners
-import net.evilblock.cubed.store.uuid.command.FindUUIDCommand
-import net.evilblock.cubed.store.uuid.command.FindUsernameCommand
-import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.store.mongo.Mongo
 import net.evilblock.cubed.store.redis.Redis
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -187,13 +166,13 @@ class Cubed : JavaPlugin() {
     }
 
     private fun loadStore() {
-        try {
-            redis.connect(CubedConfig.getRedisURI())
-        } catch (e: Exception) {
-            throw RuntimeException("Couldn't connect to redis server at ${CubedConfig.getRedisURI()}", e)
-        }
-
-        logger.info("Connected to redis server")
+//        try {
+//            redis.connect(CubedConfig.getRedisURI())
+//        } catch (e: Exception) {
+//            throw RuntimeException("Couldn't connect to redis server at ${CubedConfig.getRedisURI()}", e)
+//        }
+//
+//        logger.info("Connected to redis server")
 
         try {
             mongo.connect(CubedConfig.getMongoURI())
@@ -203,12 +182,12 @@ class Cubed : JavaPlugin() {
 
         logger.info("Connected to mongodb server")
 
-        try {
-            uuidCache = RedisUUIDCache(redis)
-            uuidCache.load()
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to load UUID cache", e)
-        }
+//        try {
+//            uuidCache = RedisUUIDCache(redis)
+//            uuidCache.load()
+//        } catch (e: Exception) {
+//            throw RuntimeException("Failed to load UUID cache", e)
+//        }
     }
 
     private fun loadCommands() {
@@ -290,7 +269,7 @@ class Cubed : JavaPlugin() {
 
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
-        server.pluginManager.registerEvents(UUIDCacheListeners, this)
+//        server.pluginManager.registerEvents(UUIDCacheListeners, this)
         server.pluginManager.registerEvents(EntityPacketAdapter, this) // this is not a mistake
         server.pluginManager.registerEvents(EntityWatcherListeners, this)
         server.pluginManager.registerEvents(LivingEntityListeners, this)
@@ -311,10 +290,10 @@ class Cubed : JavaPlugin() {
     private fun loadTasks() {
         ScoreboardThread().start()
 
-        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
-            systemSave()
-            uuidCache.load()
-        }
+//        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
+//            systemSave()
+//            uuidCache.load()
+//        }
 
         Tasks.asyncTimer(NpcStrategyLogic, 20L, 20L)
         Tasks.asyncTimer(MenuAutoUpdater, 2L, 2L)
