@@ -13,30 +13,23 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ScoreboardHandler {
 
-    internal var titleGetter: TitleGetter = DefaultTitleGetter()
-    internal var scoreGetter: ScoreGetter = DefaultScoreGetter()
-
+    internal var scoreboardProvider: ScoreboardAdapter = DefaultScoreboardProvider()
     internal val scoreboards: MutableMap<UUID, Scoreboard> = ConcurrentHashMap()
 
     internal lateinit var scoreboardOverride: ScoreboardOverride
-//    internal lateinit var scoreboardO: ScoreboardOverride
 
     @JvmStatic
-    fun configure(titleGetter: TitleGetter, scoreGetter: ScoreGetter) {
-        this.titleGetter = titleGetter
-        this.scoreGetter = scoreGetter
+    fun configure(scoreboardProvider: ScoreboardAdapter) {
+        this.scoreboardProvider = scoreboardProvider
     }
 
-    class DefaultTitleGetter : TitleGetter {
+    class DefaultScoreboardProvider : ScoreboardAdapter() {
         override fun getTitle(player: Player): String {
             return "Un-configured scoreboard"
         }
-    }
 
-    class DefaultScoreGetter : ScoreGetter {
-        override fun getScores(scores: LinkedList<String>, player: Player) {
-            scores.add("Hey there, ${player.name}!")
+        override fun getLines(board: LinkedList<String>, player: Player) {
+            board.add("Hey there, ${player.name}!")
         }
     }
-
 }

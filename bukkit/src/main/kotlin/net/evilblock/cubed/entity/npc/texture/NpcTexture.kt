@@ -6,11 +6,11 @@ import com.squareup.okhttp.Request
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.command.data.parameter.ParameterType
-import net.evilblock.cubed.store.uuidcache.UUIDCache
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.lang.IllegalStateException
 import java.util.*
 
 data class NpcTexture(val textureValue: String, val textureSignature: String) {
@@ -35,36 +35,37 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
          */
         @JvmStatic
         fun fetchTextureByUsername(username: String): Optional<NpcTexture> {
-            var uuid = Cubed.instance.uuidCache.uuid(username)
-            if (uuid == null) {
-                val apiResponse = UUIDCache.fetchFromMojang(username)
-                if (!apiResponse.isPresent) {
-                    return Optional.empty()
-                }
-
-                uuid = apiResponse.get().first
-            }
-
-            return try {
-                val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()
-
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val json = parser.parse(response.body().string()).asJsonObject
-                    val data = json.get("data").asJsonObject
-                    val texture = data.get("texture").asJsonObject
-
-                    response.body().close()
-
-                    Optional.of(NpcTexture(texture.get("value").asString, texture.get("signature").asString))
-                } else {
-                    response.body().close()
-
-                    Optional.empty()
-                }
-            } catch (e: Exception) {
-                throw IllegalStateException("Failed to fetch player texture from API", e)
-            }
+//            var uuid = Cubed.instance.uuidCache.uuid(username)
+//            if (uuid == null) {
+//                val apiResponse = UUIDCache.fetchFromMojang(username)
+//                if (!apiResponse.isPresent) {
+//                    return Optional.empty()
+//                }
+//
+//                uuid = apiResponse.get().first
+//            }
+//
+//            return try {
+//                val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()
+//
+//                val response = client.newCall(request).execute()
+//                if (response.isSuccessful) {
+//                    val json = parser.parse(response.body().string()).asJsonObject
+//                    val data = json.get("data").asJsonObject
+//                    val texture = data.get("texture").asJsonObject
+//
+//                    response.body().close()
+//
+//                    Optional.of(NpcTexture(texture.get("value").asString, texture.get("signature").asString))
+//                } else {
+//                    response.body().close()
+//
+//                    Optional.empty()
+//                }
+//            } catch (e: Exception) {
+//                throw IllegalStateException("Failed to fetch player texture from API", e)
+//            }
+            throw IllegalStateException()
         }
     }
 

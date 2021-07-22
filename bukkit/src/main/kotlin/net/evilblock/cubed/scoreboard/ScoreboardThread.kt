@@ -7,8 +7,6 @@
 
 package net.evilblock.cubed.scoreboard
 
-import net.evilblock.cubed.CubedConfig
-
 class ScoreboardThread : Thread("Cubed - Scoreboard") {
 
     init {
@@ -28,7 +26,7 @@ class ScoreboardThread : Thread("Cubed - Scoreboard") {
                     }
                 }
 
-                sleep(CubedConfig.getScoreboardUpdateInterval() * 50L)
+                sleep(ScoreboardHandler.scoreboardProvider.interval * 50L)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }

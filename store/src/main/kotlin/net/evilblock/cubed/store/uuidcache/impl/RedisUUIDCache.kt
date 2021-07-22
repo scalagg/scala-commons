@@ -51,5 +51,4 @@ class RedisUUIDCache(private val redis: Redis) : UUIDCache() {
             redis.hset(KEY, name.toLowerCase(), uuid.toString())
         }
     }
-
 }

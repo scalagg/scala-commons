@@ -58,26 +58,30 @@ class Scoreboard(private val player: Player) {
         if (player.scoreboard != scoreboard) {
             player.scoreboard = scoreboard
         }
+
+        ScoreboardHandler.scoreboardProvider.onScoreboardCreate(player, scoreboard)
     }
 
     fun update() {
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride.apply(this.player)
 
-        val title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.titleGetter.getTitle(player) else ScoreboardHandler.titleGetter.getTitle(player))
+        val title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
 
         val lines = localList.get()
         if (!lines.isEmpty()) {
             lines.clear()
         }
 
+        ScoreboardHandler.scoreboardProvider.preRun(player, this.objective.scoreboard)
+
         if (ScoreboardPreviewHandler.previewGlobal || ScoreboardPreviewHandler.previewMode.contains(player.uniqueId)) {
             this.localList.get().addAll(ScoreboardPreviewHandler.lines)
         } else {
             if (shouldOverride) {
-                override.scoreGetter.getScores(this.localList.get(), this.player)
+                override.getLines(this.localList.get(), this.player)
             } else {
-                ScoreboardHandler.scoreGetter.getScores(this.localList.get(), this.player)
+                ScoreboardHandler.scoreboardProvider.getLines(this.localList.get(), this.player)
             }
         }
 

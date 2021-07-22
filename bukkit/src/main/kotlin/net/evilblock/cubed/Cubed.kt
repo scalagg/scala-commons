@@ -49,9 +49,6 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.store.mongo.Mongo
-import net.evilblock.cubed.store.redis.Redis
-import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -77,11 +74,6 @@ class Cubed : JavaPlugin() {
         @JvmStatic var running: Boolean = false
     }
 
-    lateinit var uuidCache: UUIDCache
-
-    val redis: Redis = Redis()
-    val mongo: Mongo = Mongo()
-
     override fun onEnable() {
         instance = this
 
@@ -105,7 +97,6 @@ class Cubed : JavaPlugin() {
             LogHandler.initialLoad()
             BackupHandler.initialLoad()
 
-            loadStore()
             loadCommands()
             loadHandlers()
             loadListeners()
@@ -163,31 +154,6 @@ class Cubed : JavaPlugin() {
         } else {
             true
         }
-    }
-
-    private fun loadStore() {
-//        try {
-//            redis.connect(CubedConfig.getRedisURI())
-//        } catch (e: Exception) {
-//            throw RuntimeException("Couldn't connect to redis server at ${CubedConfig.getRedisURI()}", e)
-//        }
-//
-//        logger.info("Connected to redis server")
-
-        try {
-            mongo.connect(CubedConfig.getMongoURI())
-        } catch (e: Exception) {
-            throw RuntimeException("Couldn't connect to mongodb server at ${CubedConfig.getMongoURI()}", e)
-        }
-
-        logger.info("Connected to mongodb server")
-
-//        try {
-//            uuidCache = RedisUUIDCache(redis)
-//            uuidCache.load()
-//        } catch (e: Exception) {
-//            throw RuntimeException("Failed to load UUID cache", e)
-//        }
     }
 
     private fun loadCommands() {
@@ -269,7 +235,6 @@ class Cubed : JavaPlugin() {
 
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
-//        server.pluginManager.registerEvents(UUIDCacheListeners, this)
         server.pluginManager.registerEvents(EntityPacketAdapter, this) // this is not a mistake
         server.pluginManager.registerEvents(EntityWatcherListeners, this)
         server.pluginManager.registerEvents(LivingEntityListeners, this)
@@ -292,7 +257,6 @@ class Cubed : JavaPlugin() {
 
 //        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
 //            systemSave()
-//            uuidCache.load()
 //        }
 
         Tasks.asyncTimer(NpcStrategyLogic, 20L, 20L)
