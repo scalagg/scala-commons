@@ -43,5 +43,4 @@ class ApplyAnimationMenu(private val entity: Entity, private val use: (EntityAni
             }
         }
     }
-
 }

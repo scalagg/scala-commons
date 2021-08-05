@@ -4,12 +4,7 @@ import com.google.gson.JsonParser
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import net.evilblock.cubed.Cubed
-import net.evilblock.cubed.CubedConfig
-import net.evilblock.cubed.command.data.parameter.ParameterType
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -35,70 +30,36 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
          */
         @JvmStatic
         fun fetchTextureByUsername(username: String): Optional<NpcTexture> {
-//            var uuid = Cubed.instance.uuidCache.uuid(username)
-//            if (uuid == null) {
-//                val apiResponse = UUIDCache.fetchFromMojang(username)
-//                if (!apiResponse.isPresent) {
-//                    return Optional.empty()
-//                }
-//
-//                uuid = apiResponse.get().first
-//            }
-//
-//            return try {
-//                val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()
-//
-//                val response = client.newCall(request).execute()
-//                if (response.isSuccessful) {
-//                    val json = parser.parse(response.body().string()).asJsonObject
-//                    val data = json.get("data").asJsonObject
-//                    val texture = data.get("texture").asJsonObject
-//
-//                    response.body().close()
-//
-//                    Optional.of(NpcTexture(texture.get("value").asString, texture.get("signature").asString))
-//                } else {
-//                    response.body().close()
-//
-//                    Optional.empty()
-//                }
-//            } catch (e: Exception) {
-//                throw IllegalStateException("Failed to fetch player texture from API", e)
-//            }
-            throw IllegalStateException()
-        }
-    }
+            var uuid = Cubed.instance.uuidCache.uuid(username)
+            if (uuid == null) {
+                val apiResponse = UUIDCache.fetchFromMojang(username)
+                if (!apiResponse.isPresent) {
+                    return Optional.empty()
+                }
 
-    object NpcTextureParameterType : ParameterType<NpcTexture> {
-        override fun transform(sender: CommandSender, source: String): NpcTexture? {
-            if (CubedConfig.hasNpcTexture(source)) {
-                return CubedConfig.getNpcTexture(source)
+                uuid = apiResponse.get().first
             }
 
-            assert(!Bukkit.isPrimaryThread()) { "Cannot fetch player texture on main thread" }
+            return try {
+                val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()
 
-            try {
-                val queryResponse = fetchTextureByUsername(source)
-                if (queryResponse.isPresent) {
-                    return queryResponse.get()
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val json = parser.parse(response.body().string()).asJsonObject
+                    val data = json.get("data").asJsonObject
+                    val texture = data.get("texture").asJsonObject
+
+                    response.body().close()
+
+                    Optional.of(NpcTexture(texture.get("value").asString, texture.get("signature").asString))
+                } else {
+                    response.body().close()
+
+                    Optional.empty()
                 }
-            } catch (ignore: Exception) {}
-
-            sender.sendMessage("${ChatColor.RED}Failed to fetch player texture for `${ChatColor.WHITE}$source${ChatColor.RED}`.")
-            return null
-        }
-
-        override fun tabComplete(player: Player, flags: Set<String>, source: String): List<String> {
-            val completions = arrayListOf<String>()
-
-            for (id in CubedConfig.getNpcTextureIds()) {
-                if (source.startsWith(id, ignoreCase = true)) {
-                    completions.add(id)
-                }
+            } catch (e: Exception) {
+                throw IllegalStateException("Failed to fetch player texture from API", e)
             }
-
-            return completions
         }
     }
-
 }

@@ -7,8 +7,11 @@
 
 package net.evilblock.cubed
 
+import co.aikar.commands.ConditionFailedException
+import co.aikar.commands.PaperCommandManager
 import com.comphenix.protocol.ProtocolLibrary
 import net.evilblock.cubed.backup.BackupHandler
+import net.evilblock.cubed.command.*
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.EntitySerializer
@@ -17,8 +20,10 @@ import net.evilblock.cubed.entity.hologram.personalized.PersonalizedHologramTask
 import net.evilblock.cubed.entity.hologram.updating.UpdatingHologramTask
 import net.evilblock.cubed.entity.listener.EntityWatcherListeners
 import net.evilblock.cubed.entity.living.listener.LivingEntityListeners
+import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.listener.NpcEntityTeamUpdatesListeners
 import net.evilblock.cubed.entity.npc.strategy.NpcStrategyLogic
+import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.entity.packet.EntityPacketAdapter
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.entity.tool.EntityPortTool
@@ -49,19 +54,28 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.evilblock.cubed.store.uuidcache.UUIDCache
+import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
+import net.evilblock.cubed.util.time.Duration
 import net.evilblock.cubed.visibility.VisibilityListeners
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
+
 
 /**
  * Cubed Engine - Rapid plugin development
@@ -73,6 +87,9 @@ class Cubed : JavaPlugin() {
         @JvmStatic var startupFailed: Boolean = false
         @JvmStatic var running: Boolean = false
     }
+
+    lateinit var uuidCache: UUIDCache
+    lateinit var commandManager: PaperCommandManager
 
     override fun onEnable() {
         instance = this
@@ -157,49 +174,105 @@ class Cubed : JavaPlugin() {
     }
 
     private fun loadCommands() {
-//        CommandHandler.load()
-//
-//        CommandHandler.registerClass(CubedCommands.javaClass)
-//
-//        CommandHandler.registerClass(FindUsernameCommand.javaClass)
-//        CommandHandler.registerClass(FindUUIDCommand.javaClass)
-//
-//        CommandHandler.registerClass(EntityFixNullWorldsCommand.javaClass)
-//        CommandHandler.registerClass(EntityImportCommand.javaClass)
-//        CommandHandler.registerClass(EntityExportCommand.javaClass)
-//        CommandHandler.registerClass(EntityFastEditCommand.javaClass)
-//        CommandHandler.registerClass(EntityManageCommand.javaClass)
-//        CommandHandler.registerClass(EntityNearbyCommand.javaClass)
-//        CommandHandler.registerClass(EntitySaveCommand.javaClass)
-//        CommandHandler.registerClass(EntityStatsCommand.javaClass)
-//        CommandHandler.registerClass(EntityTeleportCommand.javaClass)
-//
-//        CommandHandler.registerClass(NpcCreateCommand.javaClass)
-//        CommandHandler.registerClass(NpcSpawnCommand.javaClass)
-//        CommandHandler.registerClass(NpcDeleteNearCommand.javaClass)
-//        CommandHandler.registerClass(NpcManageCommand.javaClass)
-//
-//        CommandHandler.registerClass(HologramCreateCommand.javaClass)
-//        CommandHandler.registerClass(HologramManageCommand.javaClass)
-//
-//        CommandHandler.registerClass(NametagStatsCommand.javaClass)
-//        CommandHandler.registerClass(NametagDebugCommand.javaClass)
-//
-//        CommandHandler.registerClass(MenuTemplateEditorCommand.javaClass)
-//        CommandHandler.registerClass(MenuTemplateViewCommand.javaClass)
-//
-//        CommandHandler.registerClass(ScoreboardPreviewCommand.javaClass)
-//        CommandHandler.registerClass(ScoreboardPreviewEditorCommand.javaClass)
-//        CommandHandler.registerClass(ScoreboardReloadAllCommand.javaClass)
-//
-//        CommandHandler.registerClass(PosterPlaceCommand.javaClass)
-//
-//        CommandHandler.registerParameterType(Entity::class.java, EntityParameterType())
-//        CommandHandler.registerParameterType(NpcEntity::class.java, NpcEntityParameterType())
-//        CommandHandler.registerParameterType(NpcTexture::class.java, NpcTexture.NpcTextureParameterType)
-//        CommandHandler.registerParameterType(MenuTemplate::class.java, MenuTemplate.TemplateParameterType())
-//
-//        logger.info("Loaded command handler")
+        commandManager = PaperCommandManager(this)
+
+        commandManager.enableUnstableAPI("help")
+        commandManager.commandContexts.registerContext(NpcEntity::class.java) { c ->
+            val entity: Entity = try {
+                EntityHandler.getEntityById(c.firstArg.toInt())
+            } catch (e: Exception) {
+                try {
+                    EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
+                } catch (e: Exception) {
+                    throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
+                }
+            } ?: throw ConditionFailedException("No NPC was found.")
+
+            return@registerContext entity as NpcEntity?
+        }
+        commandManager.commandContexts.registerIssuerOnlyContext(ConsoleCommandSender::class.java) { c ->
+            if (c.sender !is ConsoleCommandSender) {
+                throw ConditionFailedException("Only console may perform this command.")
+            }
+            return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
+        }
+        commandManager.commandContexts.registerContext(Entity::class.java) { c ->
+            return@registerContext try {
+                EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
+            } catch (e: Exception) {
+                try {
+                    EntityHandler.getEntityById(c.firstArg.toInt())
+                } catch (e: Exception) {
+                    throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
+                }
+            } ?: throw ConditionFailedException("No entity was found.")
+        }
+        commandManager.commandContexts.registerContext(NpcTexture::class.java) { c ->
+            return@registerContext if (CubedConfig.hasNpcTexture(c.firstArg)) {
+                CubedConfig.getNpcTexture(c.firstArg)
+            } else {
+                c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
+
+                val queryResponse = CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(c.firstArg) }.get()
+
+                if (queryResponse.isPresent) {
+                    queryResponse.get()
+                } else {
+                    throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${c.firstArg}${CC.RED}.")
+                }
+            }
+        }
+        commandManager.commandCompletions.registerAsyncCompletion("npctextures") { c ->
+            return@registerAsyncCompletion CubedConfig.getNpcTextureIds().toList()
+        }
+        commandManager.commandContexts.registerContext(MenuTemplate::class.java) { c ->
+            return@registerContext try {
+                MenuTemplateHandler.findTemplate(c.firstArg)
+            } catch (ignored: Exception) {
+                throw ConditionFailedException("No menu template matching ${CC.YELLOW}${c.firstArg}${CC.RED} found.")
+            }
+        }
+        commandManager.commandCompletions.registerAsyncCompletion("menutemplates") { c ->
+            val completions = mutableListOf<String>()
+
+            MenuTemplateHandler.getTemplates().forEachIndexed { index, menuTemplate ->
+                completions[index] = menuTemplate.getName()
+            }
+
+            return@registerAsyncCompletion completions
+        }
+        commandManager.commandContexts.registerContext(Duration::class.java) { c ->
+            return@registerContext try {
+                Duration.parse(c.firstArg)
+            } catch (ignored: Exception) {
+                throw ConditionFailedException("Failed to parse duration. (Example: 1h30m)")
+            }
+        }
+        commandManager.commandContexts.registerContext(UUID::class.java) { c ->
+            if (c.firstArg.length != 32 || c.firstArg.length != 36) {
+                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
+            }
+
+            if (c.firstArg.length == 32) {
+                return@registerContext UUIDUtil.formatUUID(c.firstArg)
+                    ?: throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
+            }
+
+            return@registerContext try {
+                UUID.fromString(c.firstArg)
+            } catch (ignored: Exception) {
+                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
+            }
+        }
+
+        commandManager.registerCommand(CubedCommand)
+        commandManager.registerCommand(EntityCommand)
+        commandManager.registerCommand(ItemHasKeyCommand)
+        commandManager.registerCommand(PosterPlaceCommand)
+        commandManager.registerCommand(SbReloadAllCommand)
+        commandManager.registerCommand(SpawnArmorStandCommand)
+
+        logger.info("Loaded command manager")
     }
 
     private fun loadHandlers() {
@@ -235,6 +308,7 @@ class Cubed : JavaPlugin() {
 
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
+        server.pluginManager.registerEvents(UUIDCacheListeners, this)
         server.pluginManager.registerEvents(EntityPacketAdapter, this) // this is not a mistake
         server.pluginManager.registerEvents(EntityWatcherListeners, this)
         server.pluginManager.registerEvents(LivingEntityListeners, this)
@@ -255,9 +329,10 @@ class Cubed : JavaPlugin() {
     private fun loadTasks() {
         ScoreboardThread().start()
 
-//        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
-//            systemSave()
-//        }
+        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
+            systemSave()
+            uuidCache.load()
+        }
 
         Tasks.asyncTimer(NpcStrategyLogic, 20L, 20L)
         Tasks.asyncTimer(MenuAutoUpdater, 2L, 2L)

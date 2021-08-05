@@ -36,10 +36,10 @@ object EntitySelectionTool : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerRightClickEntityEvent(event: PlayerRightClickEntityEvent) {
-        if (EntitySelectionTool.isSelecting(event.player)) {
+        if (isSelecting(event.player)) {
             event.isCancelled = true
 
-            EntitySelectionTool.handleSelection(event.player, event.entity)
+            handleSelection(event.player, event.entity)
         }
     }
 

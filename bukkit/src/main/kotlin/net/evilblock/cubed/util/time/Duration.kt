@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.util.time
 
-import net.evilblock.cubed.command.data.parameter.ParameterType
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -43,20 +42,4 @@ class Duration(private var time: Long) {
             )
         }
     }
-
-    class DurationParameterType : ParameterType<Duration> {
-        override fun transform(sender: CommandSender, source: String): Duration? {
-            return try {
-                parse(input = source)
-            } catch (e: Exception) {
-                sender.sendMessage("${ChatColor.RED}Invalid duration.")
-                null
-            }
-        }
-
-        override fun tabComplete(player: Player, flags: Set<String>, source: String): List<String> {
-            return emptyList()
-        }
-    }
-
 }

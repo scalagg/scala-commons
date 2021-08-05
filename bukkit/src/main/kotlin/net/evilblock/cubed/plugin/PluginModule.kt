@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.plugin
 
-import net.evilblock.cubed.command.data.parameter.ParameterType
 import net.evilblock.cubed.logging.ErrorHandler
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
@@ -105,10 +104,6 @@ abstract class PluginModule {
 
     open fun getCommands(): List<Class<*>> {
         return emptyList()
-    }
-
-    open fun getCommandParameterTypes(): Map<Class<*>, ParameterType<*>> {
-        return emptyMap()
     }
 
     open fun getListeners(): List<Listener> {

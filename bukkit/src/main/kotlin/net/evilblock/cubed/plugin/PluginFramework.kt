@@ -8,7 +8,6 @@
 package net.evilblock.cubed.plugin
 
 import net.evilblock.cubed.Cubed
-import net.evilblock.cubed.command.CommandHandler
 import net.evilblock.cubed.logging.ErrorHandler
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
@@ -57,26 +56,26 @@ abstract class PluginFramework : JavaPlugin() {
             module.loaded = false
             module.onEnable()
 
-            module.getCommands().forEach { command ->
-                CommandHandler.registerClass(command)
-            }
-
-            module.getCommandParameterTypes().forEach { param ->
-                CommandHandler.registerParameterType(param.key, param.value)
-            }
+//            module.getCommands().forEach { command ->
+//                CommandHandler.registerClass(command)
+//            }
+//
+//            module.getCommandParameterTypes().forEach { param ->
+//                CommandHandler.registerParameterType(param.key, param.value)
+//            }
 
             module.getListeners().forEach { listener ->
                 server.pluginManager.registerEvents(listener, this)
             }
 
             module.getPluginHandlers().forEach { handler ->
-                handler.getCommands().forEach { command ->
-                    CommandHandler.registerClass(command)
-                }
-
-                handler.getCommandParameterTypes().forEach { param ->
-                    CommandHandler.registerParameterType(param.key, param.value)
-                }
+//                handler.getCommands().forEach { command ->
+//                    CommandHandler.registerClass(command)
+//                }
+//
+//                handler.getCommandParameterTypes().forEach { param ->
+//                    CommandHandler.registerParameterType(param.key, param.value)
+//                }
 
                 handler.getListeners().forEach { listener ->
                     server.pluginManager.registerEvents(listener, this)
@@ -96,8 +95,8 @@ abstract class PluginFramework : JavaPlugin() {
 
                 try {
                     module.onEnable()
-                    module.getCommands().forEach { command -> CommandHandler.registerClass(command) }
-                    module.getCommandParameterTypes().forEach { parameterEntry -> CommandHandler.registerParameterType(parameterEntry.key, parameterEntry.value) }
+//                    module.getCommands().forEach { command -> CommandHandler.registerClass(command) }
+//                    module.getCommandParameterTypes().forEach { parameterEntry -> CommandHandler.registerParameterType(parameterEntry.key, parameterEntry.value) }
                     module.getListeners().forEach { listener -> server.pluginManager.registerEvents(listener, this) }
 
                     logger.info("Enabled ${module.getName()} module (late load)!")
@@ -174,5 +173,4 @@ abstract class PluginFramework : JavaPlugin() {
             }
         }
     }
-
 }

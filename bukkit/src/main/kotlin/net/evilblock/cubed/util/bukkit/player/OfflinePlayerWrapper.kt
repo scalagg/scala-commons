@@ -7,7 +7,6 @@ import net.evilblock.cubed.util.nms.MinecraftReflection
 import java.util.UUID
 import org.bukkit.entity.Player
 import org.bukkit.Bukkit
-import java.lang.IllegalStateException
 import java.lang.reflect.Constructor
 
 class OfflinePlayerWrapper(val source: String) {
@@ -26,36 +25,35 @@ class OfflinePlayerWrapper(val source: String) {
     }
 
     fun loadSync(): Player? {
-//        val source = source.replace("'", "").replace("\"", "")
-//        uniqueId = Cubed.instance.uuidCache.uuid(source)
-//
-//        if (uniqueId == null) {
-//            name = this.source
-//            return null
-//        }
-//
-//        name = Cubed.instance.uuidCache.name(uniqueId!!)
-//
-//        if (Bukkit.getPlayer(uniqueId) != null) {
-//            return Bukkit.getPlayer(uniqueId)
-//        }
-//
-//        if (!Bukkit.getOfflinePlayer(uniqueId).hasPlayedBefore()) {
-//            return null
-//        }
-//
-//        val server = MinecraftReflection.getMinecraftServer()
-//        val worldServer = MinecraftReflection.getWorldServers()[0]
-//        val gameProfile = MinecraftReflection.newGameProfile(uniqueId!!, name!!)
-//        val playerInteractManager = PLAYER_INTERACT_MANAGER_CONSTRUCTOR.newInstance(worldServer)
-//
-//        val entityPlayer = ENTITY_PLAYER_CONSTRUCTOR.newInstance(server, worldServer, gameProfile, playerInteractManager)
-//        val player = Reflection.callDeclaredMethod(entityPlayer, "getBukkitEntity")!!
-//
-//        Reflection.callDeclaredMethod(player, "loadData")
-//
-//        return player as Player
-        throw IllegalStateException()
+        val source = source.replace("'", "").replace("\"", "")
+        uniqueId = Cubed.instance.uuidCache.uuid(source)
+
+        if (uniqueId == null) {
+            name = this.source
+            return null
+        }
+
+        name = Cubed.instance.uuidCache.name(uniqueId!!)
+
+        if (Bukkit.getPlayer(uniqueId) != null) {
+            return Bukkit.getPlayer(uniqueId)
+        }
+
+        if (!Bukkit.getOfflinePlayer(uniqueId).hasPlayedBefore()) {
+            return null
+        }
+
+        val server = MinecraftReflection.getMinecraftServer()
+        val worldServer = MinecraftReflection.getWorldServers()[0]
+        val gameProfile = MinecraftReflection.newGameProfile(uniqueId!!, name!!)
+        val playerInteractManager = PLAYER_INTERACT_MANAGER_CONSTRUCTOR.newInstance(worldServer)
+
+        val entityPlayer = ENTITY_PLAYER_CONSTRUCTOR.newInstance(server, worldServer, gameProfile, playerInteractManager)
+        val player = Reflection.callDeclaredMethod(entityPlayer, "getBukkitEntity")!!
+
+        Reflection.callDeclaredMethod(player, "loadData")
+
+        return player as Player
     }
 
     companion object {

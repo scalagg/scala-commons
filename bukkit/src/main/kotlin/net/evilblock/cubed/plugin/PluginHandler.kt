@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.plugin
 
-import net.evilblock.cubed.command.data.parameter.ParameterType
 import org.bukkit.event.Listener
 import java.io.File
 
@@ -49,10 +48,6 @@ abstract class PluginHandler {
 
     open fun getCommands(): List<Class<*>> {
         return emptyList()
-    }
-
-    open fun getCommandParameterTypes(): Map<Class<*>, ParameterType<*>> {
-        return emptyMap()
     }
 
     open fun getListeners(): List<Listener> {

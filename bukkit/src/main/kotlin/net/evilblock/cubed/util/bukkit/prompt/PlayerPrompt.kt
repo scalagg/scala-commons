@@ -8,7 +8,7 @@
 package net.evilblock.cubed.util.bukkit.prompt
 
 import net.evilblock.cubed.Cubed
-//import net.evilblock.cubed.store.uuidcache.UUIDCache
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import org.bukkit.ChatColor
 import org.bukkit.conversations.ConversationContext
@@ -24,24 +24,24 @@ class PlayerPrompt(private val useFunc: (UUID) -> Unit) : StringPrompt() {
     }
 
     override fun acceptInput(context: ConversationContext, input: String): Prompt? {
-//        var uuid: UUID?
-//        try {
-//            uuid = UUID.fromString(input)
-//        } catch (e: Exception) {
-//            uuid = Cubed.instance.uuidCache.uuid(input)
-//            if (uuid == null) {
-//                val optionalProfile = UUIDCache.fetchFromMojang(input)
-//                if (optionalProfile.isPresent) {
-//                    uuid = optionalProfile.get().first
-//                }
-//            }
-//        }
+        var uuid: UUID?
+        try {
+            uuid = UUID.fromString(input)
+        } catch (e: Exception) {
+            uuid = Cubed.instance.uuidCache.uuid(input)
+            if (uuid == null) {
+                val optionalProfile = UUIDCache.fetchFromMojang(input)
+                if (optionalProfile.isPresent) {
+                    uuid = optionalProfile.get().first
+                }
+            }
+        }
 
-//        if (uuid == null) {
-//            context.forWhom.sendRawMessage("${ChatColor.RED}Your input did not match a player username or player UUID.")
-//        } else {
-//            useFunc.invoke(uuid)
-//        }
+        if (uuid == null) {
+            context.forWhom.sendRawMessage("${ChatColor.RED}Your input did not match a player username or player UUID.")
+        } else {
+            useFunc.invoke(uuid)
+        }
 
         return Prompt.END_OF_CONVERSATION
     }
