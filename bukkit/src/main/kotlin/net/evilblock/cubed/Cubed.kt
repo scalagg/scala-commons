@@ -176,6 +176,15 @@ class Cubed : JavaPlugin() {
     private fun loadCommands() {
         commandManager = CubedCommandManager(this)
 
+        commandManager.registerCommand(CubedCommand)
+        commandManager.registerCommand(EntityCommand)
+        commandManager.registerCommand(ItemHasKeyCommand)
+        commandManager.registerCommand(PosterPlaceCommand)
+        commandManager.registerCommand(SbReloadAllCommand)
+        commandManager.registerCommand(SpawnArmorStandCommand)
+        commandManager.registerCommand(HologramCommand)
+        commandManager.registerCommand(NpcCommand)
+
         logger.info("Loaded command manager")
     }
 

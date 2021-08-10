@@ -65,7 +65,8 @@ class CubedCommandManager : PaperCommandManager {
             } else {
                 c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
 
-                val queryResponse = CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(c.firstArg) }.get()
+                val queryResponse =
+                    CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(c.firstArg) }.get()
 
                 if (queryResponse.isPresent) {
                     queryResponse.get()
@@ -117,13 +118,5 @@ class CubedCommandManager : PaperCommandManager {
             }
         }
 
-        registerCommand(CubedCommand)
-        registerCommand(EntityCommand)
-        registerCommand(ItemHasKeyCommand)
-        registerCommand(PosterPlaceCommand)
-        registerCommand(SbReloadAllCommand)
-        registerCommand(SpawnArmorStandCommand)
-        registerCommand(HologramCommand)
-        registerCommand(NpcCommand)
     }
 }
