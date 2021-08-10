@@ -13,6 +13,7 @@ import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.hologram.menu.button.UpdateFloatingItemButton
 import net.evilblock.cubed.entity.npc.animation.FloatAnimation
+import net.evilblock.cubed.entity.npc.animation.MultiRingsAnimation
 import net.evilblock.cubed.entity.npc.animation.RingsAnimation
 import net.evilblock.cubed.entity.npc.menu.button.*
 import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
@@ -83,7 +84,7 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
     }
 
     override fun getAnimationTypes(): List<EntityAnimationType> {
-        return listOf(RingsAnimation.RingsAnimationType, FloatAnimation.FloatAnimationType)
+        return listOf(RingsAnimation.RingsAnimationType, FloatAnimation.FloatAnimationType, MultiRingsAnimation.MultiRingsAnimationType)
     }
 
     override fun onRightClick(player: Player) {
