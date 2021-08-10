@@ -19,7 +19,7 @@ import org.bukkit.command.CommandSender
 object SbReloadAllCommand : BaseCommand() {
 
     @CommandAlias("sb-reload-all")
-    @Description("Reloads the scoreboard for all players.")
+    @Description("Reloads the scoreboard for all players")
     @CommandPermission("op")
     fun execute(sender: CommandSender) {
         for (player in Bukkit.getOnlinePlayers()) {

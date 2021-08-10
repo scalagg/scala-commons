@@ -34,7 +34,7 @@ object NpcCommand : BaseCommand() {
     }
 
     @Subcommand("create")
-    @Description("Spawn an NPC.")
+    @Description("Spawn an NPC")
     @CommandPermission("cubed.npcs.create")
     fun onCreate(player: Player, @Name("text") @Single text: String) {
         if (text.length > 48) {
@@ -56,7 +56,7 @@ object NpcCommand : BaseCommand() {
     }
 
     @Subcommand("delete-near")
-    @Description("Deletes NPCs within a radius of blocks.")
+    @Description("Deletes NPCs within a radius of blocks")
     @CommandPermission("cubed.npcs.delete")
     fun onDeleteNear(player: Player, @Name("radius") @Default("5") radius: Int) {
         val inRadius = arrayListOf<NpcEntity>()
@@ -86,7 +86,7 @@ object NpcCommand : BaseCommand() {
     }
 
     @Subcommand("manage")
-    @Description("Manage an NPC.")
+    @Description("Manage an NPC")
     @CommandPermission("cubed.npcs.manage")
     fun onManage(player: Player) {
         player.sendMessage("${ChatColor.GREEN}Select (right-click) an NPC to manage...")
@@ -99,7 +99,7 @@ object NpcCommand : BaseCommand() {
     }
 
     @Subcommand("spawn-defined")
-    @Description("Spawns an NPC defined in the Cubed config.")
+    @Description("Spawns an NPC defined in the Cubed config")
     @CommandPermission("cubed.npcs.create")
     fun execute(player: Player, @Name("id") id: String) {
         val config = Cubed.instance.config

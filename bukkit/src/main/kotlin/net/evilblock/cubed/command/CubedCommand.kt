@@ -38,14 +38,14 @@ object CubedCommand : BaseCommand() {
     }
 
     @Subcommand("find-username")
-    @Description("Searches the UUID cache for a username by the given uuid.")
+    @Description("Searches the UUID cache for a username by the given uuid")
     fun onFindUsername(sender: CommandSender, @Name("uuid") uuid: UUID) {
         val username = Cubed.instance.uuidCache.name(uuid)
         sender.sendMessage("${CC.SEC}Found username: ${CC.PRI}$username")
     }
 
     @Subcommand("find-uuid")
-    @Description("Searches the UUID cache for a UUID by the given username.")
+    @Description("Searches the UUID cache for a UUID by the given username")
     @CommandCompletion("@players")
     fun onFindUUID(sender: CommandSender, @Name("username") username: String) {
         val uuid = Cubed.instance.uuidCache.uuid(username)
@@ -59,20 +59,20 @@ object CubedCommand : BaseCommand() {
     }
 
     @Subcommand("menu-template-editor")
-    @Description("Opens the Menu Template Editor.")
+    @Description("Opens the Menu Template Editor")
     fun onMenuTemplateEditor(player: Player) {
         TemplateEditorMenu().openMenu(player)
     }
 
     @Subcommand("menu-template-view")
-    @Description("Opens the static view of a menu template.")
+    @Description("Opens the static view of a menu template")
     @CommandCompletion("@menutemplates")
     fun onMenuTemplateView(player: Player, @Name("template") template: MenuTemplate<*>) {
         TemplatePreviewMenu(template).openMenu(player)
     }
 
     @Subcommand("nametag-debug")
-    @Description("View nametag debug.")
+    @Description("View nametag debug")
     fun onNametagDebug(player: Player) {
         if (player.scoreboard == null) {
             throw ConditionFailedException("No scoreboard attached!")
@@ -97,7 +97,7 @@ object CubedCommand : BaseCommand() {
     }
 
     @Subcommand("nametag-stats")
-    @Description("View nametag update statistics.")
+    @Description("View nametag update statistics")
     fun onNametagStats(sender: CommandSender) {
         var totalTeams = 0
         var totalEntries = 0
@@ -131,7 +131,7 @@ object CubedCommand : BaseCommand() {
     }
 
     @Subcommand("scoreboard-preview")
-    @Description("Toggle preview mode.")
+    @Description("Toggle preview mode")
     fun onScoreboardPreview(player: Player, @Name("global") @Optional global: Boolean) {
         if (global != null && global) {
             ScoreboardPreviewHandler.previewGlobal = !ScoreboardPreviewHandler.previewGlobal
@@ -146,7 +146,7 @@ object CubedCommand : BaseCommand() {
     }
 
     @Subcommand("scoreboard-editor")
-    @Description("Open the scoreboard preview editor.")
+    @Description("Open the scoreboard preview editor")
     fun onScoreboardEditor(player: Player) {
         ScoreboardTextEditor().openMenu(player)
     }

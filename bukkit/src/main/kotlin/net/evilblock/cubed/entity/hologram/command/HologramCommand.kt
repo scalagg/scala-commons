@@ -32,7 +32,7 @@ object HologramCommand : BaseCommand() {
 
     @Subcommand("create")
     @Syntax("<text> [-u]")
-    @Description("Create a hologram.")
+    @Description("Create a hologram")
     @CommandPermission("cubed.holograms.create")
     fun onCreate(player: Player, input: String) {
         val updating = input.endsWith("-s")
@@ -54,7 +54,7 @@ object HologramCommand : BaseCommand() {
     }
 
     @Subcommand("manage")
-    @Description("Manage a hologram.")
+    @Description("Manage a hologram")
     @CommandPermission("cubed.holograms.manage")
     fun onManage(player: Player) {
         player.sendMessage("${ChatColor.GREEN}Select (right-click) a hologram to manage...")

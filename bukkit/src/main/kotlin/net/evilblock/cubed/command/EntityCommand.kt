@@ -51,7 +51,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("export")
-    @Description("Export a selection of entities.")
+    @Description("Export a selection of entities")
     @CommandPermission("cubed.entities.export")
     fun onExport(player: Player) {
         if (EntityPortTool.isTracking(player)) {
@@ -65,7 +65,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("fast-edit|fe")
-    @Description("Toggles fast edit for entities.")
+    @Description("Toggles fast edit for entities")
     @CommandPermission("cubed.entities.manage")
     fun onFastEdit(player: Player) {
         if (player.hasMetadata("EntityFastEdit")) {
@@ -113,7 +113,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("manage")
-    @Description("Opens the untyped entity manager menu.")
+    @Description("Opens the untyped entity manager menu")
     @CommandPermission("cubed.entities.manage")
     fun onManage(player: Player) {
         player.sendMessage("${CC.GREEN}Select (right-click) an NPC to manage...")
@@ -124,7 +124,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("nearby")
-    @Description("Lists nearby entities.")
+    @Description("Lists nearby entities")
     @CommandPermission("op")
     fun onNearby(player: Player, @Name("radius") @Default("64.0") radius: Double) {
         val nearby = EntityHandler.getEntities().filter { it.location.world == player.location.world && it.location.distanceSquared(player.location) < radius }
@@ -139,7 +139,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("save")
-    @Description("Saves all entities to the disk.")
+    @Description("Saves all entities to the disk")
     @CommandPermission("cubed.entities.save")
     fun onSave(sender: CommandSender) {
         EntityHandler.saveData()
@@ -147,7 +147,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("stats")
-    @Description("Shows entity stats.")
+    @Description("Shows entity stats")
     @CommandPermission("cubed.entities.stats")
     fun onStats(player: Player) {
         player.sendMessage("")
@@ -159,7 +159,7 @@ object EntityCommand : BaseCommand() {
     }
 
     @Subcommand("tp|teleport")
-    @Description("Teleport to a Hologram by supplying the Hologram's ID.")
+    @Description("Teleport to a Hologram by supplying the Hologram's ID")
     @CommandPermission("cubed.entities.manage")
     fun onTeleport(player: Player, @Name("id") entity: Entity) {
         player.teleport(entity.location)
