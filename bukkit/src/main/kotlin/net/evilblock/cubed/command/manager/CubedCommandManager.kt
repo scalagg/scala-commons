@@ -6,7 +6,9 @@ import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.command.*
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
+import net.evilblock.cubed.entity.hologram.command.HologramCommand
 import net.evilblock.cubed.entity.npc.NpcEntity
+import net.evilblock.cubed.entity.npc.command.NpcCommand
 import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
@@ -121,5 +123,7 @@ class CubedCommandManager : PaperCommandManager {
         registerCommand(PosterPlaceCommand)
         registerCommand(SbReloadAllCommand)
         registerCommand(SpawnArmorStandCommand)
+        registerCommand(HologramCommand)
+        registerCommand(NpcCommand)
     }
 }
