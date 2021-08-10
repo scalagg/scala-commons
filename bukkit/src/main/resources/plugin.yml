@@ -4,6 +4,7 @@ author: joeleoli
 description: Rapid plugin development
 main: net.evilblock.cubed.Cubed
 
+load: STARTUP
 depend: [ProtocolLib]
 softdepend: [ViaVersion]
 loadbefore: [Scandium]

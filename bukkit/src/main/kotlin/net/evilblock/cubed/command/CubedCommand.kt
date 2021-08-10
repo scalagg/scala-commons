@@ -110,13 +110,30 @@ object CubedCommand : BaseCommand() {
             }
         }
 
-        sender.sendMessage("${CC.SEC}There are ${CC.PRI}${scoreboards.size} ${CC.SEC}scoreboards with ${CC.PRI}${totalTeams} ${CC.SEC}teams and ${CC.PRI}${totalEntries} ${CC.SEC}entries.")
+        val builder = StringBuilder("${CC.SEC}There ")
+        builder.append(
+            if (scoreboards.size == 1)
+                "is ${CC.PRI}1 ${CC.SEC}scoreboard with "
+            else
+                "are ${CC.PRI}${scoreboards.size} ${CC.SEC}scoreboards with ")
+        builder.append(
+            if (totalTeams == 1)
+                "${CC.PRI}1 ${CC.SEC}team and "
+            else
+                "${CC.PRI}${totalTeams} ${CC.SEC}teams and ")
+        builder.append(
+            if (totalEntries == 1)
+                "is ${CC.PRI}1 ${CC.SEC}entry."
+            else
+                "are ${CC.PRI}${totalEntries} ${CC.SEC}entries.")
+
+        sender.sendMessage(builder.toString())
     }
 
     @Subcommand("scoreboard-preview")
     @Description("Toggle preview mode.")
     fun onScoreboardPreview(player: Player, @Name("global") @Optional global: Boolean) {
-        if (global) {
+        if (global != null && global) {
             ScoreboardPreviewHandler.previewGlobal = !ScoreboardPreviewHandler.previewGlobal
             return
         }

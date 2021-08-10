@@ -35,7 +35,8 @@ class Poster(
 
         image = ImageIO.read(imageFile.toURI().toURL())
 
-        PosterUtils.resizeImage(image!!)
+//        PosterUtils.resizeImage(image!!)
+        PosterUtils.resizeImageNoEditing(image!!)
     }
 
     class ReferenceSerializer : JsonSerializer<Poster>, JsonDeserializer<Poster> {
