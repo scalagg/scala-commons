@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSet
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.Color
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
@@ -66,7 +67,7 @@ class Scoreboard(private val player: Player) {
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride.apply(this.player)
 
-        val title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
+        var title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
 
         val lines = localList.get()
         if (!lines.isEmpty()) {
@@ -76,7 +77,13 @@ class Scoreboard(private val player: Player) {
         ScoreboardHandler.scoreboardProvider.preRun(player, this.objective.scoreboard)
 
         if (ScoreboardPreviewHandler.previewGlobal || ScoreboardPreviewHandler.previewMode.contains(player.uniqueId)) {
-            this.localList.get().addAll(ScoreboardPreviewHandler.lines)
+            title = Color.translate(ScoreboardPreviewHandler.lines[0])
+
+            ScoreboardPreviewHandler.lines.forEachIndexed { index, s ->
+                if (index != 0) {
+                    this.localList.get().add(s)
+                }
+            }
         } else {
             if (shouldOverride) {
                 override.getLines(this.localList.get(), this.player)
