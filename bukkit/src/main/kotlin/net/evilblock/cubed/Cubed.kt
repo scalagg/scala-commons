@@ -8,10 +8,10 @@
 package net.evilblock.cubed
 
 import co.aikar.commands.ConditionFailedException
-import co.aikar.commands.PaperCommandManager
 import com.comphenix.protocol.ProtocolLibrary
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
+import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.EntitySerializer
@@ -89,7 +89,7 @@ class Cubed : JavaPlugin() {
     }
 
     lateinit var uuidCache: UUIDCache
-    lateinit var commandManager: PaperCommandManager
+    lateinit var commandManager: CubedCommandManager
 
     override fun onEnable() {
         instance = this
@@ -174,103 +174,7 @@ class Cubed : JavaPlugin() {
     }
 
     private fun loadCommands() {
-        commandManager = PaperCommandManager(this)
-
-        commandManager.enableUnstableAPI("help")
-        commandManager.commandContexts.registerContext(NpcEntity::class.java) { c ->
-            val entity: Entity = try {
-                EntityHandler.getEntityById(c.firstArg.toInt())
-            } catch (e: Exception) {
-                try {
-                    EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
-                } catch (e: Exception) {
-                    throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
-                }
-            } ?: throw ConditionFailedException("No NPC was found.")
-
-            return@registerContext entity as NpcEntity?
-        }
-        commandManager.commandContexts.registerIssuerOnlyContext(ConsoleCommandSender::class.java) { c ->
-            if (c.sender !is ConsoleCommandSender) {
-                throw ConditionFailedException("Only console may perform this command.")
-            }
-            return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
-        }
-        commandManager.commandContexts.registerContext(Entity::class.java) { c ->
-            return@registerContext try {
-                EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
-            } catch (e: Exception) {
-                try {
-                    EntityHandler.getEntityById(c.firstArg.toInt())
-                } catch (e: Exception) {
-                    throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
-                }
-            } ?: throw ConditionFailedException("No entity was found.")
-        }
-        commandManager.commandContexts.registerContext(NpcTexture::class.java) { c ->
-            return@registerContext if (CubedConfig.hasNpcTexture(c.firstArg)) {
-                CubedConfig.getNpcTexture(c.firstArg)
-            } else {
-                c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
-
-                val queryResponse = CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(c.firstArg) }.get()
-
-                if (queryResponse.isPresent) {
-                    queryResponse.get()
-                } else {
-                    throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${c.firstArg}${CC.RED}.")
-                }
-            }
-        }
-        commandManager.commandCompletions.registerAsyncCompletion("npctextures") { c ->
-            return@registerAsyncCompletion CubedConfig.getNpcTextureIds().toList()
-        }
-        commandManager.commandContexts.registerContext(MenuTemplate::class.java) { c ->
-            return@registerContext try {
-                MenuTemplateHandler.findTemplate(c.firstArg)
-            } catch (ignored: Exception) {
-                throw ConditionFailedException("No menu template matching ${CC.YELLOW}${c.firstArg}${CC.RED} found.")
-            }
-        }
-        commandManager.commandCompletions.registerAsyncCompletion("menutemplates") { c ->
-            val completions = mutableListOf<String>()
-
-            MenuTemplateHandler.getTemplates().forEachIndexed { index, menuTemplate ->
-                completions[index] = menuTemplate.getName()
-            }
-
-            return@registerAsyncCompletion completions
-        }
-        commandManager.commandContexts.registerContext(Duration::class.java) { c ->
-            return@registerContext try {
-                Duration.parse(c.firstArg)
-            } catch (ignored: Exception) {
-                throw ConditionFailedException("Failed to parse duration. (Example: 1h30m)")
-            }
-        }
-        commandManager.commandContexts.registerContext(UUID::class.java) { c ->
-            if (c.firstArg.length != 32 || c.firstArg.length != 36) {
-                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
-            }
-
-            if (c.firstArg.length == 32) {
-                return@registerContext UUIDUtil.formatUUID(c.firstArg)
-                    ?: throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
-            }
-
-            return@registerContext try {
-                UUID.fromString(c.firstArg)
-            } catch (ignored: Exception) {
-                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
-            }
-        }
-
-        commandManager.registerCommand(CubedCommand)
-        commandManager.registerCommand(EntityCommand)
-        commandManager.registerCommand(ItemHasKeyCommand)
-        commandManager.registerCommand(PosterPlaceCommand)
-        commandManager.registerCommand(SbReloadAllCommand)
-        commandManager.registerCommand(SpawnArmorStandCommand)
+        commandManager = CubedCommandManager(this)
 
         logger.info("Loaded command manager")
     }
