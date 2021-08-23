@@ -26,7 +26,7 @@ class ScoreboardThread : Thread("Cubed - Scoreboard") {
                     }
                 }
 
-                sleep(ScoreboardHandler.scoreboardProvider.interval * 50L)
+                sleep(ScoreboardHandler.scoreboardProvider.getInterval() * 50L)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
