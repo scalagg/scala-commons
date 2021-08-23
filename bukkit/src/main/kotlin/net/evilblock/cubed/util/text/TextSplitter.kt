@@ -20,6 +20,11 @@ object TextSplitter {
     }
 
     @JvmStatic
+    fun split(text: String, linePrefix: String, wordSuffix: String): List<String> {
+        return split(32, 32, text, linePrefix, wordSuffix)
+    }
+
+    @JvmStatic
     fun split(length: Int = 32, firstLineLength: Int = length, text: String, linePrefix: String = ChatColor.GRAY.toString(), wordSuffix: String = " "): List<String> {
         if (text.length <= length) {
             return arrayListOf(linePrefix + text)

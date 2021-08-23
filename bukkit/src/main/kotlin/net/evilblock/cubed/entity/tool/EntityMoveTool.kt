@@ -11,12 +11,12 @@ import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.util.NpcUtils
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -41,10 +41,10 @@ object EntityMoveTool : Listener {
     fun makeMoveTool(entity: Entity): ItemStack {
         val item = ItemBuilder.of(Material.MONSTER_EGG)
             .data(120)
-            .name("${ChatColor.YELLOW}${ChatColor.BOLD}Move ${entity.getTypeName()}")
+            .name("${CC.GRAY}» ${CC.PRI}Move ${entity.getTypeName()}")
             .setLore(arrayListOf<String>().also { desc ->
-                desc.add("${ChatColor.GRAY}Place this mob egg wherever")
-                desc.add("${ChatColor.GRAY}you'd like to move the NPC.")
+                desc.add("${CC.GRAY}Place this mob egg wherever")
+                desc.add("${CC.GRAY}you'd like to move the NPC.")
             })
             .build()
 
@@ -125,7 +125,7 @@ object EntityMoveTool : Listener {
 
                         event.player.inventory.itemInHand = null
                         event.player.updateInventory()
-                        event.player.sendMessage("${ChatColor.GREEN}Successfully updated location!")
+                        event.player.sendMessage("${CC.GREEN}Successfully updated location!")
                     }
                 }
             }

@@ -22,7 +22,6 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
@@ -80,19 +79,19 @@ object CubedCommand : BaseCommand() {
 
         for (team in player.scoreboard.teams) {
             val entries = team.entries
-            player.sendMessage("${ChatColor.YELLOW}${ChatColor.BOLD}Team ${team.name} ${ChatColor.GRAY}(${entries.size})")
+            player.sendMessage("${CC.GRAY}» ${CC.PRI}Team ${team.name} ${CC.GRAY}(${entries.size})")
 
             var last = true
             val print = entries.joinToString(transform = {
                 last = !last
                 if (last) {
-                    "${ChatColor.DARK_GRAY}$it"
+                    "${CC.D_GRAY}$it"
                 } else {
-                    "${ChatColor.GRAY}$it"
+                    "${CC.GRAY}$it"
                 }
             })
 
-            player.sendMessage("${ChatColor.DARK_AQUA}Entries: ${ChatColor.GRAY}$print")
+            player.sendMessage("${CC.D_AQUA}Entries: ${CC.GRAY}$print")
         }
     }
 

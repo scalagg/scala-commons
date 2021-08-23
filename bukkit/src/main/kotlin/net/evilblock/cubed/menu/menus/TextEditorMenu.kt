@@ -11,9 +11,10 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.buttons.AddButton
 import net.evilblock.cubed.menu.buttons.GlassButton
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
+import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.Color
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.prompt.EzPrompt
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -41,11 +42,11 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
                 buttons[6] = NoChangesButton()
             }
 
-            for (i in 1 until 8) {
-                if (!buttons.containsKey(i)) {
-                    buttons[i] = GlassButton(0)
-                }
-            }
+//            for (i in 1 until 8) {
+//                if (!buttons.containsKey(i)) {
+//                    buttons[i] = GlassButton(0)
+//                }
+//            }
         }
     }
 
@@ -71,7 +72,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
                 Tasks.delayed(1L) {
                     ConfirmMenu("Discard changes?") { confirmed ->
                         if (confirmed) {
-                            player.sendMessage("${ChatColor.YELLOW}Discarded changes.")
+                            player.sendMessage("${CC.YELLOW}Discarded changes.")
 
                             onClose(player)
                         } else {
@@ -97,25 +98,24 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
         return EzPrompt.Builder()
             .charLimit(100).also {
                 if (index == -1) {
-                    it.promptText("${ChatColor.GREEN}Please enter the new text.")
+                    it.promptText("${CC.GREEN}Please enter the new text.")
                 } else {
-                    it.promptText("${ChatColor.GREEN}Please enter the new text for line $index.")
+                    it.promptText("${CC.GREEN}Please enter the new text for line $index.")
                 }
             }
     }
 
     private inner class AddLineButton : AddButton() {
         override fun getName(player: Player): String {
-            return "${ChatColor.AQUA}${ChatColor.BOLD}Create New Line"
+            return "${CC.GRAY}» ${CC.PRI}Create New Line"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
+                "${CC.GRAY}Create a new line by completing",
+                "${CC.GRAY}the setup procedure.",
                 "",
-                "${ChatColor.GRAY}Create a new line by completing",
-                "${ChatColor.GRAY}the setup procedure.",
-                "",
-                "${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to create new line"
+                "${CC.GREEN}Left-Click to create a new line."
             )
         }
 
@@ -123,7 +123,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             getPromptBuilder(player, -1)
                 .acceptInput { input ->
                     if (supportsColors) {
-                        lines.add(ChatColor.translateAlternateColorCodes('&', input))
+                        lines.add(Color.translate(input))
                     } else {
                         lines.add(input)
                     }
@@ -142,34 +142,34 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             val text = lines[index]
 
             if (text.isEmpty() || text.isBlank()) {
-                return "${ChatColor.RED}${ChatColor.BOLD}BLANK LINE"
+                return "${CC.RED}${CC.BOLD}Blank Line"
             }
 
-            return text
+            return CC.WHITE + text
         }
 
         override fun getDescription(player: Player): List<String> {
             val description = arrayListOf<String>()
 
-            description.add("${ChatColor.GRAY}Line ${index + 1}")
+            description.add("${CC.GRAY}Line ${index + 1}")
             description.add("")
-            description.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to edit line")
-            description.add("${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to delete line")
+            description.add("${CC.GREEN}Left-Click to edit line.")
+            description.add("${CC.RED}Right-Click to delete line.")
             description.add("")
 
             val leftArrowColor = if (index > 0) {
-                ChatColor.BLUE
+                CC.BLUE
             } else {
-                ChatColor.GRAY
+                CC.GRAY
             }
 
             val rightArrowColor = if (index < lines.lastIndex) {
-                ChatColor.BLUE
+                CC.BLUE
             } else {
-                ChatColor.GRAY
+                CC.GRAY
             }
 
-            description.add("$leftArrowColor${ChatColor.BOLD}⬅ ${ChatColor.YELLOW}${ChatColor.BOLD}SHIFT LEFT/RIGHT CLICK $rightArrowColor${ChatColor.BOLD}➡")
+            description.add("$leftArrowColor${CC.BOLD}⬅ ${CC.YELLOW}Shift Left/Right Click $rightArrowColor${CC.BOLD}➡")
 
             return description
         }
@@ -208,7 +208,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
                             lines.removeAt(index)
 
                             if (supportsColors) {
-                                lines.add(index, ChatColor.translateAlternateColorCodes('&', input))
+                                lines.add(index, Color.translate(input))
                             } else {
                                 lines.add(index, input)
                             }
@@ -226,7 +226,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
                             changesMade = true
                         } else {
-                            player.sendMessage("${ChatColor.YELLOW}No changes made.")
+                            player.sendMessage("${CC.YELLOW}No changes made.")
                         }
 
                         openMenu(player)
@@ -238,16 +238,15 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class SaveButton : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.GREEN}Save Changes"
+            return "${CC.GRAY}» ${CC.PRI}Save Changes"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
+                "${CC.GRAY}Saves any changes made to the",
+                "${CC.GRAY}lines of text.",
                 "",
-                "${ChatColor.GRAY}Saves any changes made to the",
-                "${ChatColor.GRAY}lines of text.",
-                "",
-                "${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to save changes"
+                "${CC.GREEN}Left-Click to save changes."
             )
         }
 
@@ -267,14 +266,13 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class NoChangesButton : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.GRAY}${ChatColor.BOLD}No Changes Made"
+            return "${CC.GRAY}» ${CC.RED}No Changes Made"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
-                "",
-                "${ChatColor.GRAY}No changes have been made to the",
-                "${ChatColor.GRAY}lines of text."
+                "${CC.GRAY}No changes have been made to the",
+                "${CC.GRAY}lines of text."
             )
         }
 

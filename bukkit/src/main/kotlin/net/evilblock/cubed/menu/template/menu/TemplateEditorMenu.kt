@@ -16,7 +16,7 @@ import net.evilblock.cubed.util.bukkit.prompt.EzPrompt
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateFactory
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
-import org.bukkit.ChatColor
+import net.evilblock.cubed.util.CC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -68,16 +68,15 @@ class TemplateEditorMenu : PaginatedMenu() {
 
     private inner class CreateTemplateButton : AddButton() {
         override fun getName(player: Player): String {
-            return "${ChatColor.AQUA}${ChatColor.BOLD}Create New Template"
+            return "${CC.GRAY}» ${CC.PRI}Create New Template"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
+                "${CC.GRAY}Create a new template by completing",
+                "${CC.GRAY}the setup procedure.",
                 "",
-                "${ChatColor.GRAY}Create a new template by completing",
-                "${ChatColor.GRAY}the setup procedure.",
-                "",
-                "${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to create a new template"
+                "${CC.GREEN}Left-Click to create a new template."
             )
         }
 
@@ -90,7 +89,7 @@ class TemplateEditorMenu : PaginatedMenu() {
                         .regex(EzPrompt.IDENTIFIER_REGEX)
                         .acceptInput { input ->
                             if (MenuTemplateHandler.findTemplate(input) != null) {
-                                player.sendMessage("${ChatColor.RED}A template's ID must be unique, and a template with the ID `$input` already exists.")
+                                player.sendMessage("${CC.RED}A template's ID must be unique, and a template with the ID `$input` already exists.")
                                 return@acceptInput
                             }
 
@@ -98,7 +97,7 @@ class TemplateEditorMenu : PaginatedMenu() {
                                 MenuTemplateHandler.trackTemplate(template)
                                 MenuTemplateHandler.saveData()
 
-                                player.sendMessage("${ChatColor.GREEN}Successfully created a new template.")
+                                player.sendMessage("${CC.GREEN}Successfully created a new template.")
 
                                 openMenu(player)
                             }
@@ -112,19 +111,18 @@ class TemplateEditorMenu : PaginatedMenu() {
 
     private inner class TemplateButton(private val template: MenuTemplate<*>) : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${template.getName()}"
+            return "${CC.YELLOW}${template.getName()}"
         }
 
         override fun getDescription(player: Player): List<String> {
             val description = arrayListOf<String>()
 
+            description.add("${CC.GRAY}Edit the layout of the template by")
+            description.add("${CC.GRAY}painting buttons into the menu, and")
+            description.add("${CC.GRAY}then binding actions to the buttons.")
             description.add("")
-            description.add("${ChatColor.GRAY}Edit the layout of the template by")
-            description.add("${ChatColor.GRAY}painting buttons into the menu, and")
-            description.add("${ChatColor.GRAY}then binding actions to the buttons.")
-            description.add("")
-            description.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to edit template")
-            description.add("${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to delete template")
+            description.add("${CC.GREEN}Left-Click to edit template.")
+            description.add("${CC.RED}Right-Click to delete template.")
 
             return description
         }
@@ -168,7 +166,7 @@ class TemplateEditorMenu : PaginatedMenu() {
 
         private inner class FactoryButton(private val factory: MenuTemplateFactory) : Button() {
             override fun getName(player: Player): String {
-                return "${ChatColor.YELLOW}${ChatColor.BOLD}${factory.getName()}"
+                return "${CC.GRAY}» ${CC.PRI}${factory.getName()}"
             }
 
             override fun getMaterial(player: Player): Material {

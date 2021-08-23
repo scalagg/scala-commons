@@ -59,18 +59,19 @@ abstract class MenuTemplateButton : AbstractTypeSerializable {
                 }
 
                 val shift = if (action.clickType.isShiftClick) {
-                    "SHIFT "
+                    "Shift "
                 } else {
                     ""
                 }
 
                 val clickName = when {
-                    action.clickType.isLeftClick -> "LEFT-CLICK"
-                    action.clickType.isRightClick ->"RIGHT-CLICK"
-                    else -> "NOT_BOUND-CLICK"
+                    action.clickType.isLeftClick -> "Left-Click"
+                    action.clickType.isRightClick -> "Right-Click"
+                    action.clickType == ClickType.MIDDLE -> "Middle-Click"
+                    else -> "Not_Bound-Click"
                 }
 
-                itemBuilder.addToLore("${action.color}${ChatColor.BOLD}$shift$clickName ${action.color}to ${action.text}")
+                itemBuilder.addToLore("${action.color}$shift$clickName ${action.color}to ${action.text}")
             }
 
             return itemBuilder.build()

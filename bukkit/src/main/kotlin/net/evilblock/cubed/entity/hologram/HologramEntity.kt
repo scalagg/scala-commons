@@ -19,6 +19,7 @@ import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.time.TimeUtil
 import net.evilblock.cubed.util.bukkit.Rainbow
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.time.Instant
@@ -129,13 +130,13 @@ open class HologramEntity(private var text: String, location: Location, @Transie
     }
 
     override fun spawn(player: Player) {
-        if (text.isNotEmpty()) {
+        if (!text.equals("{empty}", true) || ChatColor.stripColor(text).isNotEmpty()) {
             super.spawn(player)
         }
     }
 
     override fun destroy(player: Player) {
-        if (text.isNotEmpty()) {
+        if (!text.equals("{empty}", true) || ChatColor.stripColor(text).isNotEmpty()) {
             super.destroy(player)
         }
     }

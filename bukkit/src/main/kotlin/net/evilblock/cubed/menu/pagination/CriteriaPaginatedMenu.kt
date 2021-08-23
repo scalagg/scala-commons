@@ -1,8 +1,8 @@
 package net.evilblock.cubed.menu.pagination
 
 import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -102,7 +102,7 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
 
     open inner class FilterButton : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.GREEN}${ChatColor.BOLD}Filter"
+            return "${CC.GREEN}${CC.BOLD}Filter"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -112,15 +112,15 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
                 for (filter in getFilters(player)) {
                     it.add(buildString {
                         if (filter == selectedFilter) {
-                            append(" ${ChatColor.BLUE}${ChatColor.BOLD}» ")
+                            append(" ${CC.BLUE}${CC.BOLD}» ")
                         } else {
                             append("    ")
                         }
 
                         if (currentFilters.contains(filter)) {
-                            append("${ChatColor.GREEN}${ChatColor.BOLD}")
+                            append("${CC.GREEN}${CC.BOLD}")
                         } else {
-                            append("${ChatColor.GRAY}")
+                            append(CC.GRAY)
                         }
 
                         append(filter.name())
@@ -128,9 +128,9 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
                 }
 
                 it.add("")
-                it.add("${ChatColor.BLUE}${Constants.ARROW_UP} ${ChatColor.YELLOW}${ChatColor.BOLD}LEFT-CLICK")
-                it.add("${ChatColor.BLUE}${ChatColor.BOLD}${Constants.DOT_SYMBOL} ${ChatColor.YELLOW}${ChatColor.BOLD}MIDDLE-CLICK ${ChatColor.YELLOW}to toggle")
-                it.add("${ChatColor.BLUE}${Constants.ARROW_DOWN} ${ChatColor.YELLOW}${ChatColor.BOLD}RIGHT-CLICK")
+                it.add("${CC.GRAY}${Constants.ARROW_UP} ${CC.GREEN}Left-Click.")
+                it.add("${CC.GRAY}${CC.BOLD}${Constants.DOT_SYMBOL} ${CC.GREEN}Middle-Click to toggle.")
+                it.add("${CC.GRAY}${Constants.ARROW_DOWN} ${CC.GREEN}Right-Click.")
             }
         }
 
@@ -185,7 +185,7 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
 
     open inner class SortButton : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.GREEN}${ChatColor.BOLD}Sort"
+            return "${CC.GREEN}${CC.BOLD}Sort"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -196,18 +196,18 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
                     val builder = StringBuilder()
 
                     if (sort == selectedSort) {
-                        builder.append(" ${ChatColor.BLUE}${ChatColor.BOLD}» ${ChatColor.GREEN}${sort.name()}")
+                        builder.append(" ${CC.BLUE}${CC.BOLD}» ${CC.GREEN}${sort.name()}")
                     } else {
-                        builder.append("    ${ChatColor.GRAY}${sort.name()}")
+                        builder.append("    ${CC.GRAY}${sort.name()}")
                     }
 
                     it.add(builder.toString())
                 }
 
                 it.add("")
-                it.add("${ChatColor.BLUE}${Constants.ARROW_DOWN} ${ChatColor.YELLOW}${ChatColor.BOLD}LEFT-CLICK")
-                it.add("${ChatColor.BLUE}${Constants.ARROW_UP} ${ChatColor.YELLOW}${ChatColor.BOLD}RIGHT-CLICK")
-                it.add("${ChatColor.BLUE}${Constants.REFRESH_SYMBOL} ${ChatColor.YELLOW}${ChatColor.BOLD}MIDDLE-CLICK ${ChatColor.YELLOW}to reverse sort")
+                it.add("${CC.GRAY}${Constants.ARROW_DOWN} ${CC.GREEN}Left-Click.")
+                it.add("${CC.GRAY}${Constants.ARROW_UP} ${CC.GREEN}Right-Click.")
+                it.add("${CC.GRAY}${Constants.REFRESH_SYMBOL} ${CC.GREEN}Middle-Click to reverse sort.")
             }
         }
 

@@ -10,6 +10,7 @@ package net.evilblock.cubed.menu.template.button
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.menu.template.MenuTemplateButton
 import net.evilblock.cubed.menu.template.MenuTemplateButtonFactory
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -20,7 +21,7 @@ import java.lang.reflect.Type
 class TemplatePlaceholderButton : MenuTemplateButton(), CloneableMenuTemplateButton {
 
     override fun getEditorIcon(): ItemStack {
-        return ItemUtils.applySkullTexture(ItemBuilder.of(Material.SKULL_ITEM).name("${ChatColor.YELLOW}${ChatColor.BOLD}Template Placeholder").data(3).build(), TEXTURE)
+        return ItemUtils.applySkullTexture(ItemBuilder.of(Material.SKULL_ITEM).name("${CC.GRAY}» ${CC.PRI}Template Placeholder").data(3).build(), TEXTURE)
     }
 
     override fun getEditorActions(): List<ButtonAction> {

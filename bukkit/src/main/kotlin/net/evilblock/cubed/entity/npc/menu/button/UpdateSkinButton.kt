@@ -3,10 +3,10 @@ package net.evilblock.cubed.entity.npc.menu.button
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.text.TextSplitter
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import net.evilblock.cubed.util.bukkit.Tasks
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.conversations.ConversationContext
 import org.bukkit.conversations.Prompt
@@ -20,14 +20,14 @@ import org.bukkit.inventory.meta.SkullMeta
 class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolean) -> Unit) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.YELLOW}${ChatColor.BOLD}Update Skin"
+        return "${CC.GRAY}» ${CC.PRI}Update Skin"
     }
 
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update this NPC's skin by fetching a real Minecraft player's skin by their username."))
             desc.add("")
-            desc.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to update skin")
+            desc.add("${CC.GREEN}Left-Click to update skin.")
         }
     }
 
@@ -48,12 +48,12 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
 
         ConversationUtil.startConversation(player, object : StringPrompt() {
             override fun getPromptText(context: ConversationContext): String {
-                return "${ChatColor.GREEN}Please input the username to query. ${ChatColor.GRAY}(Limit of 16 characters)"
+                return "${CC.GREEN}Please input the username to query. ${CC.GRAY}(Limit of 16 characters)"
             }
 
             override fun acceptInput(context: ConversationContext, input: String): Prompt? {
                 if (input.equals("cancel", ignoreCase = true)) {
-                    context.forWhom.sendRawMessage("${ChatColor.YELLOW}No changes made to NPC.")
+                    context.forWhom.sendRawMessage("${CC.YELLOW}No changes made to NPC.")
                     return Prompt.END_OF_CONVERSATION
                 }
 
@@ -63,16 +63,16 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
                 Tasks.async {
                     npc.updateTextureByUsername(username = input, onComplete = { success, thrown ->
                         if (success) {
-                            context.forWhom.sendRawMessage("${ChatColor.GREEN}Successfully updated texture!")
+                            context.forWhom.sendRawMessage("${CC.GREEN}Successfully updated texture!")
 
                             Tasks.async {
                                 EntityHandler.saveData()
                             }
                         } else {
                             if (thrown == null) {
-                                context.forWhom.sendRawMessage("${ChatColor.RED}Failed to update texture.")
+                                context.forWhom.sendRawMessage("${CC.RED}Failed to update texture.")
                             } else {
-                                context.forWhom.sendRawMessage("${ChatColor.RED}${thrown.message}.")
+                                context.forWhom.sendRawMessage("${CC.RED}${thrown.message}.")
                             }
                         }
 

@@ -16,11 +16,13 @@ import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
+import net.evilblock.cubed.entity.hologram.command.HologramCommand
 import net.evilblock.cubed.entity.hologram.personalized.PersonalizedHologramTask
 import net.evilblock.cubed.entity.hologram.updating.UpdatingHologramTask
 import net.evilblock.cubed.entity.listener.EntityWatcherListeners
 import net.evilblock.cubed.entity.living.listener.LivingEntityListeners
 import net.evilblock.cubed.entity.npc.NpcEntity
+import net.evilblock.cubed.entity.npc.command.NpcCommand
 import net.evilblock.cubed.entity.npc.listener.NpcEntityTeamUpdatesListeners
 import net.evilblock.cubed.entity.npc.strategy.NpcStrategyLogic
 import net.evilblock.cubed.entity.npc.texture.NpcTexture

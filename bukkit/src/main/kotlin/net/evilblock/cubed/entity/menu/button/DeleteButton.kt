@@ -5,8 +5,8 @@ import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.menus.ConfirmMenu
 import net.evilblock.cubed.menu.protocol.MenuCompatibility
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.text.TextSplitter
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -15,14 +15,14 @@ import org.bukkit.inventory.InventoryView
 class DeleteButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.RED}${ChatColor.BOLD}Delete ${entity.getTypeName()}"
+        return "${CC.GRAY}» ${CC.RED}Delete ${entity.getTypeName()}"
     }
 
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Delete this ${entity.getTypeName()}."))
             desc.add("")
-            desc.add("${ChatColor.RED}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.RED}to delete ${entity.getTypeName().toLowerCase()}")
+            desc.add("${CC.RED}Left-Click to delete ${entity.getTypeName().toLowerCase()}.")
         }
     }
 
@@ -39,9 +39,9 @@ class DeleteButton(private val entity: Entity) : Button() {
 
                 EntityHandler.forgetEntity(entity)
 
-                player.sendMessage("${ChatColor.GREEN}Deleted ${entity.getTypeName()}!")
+                player.sendMessage("${CC.GREEN}Deleted ${entity.getTypeName()}!")
             } else {
-                player.sendMessage("${ChatColor.YELLOW}No changes made to ${entity.getTypeName()}.")
+                player.sendMessage("${CC.YELLOW}No changes made to ${entity.getTypeName()}.")
             }
         }.openMenu(player)
     }

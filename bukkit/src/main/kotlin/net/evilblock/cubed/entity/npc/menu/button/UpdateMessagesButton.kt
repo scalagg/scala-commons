@@ -3,7 +3,7 @@ package net.evilblock.cubed.entity.npc.menu.button
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.menu.EditNpcMessagesMenu
 import net.evilblock.cubed.menu.Button
-import org.bukkit.ChatColor
+import net.evilblock.cubed.util.CC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -12,16 +12,16 @@ import org.bukkit.inventory.InventoryView
 class UpdateMessagesButton(private val npc: NpcEntity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.YELLOW}${ChatColor.BOLD}Update Messages"
+        return "${CC.GRAY}» ${CC.PRI}Update Messages"
     }
 
     override fun getDescription(player: Player): List<String> {
         return listOf(
-            "${ChatColor.GRAY}Update the messages that are sent to",
-            "${ChatColor.GRAY}a player when they right-click this NPC.",
+            "${CC.GRAY}Update the messages that are sent to",
+            "${CC.GRAY}a player when they right-click this NPC.",
             "",
-            "${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to update messages",
-            "${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to unset messages"
+            "${CC.GREEN}Left-Click to update messages.",
+            "${CC.RED}Right-Click to unset messages."
         )
     }
 
@@ -39,9 +39,8 @@ class UpdateMessagesButton(private val npc: NpcEntity) : Button() {
         } else {
             if (npc.messages != null) {
                 npc.messages = null
-                player.sendMessage("${ChatColor.GREEN}Unset messages!")
+                player.sendMessage("${CC.GREEN}Unset messages!")
             }
         }
     }
-
 }

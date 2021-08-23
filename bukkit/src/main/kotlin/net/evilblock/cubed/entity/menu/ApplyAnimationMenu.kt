@@ -5,8 +5,8 @@ import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -28,7 +28,7 @@ class ApplyAnimationMenu(private val entity: Entity, private val use: (EntityAni
 
     private inner class AnimationButton(private val type: EntityAnimationType) : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}${type.getName()}"
+            return "${CC.GRAY}» ${CC.PRI}${type.getName()}"
         }
 
         override fun getButtonItem(player: Player): ItemStack {

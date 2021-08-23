@@ -15,6 +15,7 @@ import net.evilblock.cubed.menu.template.MenuTemplateButtonFactory
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.menu.template.button.BasicTemplateButton
 import net.evilblock.cubed.menu.template.button.TemplatePlaceholderButton
+import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -146,7 +147,7 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
 
         private inner class FactoryButton(private val factory: MenuTemplateButtonFactory) : Button() {
             override fun getName(player: Player): String {
-                return "${ChatColor.YELLOW}${ChatColor.BOLD}${factory.getName()}"
+                return "${CC.GRAY}» ${CC.PRI}${factory.getName()}"
             }
 
             override fun getMaterial(player: Player): Material {

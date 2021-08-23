@@ -3,7 +3,7 @@ package net.evilblock.cubed.entity.npc.menu.button
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.menu.EditNpcTextMenu
 import net.evilblock.cubed.menu.Button
-import org.bukkit.ChatColor
+import net.evilblock.cubed.util.CC
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -12,16 +12,15 @@ import org.bukkit.inventory.InventoryView
 class UpdateTextButton(private val npc: NpcEntity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.YELLOW}${ChatColor.BOLD}Update Text"
+        return "${CC.GRAY}» ${CC.PRI}Update Text"
     }
 
     override fun getDescription(player: Player): List<String> {
         return listOf(
+            "${CC.GRAY}Update the lines of text that",
+            "${CC.GRAY}appear above this NPC.",
             "",
-            "${ChatColor.GRAY}Update the lines of text that",
-            "${ChatColor.GRAY}appear above this NPC.",
-            "",
-            "${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to update text"
+            "${CC.GREEN}Left-Click to update text."
         )
     }
 

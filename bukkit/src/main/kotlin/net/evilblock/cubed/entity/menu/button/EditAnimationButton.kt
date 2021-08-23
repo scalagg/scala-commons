@@ -6,9 +6,9 @@ import net.evilblock.cubed.entity.menu.ApplyAnimationMenu
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.menus.ConfirmMenu
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.text.TextSplitter
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -17,18 +17,17 @@ import org.bukkit.inventory.InventoryView
 class EditAnimationButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.YELLOW}${ChatColor.BOLD}Apply Animation"
+        return "${CC.GRAY}» ${CC.PRI}Apply Animation"
     }
 
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
-            desc.add("")
             desc.addAll(TextSplitter.split(text = "Apply an animation to this entity."))
             desc.add("")
-            desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to apply animation"))
+            desc.add("${CC.GREEN}Left-Click to apply animation.")
 
             if (entity.animation != null) {
-                desc.add(styleAction(ChatColor.RED, "RIGHT-CLICK", "to remove animation"))
+                desc.add("${CC.RED}Right-Click to remove animation.")
             }
         }
     }

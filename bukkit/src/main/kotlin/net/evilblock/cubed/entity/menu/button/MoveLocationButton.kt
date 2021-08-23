@@ -3,9 +3,9 @@ package net.evilblock.cubed.entity.menu.button
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.text.TextSplitter
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -16,14 +16,14 @@ import org.bukkit.inventory.ItemStack
 class MoveLocationButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Location"
+        return "${CC.GRAY}» ${CC.PRI}Move Location"
     }
 
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Move this NPC's location."))
             desc.add("")
-            desc.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to move location")
+            desc.add("${CC.GREEN}Left-Click to move location.")
         }
     }
 
@@ -41,7 +41,7 @@ class MoveLocationButton(private val entity: Entity) : Button() {
         player.closeInventory()
         player.inventory.addItem(EntityMoveTool.makeMoveTool(entity))
         player.updateInventory()
-        player.sendMessage("${ChatColor.GREEN}Place the mob egg wherever you'd like to move the NPC.")
+        player.sendMessage("${CC.GREEN}Place the mob egg wherever you'd like to move the NPC.")
     }
 
 }

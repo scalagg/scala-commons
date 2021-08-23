@@ -4,13 +4,13 @@ import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.menus.SelectItemStackMenu
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.text.TextSplitter
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -119,14 +119,14 @@ class FloatingItem(var itemStack: ItemStack, location: Location) : Entity(locati
 
     private inner class EditFloatingItemButton : Button() {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Edit Floating Item"
+            return "${CC.GRAY}» ${CC.PRI}Edit Floating Item"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Change the item that is being displayed."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to edit item"))
+                desc.add("${CC.GREEN}Left-Click to edit item.")
             }
         }
 

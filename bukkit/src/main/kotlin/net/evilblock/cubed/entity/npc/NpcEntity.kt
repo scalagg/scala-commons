@@ -84,7 +84,7 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
     }
 
     override fun getAnimationTypes(): List<EntityAnimationType> {
-        return listOf(RingsAnimation.RingsAnimationType, FloatAnimation.FloatAnimationType, MultiRingsAnimation.MultiRingsAnimationType)
+        return listOf(RingsAnimation.RingsAnimationType, FloatAnimation.FloatAnimationType)
     }
 
     override fun onRightClick(player: Player) {

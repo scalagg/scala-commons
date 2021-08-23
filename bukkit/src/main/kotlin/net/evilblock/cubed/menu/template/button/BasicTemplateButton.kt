@@ -16,6 +16,7 @@ import net.evilblock.cubed.util.bukkit.prompt.EzPrompt
 import net.evilblock.cubed.menu.template.MenuTemplateButton
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.menu.template.button.redirect.MenuDestination
+import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -70,7 +71,8 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
                 template.boundButtons.remove(slot)
             },
             ButtonAction(clickType = ClickType.MIDDLE, color = ChatColor.AQUA, text = "copy item") { menu, player, template, slot ->
-                player.inventory.addItem(icon.clone())
+                player.openInventory.cursor = icon.clone()
+//                player.inventory.addItem(icon.clone())
                 player.updateInventory()
             }
         )
@@ -111,7 +113,7 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
 
         private inner class SetRedirectButton : Button() {
             override fun getName(player: Player): String {
-                return "${ChatColor.AQUA}${ChatColor.BOLD}Set Redirect"
+                return "${CC.PRI}Set Redirect"
             }
 
             override fun getMaterial(player: Player): Material {
@@ -158,7 +160,7 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
 
         private inner class EditCommandsButton : Button() {
             override fun getName(player: Player): String {
-                return "${ChatColor.AQUA}${ChatColor.BOLD}Edit Commands"
+                return "${CC.PRI}Edit Commands"
             }
 
             override fun getMaterial(player: Player): Material {

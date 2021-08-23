@@ -65,7 +65,7 @@ class Scoreboard(private val player: Player) {
 
     fun update() {
         val override = ScoreboardHandler.scoreboardOverride
-        val shouldOverride = override != null && override.shouldOverride.apply(this.player)
+        val shouldOverride = override != null && override.shouldOverride(this.player)
 
         var title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
 

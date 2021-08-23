@@ -7,11 +7,11 @@ import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.GlassButton
 import net.evilblock.cubed.menu.buttons.StaticItemStackButton
 import net.evilblock.cubed.menu.buttons.TexturedHeadButton
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
 import net.evilblock.cubed.util.bukkit.Direction
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.text.TextSplitter
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -59,20 +59,26 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
             Tasks.delayed(1L) {
                 EditEntityMenu(npc).openMenu(player)
             }
+            for (watcher in npc.getCurrentWatcherPlayers()) {
+                if (npc.isVisibleToPlayer(watcher)) {
+                    npc.destroy(watcher)
+                    npc.spawn(watcher)
+                }
+            }
         }
     }
 
     private inner class MoveUpButton : TexturedHeadButton(Constants.WOOD_ARROW_UP_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Up"
+            return "${CC.GRAY}» ${CC.PRI}Move Up"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC in the upwards direction."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move up by +0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move up by +0.25"))
+                desc.add("${CC.GREEN}Left-Click to move up by +0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move up by +0.25.")
             }
         }
 
@@ -87,15 +93,15 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveDownButton : TexturedHeadButton(Constants.WOOD_ARROW_DOWN_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Down"
+            return "${CC.GRAY}» ${CC.PRI}Move Down"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC in the downwards direction."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move down by -0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move down by -0.25"))
+                desc.add("${CC.GREEN}Left-Click to move down by -0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move down by -0.25.")
             }
         }
 
@@ -110,15 +116,15 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveForwardButton : TexturedHeadButton(Constants.WOOD_ARROW_UP_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Forward"
+            return "${CC.GRAY}» ${CC.PRI}Move Forward"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC in the forward direction."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move forward by +0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move forward by +0.25"))
+                desc.add("${CC.GREEN}Left-Click to move forward by +0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move forward by +0.25.")
             }
         }
 
@@ -154,15 +160,15 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveBackwardButton : TexturedHeadButton(Constants.WOOD_ARROW_DOWN_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Backward"
+            return "${CC.GRAY}» ${CC.PRI}Move Backward"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC in the backward direction."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move backward by -0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move backward by -0.25"))
+                desc.add("${CC.GREEN}Left-Click to move backward by -0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move backward by -0.25.")
             }
         }
 
@@ -173,15 +179,15 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveLeftButton : TexturedHeadButton(Constants.WOOD_ARROW_LEFT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Left"
+            return "${CC.GRAY}» ${CC.PRI}Move Left"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC to the left."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move left by +0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move left by +0.25"))
+                desc.add("${CC.GREEN}Left-Click to move left by +0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move left by +0.25.")
             }
         }
 
@@ -217,15 +223,15 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveRightButton : TexturedHeadButton(Constants.WOOD_ARROW_RIGHT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Move Right"
+            return "${CC.GRAY}» ${CC.PRI}Move Right"
         }
 
         override fun getDescription(player: Player): List<String> {
             return arrayListOf<String>().also { desc ->
                 desc.addAll(TextSplitter.split(text = "Pivots the NPC to the right."))
                 desc.add("")
-                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to move right by +0.1"))
-                desc.add(styleAction(ChatColor.AQUA, "SHIFT-CLICK", "to move right by +0.25"))
+                desc.add("${CC.GREEN}Left-Click to move right by +0.1.")
+                desc.add("${CC.GREEN}Shift-Click to move right by +0.25.")
             }
         }
 
@@ -261,7 +267,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class LookLeftButton : TexturedHeadButton(Constants.WOOD_ARROW_LEFT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Look Left"
+            return "${CC.GRAY}» ${CC.PRI}Look Left"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -281,7 +287,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class LookRightButton : TexturedHeadButton(Constants.WOOD_ARROW_RIGHT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${ChatColor.YELLOW}${ChatColor.BOLD}Look Right"
+            return "${CC.GRAY}» ${CC.PRI}Look Right"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -301,7 +307,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
 //    private inner class EditCoordButton(private val coord: Coord) : TexturedHeadButton() {
 //        override fun getName(player: Player): String {
-//            return "${ChatColor.YELLOW}${ChatColor.BOLD}Set ${coord.name} Coord"
+//            return "${CC.GRAY}» ${CC.PRI}Set ${coord.name} Coord"
 //        }
 //
 //        override fun getTexture(player: Player): String {
@@ -321,7 +327,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 //        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
 //            if (clickType.isLeftClick) {
 //                NumberPrompt()
-//                    .withText("${ChatColor.GREEN}Please input the new ${coord.name} value.")
+//                    .withText("${CC.GREEN}Please input the new ${coord.name} value.")
 //                    .acceptInput { input ->
 //                        npc.updateLocation(coord.modify(npc.location, input.toDouble()))
 //                        this@EditNpcPositionMenu.openMenu(player)
