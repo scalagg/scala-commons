@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed
 
-import co.aikar.commands.ConditionFailedException
 import com.comphenix.protocol.ProtocolLibrary
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
@@ -21,11 +20,9 @@ import net.evilblock.cubed.entity.hologram.personalized.PersonalizedHologramTask
 import net.evilblock.cubed.entity.hologram.updating.UpdatingHologramTask
 import net.evilblock.cubed.entity.listener.EntityWatcherListeners
 import net.evilblock.cubed.entity.living.listener.LivingEntityListeners
-import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.command.NpcCommand
 import net.evilblock.cubed.entity.npc.listener.NpcEntityTeamUpdatesListeners
 import net.evilblock.cubed.entity.npc.strategy.NpcStrategyLogic
-import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.entity.packet.EntityPacketAdapter
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.entity.tool.EntityPortTool
@@ -45,6 +42,7 @@ import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagListener
 import net.evilblock.cubed.nametag.update.NametagUpdatesListeners
 import net.evilblock.cubed.plugin.PluginFramework
+import net.evilblock.cubed.plugin.event.EventListener
 import net.evilblock.cubed.poster.PosterHandler
 import net.evilblock.cubed.poster.placed.PlacedPosterHandler
 import net.evilblock.cubed.scoreboard.ScoreboardListeners
@@ -58,25 +56,19 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
-import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
-import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
-import net.evilblock.cubed.util.time.Duration
 import net.evilblock.cubed.visibility.VisibilityListeners
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
-import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -237,6 +229,7 @@ class Cubed : JavaPlugin() {
         server.pluginManager.registerEvents(ScoreboardListeners, this)
         server.pluginManager.registerEvents(VisibilityListeners, this)
         server.pluginManager.registerEvents(NametagListener, this)
+        server.pluginManager.registerEvents(EventListener, this)
 
         logger.info("Loaded listeners")
     }

@@ -12,7 +12,7 @@ import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.serializers.Serializers
-import net.evilblock.cubed.util.bukkit.selection.EntityInteractionHandler
+import net.evilblock.cubed.util.bukkit.selection.impl.EntityInteractionHandler
 import java.io.File
 
 object PlacedPosterHandler {

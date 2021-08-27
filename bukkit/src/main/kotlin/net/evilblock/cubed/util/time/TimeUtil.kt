@@ -19,6 +19,11 @@ object TimeUtil {
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("MM/dd/yyyy")
 
     @JvmStatic
+    fun millisToSeconds(millis: Long): String {
+        return String.format("%.0f", millis)
+    }
+
+    @JvmStatic
     fun formatIntoMMSS(secs: Int): String {
         var secs = secs
         val seconds = secs % 60
@@ -154,6 +159,21 @@ object TimeUtil {
         }
 
         return seconds
+    }
+
+    @JvmStatic
+    fun elapsed(from: Long, required: Long): Boolean {
+        return System.currentTimeMillis() - from > required
+    }
+
+    @JvmStatic
+    fun elapsed(starttime: Long): Long {
+        return System.currentTimeMillis() - starttime
+    }
+
+    @JvmStatic
+    fun left(start: Long, required: Long): Long {
+        return required + start - System.currentTimeMillis()
     }
 
 }
