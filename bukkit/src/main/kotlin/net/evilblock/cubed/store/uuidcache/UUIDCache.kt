@@ -47,12 +47,12 @@ abstract class UUIDCache {
     /**
      * Attempts to retrieve a username for the given [uuid]
      */
-    fun name(uuid: UUID): String {
+    fun name(uuid: UUID): String? {
         return if (alwaysFetch) {
             fetchUsername(uuid)
         } else {
             uuidToUsername[uuid]
-        } ?: "Unknown"
+        }
     }
 
     /**
