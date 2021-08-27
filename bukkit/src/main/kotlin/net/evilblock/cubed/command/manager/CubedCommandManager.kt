@@ -2,6 +2,7 @@ package net.evilblock.cubed.command.manager
 
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.PaperCommandManager
+import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.command.*
 import net.evilblock.cubed.entity.Entity
@@ -101,19 +102,18 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
             }
         }
         commandContexts.registerContext(UUID::class.java) { c ->
-            if (c.firstArg.length != 32 || c.firstArg.length != 36) {
-                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
-            }
-
             if (c.firstArg.length == 32) {
                 return@registerContext UUIDUtil.formatUUID(c.firstArg)
-                    ?: throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
+                    ?: throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
+            } else if (c.firstArg.length <= 16) {
+                return@registerContext Cubed.instance.uuidCache.uuid(c.firstArg)
+                    ?: throw ConditionFailedException("Couldn't find uuid of player ${CC.YELLOW}${c.firstArg}${CC.RED}.")
             }
 
             return@registerContext try {
                 UUID.fromString(c.firstArg)
             } catch (ignored: Exception) {
-                throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
+                throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
             }
         }
     }
