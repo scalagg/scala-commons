@@ -24,11 +24,10 @@ import java.util.concurrent.CompletableFuture
  * @author puugz
  * @since 10/08/2021 20:38
  */
-class CubedCommandManager : PaperCommandManager {
+class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
 
-    constructor(plugin: Plugin) : super(plugin) {
+    init {
         enableUnstableAPI("help")
-
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val entity: Entity = try {
                 EntityHandler.getEntityById(c.firstArg.toInt())
@@ -88,8 +87,8 @@ class CubedCommandManager : PaperCommandManager {
         commandCompletions.registerAsyncCompletion("menutemplates") { c ->
             val completions = mutableListOf<String>()
 
-            MenuTemplateHandler.getTemplates().forEachIndexed { index, menuTemplate ->
-                completions[index] = menuTemplate.getName()
+            MenuTemplateHandler.getTemplates().forEach {
+                completions.add(it.getName())
             }
 
             return@registerAsyncCompletion completions
@@ -98,7 +97,7 @@ class CubedCommandManager : PaperCommandManager {
             return@registerContext try {
                 Duration.parse(c.firstArg)
             } catch (ignored: Exception) {
-                throw ConditionFailedException("Failed to parse duration. (Example: 1h30m)")
+                throw ConditionFailedException("Invalid duration parsed. (Example: 1h30m)")
             }
         }
         commandContexts.registerContext(UUID::class.java) { c ->
@@ -117,6 +116,5 @@ class CubedCommandManager : PaperCommandManager {
                 throw ConditionFailedException(CC.YELLOW + c.firstArg + CC.RED + " is not a valid uuid.")
             }
         }
-
     }
 }

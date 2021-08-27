@@ -7,10 +7,6 @@
 
 package net.evilblock.cubed.util.time
 
-import org.bukkit.ChatColor
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
-
 class Duration(private var time: Long) {
 
     fun get(): Long {
