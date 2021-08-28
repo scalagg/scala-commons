@@ -16,8 +16,8 @@ open class PlayerSnapshot(player: Player) {
     val flying = player.isFlying
     val allowFly = player.allowFlight
 
-    fun restore(player: Player) {
-        player.teleport(location)
+    fun restore(player: Player, teleport: Boolean = true) {
+        if (teleport) player.teleport(location)
         player.inventory.contents = inventoryContents
         player.inventory.armorContents = armorContents
         player.gameMode = gameMode
