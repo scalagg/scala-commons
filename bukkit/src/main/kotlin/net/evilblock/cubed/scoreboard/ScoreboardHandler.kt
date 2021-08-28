@@ -16,7 +16,7 @@ object ScoreboardHandler {
     internal var scoreboardProvider: ScoreboardAdapter = DefaultScoreboardProvider()
     internal val scoreboards: MutableMap<UUID, Scoreboard> = ConcurrentHashMap()
 
-    internal lateinit var scoreboardOverride: ScoreboardOverride
+    lateinit var scoreboardOverride: ScoreboardOverride
 
     @JvmStatic
     fun configure(scoreboardProvider: ScoreboardAdapter) {
