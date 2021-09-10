@@ -30,8 +30,10 @@ class ItemBuilder(private val item: ItemStack) {
 
     constructor(material: Material): this(ItemStack(material))
     constructor(material: Material, amount: Int): this(ItemStack(material, amount))
-    constructor(material: XMaterial): this(ItemStack(material.parseMaterial()))
-    constructor(material: XMaterial, amount: Int): this(ItemStack(material.parseMaterial(), amount))
+    constructor(material: XMaterial): this(material.parseItem()!!)
+    constructor(material: XMaterial, amount: Int): this(material.parseItem()!!) {
+        amount(amount)
+    }
 
     fun amount(amount: Int): ItemBuilder {
         item.amount = amount
