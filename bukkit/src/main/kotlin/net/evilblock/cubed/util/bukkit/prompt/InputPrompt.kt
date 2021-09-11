@@ -14,13 +14,13 @@ import org.bukkit.conversations.Prompt
 import org.bukkit.conversations.StringPrompt
 import org.bukkit.entity.Player
 
-class InputPrompt : StringPrompt() {
+open class InputPrompt : StringPrompt() {
 
     private var promptText: String = "${ChatColor.GREEN}Please input a value."
     private var charLimit: Int = -1
     private var regex: Regex? = null
-    private var use: ((String) -> Unit)? = null
-    private var fail: ((String) -> Unit)? = null
+    private var use: ((Player, String) -> Unit)? = null
+    private var fail: ((Player, String) -> Unit)? = null
 
     fun withText(text: String): InputPrompt {
         this.promptText =  text
@@ -37,12 +37,12 @@ class InputPrompt : StringPrompt() {
         return this
     }
 
-    fun acceptInput(use: (String) -> Unit): InputPrompt {
+    fun acceptInput(use: (Player, String) -> Unit): InputPrompt {
         this.use = use
         return this
     }
 
-    fun onFail(use: (String) -> Unit): InputPrompt {
+    fun onFail(use: (Player, String) -> Unit): InputPrompt {
         this.fail = use
         return this
     }
@@ -55,7 +55,7 @@ class InputPrompt : StringPrompt() {
         if (charLimit != -1) {
             if (input.length > charLimit) {
                 context.forWhom.sendRawMessage("${ChatColor.RED}Input text is too long! (${input.length} > ${charLimit})")
-                fail?.invoke(input)
+                fail?.invoke(context.forWhom as Player, input)
                 return Prompt.END_OF_CONVERSATION
             }
         }
@@ -63,16 +63,16 @@ class InputPrompt : StringPrompt() {
         if (regex != null) {
             if (!input.matches(regex!!)) {
                 context.forWhom.sendRawMessage("${ChatColor.RED}Input text does not match regex pattern ${regex!!.pattern}.")
-                fail?.invoke(input)
+                fail?.invoke(context.forWhom as Player, input)
                 return Prompt.END_OF_CONVERSATION
             }
         }
 
         try {
-            use!!.invoke(input)
+            use!!.invoke(context.forWhom as Player, input)
         } catch (e: Exception) {
             context.forWhom.sendRawMessage("${ChatColor.RED}Failed to handle input: ${ChatColor.WHITE}${input}")
-            fail?.invoke(input)
+            fail?.invoke(context.forWhom as Player, input)
         }
 
         return Prompt.END_OF_CONVERSATION

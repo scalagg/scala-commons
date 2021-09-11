@@ -20,7 +20,7 @@ class EmptyChunkGenerator : ChunkGenerator() {
         x: Int,
         z: Int,
         biomes: BiomeGrid?
-    ): Array<kotlin.ByteArray?> {
+    ): Array<ByteArray?> {
         return arrayOfNulls(world!!.maxHeight / 16)
     }
 
