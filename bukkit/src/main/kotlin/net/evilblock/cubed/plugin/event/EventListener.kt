@@ -9,7 +9,7 @@ object EventListener: Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.hasItem())
+        if (!event.hasItem())
             return
 
         val interactItemEvent = PlayerInteractItemEvent(event.player, event.item, Action.valueOf(event.action.name))
