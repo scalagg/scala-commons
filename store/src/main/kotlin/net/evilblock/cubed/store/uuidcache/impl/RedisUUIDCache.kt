@@ -7,46 +7,63 @@
 
 package net.evilblock.cubed.store.uuidcache.impl
 
+import com.solexgames.redis.JedisManager
 import net.evilblock.cubed.store.uuidcache.UUIDCache
-import net.evilblock.cubed.store.redis.Redis
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
-class RedisUUIDCache(private val redis: Redis) : UUIDCache() {
+class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
 
     companion object {
         private const val KEY = "Cubed:UUIDCache"
     }
 
     override fun fetchCache(): Map<UUID, String> {
-        return redis.runRedisCommand { redis -> redis.hgetAll(KEY) }
-            .mapNotNull { entry ->
-                return@mapNotNull try {
-                    UUID.fromString(entry.key) to entry.value
-                } catch (e: Exception) {
-                    null
+        val cache = hashMapOf<UUID, String>()
+
+        redis.runCommand { jedis ->
+            run {
+                jedis.hgetAll(KEY).forEach { (key, value) ->
+                    try {
+                        cache[UUID.fromString(key)] = value
+                    } catch (ignored: Exception) { }
                 }
             }
-            .toMap()
+        }
+
+        return cache
     }
 
     override fun fetchUsername(uuid: UUID): String? {
-        return redis.runRedisCommand { redis ->
-            redis.hget(KEY, uuid.toString())
+        val reference = AtomicReference<String>()
+
+        redis.runCommand { jedis ->
+            run {
+                try {
+                    reference.set(jedis.hget(KEY, uuid.toString()))
+                } catch (ignored: Exception) { }
+            }
         }
+
+        return reference.string
     }
 
     override fun fetchUUID(username: String): UUID? {
-        return redis.runRedisCommand { redis ->
-            try {
-                UUID.fromString(redis.hget(KEY, username.toLowerCase()))
-            } catch (e: Exception) {
-                null
+        val reference = AtomicReference<UUID>()
+
+        redis.runCommand { jedis ->
+            run {
+                try {
+                    reference.set(UUID.fromString(jedis.hget(KEY, reference.toString())))
+                } catch (ignored: Exception) { }
             }
         }
+
+        return reference.uuid
     }
 
     override fun updateCache(uuid: UUID, name: String) {
-        redis.runRedisCommand { redis ->
+        redis.runCommand { redis ->
             redis.hset(KEY, uuid.toString(), name)
             redis.hset(KEY, name.toLowerCase(), uuid.toString())
         }

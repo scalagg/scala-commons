@@ -21,9 +21,6 @@ class Cubed : Plugin() {
     lateinit var config: Configuration
     lateinit var uuidCache: UUIDCache
 
-    val redis: Redis = Redis()
-    val mongo: Mongo = Mongo()
-
     override fun onLoad() {
         instance = this
     }
@@ -44,22 +41,6 @@ class Cubed : Plugin() {
     }
 
     private fun loadStore() {
-        try {
-            redis.connect(CubedConfig.getRedisURI())
-        } catch (e: Exception) {
-            throw RuntimeException("Couldn't connect to redis server at ${CubedConfig.getRedisURI()}", e)
-        }
-
-        logger.info("Connected to redis server")
-
-        try {
-            mongo.connect(CubedConfig.getMongoURI())
-        } catch (e: Exception) {
-            throw RuntimeException("Couldn't connect to mongodb server at ${CubedConfig.getMongoURI()}", e)
-        }
-
-        logger.info("Connected to mongodb server")
-
         try {
             uuidCache = RedisUUIDCache(redis)
             uuidCache.load()

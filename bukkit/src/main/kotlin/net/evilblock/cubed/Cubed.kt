@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed
 
+import co.aikar.commands.MessageType
 import com.comphenix.protocol.ProtocolLibrary
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
@@ -54,8 +55,8 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -70,7 +71,6 @@ import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
 
-
 /**
  * Cubed Engine - Rapid plugin development
  */
@@ -83,7 +83,6 @@ class Cubed : JavaPlugin() {
     }
 
     lateinit var uuidCache: UUIDCache
-    lateinit var commandManager: CubedCommandManager
 
     override fun onEnable() {
         instance = this
@@ -168,7 +167,7 @@ class Cubed : JavaPlugin() {
     }
 
     private fun loadCommands() {
-        commandManager = CubedCommandManager(this)
+        val commandManager = CubedCommandManager(this)
 
         commandManager.registerCommand(CubedCommand)
         commandManager.registerCommand(EntityCommand)

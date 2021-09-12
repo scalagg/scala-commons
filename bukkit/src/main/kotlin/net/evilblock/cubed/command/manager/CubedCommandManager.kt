@@ -1,6 +1,7 @@
 package net.evilblock.cubed.command.manager
 
 import co.aikar.commands.ConditionFailedException
+import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.CubedConfig
@@ -16,6 +17,7 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
+import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.plugin.Plugin
 import java.util.*
@@ -28,6 +30,12 @@ import java.util.concurrent.CompletableFuture
 class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
 
     init {
+        listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
+            getFormat(it).setColor(3, ChatColor.GRAY)
+            getFormat(it).setColor(2, ChatColor.valueOf(CC.SEC))
+            getFormat(it).setColor(1, ChatColor.valueOf(CC.PRI))
+        }
+
         enableUnstableAPI("help")
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val entity: Entity = try {
