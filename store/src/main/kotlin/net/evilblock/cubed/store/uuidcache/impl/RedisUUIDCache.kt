@@ -26,7 +26,8 @@ class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
                 jedis.hgetAll(KEY).forEach { (key, value) ->
                     try {
                         cache[UUID.fromString(key)] = value
-                    } catch (ignored: Exception) { }
+                    } catch (ignored: Exception) {
+                    }
                 }
             }
         }
@@ -41,11 +42,12 @@ class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
             run {
                 try {
                     reference.set(jedis.hget(KEY, uuid.toString()))
-                } catch (ignored: Exception) { }
+                } catch (ignored: Exception) {
+                }
             }
         }
 
-        return reference.string
+        return reference.get()
     }
 
     override fun fetchUUID(username: String): UUID? {
@@ -55,11 +57,12 @@ class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
             run {
                 try {
                     reference.set(UUID.fromString(jedis.hget(KEY, reference.toString())))
-                } catch (ignored: Exception) { }
+                } catch (ignored: Exception) {
+                }
             }
         }
 
-        return reference.uuid
+        return reference.get()
     }
 
     override fun updateCache(uuid: UUID, name: String) {

@@ -3,6 +3,7 @@ package net.evilblock.cubed.command.manager
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
+import com.sun.org.apache.xml.internal.serialize.HTMLdtd.fromChar
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.command.*
@@ -32,8 +33,8 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
     init {
         listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
             getFormat(it).setColor(3, ChatColor.GRAY)
-            getFormat(it).setColor(2, ChatColor.valueOf(CC.SEC))
-            getFormat(it).setColor(1, ChatColor.valueOf(CC.PRI))
+            getFormat(it).setColor(2, ChatColor.getByChar(CC.SEC.replace("§", "")))
+            getFormat(it).setColor(1, ChatColor.getByChar(CC.SEC.replace("§", "")))
         }
 
         enableUnstableAPI("help")

@@ -1,7 +1,6 @@
 package net.evilblock.cubed
 
-import net.evilblock.cubed.store.mongo.Mongo
-import net.evilblock.cubed.store.redis.Redis
+import com.solexgames.redis.JedisManager
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.util.BungeeConfigUtils
@@ -29,20 +28,15 @@ class Cubed : Plugin() {
         BungeeConfigUtils.saveDefaultConfig(this)
 
         loadConfig()
-        loadStore()
-    }
-
-    override fun onDisable() {
-
     }
 
     private fun loadConfig() {
         config = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(File(dataFolder, "config.yml"))
     }
 
-    private fun loadStore() {
+    public fun loadStore(jedisManager: JedisManager) {
         try {
-            uuidCache = RedisUUIDCache(redis)
+            uuidCache = RedisUUIDCache(jedisManager)
             uuidCache.load()
         } catch (e: Exception) {
             throw RuntimeException("Failed to load UUID cache", e)

@@ -55,6 +55,7 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection

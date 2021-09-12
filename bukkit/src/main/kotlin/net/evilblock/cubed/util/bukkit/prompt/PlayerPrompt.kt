@@ -8,6 +8,7 @@
 package net.evilblock.cubed.util.bukkit.prompt
 
 import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import org.bukkit.ChatColor
 import org.bukkit.conversations.ConversationContext
