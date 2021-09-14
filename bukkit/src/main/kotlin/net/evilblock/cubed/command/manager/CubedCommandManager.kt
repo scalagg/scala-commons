@@ -33,17 +33,19 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
     init {
         listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
             getFormat(it).setColor(3, ChatColor.GRAY)
-            getFormat(it).setColor(2, ChatColor.getByChar(CC.SEC.replace("§", "")))
-            getFormat(it).setColor(1, ChatColor.getByChar(CC.SEC.replace("§", "")))
+            getFormat(it).setColor(2, CC.SEC)
+            getFormat(it).setColor(1, CC.PRI)
         }
 
         enableUnstableAPI("help")
         commandContexts.registerContext(NpcEntity::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             val entity: Entity = try {
-                EntityHandler.getEntityById(c.firstArg.toInt())
+                EntityHandler.getEntityById(firstArg.toInt())
             } catch (e: Exception) {
                 try {
-                    EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
+                    EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
                 } catch (e: Exception) {
                     throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
                 }
@@ -58,19 +60,23 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
             return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
         }
         commandContexts.registerContext(Entity::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             return@registerContext try {
-                EntityHandler.getEntityByUuid(UUID.fromString(c.firstArg))
+                EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
             } catch (e: Exception) {
                 try {
-                    EntityHandler.getEntityById(c.firstArg.toInt())
+                    EntityHandler.getEntityById(firstArg.toInt())
                 } catch (e: Exception) {
                     throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No entity was found.")
         }
         commandContexts.registerContext(NpcTexture::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             return@registerContext if (CubedConfig.hasNpcTexture(c.firstArg)) {
-                CubedConfig.getNpcTexture(c.firstArg)
+                CubedConfig.getNpcTexture(firstArg)
             } else {
                 c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
 
@@ -88,8 +94,10 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
             return@registerAsyncCompletion CubedConfig.getNpcTextureIds().toList()
         }
         commandContexts.registerContext(MenuTemplate::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             return@registerContext try {
-                MenuTemplateHandler.findTemplate(c.firstArg)
+                MenuTemplateHandler.findTemplate(firstArg)
             } catch (ignored: Exception) {
                 throw ConditionFailedException("No menu template matching ${CC.YELLOW}${c.firstArg}${CC.RED} found.")
             }
@@ -104,23 +112,27 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
             return@registerAsyncCompletion completions
         }
         commandContexts.registerContext(Duration::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             return@registerContext try {
-                Duration.parse(c.firstArg)
+                Duration.parse(firstArg)
             } catch (ignored: Exception) {
                 throw ConditionFailedException("Invalid duration parsed. (Example: 1h30m)")
             }
         }
         commandContexts.registerContext(UUID::class.java) { c ->
+            val firstArg = c.popFirstArg()
+            
             if (c.firstArg.length == 32) {
-                return@registerContext UUIDUtil.formatUUID(c.firstArg)
+                return@registerContext UUIDUtil.formatUUID(firstArg)
                     ?: throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
             } else if (c.firstArg.length <= 16) {
-                return@registerContext Cubed.instance.uuidCache.uuid(c.firstArg)
+                return@registerContext Cubed.instance.uuidCache.uuid(firstArg)
                     ?: throw ConditionFailedException("Couldn't find uuid of player ${CC.YELLOW}${c.firstArg}${CC.RED}.")
             }
 
             return@registerContext try {
-                UUID.fromString(c.firstArg)
+                UUID.fromString(firstArg)
             } catch (ignored: Exception) {
                 throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
             }
