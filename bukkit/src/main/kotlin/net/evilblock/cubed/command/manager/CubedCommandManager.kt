@@ -28,27 +28,31 @@ import java.util.concurrent.CompletableFuture
  * @author puugz
  * @since 10/08/2021 20:38
  */
-class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
+class CubedCommandManager(
+    plugin: Plugin,
+    primary: ChatColor = ChatColor.GOLD,
+    secondary: ChatColor = ChatColor.YELLOW
+) : PaperCommandManager(plugin) {
 
     init {
         enableUnstableAPI("help")
 
         listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
             getFormat(it).setColor(3, ChatColor.GRAY)
-            getFormat(it).setColor(2, ChatColor.getByChar(CC.SEC[1]))
-            getFormat(it).setColor(1, ChatColor.getByChar(CC.PRI[1]))
+            getFormat(it).setColor(2, secondary)
+            getFormat(it).setColor(1, primary)
         }
 
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
+
             val entity: Entity = try {
                 EntityHandler.getEntityById(firstArg.toInt())
             } catch (e: Exception) {
                 try {
                     EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
                 } catch (e: Exception) {
-                    throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
+                    throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No NPC was found.")
 
@@ -62,32 +66,32 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
         }
         commandContexts.registerContext(Entity::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
+
             return@registerContext try {
                 EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
             } catch (e: Exception) {
                 try {
                     EntityHandler.getEntityById(firstArg.toInt())
                 } catch (e: Exception) {
-                    throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${c.firstArg} ${CC.RED}was found.")
+                    throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No entity was found.")
         }
         commandContexts.registerContext(NpcTexture::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
-            return@registerContext if (CubedConfig.hasNpcTexture(c.firstArg)) {
+
+            return@registerContext if (CubedConfig.hasNpcTexture(firstArg)) {
                 CubedConfig.getNpcTexture(firstArg)
             } else {
                 c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
 
                 val queryResponse =
-                    CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(c.firstArg) }.get()
+                    CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(firstArg) }.get()
 
                 if (queryResponse.isPresent) {
                     queryResponse.get()
                 } else {
-                    throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${c.firstArg}${CC.RED}.")
+                    throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${firstArg}${CC.RED}.")
                 }
             }
         }
@@ -96,11 +100,11 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
         }
         commandContexts.registerContext(MenuTemplate::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
+
             return@registerContext try {
                 MenuTemplateHandler.findTemplate(firstArg)
             } catch (ignored: Exception) {
-                throw ConditionFailedException("No menu template matching ${CC.YELLOW}${c.firstArg}${CC.RED} found.")
+                throw ConditionFailedException("No menu template matching ${CC.YELLOW}${firstArg}${CC.RED} found.")
             }
         }
         commandCompletions.registerAsyncCompletion("menutemplates") { c ->
@@ -114,7 +118,7 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
         }
         commandContexts.registerContext(Duration::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
+
             return@registerContext try {
                 Duration.parse(firstArg)
             } catch (ignored: Exception) {
@@ -123,19 +127,19 @@ class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
         }
         commandContexts.registerContext(UUID::class.java) { c ->
             val firstArg = c.popFirstArg()
-            
-            if (c.firstArg.length == 32) {
+
+            if (firstArg.length == 32) {
                 return@registerContext UUIDUtil.formatUUID(firstArg)
-                    ?: throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
-            } else if (c.firstArg.length <= 16) {
+                    ?: throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
+            } else if (firstArg.length <= 16) {
                 return@registerContext Cubed.instance.uuidCache.uuid(firstArg)
-                    ?: throw ConditionFailedException("Couldn't find uuid of player ${CC.YELLOW}${c.firstArg}${CC.RED}.")
+                    ?: throw ConditionFailedException("Couldn't find uuid of player ${CC.YELLOW}${firstArg}${CC.RED}.")
             }
 
             return@registerContext try {
                 UUID.fromString(firstArg)
             } catch (ignored: Exception) {
-                throw ConditionFailedException("${CC.YELLOW}${c.firstArg}${CC.RED} is not a valid uuid.")
+                throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
             }
         }
     }
