@@ -31,13 +31,14 @@ import java.util.concurrent.CompletableFuture
 class CubedCommandManager(plugin: Plugin) : PaperCommandManager(plugin) {
 
     init {
+        enableUnstableAPI("help")
+
         listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
             getFormat(it).setColor(3, ChatColor.GRAY)
-            getFormat(it).setColor(2, CC.SEC)
-            getFormat(it).setColor(1, CC.PRI)
+            getFormat(it).setColor(2, ChatColor.getByChar(CC.SEC[1]))
+            getFormat(it).setColor(1, ChatColor.getByChar(CC.PRI[1]))
         }
 
-        enableUnstableAPI("help")
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val firstArg = c.popFirstArg()
             
