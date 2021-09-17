@@ -1,10 +1,12 @@
 name: Cubed
-version: 1.1
-author: joeleoli
-description: Rapid plugin development
+version: 1.0.1
 main: net.evilblock.cubed.Cubed
 
+authors: [joeleoli, SolexGames]
+website: https://evilblock.net & https://solexgames.com
+
 load: STARTUP
+
 depend: [ProtocolLib]
 softdepend: [ViaVersion]
 loadbefore: [Lemon]
