@@ -7,6 +7,10 @@ import org.apache.tools.ant.filters.ReplaceTokens
  * explicit permission from original author: Joel Evans
  */
 
+buildscript {
+    ext.kotlin_version = '1.5.21'
+}
+
 plugins {
     id 'idea'
     id 'java'
@@ -25,12 +29,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
 
     implementation project(':serializers')
     implementation project(':banana')
 
-    implementation 'redis.clients:jedis:3.5.1'
+    implementation 'redis.clients:jedis:3.6.3'
     compileOnly 'com.google.code.gson:gson:2.8.8'
     implementation 'org.mongodb:mongodb-driver:3.12.10'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
