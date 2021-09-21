@@ -30,7 +30,7 @@ object ButtonListeners : Listener {
 
             // check if dragging in both the menu and their own inventory
             // by comparing max used slot to max slots
-            if (event.newItems.maxBy { it.key }!!.key >= event.view.topInventory.size) {
+            if (event.newItems.maxByOrNull { it.key }!!.key >= event.view.topInventory.size) {
                 event.isCancelled = true
                 return
             }

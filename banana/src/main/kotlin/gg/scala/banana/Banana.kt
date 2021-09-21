@@ -64,8 +64,8 @@ data class Banana(
 
     fun useResource(lambda: (Jedis) -> Unit) {
         jedisPool?.resource?.use { jedis ->
-            credentials.password?.let {
-                jedis.auth(it)
+            if (credentials.authenticate) {
+                jedis.auth(credentials.password)
             }
 
             lambda.invoke(jedis)

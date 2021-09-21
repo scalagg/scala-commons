@@ -29,6 +29,7 @@ repositories {
 dependencies {
     implementation project(':serializers')
     implementation project(':store')
+    implementation project(':banana')
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21'
     implementation 'org.apache.commons:commons-lang3:3.12.0'

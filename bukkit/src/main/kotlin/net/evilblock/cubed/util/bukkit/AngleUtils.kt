@@ -65,7 +65,7 @@ object AngleUtils {
      */
     @JvmStatic
     fun yawToBytes(yaw: Float): Byte {
-        return (yaw.toDouble() * 256.0F / 360.0F).toByte()
+        return (yaw.toDouble() * 256.0F / 360.0F).toInt().toByte()
     }
 
     @JvmStatic

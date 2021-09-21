@@ -56,7 +56,7 @@ class TemplateMenu<T>(
     }
 
     override fun size(buttons: Map<Int, Button>): Int {
-        val maxSlot = template.boundButtons.maxBy { it.key }?.key ?: return 9
+        val maxSlot = template.boundButtons.maxByOrNull { it.key }?.key ?: return 9
 
         var rows = maxSlot / 9
         if (maxSlot / 9 > 0) {

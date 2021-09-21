@@ -7,5 +7,6 @@ package gg.scala.banana.credentials
 class BananaCredentials {
     val address = "localhost"
     val port = 6379
-    val password: String? = null
+    val authenticate = false
+    val password: String = ""
 }
