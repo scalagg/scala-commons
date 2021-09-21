@@ -1,22 +1,26 @@
 package net.evilblock.cubed.store.uuidcache.listener
 
-import com.solexgames.redis.annotation.Subscription
-import com.solexgames.redis.handler.JedisHandler
-import com.solexgames.redis.json.JsonAppender
+import gg.scala.banana.annotate.Subscribe
+import gg.scala.banana.message.Message
+import gg.scala.banana.subscribe.marker.BananaHandler
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import java.util.*
 
 /**
  * Default message listener implementations for syncing UUID cache across multiple cache instances.
  */
-class UUIDUpdateHandler(private val uuidCache: UUIDCache) : JedisHandler {
+class UUIDUpdateHandler(
+    private val uuidCache: UUIDCache
+) : BananaHandler {
 
-    @Subscription(action = "UUIDUpdate")
-    fun onUUIDUpdate(data: JsonAppender) {
-        val uuid = UUID.fromString(data.getParam("uuid"))
-        val name = data.getParam("Name")
+    @Subscribe("UUIDUpdate")
+    fun onUUIDUpdate(data: Message) {
+        val uuid = UUID.fromString(data["uuid"])
+        val name = data["Name"]
 
-        uuidCache.update(uuid, name, commit = false)
+        if (name != null) {
+            uuidCache.update(uuid, name, commit = false)
+        }
     }
 
 }

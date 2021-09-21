@@ -16,10 +16,10 @@ import java.util.logging.Logger
 
 abstract class UUIDCache {
 
-    internal var uuidToUsername = ConcurrentHashMap<UUID, String>()
-    internal var usernameToUuid = ConcurrentHashMap<String, UUID>()
+    private var uuidToUsername = ConcurrentHashMap<UUID, String>()
+    private var usernameToUuid = ConcurrentHashMap<String, UUID>()
 
-    var alwaysFetch: Boolean = false
+    private var alwaysFetch: Boolean = false
 
     fun load() {
         val newUuidToName = ConcurrentHashMap<UUID, String>()
@@ -133,7 +133,7 @@ abstract class UUIDCache {
 
                     val name = names
                         .filter { it.has("changedToAt") }
-                        .maxBy { it.get("changedToAt").asLong }!!.get("name").asString
+                        .maxByOrNull { it.get("changedToAt").asLong }!!.get("name").asString
 
                     return Optional.of(Pair(uuid, name))
                 }

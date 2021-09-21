@@ -1,0 +1,48 @@
+plugins {
+    id 'maven-publish'
+    id "org.jetbrains.kotlin.jvm" version "1.5.30"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+group 'gg.scala'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        url = "https://jitpack.io"
+    }
+}
+
+task prepareKotlinBuildScriptModel {
+
+}
+
+task wrapper(type: Wrapper){
+    gradleVersion = '7.2'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.30"
+
+    implementation 'redis.clients:jedis:3.7.0'
+    implementation 'com.google.code.gson:gson:2.8.8'
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+}
+
+shadowJar {
+    archiveClassifier.set("")
+
+    archiveFileName = "banana-lib.jar"
+}
+
+tasks.build.dependsOn(shadowJar)

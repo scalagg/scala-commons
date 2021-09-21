@@ -2,8 +2,8 @@ name: Cubed
 version: 1.0.1
 main: net.evilblock.cubed.Cubed
 
-authors: [joeleoli, SolexGames]
-website: https://evilblock.net & https://solexgames.com
+authors: [joeleoli, Scala]
+website: https://www.evilblock.com, https://www.scala.gg
 
 load: STARTUP
 

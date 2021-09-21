@@ -10,4 +10,5 @@ include 'store'
 include 'bukkit'
 include 'proxy'
 include 'serializers'
+include 'banana'
 

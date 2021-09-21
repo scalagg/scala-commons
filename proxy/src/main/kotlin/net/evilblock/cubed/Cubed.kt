@@ -1,6 +1,6 @@
 package net.evilblock.cubed
 
-import com.solexgames.redis.JedisManager
+import gg.scala.banana.Banana
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.util.BungeeConfigUtils
@@ -34,9 +34,9 @@ class Cubed : Plugin() {
         config = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(File(dataFolder, "config.yml"))
     }
 
-    public fun loadStore(jedisManager: JedisManager) {
+    fun loadStore(banana: Banana) {
         try {
-            uuidCache = RedisUUIDCache(jedisManager)
+            uuidCache = RedisUUIDCache(banana)
             uuidCache.load()
         } catch (e: Exception) {
             throw RuntimeException("Failed to load UUID cache", e)

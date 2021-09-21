@@ -7,21 +7,22 @@
 
 package net.evilblock.cubed.store.uuidcache.impl
 
-import com.solexgames.redis.JedisManager
+import gg.scala.banana.Banana
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 
-class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
+class RedisUUIDCache(
+    private val banana: Banana
+) : UUIDCache() {
 
     companion object {
-        private const val KEY = "Cubed:UUIDCache"
+        private const val KEY = "cubed:uuid_cache"
     }
 
     override fun fetchCache(): Map<UUID, String> {
         val cache = hashMapOf<UUID, String>()
 
-        redis.runCommand { jedis ->
+        banana.useResource { jedis ->
             run {
                 jedis.hgetAll(KEY).forEach { (key, value) ->
                     try {
@@ -36,37 +37,33 @@ class RedisUUIDCache(private val redis: JedisManager) : UUIDCache() {
     }
 
     override fun fetchUsername(uuid: UUID): String? {
-        val reference = AtomicReference<String>()
+        var reference: String? = null
 
-        redis.runCommand { jedis ->
-            run {
-                try {
-                    reference.set(jedis.hget(KEY, uuid.toString()))
-                } catch (ignored: Exception) {
-                }
+        banana.useResource { jedis ->
+            try {
+                reference = jedis.hget(KEY, uuid.toString())
+            } catch (ignored: Exception) {
             }
         }
 
-        return reference.get()
+        return reference
     }
 
     override fun fetchUUID(username: String): UUID? {
-        val reference = AtomicReference<UUID>()
+        var reference: UUID? = null
 
-        redis.runCommand { jedis ->
-            run {
-                try {
-                    reference.set(UUID.fromString(jedis.hget(KEY, reference.toString())))
-                } catch (ignored: Exception) {
-                }
+        banana.useResource { jedis ->
+            try {
+                reference = UUID.fromString(jedis.hget(KEY, reference.toString()))
+            } catch (ignored: Exception) {
             }
         }
 
-        return reference.get()
+        return reference
     }
 
     override fun updateCache(uuid: UUID, name: String) {
-        redis.runCommand { redis ->
+        banana.useResource { redis ->
             redis.hset(KEY, uuid.toString(), name)
             redis.hset(KEY, name.toLowerCase(), uuid.toString())
         }
