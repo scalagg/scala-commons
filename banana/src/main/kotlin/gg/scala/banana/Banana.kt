@@ -2,12 +2,15 @@ package gg.scala.banana
 
 import gg.scala.banana.annotate.Subscribe
 import gg.scala.banana.credentials.BananaCredentials
+import gg.scala.banana.helper.BananaHelper
 import gg.scala.banana.options.BananaOptions
 import gg.scala.banana.subscribe.BananaSubscription
 import gg.scala.banana.subscribe.BananaSubscriptionData
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 
 /**
  * Handles everything banana-related
@@ -19,35 +22,59 @@ data class Banana(
     private val credentials: BananaCredentials,
     val options: BananaOptions,
 ) {
-    private var jedisPool: JedisPool? = null
-    private val pubSub = BananaSubscription(this)
+    companion object {
+        @JvmStatic
+        val bananas = mutableListOf<Banana>()
+    }
+
+    private val subscribeJedisPool: JedisPool = JedisPool(
+        credentials.address,
+        credentials.port
+    )
+    private var publishJedisPool: JedisPool =  JedisPool(
+        credentials.address,
+        credentials.port
+    )
+
+    private lateinit var pubSub: JedisPubSub
 
     private var shutdownHookAdded = false
 
     val subscriptions = mutableMapOf<String, MutableList<BananaSubscriptionData>>()
 
+    init {
+        bananas.add(this)
+    }
+
     fun subscribe() {
-        jedisPool = JedisPool(
-            credentials.address,
-            credentials.port
-        )
-
-        Thread(
-            {
-                useResource {
-                    it.subscribe(pubSub, options.channel)
-
-                    println("[Banana] Now reading on jedis channel \"${options.channel}\".")
+        CompletableFuture.runAsync {
+            useResource({
+                try {
+                    it.subscribe(
+                        BananaSubscription(this),
+                        options.channel
+                    )
+                } finally {
+                    it.connect()
                 }
-            },
-            "Banana Subscription Thread"
-        ).start()
+            }, subscribeJedisPool)
+        }
+
+        BananaHelper.handle({
+            useResource {
+                it.connect()
+            }
+        }, this)
 
         if (!shutdownHookAdded) {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
-                    if (jedisPool != null && !jedisPool!!.isClosed) {
-                        jedisPool?.close()
+                    if (!publishJedisPool.isClosed) {
+                        publishJedisPool.close()
+                    }
+
+                    if (!subscribeJedisPool.isClosed) {
+                        subscribeJedisPool.close()
                     }
 
                     if (pubSub.isSubscribed) {
@@ -63,12 +90,29 @@ data class Banana(
     }
 
     fun useResource(lambda: (Jedis) -> Unit) {
-        jedisPool?.resource?.use { jedis ->
-            if (credentials.authenticate) {
-                jedis.auth(credentials.password)
-            }
+        useResource(lambda, publishJedisPool)
+    }
 
-            lambda.invoke(jedis)
+    fun useResource(
+        lambda: (Jedis) -> Unit,
+        jedisPool: JedisPool?
+    ) {
+        try {
+            val resource = jedisPool?.resource
+
+            if (resource != null) {
+                if (credentials.authenticate) {
+                    resource.auth(credentials.password)
+                }
+
+                lambda.invoke(resource)
+            } else {
+                throw RuntimeException("Jedis pool provided was null")
+            }
+        } catch (e: Exception) {
+            options.exceptionHandler.onOutgoingPacket(
+                "CMD", e
+            )
         }
     }
 
@@ -98,6 +142,10 @@ data class Banana(
         subscriptions.putIfAbsent(subscribe.value, mutableListOf())
 
         val packetSubscriptions = subscriptions[subscribe.value]
+
+        if (options.debug) {
+            println("Registered ${subscribe.value}")
+        }
 
         packetSubscriptions!!.add(
             BananaSubscriptionData(

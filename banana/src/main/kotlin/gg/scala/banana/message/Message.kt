@@ -1,5 +1,6 @@
 package gg.scala.banana.message
 
+import gg.scala.banana.Banana
 import gg.scala.banana.helper.BananaHelper
 
 /**
@@ -19,20 +20,17 @@ class Message(
         keyValueStore[key] = value
     }
 
-    fun convert(key: String, any: Any) {
-        keyValueStore[key] = BananaHelper.banana.options.gson.toJson(any)
-    }
-
     fun dispatch() {
-        this.dispatch(BananaHelper.banana.options.channel)
+        this.dispatch(Banana.bananas[Banana.bananas.size - 1].options.channel)
     }
 
     fun dispatch(channel: String) {
-        BananaHelper.banana.useResource {
-            it.publish(
-                channel, BananaHelper.banana.options.gson.toJson(this)
-            )
-            it.close()
+        Banana.bananas[Banana.bananas.size - 1].useResource {
+            it.use { jedis ->
+                jedis.publish(
+                    channel, Banana.bananas[Banana.bananas.size - 1].options.gson.toJson(this)
+                )
+            }
         }
     }
 }

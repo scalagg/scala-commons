@@ -8,10 +8,8 @@ import gg.scala.banana.Banana
  */
 object BananaHelper {
 
-    lateinit var banana: Banana
-
     @JvmStatic
-    fun handle(lambda: () -> Unit) {
+    fun handle(lambda: () -> Unit, banana: Banana) {
         if (banana.options.async) {
             banana.options.executor.execute(lambda)
         } else {

@@ -19,6 +19,9 @@ data class BananaOptions(
     val channel: String,
 
     val async: Boolean = true,
+    val debug: Boolean = false,
+    val ignoreNonExistentHandlers: Boolean = true,
+
     val gson: Gson = GsonBuilder()
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .create(),

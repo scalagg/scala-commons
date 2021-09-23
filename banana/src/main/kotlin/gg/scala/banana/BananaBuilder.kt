@@ -27,7 +27,6 @@ class BananaBuilder {
         val banana = Banana(
             credentials, options
         )
-        BananaHelper.banana = banana
 
         return banana
     }

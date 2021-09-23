@@ -24,6 +24,7 @@ object BananaTestEnvironment {
             .options(
                 BananaOptions(
                     channel = "haha",
+                    debug = true,
                     async = true
                 )
             )
