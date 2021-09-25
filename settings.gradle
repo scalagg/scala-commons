@@ -11,4 +11,5 @@ include 'bukkit'
 include 'proxy'
 include 'serializers'
 include 'banana'
+include 'lingonberry'
 

@@ -24,12 +24,12 @@ object MinecraftReflection {
     private var SERVER_VERSION: Int = -1
 
     private val GAME_PROFILE_CLASS: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.GameProfile")
-    private val GAME_PROFILE_CLASS_LEGACY: Class<*>? = Reflection.getClassSuppressed("net.minecraft.util.com.mojang.authlib.GameProfile")
+    private val GAME_PROFILE_CLASS_LEGACY: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.GameProfile")
 
-    private val PROPERTY_MAP_CLASS: Class<*>? = Reflection.getClassSuppressed("net.minecraft.util.com.mojang.authlib.properties.PropertyMap")
+    private val PROPERTY_MAP_CLASS: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.properties.PropertyMap")
     private val PROPERTY_MAP_CLASS_LEGACY: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.properties.PropertyMap")
 
-    private val PROPERTY_CLASS: Class<*>? = Reflection.getClassSuppressed("net.minecraft.util.com.mojang.authlib.properties.Property")
+    private val PROPERTY_CLASS: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.properties.Property")
     private val PROPERTY_CLASS_LEGACY: Class<*>? = Reflection.getClassSuppressed("com.mojang.authlib.properties.Property")
     private val PROPERTY_VALUE_FIELD: Field = Reflection.getDeclaredField((PROPERTY_CLASS ?: PROPERTY_CLASS_LEGACY)!!, "value")!!
     private val PROPERTY_SIGNATURE_FIELD: Field = Reflection.getDeclaredField((PROPERTY_CLASS ?: PROPERTY_CLASS_LEGACY)!!, "signature")!!

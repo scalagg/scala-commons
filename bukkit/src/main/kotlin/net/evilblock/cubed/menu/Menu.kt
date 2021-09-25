@@ -231,7 +231,7 @@ abstract class Menu {
 
         private val OPEN_CUSTOM_INVENTORY_METHOD_LEGACY: Method? = Reflection.getDeclaredMethod(
             MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openCustomInventory",
+            "openInventory",
             Inventory::class.java,
             MinecraftReflection.getNMSClass("EntityPlayer")!!,
             Integer.TYPE
@@ -239,7 +239,7 @@ abstract class Menu {
 
         private val OPEN_CUSTOM_INVENTORY_METHOD: Method? = Reflection.getDeclaredMethod(
             MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openCustomInventory",
+            "openInventory",
             Inventory::class.java,
             MinecraftReflection.getNMSClass("EntityPlayer")!!,
             String::class.java

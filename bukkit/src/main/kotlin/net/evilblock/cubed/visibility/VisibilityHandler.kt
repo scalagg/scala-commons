@@ -1,5 +1,6 @@
 package net.evilblock.cubed.visibility
 
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -19,12 +20,14 @@ object VisibilityHandler {
     }
 
     fun update(player: Player) {
-        if (adapters.isEmpty() && overrideHandlers.isEmpty()) {
-            return
-        }
+//        if (adapters.isEmpty() && overrideHandlers.isEmpty()) {
+//            return
+//        }
 
-        updateAllTo(player)
-        updateToAll(player)
+        Tasks.async {
+            updateAllTo(player)
+            updateToAll(player)
+        }
     }
 
     fun updateAllTo(viewer: Player) {
