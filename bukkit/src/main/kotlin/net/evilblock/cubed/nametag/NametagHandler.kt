@@ -4,6 +4,7 @@ import com.google.common.primitives.Ints
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
@@ -20,7 +21,8 @@ object NametagHandler {
 
     private var isNametagRestrictionEnabled: Boolean = false
     private var nametagRestrictBypass: String = ""
-    private var async: Boolean = true
+
+    var async: Boolean = false
 
     var updateInterval: Int = 2
 
@@ -40,7 +42,8 @@ object NametagHandler {
 
     fun registerProvider(newProvider: NametagProvider) {
         providers.add(newProvider)
-        providers.sortWith(Comparator { a, b -> Ints.compare(b.weight, a.weight) })
+
+        providers.sortWith { a, b -> Ints.compare(b.weight, a.weight) }
     }
 
     fun reloadPlayer(toRefresh: Player) {
@@ -49,7 +52,9 @@ object NametagHandler {
         if (async) {
             NametagThread.pendingUpdates[update] = true
         } else {
-            applyUpdate(update)
+            Tasks.sync {
+                applyUpdate(update)
+            }
         }
     }
 

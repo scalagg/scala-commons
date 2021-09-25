@@ -67,7 +67,7 @@ class Scoreboard(private val player: Player) {
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride(this.player)
 
-        var title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
+        var title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override!!.getTitle(player) else ScoreboardHandler.scoreboardProvider.getTitle(player))
 
         val lines = localList.get()
         if (!lines.isEmpty()) {
@@ -86,7 +86,7 @@ class Scoreboard(private val player: Player) {
             }
         } else {
             if (shouldOverride) {
-                override.getLines(this.localList.get(), this.player)
+                override!!.getLines(this.localList.get(), this.player)
             } else {
                 ScoreboardHandler.scoreboardProvider.getLines(this.localList.get(), this.player)
             }
