@@ -92,7 +92,6 @@ abstract class UUIDCache {
 
     companion object {
         private val client = OkHttpClient()
-        private val parser = JsonParser()
 
         /**
          * Fetches a UUID and Username pair from the Mojang API.
@@ -105,7 +104,7 @@ abstract class UUIDCache {
 
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    val json = parser.parse(response.body().string()).asJsonObject
+                    val json = JsonParser.parseString(response.body().string()).asJsonObject
 
                     val uuid = UUID.fromString(json.get("id").asString.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(), "$1-$2-$3-$4-$5"))
                     val name = json.get("name").asString
@@ -126,7 +125,7 @@ abstract class UUIDCache {
 
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
-                    val names = parser.parse(response.body().string()).asJsonArray.map { it.asJsonObject }
+                    val names = JsonParser.parseString(response.body().string()).asJsonArray.map { it.asJsonObject }
                     if (names.size == 1) {
                         return Optional.of(uuid to names.first().get("name").asString)
                     }

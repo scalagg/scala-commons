@@ -145,11 +145,7 @@ abstract class Menu {
         val entityPlayer = MinecraftReflection.getHandle(player)
 
         if (Bukkit.isPrimaryThread()) {
-            if (OPEN_CUSTOM_INVENTORY_METHOD_LEGACY != null) {
-                OPEN_CUSTOM_INVENTORY_METHOD_LEGACY.invoke(player, inv, entityPlayer, 0)
-            } else {
-                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
-            }
+            OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
 
             update(player)
 
@@ -158,11 +154,7 @@ abstract class Menu {
             }
         } else {
             Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, {
-                if (OPEN_CUSTOM_INVENTORY_METHOD_LEGACY != null) {
-                    OPEN_CUSTOM_INVENTORY_METHOD_LEGACY.invoke(player, inv, entityPlayer, 0)
-                } else {
-                    OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
-                }
+                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
 
                 update(player)
 
@@ -229,17 +221,9 @@ abstract class Menu {
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
-        private val OPEN_CUSTOM_INVENTORY_METHOD_LEGACY: Method? = Reflection.getDeclaredMethod(
-            MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openInventory",
-            Inventory::class.java,
-            MinecraftReflection.getNMSClass("EntityPlayer")!!,
-            Integer.TYPE
-        )
-
         private val OPEN_CUSTOM_INVENTORY_METHOD: Method? = Reflection.getDeclaredMethod(
             MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openInventory",
+            "openCustomInventory",
             Inventory::class.java,
             MinecraftReflection.getNMSClass("EntityPlayer")!!,
             String::class.java

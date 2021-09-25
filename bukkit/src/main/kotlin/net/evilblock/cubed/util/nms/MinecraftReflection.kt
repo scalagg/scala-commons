@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.util.nms
 
+import com.comphenix.protocol.wrappers.EnumWrappers
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.wrapper.Vector3FWrapper
 import org.bukkit.Bukkit
@@ -41,7 +42,7 @@ object MinecraftReflection {
     private val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
     private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field = Reflection.getDeclaredField(MINECRAFT_SERVER_CLASS, "worlds")!!
 
-    private val ENUM_ITEM_SLOT_CLASS: Class<*>? = getNMSClass("EnumItemSlot")
+    private val ENUM_ITEM_SLOT_CLASS: Class<*> = EnumWrappers.ItemSlot::class.java
     @JvmStatic val ENUM_ITEM_SLOT_HEAD: Any? = getEnumItemSlot("HEAD")
     @JvmStatic val ENUM_ITEM_SLOT_CHEST: Any? = getEnumItemSlot("CHEST")
     @JvmStatic val ENUM_ITEM_SLOT_LEGS: Any? = getEnumItemSlot("LEGS")
