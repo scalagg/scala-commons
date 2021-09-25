@@ -31,21 +31,25 @@ object VisibilityHandler {
     }
 
     fun updateAllTo(viewer: Player) {
-        for (target in Bukkit.getOnlinePlayers()) {
-            if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target)
-            } else {
-                viewer.showPlayer(target)
+        Tasks.sync {
+            for (target in Bukkit.getOnlinePlayers()) {
+                if (!shouldSee(target, viewer)) {
+                    viewer.hidePlayer(target)
+                } else {
+                    viewer.showPlayer(target)
+                }
             }
         }
     }
 
     fun updateToAll(target: Player) {
-        for (viewer in Bukkit.getOnlinePlayers()) {
-            if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target)
-            } else {
-                viewer.showPlayer(target)
+        Tasks.sync {
+            for (viewer in Bukkit.getOnlinePlayers()) {
+                if (!shouldSee(target, viewer)) {
+                    viewer.hidePlayer(target)
+                } else {
+                    viewer.showPlayer(target)
+                }
             }
         }
     }
