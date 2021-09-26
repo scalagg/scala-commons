@@ -101,9 +101,7 @@ object NametagHandler {
         var provided: NametagInfo? = null
         var providerIndex = 0
 
-        Bukkit.getPluginManager().callEvent(
-            NametagUpdateEvent(toRefresh)
-        )
+        NametagUpdateEvent(toRefresh).call()
 
         while (provided == null) {
             provided = providers[providerIndex++].fetchNametag(toRefresh, refreshFor)
