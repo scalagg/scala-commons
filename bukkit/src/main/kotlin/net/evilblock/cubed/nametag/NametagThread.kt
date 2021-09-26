@@ -28,7 +28,6 @@ internal class NametagThread : Thread("Cubed - Nametag Thread") {
             } catch (e2: InterruptedException) {
                 e2.printStackTrace()
             }
-
         }
     }
 

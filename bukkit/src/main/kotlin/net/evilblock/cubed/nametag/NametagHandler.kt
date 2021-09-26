@@ -3,6 +3,7 @@ package net.evilblock.cubed.nametag
 import com.google.common.primitives.Ints
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.nametag.update.NametagUpdate
+import net.evilblock.cubed.nametag.update.NametagUpdateEvent
 import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
@@ -92,13 +93,17 @@ object NametagHandler {
         }
     }
 
-    internal fun reloadPlayerInternal(toRefresh: Player, refreshFor: Player) {
+    private fun reloadPlayerInternal(toRefresh: Player, refreshFor: Player) {
         if (!refreshFor.hasMetadata("Nametag-Applied")) {
             return
         }
 
         var provided: NametagInfo? = null
         var providerIndex = 0
+
+        Bukkit.getPluginManager().callEvent(
+            NametagUpdateEvent(toRefresh)
+        )
 
         while (provided == null) {
             provided = providers[providerIndex++].fetchNametag(toRefresh, refreshFor)
