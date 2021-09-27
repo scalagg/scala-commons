@@ -2,6 +2,7 @@ package net.evilblock.cubed.nametag.update
 
 import net.evilblock.cubed.plugin.PluginEvent
 import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
 
 /**
  * @author GrowlyX
@@ -9,4 +10,14 @@ import org.bukkit.entity.Player
  */
 class NametagUpdateEvent(
     val player: Player
-) : PluginEvent()
+) : PluginEvent() {
+
+    companion object {
+        @JvmStatic
+        val HANDLERS = HandlerList()
+    }
+
+    override fun getHandlers(): HandlerList {
+        return HANDLERS
+    }
+}
