@@ -14,15 +14,15 @@ abstract class ScoreboardAdapter {
 
     abstract fun getLines(board: LinkedList<String>, player: Player)
 
-    fun getInterval(): Long {
+    open fun getInterval(): Long {
         return 3L
     }
 
-    fun onScoreboardCreate(player: Player, scoreboard: Scoreboard) {
+    open fun onScoreboardCreate(player: Player, scoreboard: Scoreboard) {
 
     }
 
-    fun preRun(player: Player, scoreboard: Scoreboard) {
+    open fun preRun(player: Player, scoreboard: Scoreboard) {
 
     }
 }
