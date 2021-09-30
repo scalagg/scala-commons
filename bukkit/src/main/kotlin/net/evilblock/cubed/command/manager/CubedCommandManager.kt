@@ -3,18 +3,15 @@ package net.evilblock.cubed.command.manager
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
-import com.sun.org.apache.xml.internal.serialize.HTMLdtd.fromChar
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.CubedConfig
-import net.evilblock.cubed.command.*
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
-import net.evilblock.cubed.entity.hologram.command.HologramCommand
 import net.evilblock.cubed.entity.npc.NpcEntity
-import net.evilblock.cubed.entity.npc.command.NpcCommand
 import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
+import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
@@ -132,8 +129,9 @@ class CubedCommandManager(
                 return@registerContext UUIDUtil.formatUUID(firstArg)
                     ?: throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
             } else if (firstArg.length <= 16) {
-                return@registerContext Cubed.instance.uuidCache.uuid(firstArg)
-                    ?: throw ConditionFailedException("Couldn't find uuid of player ${CC.YELLOW}${firstArg}${CC.RED}.")
+                return@registerContext Cubed.instance.uuidCache.uuid(firstArg) ?: UUIDCache.fetchFromMojang(firstArg)
+                    .orElse(null)?.first
+                ?: throw ConditionFailedException("No player with the username ${CC.YELLOW}${firstArg}${CC.RED} exists.")
             }
 
             return@registerContext try {
