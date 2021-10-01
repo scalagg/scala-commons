@@ -22,23 +22,16 @@ class BananaSubscription(
             return
         }
 
-        if (banana.options.debug) {
-            println("Received message (#1)")
-        }
-
         BananaHelper.handle(
             {
                 try {
                     val message = banana.options.gson.fromJson(serialized, Message::class.java)
                         ?: throw RuntimeException("Incoming message was null")
-                    val handlers = banana.subscriptions[message.packet] ?: if (!banana.options.ignoreNonExistentHandlers) return@handle else throw RuntimeException("No handler found.")
+                    val handlers = banana.subscriptions[message.packet] ?: if (banana.options.ignoreNonExistentHandlers) return@handle else throw RuntimeException("No handler found.")
 
-                    handlers.sortedByDescending { it.subscribe.priority }
+                    handlers
+                        .sortedByDescending { it.subscribe.priority }
                         .forEach {
-                            if (banana.options.debug) {
-                                println("Handling message ${it.subscribe.value}")
-                            }
-
                             it.method.invoke(it.clazz, message)
                         }
                 } catch (exception: Exception) {

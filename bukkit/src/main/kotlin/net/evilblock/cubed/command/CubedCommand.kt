@@ -131,7 +131,7 @@ object CubedCommand : BaseCommand() {
 
     @Subcommand("scoreboard-preview")
     @Description("Toggle preview mode")
-    fun onScoreboardPreview(player: Player, @Name("global") @Optional global: Boolean) {
+    fun onScoreboardPreview(player: Player, @Name("global") @Optional global: Boolean?) {
         if (global != null && global) {
             ScoreboardPreviewHandler.previewGlobal = !ScoreboardPreviewHandler.previewGlobal
             return

@@ -11,7 +11,6 @@ import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
-import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
@@ -122,6 +121,7 @@ class CubedCommandManager(
                 throw ConditionFailedException("Invalid duration parsed. (Example: 1h30m)")
             }
         }
+
         commandContexts.registerContext(UUID::class.java) { c ->
             val firstArg = c.popFirstArg()
 
@@ -129,8 +129,9 @@ class CubedCommandManager(
                 return@registerContext UUIDUtil.formatUUID(firstArg)
                     ?: throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
             } else if (firstArg.length <= 16) {
-                return@registerContext Cubed.instance.uuidCache.uuid(firstArg) ?: UUIDCache.fetchFromMojang(firstArg)
-                    .orElse(null)?.first
+                return@registerContext Cubed.instance.uuidCache.uuid(firstArg) ?: Cubed.instance.uuidCache.fetchUUID(
+                    firstArg
+                )
                 ?: throw ConditionFailedException("No player with the username ${CC.YELLOW}${firstArg}${CC.RED} exists.")
             }
 
