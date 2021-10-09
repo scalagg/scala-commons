@@ -43,10 +43,16 @@ abstract class UUIDCache {
             val fromLocal = usernameToUuid[username.toLowerCase()]
 
             if (fromLocal == null) {
-                val fromMojang = fetchFromMojang(username).get()
-                update(fromMojang.first, fromMojang.second)
+                val fromCache = fetchUUID(username)
 
-                fromMojang.first
+                if (fromCache == null) {
+                    val fromMojang = fetchFromMojang(username).get()
+                    update(fromMojang.first, fromMojang.second)
+
+                    fromMojang.first
+                } else {
+                    fromCache
+                }
             } else {
                 fromLocal
             }
@@ -63,10 +69,16 @@ abstract class UUIDCache {
             val fromLocal = uuidToUsername[uuid]
 
             if (fromLocal == null) {
-                val fromMojang = fetchFromMojang(uuid).get()
-                update(fromMojang.first, fromMojang.second)
+                val fromCache = fetchUsername(uuid)
 
-                fromMojang.second
+                if (fromCache == null) {
+                    val fromMojang = fetchFromMojang(uuid).get()
+                    update(fromMojang.first, fromMojang.second)
+
+                    fromMojang.second
+                } else {
+                    fromCache
+                }
             } else {
                 fromLocal
             }
