@@ -63,6 +63,9 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
 
                 if (page != 1) {
                     fancyMessage
+                        .andHoverOf(
+                            "${CC.GREEN}Click to view page ${CC.YELLOW}${page - 1}${CC.GREEN}."
+                        )
                         .andCommandOf(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(command, page - 1)
@@ -78,6 +81,9 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
 
                 if (page != maxPages) {
                     fancyMessage
+                        .andHoverOf(
+                            "${CC.GREEN}Click to view page ${CC.YELLOW}${page + 1}${CC.GREEN}."
+                        )
                         .andCommandOf(
                             ClickEvent.Action.RUN_COMMAND,
                             String.format(command, page + 1)
