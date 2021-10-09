@@ -1,6 +1,7 @@
 package net.evilblock.cubed.command.manager
 
 import co.aikar.commands.ConditionFailedException
+import co.aikar.commands.ExceptionHandler
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
 import net.evilblock.cubed.Cubed
@@ -38,6 +39,13 @@ class CubedCommandManager(
             getFormat(it).setColor(2, secondary)
             getFormat(it).setColor(1, primary)
         }
+
+//        defaultExceptionHandler = ExceptionHandler { command, registeredCommand, sender, args, t ->
+//            sender.sendMessage("${CC.RED}Something went wrong while trying to issue ${CC.YELLOW}/${command.name}${CC.RED}.")
+//            sender.sendMessage("${CC.RED}${t.message}.")
+//
+//            return@ExceptionHandler true
+//        }
 
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val firstArg = c.popFirstArg()
