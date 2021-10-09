@@ -1,4 +1,5 @@
 debug: false
+timezone: EST
 
 backups: true
 

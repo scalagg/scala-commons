@@ -92,6 +92,12 @@ class Cubed : JavaPlugin() {
             saveDefaultConfig()
             runSetupCheck()
 
+            TimeZone.setDefault(
+                TimeZone.getTimeZone(
+                    config.getString("timezone", "EST")
+                )
+            )
+
             Serializers.useGsonBuilderThenRebuild { builder ->
                 builder.registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
                     .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
