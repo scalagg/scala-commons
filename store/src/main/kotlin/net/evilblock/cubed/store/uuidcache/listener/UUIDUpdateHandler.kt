@@ -13,10 +13,10 @@ class UUIDUpdateHandler(
     private val uuidCache: UUIDCache
 ) : BananaHandler {
 
-    @Subscribe("UUIDUpdate")
+    @Subscribe("uuid_update")
     fun onUUIDUpdate(data: Message) {
         val uuid = UUID.fromString(data["uuid"])
-        val name = data["Name"]
+        val name = data["username"]
 
         if (name != null) {
             uuidCache.update(uuid, name, commit = false)

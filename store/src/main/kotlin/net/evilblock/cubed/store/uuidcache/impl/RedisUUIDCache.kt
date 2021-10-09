@@ -8,12 +8,22 @@
 package net.evilblock.cubed.store.uuidcache.impl
 
 import gg.scala.banana.Banana
+import gg.scala.banana.message.Message
+import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.store.uuidcache.UUIDCache
+import net.evilblock.cubed.store.uuidcache.listener.UUIDUpdateHandler
 import java.util.*
 
 class RedisUUIDCache(
     private val banana: Banana
 ) : UUIDCache() {
+
+    init {
+        banana.registerClass(
+            UUIDUpdateHandler(this)
+        )
+        banana.subscribe()
+    }
 
     companion object {
         private const val KEY = "cubed:uuid_cache"
@@ -66,6 +76,16 @@ class RedisUUIDCache(
         banana.useResource { redis ->
             redis.hset(KEY, uuid.toString(), name)
             redis.hset(KEY, name.toLowerCase(), uuid.toString())
+
+            redis.publish(
+                "cubed",
+                Serializers.gson.toJson(
+                    Message("uuid_update").also {
+                        it["uuid"] = uuid.toString()
+                        it["username"] = name
+                    }
+                )
+            )
         }
     }
 }
