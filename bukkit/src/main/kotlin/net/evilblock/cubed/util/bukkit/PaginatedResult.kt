@@ -94,7 +94,9 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
             } else
             {
                 sender.sendMessage(
-                    "${CC.SEC}Page ${CC.PRI}$page ${CC.SEC}out of ${CC.PRI}$maxPages ${CC.GRAY}(${results.size} results)"
+                    "${CC.SEC}Page ${CC.PRI}$page ${CC.SEC}out of ${CC.PRI}$maxPages ${CC.GRAY}(${results.size} ${
+                        if (results.size == 1) "result" else "results"
+                    })"
                 )
             }
         }
