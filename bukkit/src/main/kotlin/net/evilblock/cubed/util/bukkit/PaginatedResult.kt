@@ -68,7 +68,7 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
                         )
                         .andCommandOf(
                             ClickEvent.Action.RUN_COMMAND,
-                            String.format(command, page - 1)
+                            String.format("/${command}", page - 1)
                         )
                 }
 
@@ -86,7 +86,7 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
                         )
                         .andCommandOf(
                             ClickEvent.Action.RUN_COMMAND,
-                            String.format(command, page + 1)
+                            String.format("/${command}", page + 1)
                         )
                 }
 
