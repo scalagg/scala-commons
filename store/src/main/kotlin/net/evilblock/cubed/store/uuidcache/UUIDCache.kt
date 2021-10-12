@@ -14,14 +14,16 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Logger
 
-abstract class UUIDCache {
+abstract class UUIDCache
+{
 
     private var uuidToUsername = ConcurrentHashMap<UUID, String>()
     private var usernameToUuid = ConcurrentHashMap<String, UUID>()
 
     private var alwaysFetch: Boolean = false
 
-    fun load() {
+    fun load()
+    {
         val newUuidToName = ConcurrentHashMap<UUID, String>()
         val newNameToUuid = ConcurrentHashMap<String, UUID>()
 
@@ -29,31 +31,44 @@ abstract class UUIDCache {
 
         cache.forEach { (uuid, name) ->
             newUuidToName[uuid] = name
-            newNameToUuid[name.toLowerCase()] = uuid
+            newNameToUuid[name.lowercase(Locale.getDefault())] = uuid
         }
 
         uuidToUsername = newUuidToName
         usernameToUuid = newNameToUuid
     }
 
-    fun uuid(username: String): UUID? {
-        return if (alwaysFetch) {
+    fun uuid(username: String): UUID?
+    {
+        return if (alwaysFetch)
+        {
             fetchUUID(username)
-        } else {
-            val fromLocal = usernameToUuid[username.toLowerCase()]
+        } else
+        {
+            val fromLocal = usernameToUuid[username.lowercase(Locale.getDefault())]
 
-            if (fromLocal == null) {
+            if (fromLocal == null)
+            {
                 val fromCache = fetchUUID(username)
 
-                if (fromCache == null) {
-                    val fromMojang = fetchFromMojang(username).get()
-                    update(fromMojang.first, fromMojang.second)
+                if (fromCache == null)
+                {
+                    val fromMojang = fetchFromMojang(username)
 
-                    fromMojang.first
-                } else {
+                    if (!fromMojang.isPresent)
+                    {
+                        return null
+                    }
+
+                    update(fromMojang.get().first, fromMojang.get().second)
+
+                    fromMojang.get().first
+                } else
+                {
                     fromCache
                 }
-            } else {
+            } else
+            {
                 fromLocal
             }
         }
@@ -62,24 +77,37 @@ abstract class UUIDCache {
     /**
      * Attempts to retrieve a username for the given [uuid]
      */
-    fun name(uuid: UUID): String? {
-        return if (alwaysFetch) {
+    fun name(uuid: UUID): String?
+    {
+        return if (alwaysFetch)
+        {
             fetchUsername(uuid)
-        } else {
+        } else
+        {
             val fromLocal = uuidToUsername[uuid]
 
-            if (fromLocal == null) {
+            if (fromLocal == null)
+            {
                 val fromCache = fetchUsername(uuid)
 
-                if (fromCache == null) {
-                    val fromMojang = fetchFromMojang(uuid).get()
-                    update(fromMojang.first, fromMojang.second)
+                if (fromCache == null)
+                {
+                    val fromMojang = fetchFromMojang(uuid)
 
-                    fromMojang.second
-                } else {
+                    if (!fromMojang.isPresent)
+                    {
+                        return null
+                    }
+
+                    update(fromMojang.get().first, fromMojang.get().second)
+
+                    fromMojang.get().second
+                } else
+                {
                     fromCache
                 }
-            } else {
+            } else
+            {
                 fromLocal
             }
         }
@@ -88,20 +116,24 @@ abstract class UUIDCache {
     /**
      * Updates the cache for the given [uuid] and [username], then commits changes to Redis if [commit] is true.
      */
-    fun update(uuid: UUID, username: String, commit: Boolean = true) {
+    fun update(uuid: UUID, username: String, commit: Boolean = true)
+    {
         uuidToUsername[uuid] = username
-        usernameToUuid[username.toLowerCase()] = uuid
+        usernameToUuid[username.lowercase(Locale.getDefault())] = uuid
 
-        if (commit) {
+        if (commit)
+        {
             updateCache(uuid, username)
         }
     }
 
-    fun getCachedUuids(): Set<UUID> {
+    fun getCachedUuids(): Set<UUID>
+    {
         return uuidToUsername.keys
     }
 
-    fun isCached(uuid: UUID): Boolean {
+    fun isCached(uuid: UUID): Boolean
+    {
         return uuidToUsername.containsKey(uuid)
     }
 
@@ -120,7 +152,8 @@ abstract class UUIDCache {
      */
     abstract fun updateCache(uuid: UUID, name: String)
 
-    companion object {
+    companion object
+    {
 
         private val parser = JsonParser()
         private val client = OkHttpClient()
@@ -130,20 +163,29 @@ abstract class UUIDCache {
          * Should not be called very often as the server could be rate-limited which will cause more issues.
          */
         @JvmStatic
-        fun fetchFromMojang(username: String): Optional<Pair<UUID, String>> {
-            try {
+        fun fetchFromMojang(username: String): Optional<Pair<UUID, String>>
+        {
+            try
+            {
                 val request = Request.Builder().url("https://api.mojang.com/users/profiles/minecraft/$username").build()
 
                 val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
+                if (response.isSuccessful)
+                {
                     val json = parser.parse(response.body().string()).asJsonObject
 
-                    val uuid = UUID.fromString(json.get("id").asString.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(), "$1-$2-$3-$4-$5"))
+                    val uuid = UUID.fromString(
+                        json.get("id").asString.replaceFirst(
+                            "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(),
+                            "$1-$2-$3-$4-$5"
+                        )
+                    )
                     val name = json.get("name").asString
 
                     return Optional.of(Pair(uuid, name))
                 }
-            } catch (e: Exception) {
+            } catch (e: Exception)
+            {
                 Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $username")
             }
 
@@ -151,14 +193,19 @@ abstract class UUIDCache {
         }
 
         @JvmStatic
-        fun fetchFromMojang(uuid: UUID): Optional<Pair<UUID, String>> {
-            try {
-                val request = Request.Builder().url("https://api.mojang.com/user/profiles/${uuid.toString().replace("-", "")}/names").build()
+        fun fetchFromMojang(uuid: UUID): Optional<Pair<UUID, String>>
+        {
+            try
+            {
+                val request = Request.Builder()
+                    .url("https://api.mojang.com/user/profiles/${uuid.toString().replace("-", "")}/names").build()
 
                 val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
+                if (response.isSuccessful)
+                {
                     val names = parser.parse(response.body().string()).asJsonArray.map { it.asJsonObject }
-                    if (names.size == 1) {
+                    if (names.size == 1)
+                    {
                         return Optional.of(uuid to names.first().get("name").asString)
                     }
 
@@ -168,7 +215,8 @@ abstract class UUIDCache {
 
                     return Optional.of(Pair(uuid, name))
                 }
-            } catch (e: Exception) {
+            } catch (e: Exception)
+            {
                 Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $uuid")
             }
 

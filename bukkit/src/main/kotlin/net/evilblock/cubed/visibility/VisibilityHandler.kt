@@ -55,7 +55,7 @@ object VisibilityHandler {
     }
 
     fun treatAsOnline(target: Player, viewer: Player): Boolean {
-        return viewer.canSee(target) || !target.hasMetadata("vanished")
+        return !target.hasMetadata("vanished")
     }
 
     private fun shouldSee(target: Player, viewer: Player): Boolean {

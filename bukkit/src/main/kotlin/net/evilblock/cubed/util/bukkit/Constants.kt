@@ -14,10 +14,10 @@ import org.bukkit.Material
 object Constants {
 
     @JvmStatic
-    val SITE_LINK = "https://www.minexd.com"
+    val SITE_LINK = "https://scala.gg"
 
     @JvmStatic
-    val STORE_LINK = "https://store.minexd.com"
+    val STORE_LINK = "https://store.scala.gg"
 
     @JvmStatic
     val USERNAME_REGEX = "[a-zA-Z0-9_]{1,16}".toRegex()
