@@ -33,14 +33,13 @@ class RedisUUIDCache(
         val cache = hashMapOf<UUID, String>()
 
         banana.useResource { jedis ->
-            run {
-                jedis.hgetAll(KEY).forEach { (key, value) ->
-                    try {
-                        cache[UUID.fromString(key)] = value
-                    } catch (ignored: Exception) {
-                    }
+            jedis.hgetAll(KEY).forEach { (key, value) ->
+                try {
+                    cache[UUID.fromString(key)] = value
+                } catch (ignored: Exception) {
                 }
             }
+            jedis.close()
         }
 
         return cache
@@ -54,6 +53,7 @@ class RedisUUIDCache(
                 reference = jedis.hget(KEY, uuid.toString())
             } catch (ignored: Exception) {
             }
+            jedis.close()
         }
 
         return reference
@@ -67,6 +67,7 @@ class RedisUUIDCache(
                 reference = UUID.fromString(jedis.hget(KEY, reference.toString()))
             } catch (ignored: Exception) {
             }
+            jedis.close()
         }
 
         return reference
@@ -86,6 +87,7 @@ class RedisUUIDCache(
                     }
                 )
             )
+            redis.close()
         }
     }
 }
