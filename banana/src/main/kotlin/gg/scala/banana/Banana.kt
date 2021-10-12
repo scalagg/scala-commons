@@ -8,6 +8,7 @@ import gg.scala.banana.subscribe.BananaSubscription
 import gg.scala.banana.subscribe.BananaSubscriptionData
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
@@ -27,14 +28,10 @@ data class Banana(
         val bananas = mutableListOf<Banana>()
     }
 
-    private val subscribeJedisPool: JedisPool = JedisPool(
-        credentials.address,
-        credentials.port
-    )
-    private var publishJedisPool: JedisPool =  JedisPool(
-        credentials.address,
-        credentials.port
-    )
+    private val jedisConfig = JedisPoolConfig()
+
+    private val subscribeJedisPool: JedisPool
+    private var publishJedisPool: JedisPool
 
     private lateinit var pubSub: JedisPubSub
 
@@ -44,9 +41,26 @@ data class Banana(
 
     init {
         bananas.add(this)
+
+        jedisConfig.minIdle = 2
+        jedisConfig.maxIdle = 8
+        jedisConfig.minEvictableIdleTimeMillis = 1_000L * 60L * 5L
+
+        subscribeJedisPool = JedisPool(
+            jedisConfig,
+            credentials.address,
+            credentials.port
+        )
+        publishJedisPool = JedisPool(
+            jedisConfig,
+            credentials.address,
+            credentials.port
+        )
     }
 
     fun subscribe() {
+
+
         CompletableFuture.runAsync {
             useResource({
                 try {
