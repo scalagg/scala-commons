@@ -1,7 +1,6 @@
 package gg.scala.banana.subscribe
 
 import gg.scala.banana.Banana
-import gg.scala.banana.helper.BananaHelper
 import gg.scala.banana.message.Message
 import redis.clients.jedis.JedisPubSub
 
@@ -22,25 +21,23 @@ class BananaSubscription(
             return
         }
 
-        BananaHelper.handle(
-            {
-                try {
-                    val message = banana.options.gson.fromJson(serialized, Message::class.java)
-                        ?: throw RuntimeException("Incoming message was null")
-                    val handlers = banana.subscriptions[message.packet] ?: if (banana.options.ignoreNonExistentHandlers) return@handle else throw RuntimeException("No handler found.")
+        try {
+            val message = banana.options.gson.fromJson(serialized, Message::class.java)
+                ?: throw RuntimeException("Incoming message was null")
 
-                    handlers
-                        .sortedByDescending { it.subscribe.priority }
-                        .forEach {
-                            it.method.invoke(it.clazz, message)
-                        }
-                } catch (exception: Exception) {
-                    banana.options.exceptionHandler.onIncomingPacket(
-                        "N/A", exception
-                    )
+            val handlers = banana.subscriptions[message.packet]
+                ?: if (banana.options.ignoreNonExistentHandlers)
+                    return else throw RuntimeException("No handler found.")
+
+            handlers
+                .sortedByDescending { it.subscribe.priority }
+                .forEach {
+                    it.method.invoke(it.clazz, message)
                 }
-            },
-            banana
-        )
+        } catch (exception: Exception) {
+            banana.options.exceptionHandler.onIncomingPacket(
+                "N/A", exception
+            )
+        }
     }
 }

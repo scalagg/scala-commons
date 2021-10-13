@@ -2,7 +2,6 @@ package gg.scala.banana
 
 import gg.scala.banana.annotate.Subscribe
 import gg.scala.banana.credentials.BananaCredentials
-import gg.scala.banana.helper.BananaHelper
 import gg.scala.banana.options.BananaOptions
 import gg.scala.banana.subscribe.BananaSubscription
 import gg.scala.banana.subscribe.BananaSubscriptionData
@@ -11,7 +10,8 @@ import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 /**
  * Handles everything banana-related
@@ -37,6 +37,8 @@ data class Banana(
 
     private var shutdownHookAdded = false
 
+    private val cachedSubExecutor = Executors.newCachedThreadPool()
+
     val subscriptions = mutableMapOf<String, MutableList<BananaSubscriptionData>>()
 
     init {
@@ -59,9 +61,7 @@ data class Banana(
     }
 
     fun subscribe() {
-
-
-        CompletableFuture.runAsync {
+        cachedSubExecutor.execute {
             useResource({
                 try {
                     it.subscribe(
@@ -74,11 +74,11 @@ data class Banana(
             }, subscribeJedisPool)
         }
 
-        BananaHelper.handle({
+        thread(name = "Banana - Publish Thread") {
             useResource {
                 it.connect()
             }
-        }, this)
+        }
 
         if (!shutdownHookAdded) {
             Runtime.getRuntime().addShutdownHook(
@@ -113,16 +113,13 @@ data class Banana(
     ) {
         try {
             val resource = jedisPool?.resource
+                ?: throw RuntimeException("Jedis pool provided was null")
 
-            if (resource != null) {
-                if (credentials.authenticate) {
-                    resource.auth(credentials.password)
-                }
-
-                lambda.invoke(resource)
-            } else {
-                throw RuntimeException("Jedis pool provided was null")
+            if (credentials.authenticate) {
+                resource.auth(credentials.password)
             }
+
+            lambda.invoke(resource)
         } catch (e: Exception) {
             options.exceptionHandler.onOutgoingPacket(
                 "CMD", e

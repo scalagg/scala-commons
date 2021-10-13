@@ -89,8 +89,7 @@ class CubedCommandManager(
             } else {
                 c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
 
-                val queryResponse =
-                    CompletableFuture.supplyAsync { NpcTexture.fetchTextureByUsername(firstArg) }.get()
+                val queryResponse = NpcTexture.fetchTextureByUsername(firstArg)
 
                 if (queryResponse.isPresent) {
                     queryResponse.get()

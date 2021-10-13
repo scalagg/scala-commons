@@ -31,10 +31,12 @@ abstract class Menu {
     var updateAfterClick: Boolean = false
     var keepBottomMechanics: Boolean = true
     var placeholder: Boolean = false
+    var placeholdBorders: Boolean = false
     var nonCancelling: Boolean = false
     var async: Boolean = false
     var manualClose: Boolean = true
     var closed: Boolean = false
+
     private var staticTitle: String
 
     constructor() {
@@ -80,6 +82,21 @@ abstract class Menu {
 
             buttons[buttonEntry.key] = buttonEntry.value
             inv.setItem(buttonEntry.key, buttonEntry.value.getButtonItem(player))
+        }
+
+        val current = size(invButtons)
+
+        if (placeholdBorders)
+        {
+            val placeholder = Button.placeholder(Material.STAINED_GLASS_PANE, 15.toByte(), " ")
+
+            for (i in 0 until current)
+            {
+                if (i < 9 || i >= current - 9 || i % 9 == 0 || i % 9 == 8)
+                {
+                    inv.setItem(i, placeholder.getButtonItem(player))
+                }
+            }
         }
 
         if (placeholder) {

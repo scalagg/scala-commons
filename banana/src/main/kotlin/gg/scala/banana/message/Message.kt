@@ -1,7 +1,6 @@
 package gg.scala.banana.message
 
 import gg.scala.banana.Banana
-import gg.scala.banana.helper.BananaHelper
 
 /**
  * @author GrowlyX
@@ -26,11 +25,10 @@ class Message(
 
     fun dispatch(channel: String) {
         Banana.bananas[Banana.bananas.size - 1].useResource {
-            it.use { jedis ->
-                jedis.publish(
-                    channel, Banana.bananas[Banana.bananas.size - 1].options.gson.toJson(this)
-                )
-            }
+            it.publish(
+                channel, Banana.bananas[Banana.bananas.size - 1].options.gson.toJson(this)
+            )
+            it.close()
         }
     }
 }
