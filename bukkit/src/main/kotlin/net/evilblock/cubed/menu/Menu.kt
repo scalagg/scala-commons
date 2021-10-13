@@ -94,7 +94,10 @@ abstract class Menu {
             {
                 if (i < 9 || i >= current - 9 || i % 9 == 0 || i % 9 == 8)
                 {
-                    inv.setItem(i, placeholder.getButtonItem(player))
+                    if (invButtons[i] == null)
+                    {
+                        inv.setItem(i, placeholder.getButtonItem(player))
+                    }
                 }
             }
         }
