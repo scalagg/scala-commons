@@ -39,8 +39,6 @@ object BananaTestEnvironment {
         while (true) {
             val message = Message("some-packet")
             message["something"] = reader.readLine()
-
-            message.dispatch()
         }
     }
 

@@ -6,7 +6,6 @@ import com.google.gson.LongSerializationPolicy
 import gg.scala.banana.handler.ExceptionHandler
 import gg.scala.banana.handler.impl.DefaultExceptionHandler
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 
 /**
@@ -27,5 +26,5 @@ data class BananaOptions(
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .create(),
     val exceptionHandler: ExceptionHandler = DefaultExceptionHandler,
-    val executor: Executor = Executors.newSingleThreadExecutor()
+    val executor: Executor = ForkJoinPool.commonPool()
 )

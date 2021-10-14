@@ -1,6 +1,6 @@
 package gg.scala.banana.message
 
-import gg.scala.banana.Banana
+import java.util.*
 
 /**
  * @author GrowlyX
@@ -9,7 +9,7 @@ import gg.scala.banana.Banana
 class Message(
     val packet: String
 ) {
-    private val keyValueStore = mutableMapOf<String, String>()
+    private val keyValueStore = WeakHashMap<String, String>()
 
     operator fun get(key: String): String? {
         return keyValueStore[key]
@@ -17,18 +17,5 @@ class Message(
 
     operator fun set(key: String, value: String) {
         keyValueStore[key] = value
-    }
-
-    fun dispatch() {
-        this.dispatch(Banana.bananas[Banana.bananas.size - 1].options.channel)
-    }
-
-    fun dispatch(channel: String) {
-        Banana.bananas[Banana.bananas.size - 1].useResource {
-            it.publish(
-                channel, Banana.bananas[Banana.bananas.size - 1].options.gson.toJson(this)
-            )
-            it.close()
-        }
     }
 }

@@ -23,11 +23,6 @@ data class Banana(
     private val credentials: BananaCredentials,
     val options: BananaOptions,
 ) {
-    companion object {
-        @JvmStatic
-        val bananas = mutableListOf<Banana>()
-    }
-
     private val jedisConfig = JedisPoolConfig()
 
     private val subscribeJedisPool: JedisPool
@@ -42,8 +37,6 @@ data class Banana(
     val subscriptions = mutableMapOf<String, MutableList<BananaSubscriptionData>>()
 
     init {
-        bananas.add(this)
-
         jedisConfig.minIdle = 2
         jedisConfig.maxIdle = 8
         jedisConfig.minEvictableIdleTimeMillis = 1_000L * 60L * 5L
@@ -61,7 +54,7 @@ data class Banana(
     }
 
     fun subscribe() {
-        cachedSubExecutor.execute {
+        thread(name = "Banana - Subscribe Thread") {
             useResource({
                 try {
                     it.subscribe(
@@ -74,10 +67,8 @@ data class Banana(
             }, subscribeJedisPool)
         }
 
-        thread(name = "Banana - Publish Thread") {
-            useResource {
-                it.connect()
-            }
+        useResource {
+            it.connect()
         }
 
         if (!shutdownHookAdded) {
@@ -120,6 +111,10 @@ data class Banana(
             }
 
             lambda.invoke(resource)
+
+            if (!jedisPool.isClosed) {
+                resource.close()
+            }
         } catch (e: Exception) {
             options.exceptionHandler.onOutgoingPacket(
                 "CMD", e
