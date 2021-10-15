@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.streams.asSequence
 
 object ErrorHandler {
 
@@ -31,7 +30,7 @@ object ErrorHandler {
     }
 
     private fun generateLogId(): String {
-        return ThreadLocalRandom.current().ints(10, 0, CHAR_POOL.size).asSequence().map(CHAR_POOL::get).joinToString("")
+        return ThreadLocalRandom.current().ints(10, 0, CHAR_POOL.size).sequential().toString()
     }
 
     @JvmStatic

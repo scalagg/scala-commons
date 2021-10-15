@@ -15,7 +15,7 @@ plugins {
     id 'idea'
     id 'java'
     id 'maven-publish'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
@@ -24,6 +24,7 @@ repositories {
     mavenCentral()
 
     maven { url = 'https://jitpack.io' }
+    maven { url 'https://repo.lucko.me' }
     maven { url = 'https://maven.enginehub.org/repo/' }
     maven { url = "https://repo.aikar.co/content/groups/aikar/" }
     maven { url = 'https://repo.dmulloy2.net/nexus/repository/public' }
@@ -35,23 +36,25 @@ dependencies {
     implementation project(':store')
     implementation project(':banana')
 
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21'
+    compileOnly fileTree(dir: 'lib', include: '/impl/*.jar')
+    implementation fileTree(dir: 'lib', include: '*.jar')
+
+    compileOnly "me.lucko:helper:5.6.8"
+    compileOnly 'com.google.code.gson:gson:2.8.8'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT'
+
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'org.reflections:reflections:0.10.1'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT'
+
     implementation 'com.google.zxing:core:3.4.1'
-    compileOnly fileTree(dir: 'lib', include: '/impl/*.jar')
-    implementation fileTree(dir: 'lib', include: '*.jar')
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     implementation 'com.github.azbh111:ProtocolLib:4.4.0'
     implementation 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
     implementation 'com.github.cryptomorin:XSeries:8.4.0'
-    compileOnly 'com.google.code.gson:gson:2.8.8'
     implementation 'org.mongodb:mongodb-driver:3.12.10'
 }
 
