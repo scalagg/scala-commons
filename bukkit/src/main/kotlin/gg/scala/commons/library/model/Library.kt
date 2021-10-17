@@ -1,7 +1,9 @@
 package gg.scala.commons.library.model
 
-import me.lucko.helper.maven.MavenLibrary
 import gg.scala.commons.library.HelperLibraryHandler
+import me.lucko.helper.maven.MavenLibrary
+import java.net.MalformedURLException
+import java.net.URL
 
 /**
  * An object form of the [MavenLibrary]
@@ -28,5 +30,20 @@ data class Library(
     fun mavenCentral(): Library
     {
         forcedRepository = "https://repo1.maven.org/maven2/"; return this
+    }
+
+    @Throws(MalformedURLException::class)
+    fun getUrl(repoUrl: String): URL
+    {
+        var repo: String = repoUrl
+
+        if (!repo.endsWith("/"))
+        {
+            repo += "/"
+        }
+
+        repo += "%s/%s/%s/%s-%s.jar"
+        val url = String.format(repo, groupId.replace(".", "/"), artifactId, version, artifactId, version)
+        return URL(url)
     }
 }

@@ -1,8 +1,12 @@
 package gg.scala.commons.library
 
+import com.google.common.base.Suppliers
 import gg.scala.commons.library.model.Library
-import me.lucko.helper.maven.LibraryLoader
-import org.bukkit.craftbukkit.libs.jline.internal.Log
+import me.lucko.helper.internal.LoaderUtils
+import java.io.File
+import java.net.URL
+import java.net.URLClassLoader
+import java.nio.file.Files
 
 /**
  * @author GrowlyX
@@ -10,6 +14,20 @@ import org.bukkit.craftbukkit.libs.jline.internal.Log
  */
 object HelperLibraryHandler
 {
+
+    private val ADD_URL_METHOD = Suppliers.memoize {
+        try
+        {
+            val addUrlMethod = URLClassLoader::class.java
+                .getDeclaredMethod("addURL", URL::class.java)
+            
+            addUrlMethod.isAccessible = true
+            return@memoize addUrlMethod
+        } catch (e: NoSuchMethodException)
+        {
+            throw RuntimeException(e)
+        }
+    }
 
     /**
      * Common maven repositories, consists
@@ -46,10 +64,8 @@ object HelperLibraryHandler
             {
                 if (instance.forcedRepository != null)
                 {
-                    LibraryLoader.load(
-                        instance.groupId,
-                        instance.artifactId,
-                        instance.version,
+                    internalLoad(
+                        instance,
                         instance.forcedRepository!!
                     )
 
@@ -60,10 +76,8 @@ object HelperLibraryHandler
                     for (commonRepository in COMMON_REPOSITORIES)
                     {
                         try {
-                            LibraryLoader.load(
-                                instance.groupId,
-                                instance.artifactId,
-                                instance.version,
+                            internalLoad(
+                                instance,
                                 commonRepository
                             )
 
@@ -78,13 +92,64 @@ object HelperLibraryHandler
 
                     if (!foundRepository)
                     {
-                        Log.error("Failed to register ${instance.artifactId} version ${instance.version} due to no matching repository being found.")
+                        println("[helper] Failed to register ${instance.artifactId} version ${instance.version} due to no matching repository being found.")
                     }
                 }
             } else
             {
-                Log.info("Failed to load ${field.name} due to it not being an instance of Library.")
+                println("[helper] Failed to load ${field.name} due to it not being an instance of Library.")
             }
         }
+    }
+
+    internal fun internalLoad(library: Library, url: String)
+    {
+        println("[helper] ${
+            String.format(
+                "Loading dependency %s:%s:%s.",
+                library.groupId,
+                library.artifactId,
+                library.version,
+            )
+        }")
+
+        val name = library.artifactId + "-" + library.version
+        val saveLocation = File(getLibFolder(), "$name.jar")
+
+        if (!saveLocation.exists())
+        {
+            println("[helper] Dependency '$name' is not already in the libraries folder. Attempting to download...")
+
+            library.getUrl(url).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
+
+            println("[helper] Dependency '$name' successfully downloaded.")
+        }
+
+        if (!saveLocation.exists())
+        {
+            throw RuntimeException("Unable to download dependency: $library")
+        }
+
+        val classLoader = LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader
+
+        try
+        {
+            ADD_URL_METHOD.get().invoke(classLoader, saveLocation.toURI().toURL())
+        } catch (e: Exception)
+        {
+            throw RuntimeException("Unable to load dependency: $saveLocation", e)
+        }
+
+        println("[helper] Loaded dependency '$name' successfully.")
+    }
+
+    private fun getLibFolder(): File
+    {
+        val pluginDataFolder = LoaderUtils.getPlugin().dataFolder
+        val pluginsDir = pluginDataFolder.parentFile
+        val helperDir = File(pluginsDir, "helper")
+        val libs = File(helperDir, "libraries")
+        libs.mkdirs()
+        return libs
     }
 }

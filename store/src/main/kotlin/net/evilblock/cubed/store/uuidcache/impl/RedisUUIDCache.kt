@@ -76,7 +76,7 @@ class RedisUUIDCache(
     override fun updateCache(uuid: UUID, name: String) {
         banana.useResource { redis ->
             redis.hset(KEY, uuid.toString(), name)
-            redis.hset(KEY, name.toLowerCase(), uuid.toString())
+            redis.hset(KEY, name.lowercase(), uuid.toString())
 
             redis.publish(
                 "cubed",
