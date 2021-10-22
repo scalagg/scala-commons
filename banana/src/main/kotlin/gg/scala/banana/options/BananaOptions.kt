@@ -15,7 +15,10 @@ import java.util.concurrent.ForkJoinPool
  * @author GrowlyX
  * @since 9/19/2021
  */
-data class BananaOptions(
+data class BananaOptions
+
+@JvmOverloads
+constructor(
     val channel: String,
 
     val async: Boolean = true,
