@@ -53,7 +53,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
     }
 
     override fun getDamageValue(player: Player): Byte {
-        return if (hasNext(player)) 3.toByte() else 7.toByte()
+        return if (hasNext(player)) 3.toByte() else 15.toByte()
     }
 
     override fun getMaterial(player: Player): Material {
