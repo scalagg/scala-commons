@@ -45,7 +45,7 @@ abstract class PaginatedMenu : Menu() {
         val buttons = HashMap<Int, Button>()
 
         for (i in 1..7) {
-            buttons[i] = ItemBuilder(Material.STAINED_GLASS_PANE).data(7.toShort()).name(" ").toButton()
+            buttons[i] = ItemBuilder(Material.STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
         }
 
         val pageButtonSlots = getPageButtonSlots()
