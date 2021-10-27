@@ -76,7 +76,7 @@ public class AStar2 {
 	}
 
 	boolean checkOnce = false;
-	
+
 	private int abs(int i) {
 		return (i < 0 ? -i : i);
 	}

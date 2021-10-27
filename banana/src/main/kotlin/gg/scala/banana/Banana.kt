@@ -23,8 +23,6 @@ data class Banana(
     private val credentials: BananaCredentials,
     val options: BananaOptions,
 ) {
-    private val jedisConfig = JedisPoolConfig()
-
     private val subscribeJedisPool: JedisPool
     private var publishJedisPool: JedisPool
 
@@ -32,22 +30,14 @@ data class Banana(
 
     private var shutdownHookAdded = false
 
-    private val cachedSubExecutor = Executors.newCachedThreadPool()
-
     val subscriptions = mutableMapOf<String, MutableList<BananaSubscriptionData>>()
 
     init {
-        jedisConfig.minIdle = 2
-        jedisConfig.maxIdle = 8
-        jedisConfig.minEvictableIdleTimeMillis = 1_000L * 60L * 5L
-
         subscribeJedisPool = JedisPool(
-            jedisConfig,
             credentials.address,
             credentials.port
         )
         publishJedisPool = JedisPool(
-            jedisConfig,
             credentials.address,
             credentials.port
         )

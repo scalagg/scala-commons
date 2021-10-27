@@ -12,10 +12,10 @@ object EventListener: Listener {
         if (!event.hasItem())
             return
 
-        val interactItemEvent = PlayerInteractItemEvent(event.player, event.item, Action.valueOf(event.action.name))
-
-        if (interactItemEvent.call()) {
-            event.isCancelled = true
-        }
+//        val interactItemEvent = PlayerInteractItemEvent(event.player, event.item, Action.valueOf(event.action.name))
+//
+//        if (interactItemEvent.call()) {
+//            event.isCancelled = true
+//        }
     }
 }
