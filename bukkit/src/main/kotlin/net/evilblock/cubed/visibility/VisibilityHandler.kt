@@ -57,9 +57,10 @@ object VisibilityHandler {
     {
         if (!player.hasMetadata("vanished"))
         {
-            val playerInfoAddPacket = MinecraftProtocol.newPacket("PacketPlayOutPlayerInfo")
-            Reflection.setDeclaredFieldValue(playerInfoAddPacket, "a", Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!)
-            Reflection.setDeclaredFieldValue(playerInfoAddPacket, "b", arrayListOf(MinecraftReflection.getHandle(player)))
+            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
+                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!,
+                arrayListOf(MinecraftReflection.getHandle(player))
+            )
 
             Tasks.sync {
                 Bukkit.getOnlinePlayers().forEach {
