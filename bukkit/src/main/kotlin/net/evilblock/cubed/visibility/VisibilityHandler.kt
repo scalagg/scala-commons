@@ -1,10 +1,13 @@
 package net.evilblock.cubed.visibility
 
+import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
+import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
+import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
-import java.util.*
 
 object VisibilityHandler {
 
@@ -20,10 +23,6 @@ object VisibilityHandler {
     }
 
     fun update(player: Player) {
-//        if (adapters.isEmpty() && overrideHandlers.isEmpty()) {
-//            return
-//        }
-
         Tasks.async {
             updateAllTo(player)
             updateToAll(player)
@@ -34,7 +33,7 @@ object VisibilityHandler {
         Tasks.sync {
             for (target in Bukkit.getOnlinePlayers()) {
                 if (!shouldSee(target, viewer)) {
-                    viewer.hidePlayer(target)
+                    viewer.hidePlayer(target); addPlayer(target)
                 } else {
                     viewer.showPlayer(target)
                 }
@@ -46,9 +45,25 @@ object VisibilityHandler {
         Tasks.sync {
             for (viewer in Bukkit.getOnlinePlayers()) {
                 if (!shouldSee(target, viewer)) {
-                    viewer.hidePlayer(target)
+                    viewer.hidePlayer(target); addPlayer(target)
                 } else {
                     viewer.showPlayer(target)
+                }
+            }
+        }
+    }
+
+    fun addPlayer(player: Player)
+    {
+        if (!player.hasMetadata("vanished"))
+        {
+            val playerInfoAddPacket = MinecraftProtocol.newPacket("PacketPlayOutPlayerInfo")
+            Reflection.setDeclaredFieldValue(playerInfoAddPacket, "a", Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!)
+            Reflection.setDeclaredFieldValue(playerInfoAddPacket, "b", arrayListOf(MinecraftReflection.getHandle(player)))
+
+            Tasks.sync {
+                Bukkit.getOnlinePlayers().forEach {
+                    MinecraftProtocol.send(it, playerInfoAddPacket)
                 }
             }
         }

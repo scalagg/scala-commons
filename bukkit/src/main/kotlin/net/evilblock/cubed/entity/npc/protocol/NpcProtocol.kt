@@ -25,10 +25,11 @@ object NpcProtocol {
 //    private val ENUM_GAME_MODE_CLASS: Class<*> = MinecraftReflection.getNMSClass("EnumGamemode")!! // 1.12 class
     private val I_CHAT_BASE_COMPONENT_CLASS: Class<*> = MinecraftReflection.getNMSClass("IChatBaseComponent")!!
 
-    private val PACKET_PLAY_OUT_PLAYER_INFO_CLASS: Class<*> = MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo")!!
+    val PACKET_PLAY_OUT_PLAYER_INFO_CLASS: Class<*> = MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo")!!
+    val ENUM_PLAYER_INFO_ACTION_CLASS: Class<*> = MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo\$EnumPlayerInfoAction")!!
+
     private val PLAYER_INFO_DATA_CLASS: Class<*> = PACKET_PLAY_OUT_PLAYER_INFO_CLASS.declaredClasses.find { it.simpleName == "PlayerInfoData" }!!
     private val PLAYER_INFO_DATA_CONSTRUCTOR: Constructor<*> = Reflection.getDeclaredConstructor(PLAYER_INFO_DATA_CLASS, PACKET_PLAY_OUT_PLAYER_INFO_CLASS, MinecraftReflection.getGameProfileClass(), Int::class.java, ENUM_GAME_MODE_CLASS, I_CHAT_BASE_COMPONENT_CLASS)!!
-    val ENUM_PLAYER_INFO_ACTION_CLASS: Class<*> = MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo\$EnumPlayerInfoAction")!!
 
     private val ENTITY_CLASS = MinecraftReflection.getNMSClass("Entity")!!
     private val ENTITY_LIVING_CLASS = MinecraftReflection.getNMSClass("EntityLiving")!!

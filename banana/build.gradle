@@ -1,10 +1,10 @@
 
 buildscript {
-    ext.kotlin_version = '1.5.21'
+    ext.kotlin_version = '1.5.31'
 }
 plugins {
     id 'maven-publish'
-    id "org.jetbrains.kotlin.jvm" version "1.5.21"
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
     id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
@@ -29,7 +29,7 @@ task wrapper(type: Wrapper){
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.21"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
 
     implementation 'redis.clients:jedis:3.7.0'
     implementation 'com.google.code.gson:gson:2.8.8'

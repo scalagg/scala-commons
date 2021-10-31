@@ -126,8 +126,6 @@ class Cubed : ExtendedJavaPlugin() {
             filterConsoleLogs()
 
             GlowEnchantment.registerEnchant()
-
-//        ProtocolLibrary.getProtocolManager().addPacketListener(DebugPacketAdapter)
         } catch (e: Exception) {
             e.printStackTrace()
             startupFailed = true
