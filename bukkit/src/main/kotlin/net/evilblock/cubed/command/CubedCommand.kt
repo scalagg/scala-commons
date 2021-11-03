@@ -12,6 +12,9 @@ import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
+import gg.scala.banana.BananaBuilder
+import gg.scala.banana.credentials.BananaCredentials
+import gg.scala.banana.options.BananaOptions
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
@@ -24,7 +27,10 @@ import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.util.*
+
 
 @CommandAlias("cubed")
 @CommandPermission("op")
@@ -41,6 +47,14 @@ object CubedCommand : BaseCommand() {
     fun onFindUsername(sender: CommandSender, @Name("uuid") uuid: UUID) {
         val username = Cubed.instance.uuidCache.name(uuid)
         sender.sendMessage("${CC.SEC}Found username: ${CC.PRI}$username")
+    }
+
+    @Subcommand("fetch-cache")
+    @Description("Fetches the uuid cache")
+    fun onFlushCache(sender: CommandSender) {
+        Cubed.instance.uuidCache.getCachedUuids().forEach {
+            sender.sendMessage(it.toString())
+        }
     }
 
     @Subcommand("find-uuid")

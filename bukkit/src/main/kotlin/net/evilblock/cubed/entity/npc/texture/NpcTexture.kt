@@ -30,6 +30,7 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
          */
         @JvmStatic
         fun fetchTextureByUsername(username: String): Optional<NpcTexture> {
+            println(username)
             var uuid = Cubed.instance.uuidCache.uuid(username)
             if (uuid == null) {
                 val apiResponse = UUIDCache.fetchFromMojang(username)
