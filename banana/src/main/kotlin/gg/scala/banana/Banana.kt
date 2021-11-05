@@ -11,6 +11,7 @@ import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Method
 import java.util.concurrent.Executors
+import java.util.function.Consumer
 import kotlin.concurrent.thread
 
 /**
@@ -22,7 +23,8 @@ import kotlin.concurrent.thread
 data class Banana(
     private val credentials: BananaCredentials,
     val options: BananaOptions,
-) {
+)
+{
     private val subscribeJedisPool: JedisPool
     private var publishJedisPool: JedisPool
 
@@ -32,7 +34,8 @@ data class Banana(
 
     val subscriptions = mutableMapOf<String, MutableList<BananaSubscriptionData>>()
 
-    init {
+    init
+    {
         subscribeJedisPool = JedisPool(
             credentials.address,
             credentials.port
@@ -43,15 +46,18 @@ data class Banana(
         )
     }
 
-    fun subscribe() {
+    fun subscribe()
+    {
         thread(name = "Banana - Subscribe Thread") {
             useResource({
-                try {
+                try
+                {
                     it.subscribe(
                         BananaSubscription(this),
                         options.channel
                     )
-                } finally {
+                } finally
+                {
                     it.connect()
                 }
             }, subscribeJedisPool)
@@ -61,18 +67,22 @@ data class Banana(
             it.connect()
         }
 
-        if (!shutdownHookAdded) {
+        if (!shutdownHookAdded)
+        {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
-                    if (!publishJedisPool.isClosed) {
+                    if (!publishJedisPool.isClosed)
+                    {
                         publishJedisPool.close()
                     }
 
-                    if (!subscribeJedisPool.isClosed) {
+                    if (!subscribeJedisPool.isClosed)
+                    {
                         subscribeJedisPool.close()
                     }
 
-                    if (pubSub.isSubscribed) {
+                    if (pubSub.isSubscribed)
+                    {
                         pubSub.unsubscribe()
                     }
 
@@ -84,35 +94,49 @@ data class Banana(
         }
     }
 
-    fun useResource(lambda: (Jedis) -> Unit) {
+    fun useResource(lambda: Consumer<Jedis>)
+    {
+        useResource({
+            lambda.accept(it)
+        }, publishJedisPool)
+    }
+
+    fun useResource(lambda: (Jedis) -> Unit)
+    {
         useResource(lambda, publishJedisPool)
     }
 
     fun useResource(
         lambda: (Jedis) -> Unit,
         jedisPool: JedisPool?
-    ) {
-        try {
+    )
+    {
+        try
+        {
             val resource = jedisPool?.resource
                 ?: throw RuntimeException("Jedis pool provided was null")
 
-            if (credentials.authenticate) {
+            if (credentials.authenticate)
+            {
                 resource.auth(credentials.password)
             }
 
             lambda.invoke(resource)
 
-            if (!jedisPool.isClosed) {
+            if (!jedisPool.isClosed)
+            {
                 resource.close()
             }
-        } catch (e: Exception) {
+        } catch (e: Exception)
+        {
             options.exceptionHandler.onOutgoingPacket(
                 "CMD", e
             )
         }
     }
 
-    fun registerClass(clazz: Class<*>) {
+    fun registerClass(clazz: Class<*>)
+    {
         val instance = clazz.newInstance()
         validateClass(instance)
 
@@ -121,11 +145,13 @@ data class Banana(
         }
     }
 
-    private fun validateClass(instance: Any?) {
+    private fun validateClass(instance: Any?)
+    {
         instance ?: throw RuntimeException("Provided subscription instance for Banana was null")
     }
 
-    fun registerClass(clazz: Any) {
+    fun registerClass(clazz: Any)
+    {
         validateClass(clazz)
 
         clazz::class.java.methods.forEach {
@@ -133,13 +159,15 @@ data class Banana(
         }
     }
 
-    private fun registerMethod(method: Method, instance: Any) {
+    private fun registerMethod(method: Method, instance: Any)
+    {
         val subscribe = method.getAnnotation(Subscribe::class.java) ?: return
         subscriptions.putIfAbsent(subscribe.value, mutableListOf())
 
         val packetSubscriptions = subscriptions[subscribe.value]
 
-        if (options.debug) {
+        if (options.debug)
+        {
             println("Registered ${subscribe.value}")
         }
 
