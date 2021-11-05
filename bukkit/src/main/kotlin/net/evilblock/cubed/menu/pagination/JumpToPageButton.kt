@@ -21,7 +21,7 @@ class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu, p
     }
 
     override fun getDescription(player: Player): List<String> {
-        return if (current) listOf("   ", CC.GREEN + "This is the current page.") else listOf(CC.GRAY + "Click to switch to this page!")
+        return if (current) listOf(CC.GREEN + "This is the current page.") else listOf(CC.GRAY + "Click to switch to this page!")
     }
 
     override fun getMaterial(player: Player): Material {
