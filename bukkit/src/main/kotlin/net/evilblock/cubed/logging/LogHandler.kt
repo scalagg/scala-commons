@@ -16,7 +16,8 @@ object LogHandler {
 
     fun initialLoad() {
         Tasks.asyncTimer(20L * 30L, 20L * 30L) {
-            for (logFile in logFiles) {
+            for (logFile in
+            logFiles) {
                 logFile.flush()
             }
         }

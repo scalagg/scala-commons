@@ -14,10 +14,13 @@ import java.util.*
 class UUIDAdapter : JsonDeserializer<UUID>, JsonSerializer<UUID> {
 
     @Throws(JsonParseException::class)
-    override fun deserialize(src: JsonElement, type: Type, context: JsonDeserializationContext): UUID {
-        return UUID.fromString(src.asString)
+    override fun deserialize(src: JsonElement?, type: Type, context: JsonDeserializationContext): UUID? {
+        return if (src == null || src.asString == null || src.asString.equals("null")) {
+            null
+        } else {
+            UUID.fromString(src.asString)
+        }
     }
-
     override fun serialize(src: UUID, type: Type, context: JsonSerializationContext): JsonElement {
         return JsonPrimitive(src.toString())
     }

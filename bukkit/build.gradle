@@ -15,6 +15,8 @@ plugins {
     id 'idea'
     id 'java'
     id 'maven-publish'
+//    id 'org.ajoberstar:grgit:1.1.0'
+    id "com.gorylenko.gradle-git-properties" version "2.3.1"
     id 'org.jetbrains.kotlin.jvm' version '1.5.31'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
@@ -97,11 +99,10 @@ publishing {
     }
 }
 
-processResources {
-    filter ReplaceTokens, tokens: ["plugin.version": project.version ]
+generateGitProperties {
+    System.setProperty("GIT_COMMIT_ID_ABBREV", gitProperties.getKeys().get(8).toString())
 }
 
-//tasks.withType(Jar) {
-//    def home = System.properties['user.home']
-//    destinationDirectory = file("$home/Desktop/@MineXD/shared/global")
-//}
+processResources {
+    filter ReplaceTokens, tokens: ["VERSION": System.getenv("GIT_COMMIT_ID_ABBREV").toString()]
+}

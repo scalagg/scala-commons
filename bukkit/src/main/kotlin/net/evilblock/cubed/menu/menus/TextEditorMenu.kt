@@ -151,7 +151,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
         override fun getDescription(player: Player): List<String> {
             val description = arrayListOf<String>()
 
-            description.add("${CC.GRAY}Line ${index + 1}")
+            description.add("${CC.D_GRAY}Line ${index + 1}")
             description.add("")
             description.add("${CC.GREEN}Left-Click to edit line.")
             description.add("${CC.RED}Right-Click to delete line.")
@@ -259,7 +259,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-            onSave(player, lines)
+            onSave(player, Color.translate(lines))
             changesMade = false
         }
     }

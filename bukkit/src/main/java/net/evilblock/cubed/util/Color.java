@@ -2,6 +2,7 @@ package net.evilblock.cubed.util;
 
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,12 @@ public class Color {
 	}
 
 	public static List<String> translate(List<String> list) {
-		return list.stream().map(Color::translate).collect(Collectors.toList());
+		final List<String> translated = new ArrayList<>();
+
+		for (String s : list) {
+			translated.add(translate(s));
+		}
+
+		return translated;
 	}
 }
