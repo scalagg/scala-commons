@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers
 import gg.scala.commons.library.model.Library
 import me.lucko.helper.internal.LoaderUtils
 import java.io.File
+import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLClassLoader
 import java.nio.file.Files
@@ -20,7 +21,7 @@ object HelperLibraryHandler
         {
             val addUrlMethod = URLClassLoader::class.java
                 .getDeclaredMethod("addURL", URL::class.java)
-            
+
             addUrlMethod.isAccessible = true
             return@memoize addUrlMethod
         } catch (e: NoSuchMethodException)
@@ -32,11 +33,14 @@ object HelperLibraryHandler
     /**
      * Common maven repositories, consists
      * of spigot-related repositories.
+     *
+     * These repositories are ordered by
+     * popularity.
      */
     @JvmStatic
     val COMMON_REPOSITORIES = listOf(
-        "https://jitpack.io",
         "https://repo1.maven.org/maven2",
+        "https://jitpack.io",
         "https://repo.dmulloy2.net/nexus/repository/public",
         "https://maven.enginehub.org/repo/",
         "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
@@ -58,15 +62,21 @@ object HelperLibraryHandler
             }
 
             val instance = field.get(any)
-            println("$instance - field")
 
             if (instance is Library)
             {
-                if (instance.forcedRepository != null)
+                val forced = try
+                {
+                    instance.repository
+                } catch (ignored: Exception)
+                {
+                    null
+                }
+
+                if (forced != null)
                 {
                     internalLoad(
-                        instance,
-                        instance.forcedRepository!!
+                        instance, forced
                     )
 
                     println("[Cubed] Forced repository found for ${instance.artifactId}")
@@ -120,7 +130,7 @@ object HelperLibraryHandler
         {
             println("[helper] Dependency '$name' is not already in the libraries folder. Attempting to download...")
 
-            library.getUrl(url).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
+            getUrl(url, library).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
 
             println("[helper] Dependency '$name' successfully downloaded.")
         }
@@ -141,6 +151,21 @@ object HelperLibraryHandler
         }
 
         println("[helper] Loaded dependency '$name' successfully.")
+    }
+
+    @Throws(MalformedURLException::class)
+    fun getUrl(repoUrl: String, library: Library): URL
+    {
+        var repo: String = repoUrl
+
+        if (!repo.endsWith("/"))
+        {
+            repo += "/"
+        }
+
+        repo += "%s/%s/%s/%s-%s.jar"
+        val url = String.format(repo, library.groupId.replace(".", "/"), library.artifactId, library.version, library.artifactId, library.version)
+        return URL(url)
     }
 
     private fun getLibFolder(): File

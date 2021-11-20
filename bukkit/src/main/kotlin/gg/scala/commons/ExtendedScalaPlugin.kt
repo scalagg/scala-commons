@@ -13,17 +13,11 @@ import net.evilblock.cubed.util.ClassUtils
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
-
     override fun load()
     {
-
-        println("load has been called")
-
         val `package` = description.main.replace(
             this.javaClass.simpleName, "library"
         )
-
-        println("[Cubed] Targeting package $`package`")
 
         val classes = ClassUtils.getClassesInPackage(this, `package`)
 
