@@ -9,5 +9,5 @@ annotation class Library(
     val groupId: String,
     val artifactId: String,
     val version: String,
-    val repository: String
+    val repository: String = "https://repo1.maven.org/maven2"
 )

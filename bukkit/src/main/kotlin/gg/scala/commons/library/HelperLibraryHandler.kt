@@ -56,50 +56,17 @@ object HelperLibraryHandler
 
         for (instance in fields)
         {
-            val forced = try
-            {
-                instance.repository
-            } catch (ignored: Exception)
-            {
-                null
-            }
+            val forced = instance.repository
 
-            if (forced != null)
-            {
-                internalLoad(
-                    instance, forced
-                )
+            internalLoad(
+                instance, forced
+            )
 
-                println("[Cubed] Forced repository found for ${instance.artifactId}")
-            } else {
-                var foundRepository = false
-
-                for (commonRepository in COMMON_REPOSITORIES)
-                {
-                    try {
-                        internalLoad(
-                            instance,
-                            commonRepository
-                        )
-
-                        println("[Cubed] Repository found for ${instance.artifactId}")
-
-                        foundRepository = true
-                    } catch (exception: Exception)
-                    {
-                        println("[Cubed] Attempting new repository, for ${instance.artifactId}")
-                    }
-                }
-
-                if (!foundRepository)
-                {
-                    println("[helper] Failed to register ${instance.artifactId} version ${instance.version} due to no matching repository being found.")
-                }
-            }
+            println("[Cubed] Repository found for ${instance.artifactId}")
         }
     }
 
-    internal fun internalLoad(library: Library, url: String)
+    private fun internalLoad(library: Library, url: String)
     {
         println("[helper] ${
             String.format(
