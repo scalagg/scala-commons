@@ -52,62 +52,49 @@ object HelperLibraryHandler
      */
     fun loadAll(clazz: Class<*>, any: Any? = null)
     {
-        val fields = clazz.declaredFields
+        val fields = clazz.getAnnotationsByType(Library::class.java)
 
-        for (field in fields)
+        for (instance in fields)
         {
-            if (!field.isAccessible)
+            val forced = try
             {
-                field.isAccessible = true
+                instance.repository
+            } catch (ignored: Exception)
+            {
+                null
             }
 
-            val instance = field.get(any)
-
-            if (instance is Library)
+            if (forced != null)
             {
-                val forced = try
-                {
-                    instance.repository
-                } catch (ignored: Exception)
-                {
-                    null
-                }
+                internalLoad(
+                    instance, forced
+                )
 
-                if (forced != null)
+                println("[Cubed] Forced repository found for ${instance.artifactId}")
+            } else {
+                var foundRepository = false
+
+                for (commonRepository in COMMON_REPOSITORIES)
                 {
-                    internalLoad(
-                        instance, forced
-                    )
+                    try {
+                        internalLoad(
+                            instance,
+                            commonRepository
+                        )
 
-                    println("[Cubed] Forced repository found for ${instance.artifactId}")
-                } else {
-                    var foundRepository = false
+                        println("[Cubed] Repository found for ${instance.artifactId}")
 
-                    for (commonRepository in COMMON_REPOSITORIES)
+                        foundRepository = true
+                    } catch (exception: Exception)
                     {
-                        try {
-                            internalLoad(
-                                instance,
-                                commonRepository
-                            )
-
-                            println("[Cubed] Repository found for ${instance.artifactId}")
-
-                            foundRepository = true
-                        } catch (exception: Exception)
-                        {
-                            println("[Cubed] Attempting new repository, for ${instance.artifactId}")
-                        }
-                    }
-
-                    if (!foundRepository)
-                    {
-                        println("[helper] Failed to register ${instance.artifactId} version ${instance.version} due to no matching repository being found.")
+                        println("[Cubed] Attempting new repository, for ${instance.artifactId}")
                     }
                 }
-            } else
-            {
-                println("[helper] Failed to load ${field.name} due to it not being an instance of Library.")
+
+                if (!foundRepository)
+                {
+                    println("[helper] Failed to register ${instance.artifactId} version ${instance.version} due to no matching repository being found.")
+                }
             }
         }
     }
