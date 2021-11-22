@@ -22,6 +22,8 @@ class ViewAllPagesMenu(private val menu: PaginatedMenu) : Menu() {
         return "Jump to page"
     }
 
+    override fun size(buttons: Map<Int, Button>): Int = 36
+
     override fun getButtons(player: Player): Map<Int, Button> {
         val buttons = HashMap<Int, Button>()
 

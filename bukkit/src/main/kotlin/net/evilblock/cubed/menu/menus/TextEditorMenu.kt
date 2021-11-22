@@ -23,6 +23,16 @@ import java.util.*
 
 abstract class TextEditorMenu(protected val lines: LinkedList<String>) : PaginatedMenu() {
 
+    companion object
+    {
+        @JvmStatic
+        val SLOTS = listOf(
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+        )
+    }
+
     constructor(lines: Collection<String>) : this(lines = LinkedList(lines))
 
     private var changesMade: Boolean = false
@@ -30,6 +40,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     init {
         updateAfterClick = true
+        placeholdBorders = true
     }
 
     override fun getGlobalButtons(player: Player): Map<Int, Button>? {
@@ -41,14 +52,10 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             } else {
                 buttons[6] = NoChangesButton()
             }
-
-//            for (i in 1 until 8) {
-//                if (!buttons.containsKey(i)) {
-//                    buttons[i] = GlassButton(0)
-//                }
-//            }
         }
     }
+
+    override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button> {
         return hashMapOf<Int, Button>().also { buttons ->
@@ -59,11 +66,11 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
     }
 
     override fun size(buttons: Map<Int, Button>): Int {
-        return 54
+        return 45
     }
 
     override fun getMaxItemsPerPage(player: Player): Int {
-        return 45
+        return 27
     }
 
     override fun onClose(player: Player, manualClose: Boolean) {

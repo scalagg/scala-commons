@@ -24,6 +24,16 @@ import org.bukkit.inventory.InventoryView
 
 class TemplateEditorMenu : PaginatedMenu() {
 
+    companion object
+    {
+        @JvmStatic
+        val SLOTS = listOf(
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+        )
+    }
+
     init {
         updateAfterClick = true
     }
@@ -32,17 +42,15 @@ class TemplateEditorMenu : PaginatedMenu() {
         return "Menu Template Editor"
     }
 
-    override fun getGlobalButtons(player: Player): Map<Int, Button>? {
+    override fun getGlobalButtons(player: Player): Map<Int, Button>
+    {
         val buttons = hashMapOf<Int, Button>()
-
-        buttons[2] = CreateTemplateButton()
-
-        for (i in 9..17) {
-            buttons[i] = Button.placeholder(Material.STAINED_GLASS_PANE, 0, " ")
-        }
+        buttons[4] = CreateTemplateButton()
 
         return buttons
     }
+
+    override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button> {
         val buttons = hashMapOf<Int, Button>()
@@ -54,16 +62,12 @@ class TemplateEditorMenu : PaginatedMenu() {
         return buttons
     }
 
-    override fun getButtonsStartOffset(): Int {
-        return 9
-    }
-
     override fun getMaxItemsPerPage(player: Player): Int {
-        return 36
+        return 27
     }
 
     override fun size(buttons: Map<Int, Button>): Int {
-        return 54
+        return 45
     }
 
     private inner class CreateTemplateButton : AddButton() {

@@ -8,6 +8,7 @@
 package net.evilblock.cubed.menu
 
 import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
