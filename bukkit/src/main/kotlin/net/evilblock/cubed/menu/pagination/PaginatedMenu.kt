@@ -10,13 +10,13 @@ package net.evilblock.cubed.menu.pagination
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import kotlin.math.ceil
 import kotlin.math.min
 
-abstract class PaginatedMenu : Menu() {
+abstract class PaginatedMenu : Menu()
+{
 
     companion object
     {
@@ -27,7 +27,8 @@ abstract class PaginatedMenu : Menu() {
     var page: Int = 1
     var verticalView: Boolean = false
 
-    override fun getTitle(player: Player): String {
+    override fun getTitle(player: Player): String
+    {
         val pages = getPages(player)
 
         return "${getPrePaginatedTitle(player)}${
@@ -35,64 +36,79 @@ abstract class PaginatedMenu : Menu() {
         }"
     }
 
-    fun modPage(player: Player, mod: Int) {
+    fun modPage(player: Player, mod: Int)
+    {
         page += mod
         buttons.clear()
         openMenu(player)
     }
 
-    internal fun getPages(player: Player): Int {
+    internal fun getPages(player: Player): Int
+    {
         val buttonAmount = getAllPagesButtons(player).size
 
-        return if (buttonAmount == 0) {
+        return if (buttonAmount == 0)
+        {
             1
-        } else {
+        } else
+        {
             ceil(buttonAmount / getMaxItemsPerPage(player).toDouble()).toInt()
         }
     }
 
-    override fun getButtons(player: Player): MutableMap<Int, Button> {
+    override fun getButtons(player: Player): MutableMap<Int, Button>
+    {
         val buttons = HashMap<Int, Button>()
 
-        for (i in 1..7) {
+        for (i in 1..7)
+        {
             buttons[i] = PLACEHOLDER
         }
 
         val pageButtonSlots = getPageButtonSlots()
-        if (pageButtonSlots != null) {
+        if (pageButtonSlots != null)
+        {
             buttons[pageButtonSlots.first] = PageButton(-1, this)
             buttons[pageButtonSlots.second] = PageButton(1, this)
         }
 
         // insert entry buttons
         val buttonSlots = getAllPagesButtonSlots()
-        if (buttonSlots.isEmpty()) {
+        if (buttonSlots.isEmpty())
+        {
             val minIndex = ((page - 1) * getMaxItemsPerPage(player).toDouble()).toInt()
             val maxIndex = (page * getMaxItemsPerPage(player).toDouble()).toInt()
 
-            for (entry in getAllPagesButtons(player).entries) {
+            for (entry in getAllPagesButtons(player).entries)
+            {
                 var ind = entry.key
-                if (ind in minIndex until maxIndex) {
+                if (ind in minIndex until maxIndex)
+                {
                     ind -= (getMaxItemsPerPage(player) * (page - 1).toDouble()).toInt() - 9
                     buttons[getButtonsStartOffset() + ind] = entry.value
                 }
             }
-        } else {
+        } else
+        {
             val maxPerPage = buttonSlots.size
-            val minIndex = ((page - 1) * maxPerPage.toDouble()).toInt()
-            val maxIndex = (page * maxPerPage.toDouble()).toInt()
+            val minIndex = (page - 1) * maxPerPage
+            val maxIndex = page * maxPerPage
 
-            for ((index, entry) in getAllPagesButtons(player).entries.withIndex()) {
-                if (index in minIndex until min(maxIndex, buttonSlots.size)) {
-                    buttons[buttonSlots[index]] = entry.value
+            for ((index, entry) in getAllPagesButtons(player).entries.withIndex())
+            {
+                if (index in minIndex until maxIndex)
+                {
+                    buttons[buttonSlots[index - minIndex]] = entry.value
                 }
             }
         }
 
         // insert global buttons AFTER inserting entry buttons
         val global = getGlobalButtons(player)
-        if (global != null) {
-            for ((key, value) in global) {
+        if (global != null)
+        {
+            for ((key, value) in global)
+            {
                 buttons[key] = value
             }
         }
@@ -100,19 +116,23 @@ abstract class PaginatedMenu : Menu() {
         return buttons
     }
 
-    open fun getMaxItemsPerPage(player: Player): Int {
+    open fun getMaxItemsPerPage(player: Player): Int
+    {
         return 18
     }
 
-    open fun getButtonsStartOffset(): Int {
+    open fun getButtonsStartOffset(): Int
+    {
         return 0
     }
 
-    open fun getPageButtonSlots(): Pair<Int, Int>? {
+    open fun getPageButtonSlots(): Pair<Int, Int>?
+    {
         return Pair(0, 8)
     }
 
-    open fun getGlobalButtons(player: Player): Map<Int, Button>? {
+    open fun getGlobalButtons(player: Player): Map<Int, Button>?
+    {
         return null
     }
 
@@ -120,7 +140,8 @@ abstract class PaginatedMenu : Menu() {
 
     abstract fun getAllPagesButtons(player: Player): Map<Int, Button>
 
-    open fun getAllPagesButtonSlots(): List<Int> {
+    open fun getAllPagesButtonSlots(): List<Int>
+    {
         return emptyList()
     }
 
