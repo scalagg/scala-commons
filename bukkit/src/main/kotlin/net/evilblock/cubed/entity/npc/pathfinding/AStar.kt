@@ -22,7 +22,6 @@ class AStar(
     canClimbLadders: Boolean = false,
     maxFallDistance: Double = 1.0
 ) {
-
     private val startNode: Node
     private var endNode: Node
 

@@ -18,11 +18,21 @@ import kotlin.math.min
 
 abstract class PaginatedMenu : Menu() {
 
+    companion object
+    {
+        @JvmStatic
+        val PLACEHOLDER = ItemBuilder(Material.STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
+    }
+
     var page: Int = 1
     var verticalView: Boolean = false
 
     override fun getTitle(player: Player): String {
-        return getPrePaginatedTitle(player) + ChatColor.RESET.toString() + " - " + page + "/" + getPages(player)
+        val pages = getPages(player)
+
+        return "${getPrePaginatedTitle(player)}${
+            if (pages > 1) " ($page/$pages)" else ""
+        }"
     }
 
     fun modPage(player: Player, mod: Int) {
@@ -45,7 +55,7 @@ abstract class PaginatedMenu : Menu() {
         val buttons = HashMap<Int, Button>()
 
         for (i in 1..7) {
-            buttons[i] = ItemBuilder(Material.STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
+            buttons[i] = PLACEHOLDER
         }
 
         val pageButtonSlots = getPageButtonSlots()
@@ -69,8 +79,8 @@ abstract class PaginatedMenu : Menu() {
             }
         } else {
             val maxPerPage = buttonSlots.size
-            val minIndex = (page - 1) * maxPerPage
-            val maxIndex = page * maxPerPage
+            val minIndex = ((page - 1) * maxPerPage.toDouble()).toInt()
+            val maxIndex = (page * maxPerPage.toDouble()).toInt()
 
             for ((index, entry) in getAllPagesButtons(player).entries.withIndex()) {
                 if (index in minIndex until min(maxIndex, buttonSlots.size)) {

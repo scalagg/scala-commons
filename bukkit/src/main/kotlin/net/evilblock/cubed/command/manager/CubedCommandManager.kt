@@ -40,12 +40,12 @@ class CubedCommandManager(
             getFormat(it).setColor(1, primary)
         }
 
-//        defaultExceptionHandler = ExceptionHandler { command, registeredCommand, sender, args, t ->
-//            sender.sendMessage("${CC.RED}Something went wrong while trying to issue ${CC.YELLOW}/${command.name}${CC.RED}.")
-//            sender.sendMessage("${CC.RED}${t.message}.")
-//
-//            return@ExceptionHandler true
-//        }
+        defaultExceptionHandler = ExceptionHandler { command, _, sender, args, t ->
+            sender.sendMessage("${CC.RED}Something went terribly wrong while trying to perform this command.")
+            plugin.logger.info("[Exception] Thrown during \"/${command.execCommandLabel} ${args.joinToString(" ")}\": ${t.message}")
+
+            return@ExceptionHandler true
+        }
 
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val firstArg = c.popFirstArg()
