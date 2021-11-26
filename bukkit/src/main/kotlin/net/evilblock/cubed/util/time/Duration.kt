@@ -22,12 +22,15 @@ class Duration(private var time: Long) {
         val NOT_PROVIDED = Duration(-1L)
 
         @JvmStatic
+        val PERMANENT = Duration(Long.MAX_VALUE)
+
+        @JvmStatic
         fun parse(input: String): Duration {
             if (input == "NOT_PROVIDED") {
                 return NOT_PROVIDED
             }
 
-            if (input.equals("perm", ignoreCase = true) || input.equals("permanent", ignoreCase = true)) {
+            if (input.equals("perm", ignoreCase = true) || input.equals("permanent", ignoreCase = true) || input.equals("-s", true)) {
                 return Duration(Long.MAX_VALUE)
             }
 
