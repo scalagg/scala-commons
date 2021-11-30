@@ -13,6 +13,16 @@ import net.evilblock.cubed.util.ClassUtils
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
+    fun invokeTrackedTask(id: String, lambda: () -> Unit)
+    {
+        val current = System.currentTimeMillis()
+        lambda.invoke()
+
+        logger.info("Loaded $id resources in ${
+            System.currentTimeMillis() - current
+        }ms!")
+    }
+
     override fun load()
     {
         val `package` = description.main.replace(

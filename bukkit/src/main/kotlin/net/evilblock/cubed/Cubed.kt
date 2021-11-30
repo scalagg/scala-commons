@@ -8,7 +8,6 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import me.lucko.helper.maven.MavenLibrary
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
@@ -47,6 +46,7 @@ import net.evilblock.cubed.plugin.PluginFramework
 import net.evilblock.cubed.plugin.event.EventListener
 import net.evilblock.cubed.poster.PosterHandler
 import net.evilblock.cubed.poster.placed.PlacedPosterHandler
+import net.evilblock.cubed.scheduler.CubedScheduler
 import net.evilblock.cubed.scoreboard.ScoreboardListeners
 import net.evilblock.cubed.scoreboard.ScoreboardThread
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
@@ -67,7 +67,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
@@ -133,6 +132,8 @@ class Cubed : ExtendedJavaPlugin() {
             return
         }
 
+        CubedScheduler.initialLoad()
+
         running = true
     }
 
@@ -146,7 +147,7 @@ class Cubed : ExtendedJavaPlugin() {
                 PlacedPosterHandler.onDisable()
             }
 
-            LogHandler.onDisable()
+            LogHandler.completeFlush()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -245,7 +246,7 @@ class Cubed : ExtendedJavaPlugin() {
     private fun loadTasks() {
         ScoreboardThread().start()
 
-        Tasks.asyncTimer(20L * 60L * 2, 20L * 60L * 2) {
+        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncMinuteMarkEvent> {
             systemSave()
             uuidCache.load()
         }

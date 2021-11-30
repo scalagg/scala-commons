@@ -41,7 +41,7 @@ class SelectItemStackMenu(
         }
 
         override fun getMaterial(player: Player): Material {
-            return Material.NETHER_STAR
+            return Material.COMPASS
         }
     }
 

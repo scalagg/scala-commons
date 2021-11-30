@@ -7,33 +7,35 @@
 
 package net.evilblock.cubed.logging
 
+import net.evilblock.cubed.scheduler.CubedScheduler
 import net.evilblock.cubed.util.bukkit.Tasks
 import java.util.concurrent.ConcurrentHashMap
 
-object LogHandler {
+object LogHandler
+{
 
     private var logFiles: MutableSet<LogFile> = ConcurrentHashMap.newKeySet()
 
-    fun initialLoad() {
-        Tasks.asyncTimer(20L * 30L, 20L * 30L) {
-            for (logFile in
-            logFiles) {
-                logFile.flush()
-            }
-        }
+    fun initialLoad()
+    {
+        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncHourMarkEvent> { completeFlush() }
     }
 
-    fun onDisable() {
-        for (logFile in logFiles) {
+    fun completeFlush()
+    {
+        for (logFile in logFiles)
+        {
             logFile.flush()
         }
     }
 
-    fun trackLogFile(logFile: LogFile) {
+    fun trackLogFile(logFile: LogFile)
+    {
         logFiles.add(logFile)
     }
 
-    fun forgetLogFile(logFile: LogFile) {
+    fun forgetLogFile(logFile: LogFile)
+    {
         Tasks.async {
             logFile.flush()
         }

@@ -153,8 +153,8 @@ object EntityCommand : BaseCommand() {
         player.sendMessage("")
         player.sendMessage("${ChatColor.GREEN}Printing stats for entities...")
         player.sendMessage("")
-        player.sendMessage("${ChatColor.GOLD}Current ID: ${Entity.currId()}")
-        player.sendMessage("${ChatColor.GOLD}Tracked entities: ${NumberFormat.getInstance().format(EntityHandler.getEntities().size)}")
+        player.sendMessage("${ChatColor.GOLD}Current ID: ${CC.WHITE}${Entity.currId()}")
+        player.sendMessage("${ChatColor.GOLD}Tracked entities: ${CC.WHITE}${NumberFormat.getInstance().format(EntityHandler.getEntities().size)}")
         player.sendMessage("")
     }
 
