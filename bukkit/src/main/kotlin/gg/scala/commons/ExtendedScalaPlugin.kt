@@ -3,6 +3,7 @@ package gg.scala.commons
 import gg.scala.commons.library.HelperLibraryHandler
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.util.ClassUtils
+import net.evilblock.cubed.util.bukkit.Tasks
 
 /**
  * An extension of [ExtendedJavaPlugin] with support
@@ -18,9 +19,51 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         val current = System.currentTimeMillis()
         lambda.invoke()
 
-        logger.info("Loaded $id resources in ${
+        logger.info("Finished $id in ${
             System.currentTimeMillis() - current
         }ms!")
+    }
+
+    /**
+     * Invokes the [lambda] asynchronously and
+     * tracks it until its failure/success.
+     *
+     * If this task takes longer than the [timeout], we
+     * will invoke the [onFailure] function synchronously.
+     *
+     * Status of this tracked task will report on completion
+     * the same fashion as [invokeTrackedTask].
+     *
+     * @author GrowlyX
+     * @since 11/29/2021
+     */
+    fun invokeTrackedTaskWithTimeout(
+        id: String, timeout: Long,
+        onCompletion: () -> Unit,
+        onFailure: () -> Unit,
+        lambda: () -> Unit
+    )
+    {
+        val current = System.currentTimeMillis()
+        var complete = false
+
+        Tasks.async {
+            lambda.invoke()
+            onCompletion.invoke()
+
+            complete = true
+
+            logger.info("Finished $id in ${
+                System.currentTimeMillis() - current
+            }ms!")
+        }
+
+        Tasks.delayed(timeout) {
+            if (!complete)
+            {
+                onFailure.invoke()
+            }
+        }
     }
 
     override fun load()
