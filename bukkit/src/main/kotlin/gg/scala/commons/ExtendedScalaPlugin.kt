@@ -32,7 +32,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
      * will invoke the [onFailure] function synchronously.
      *
      * Status of this tracked task will report on completion
-     * the same fashion as [invokeTrackedTask].
+     * in the same fashion as [invokeTrackedTask].
      *
      * @author GrowlyX
      * @since 11/29/2021
