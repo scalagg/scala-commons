@@ -23,32 +23,35 @@ object VisibilityHandler {
     }
 
     fun update(player: Player) {
-        Tasks.async {
+        if (!Bukkit.isPrimaryThread())
+        {
+            Tasks.sync {
+                updateAllTo(player)
+                updateToAll(player)
+            }
+        } else
+        {
             updateAllTo(player)
             updateToAll(player)
         }
     }
 
     fun updateAllTo(viewer: Player) {
-        Tasks.sync {
-            for (target in Bukkit.getOnlinePlayers()) {
-                if (!shouldSee(target, viewer)) {
-                    viewer.hidePlayer(target); addPlayer(target)
-                } else {
-                    viewer.showPlayer(target)
-                }
+        for (target in Bukkit.getOnlinePlayers()) {
+            if (!shouldSee(target, viewer)) {
+                viewer.hidePlayer(target); addPlayer(target)
+            } else {
+                viewer.showPlayer(target)
             }
         }
     }
 
     fun updateToAll(target: Player) {
-        Tasks.sync {
-            for (viewer in Bukkit.getOnlinePlayers()) {
-                if (!shouldSee(target, viewer)) {
-                    viewer.hidePlayer(target); addPlayer(target)
-                } else {
-                    viewer.showPlayer(target)
-                }
+        for (viewer in Bukkit.getOnlinePlayers()) {
+            if (!shouldSee(target, viewer)) {
+                viewer.hidePlayer(target); addPlayer(target)
+            } else {
+                viewer.showPlayer(target)
             }
         }
     }

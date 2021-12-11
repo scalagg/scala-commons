@@ -16,7 +16,7 @@ plugins {
     id 'java'
     id 'maven-publish'
 //    id 'org.ajoberstar:grgit:1.1.0'
-    id "com.gorylenko.gradle-git-properties" version "2.3.1"
+//    id "com.gorylenko.gradle-git-properties" version "2.3.1"
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
@@ -97,10 +97,6 @@ publishing {
             project.shadow.component(publication)
         }
     }
-}
-
-generateGitProperties {
-    System.setProperty("GIT_COMMIT_ID_ABBREV", gitProperties.getKeys().get(8).toString())
 }
 
 processResources {
