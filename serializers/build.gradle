@@ -6,11 +6,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
  * Use and or redistribution of compiled JAR file and or source code is permitted only if given
  * explicit permission from original author: Joel Evans
  */
-
-buildscript {
-    ext.kotlin_version = '1.6.0'
-}
-
 plugins {
     id 'idea'
     id 'java'
@@ -25,10 +20,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
-    implementation 'com.google.code.gson:gson:2.8.8'
-    compileOnly 'org.mongodb:bson:4.3.2'
+    compileOnly 'com.google.code.gson:gson:2.8.9'
+    compileOnly 'org.mongodb:bson:4.4.0'
 }
 
 compileKotlin {

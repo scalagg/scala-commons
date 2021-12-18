@@ -6,16 +6,11 @@ import org.apache.tools.ant.filters.ReplaceTokens
  * Use and or redistribution of compiled JAR file and or source code is permitted only if given
  * explicit permission from original author: Joel Evans
  */
-
-buildscript {
-    ext.kotlin_version = '1.5.21'
-}
-
 plugins {
     id 'idea'
     id 'java'
     id 'maven-publish'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
@@ -29,13 +24,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
     implementation project(':serializers')
     implementation project(':banana')
 
     implementation 'redis.clients:jedis:3.6.3'
-    compileOnly 'com.google.code.gson:gson:2.8.8'
+    compileOnly 'com.google.code.gson:gson:2.8.9'
     implementation 'org.mongodb:mongodb-driver:3.12.10'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
 

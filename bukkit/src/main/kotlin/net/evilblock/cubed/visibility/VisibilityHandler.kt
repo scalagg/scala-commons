@@ -39,9 +39,9 @@ object VisibilityHandler {
     fun updateAllTo(viewer: Player) {
         for (target in Bukkit.getOnlinePlayers()) {
             if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target); addPlayer(target)
+                viewer.hidePlayer(target); removePlayer(target)
             } else {
-                viewer.showPlayer(target)
+                viewer.showPlayer(target); addPlayer(target)
             }
         }
     }
@@ -49,9 +49,26 @@ object VisibilityHandler {
     fun updateToAll(target: Player) {
         for (viewer in Bukkit.getOnlinePlayers()) {
             if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target); addPlayer(target)
+                viewer.hidePlayer(target); removePlayer(target)
             } else {
-                viewer.showPlayer(target)
+                viewer.showPlayer(target); addPlayer(target)
+            }
+        }
+    }
+
+    fun removePlayer(player: Player)
+    {
+        if (player.hasMetadata("vanished"))
+        {
+            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
+                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "REMOVE_PLAYER")!!,
+                arrayListOf(MinecraftReflection.getHandle(player))
+            )
+
+            Tasks.sync {
+                Bukkit.getOnlinePlayers().forEach {
+                    MinecraftProtocol.send(it, playerInfoAddPacket)
+                }
             }
         }
     }
