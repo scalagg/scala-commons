@@ -14,6 +14,7 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo
 import org.bukkit.entity.Player
 import java.lang.reflect.Constructor
 

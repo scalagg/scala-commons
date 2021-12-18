@@ -39,9 +39,9 @@ object VisibilityHandler {
     fun updateAllTo(viewer: Player) {
         for (target in Bukkit.getOnlinePlayers()) {
             if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target); removePlayer(target)
+                viewer.hidePlayer(target); removePlayer(target, viewer)
             } else {
-                viewer.showPlayer(target); addPlayer(target)
+                viewer.showPlayer(target); addPlayer(target, viewer)
             }
         }
     }
@@ -49,14 +49,14 @@ object VisibilityHandler {
     fun updateToAll(target: Player) {
         for (viewer in Bukkit.getOnlinePlayers()) {
             if (!shouldSee(target, viewer)) {
-                viewer.hidePlayer(target); removePlayer(target)
+                viewer.hidePlayer(target); removePlayer(target, viewer)
             } else {
-                viewer.showPlayer(target); addPlayer(target)
+                viewer.showPlayer(target); addPlayer(target, viewer)
             }
         }
     }
 
-    fun removePlayer(player: Player)
+    fun removePlayer(player: Player, other: Player)
     {
         if (player.hasMetadata("vanished"))
         {
@@ -65,24 +65,20 @@ object VisibilityHandler {
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            Bukkit.getOnlinePlayers().forEach {
-                MinecraftProtocol.send(it, playerInfoAddPacket)
-            }
+            MinecraftProtocol.send(other, playerInfoAddPacket)
         }
     }
 
-    fun addPlayer(player: Player)
+    fun addPlayer(player: Player, other: Player)
     {
-        if (!player.hasMetadata("vanished"))
+        if (player.hasMetadata("vanished"))
         {
             val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
                 Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!,
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            Bukkit.getOnlinePlayers().forEach {
-                MinecraftProtocol.send(it, playerInfoAddPacket)
-            }
+            MinecraftProtocol.send(other, playerInfoAddPacket)
         }
     }
 
