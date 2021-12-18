@@ -65,10 +65,8 @@ object VisibilityHandler {
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            Tasks.sync {
-                Bukkit.getOnlinePlayers().forEach {
-                    MinecraftProtocol.send(it, playerInfoAddPacket)
-                }
+            Bukkit.getOnlinePlayers().forEach {
+                MinecraftProtocol.send(it, playerInfoAddPacket)
             }
         }
     }
@@ -82,10 +80,8 @@ object VisibilityHandler {
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            Tasks.sync {
-                Bukkit.getOnlinePlayers().forEach {
-                    MinecraftProtocol.send(it, playerInfoAddPacket)
-                }
+            Bukkit.getOnlinePlayers().forEach {
+                MinecraftProtocol.send(it, playerInfoAddPacket)
             }
         }
     }
