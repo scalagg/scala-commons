@@ -17,6 +17,14 @@ object UUIDCacheListeners : Listener {
 
     @EventHandler
     fun onAsyncPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
+        try
+        {
+            Cubed.instance.uuidCache
+        } catch (e: Exception)
+        {
+            return
+        }
+
         var update = false
         if (Cubed.instance.uuidCache.isCached(event.uniqueId)) {
             val name = Cubed.instance.uuidCache.name(event.uniqueId)

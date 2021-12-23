@@ -8,9 +8,9 @@
 package net.evilblock.cubed.menu
 
 import net.evilblock.cubed.Cubed
-import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
+import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -23,7 +23,8 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 
-abstract class Menu {
+abstract class Menu
+{
 
     var buttons: ConcurrentHashMap<Int, Button> = ConcurrentHashMap()
     var autoUpdate: Boolean = false
@@ -40,27 +41,36 @@ abstract class Menu {
 
     private var staticTitle: String
 
-    constructor() {
+    constructor()
+    {
         staticTitle = " "
     }
 
-    constructor(title: String) {
+    constructor(title: String)
+    {
         staticTitle = title
     }
 
     abstract fun getButtons(player: Player): Map<Int, Button>
 
-    open fun getTitle(player: Player): String {
+    open fun getTitle(player: Player): String
+    {
         return staticTitle
     }
 
-    open fun onOpen(player: Player) {}
+    open fun onOpen(player: Player)
+    {
+    }
 
-    open fun onClose(player: Player, manualClose: Boolean) {}
+    open fun onClose(player: Player, manualClose: Boolean)
+    {
+    }
 
-    internal fun createInventory(player: Player): Inventory {
+    internal fun createInventory(player: Player): Inventory
+    {
         var title = ChatColor.translateAlternateColorCodes('&', getTitle(player))
-        if (title.length > 32) {
+        if (title.length > 32)
+        {
             title = title.substring(0, 31)
         }
 
@@ -68,16 +78,20 @@ abstract class Menu {
         var size = size(invButtons)
 
         val minSize = getMinSize()
-        if (minSize != -1) {
-            if (minSize > size) {
+        if (minSize != -1)
+        {
+            if (minSize > size)
+            {
                 size = minSize
             }
         }
 
         val inv = Bukkit.createInventory(null, size, title)
 
-        for (buttonEntry in invButtons.entries) {
-            if (buttonEntry.key >= size) {
+        for (buttonEntry in invButtons.entries)
+        {
+            if (buttonEntry.key >= size)
+            {
                 continue
             }
 
@@ -103,11 +117,14 @@ abstract class Menu {
             }
         }
 
-        if (placeholder) {
+        if (placeholder)
+        {
             val placeholder = Button.placeholder(Material.STAINED_GLASS_PANE, 15.toByte(), " ")
 
-            for (index in 0 until size(invButtons)) {
-                if (invButtons[index] == null) {
+            for (index in 0 until size(invButtons))
+            {
+                if (invButtons[index] == null)
+                {
                     buttons[index] = placeholder
                     inv.setItem(index, placeholder.getButtonItem(player))
                 }
@@ -117,80 +134,106 @@ abstract class Menu {
         return inv
     }
 
-    fun openMenu(player: Player) {
-        if (async) {
+    fun openMenu(player: Player)
+    {
+        if (async)
+        {
             Tasks.async {
-                try {
+                try
+                {
                     asyncLoadResources(player) { successfulLoad ->
-                        if (successfulLoad) {
+                        if (successfulLoad)
+                        {
                             val inv = createInventory(player)
 
-                            try {
+                            try
+                            {
                                 openCustomInventory(player, inv)
-                            } catch (ex: Exception) {
+                            } catch (ex: Exception)
+                            {
                                 ex.printStackTrace()
                             }
-                        } else {
+                        } else
+                        {
                             player.sendMessage("${ChatColor.RED}Couldn't load menu...")
                         }
                     }
-                } catch (e: Exception) {
+                } catch (e: Exception)
+                {
                     e.printStackTrace()
                     player.sendMessage("${ChatColor.RED}Couldn't load menu...")
                 }
             }
-        } else {
+        } else
+        {
             val inv = createInventory(player)
 
-            try {
+            try
+            {
                 openCustomInventory(player, inv)
-            } catch (ex: Exception) {
+            } catch (ex: Exception)
+            {
                 ex.printStackTrace()
             }
         }
     }
 
-    private fun openCustomInventory(player: Player, inv: Inventory) {
+    private fun openCustomInventory(
+        player: Player, inventory: Inventory
+    )
+    {
+        val entityPlayer = MinecraftReflection.getHandle(player)
         val openInventory = player.openInventory
-        if (openInventory != null) {
+
+        if (openInventory != null)
+        {
             // check if top inv size is the same as new menu size and if the titles match
-            if (openInventory.topInventory != null && openInventory.topInventory.size == inv.size && openInventory.topInventory.title == inv.title) {
-                openInventory.topInventory.contents = inv.contents
+            if (openInventory.topInventory != null && openInventory.topInventory.size == inventory.size && openInventory.topInventory.title == inventory.title)
+            {
+                openInventory.topInventory.contents = inventory.contents
                 return
             }
 
             manualClose = false
-            player.closeInventory()
         }
 
-        val entityPlayer = MinecraftReflection.getHandle(player)
-
-        if (Bukkit.isPrimaryThread()) {
-            OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
+        if (Bukkit.isPrimaryThread())
+        {
+            OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
+                player, inventory, entityPlayer, getWindowType(inventory.size)
+            )
 
             update(player)
 
-            if (openInventory != null) {
+            if (player.openInventory != null)
+            {
                 player.updateInventory()
             }
-        } else {
-            Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, {
-                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(player, inv, entityPlayer, getWindowType(inv.size))
+        } else
+        {
+            Tasks.delayed(1L)
+            {
+                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
+                    player, inventory, entityPlayer, getWindowType(inventory.size)
+                )
 
                 update(player)
 
-                if (openInventory != null) {
+                if (player.openInventory != null)
+                {
                     player.updateInventory()
                 }
-            }, 1L)
+            }
         }
     }
 
-    private fun getWindowType(size: Int): String {
+    private fun getWindowType(size: Int): String
+    {
         return "minecraft:chest"
     }
 
-    fun update(player: Player) {
+    fun update(player: Player)
+    {
         // set open menu reference to this menu
         currentlyOpenedMenus[player.uniqueId] = this
 
@@ -199,45 +242,59 @@ abstract class Menu {
         onOpen(player)
     }
 
-    open fun size(buttons: Map<Int, Button>): Int {
+    open fun size(buttons: Map<Int, Button>): Int
+    {
         var highest = 0
-        for (buttonValue in buttons.keys) {
-            if (buttonValue > highest) {
+        for (buttonValue in buttons.keys)
+        {
+            if (buttonValue > highest)
+            {
                 highest = buttonValue
             }
         }
         return (ceil((highest + 1) / 9.0) * 9.0).toInt()
     }
 
-    open fun getMinSize(): Int {
+    open fun getMinSize(): Int
+    {
         return -1
     }
 
-    fun getSlot(x: Int, y: Int): Int {
+    fun getSlot(x: Int, y: Int): Int
+    {
         return 9 * y + x
     }
 
-    open fun asyncLoadResources(player: Player, callback: (Boolean) -> Unit) {}
+    open fun asyncLoadResources(player: Player, callback: (Boolean) -> Unit)
+    {
+    }
 
-    open fun acceptsInsertedItem(player: Player, itemStack: ItemStack, slot: Int): Boolean {
+    open fun acceptsInsertedItem(player: Player, itemStack: ItemStack, slot: Int): Boolean
+    {
         return false
     }
 
-    open fun acceptsShiftClickedItem(player: Player, itemStack: ItemStack): Boolean {
+    open fun acceptsShiftClickedItem(player: Player, itemStack: ItemStack): Boolean
+    {
         return false
     }
 
-    open fun acceptsDraggedItems(player: Player, items: Map<Int, ItemStack>): Boolean {
+    open fun acceptsDraggedItems(player: Player, items: Map<Int, ItemStack>): Boolean
+    {
         return false
     }
 
-    open fun getAutoUpdateTicks(): Long {
+    open fun getAutoUpdateTicks(): Long
+    {
         return autoUpdateInterval
     }
 
-    open fun preAutoUpdate() {}
+    open fun preAutoUpdate()
+    {
+    }
 
-    companion object {
+    companion object
+    {
 
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
@@ -251,7 +308,8 @@ abstract class Menu {
         )
 
         @JvmStatic
-        fun styleAction(color: ChatColor, action: String, text: String): String {
+        fun styleAction(color: ChatColor, action: String, text: String): String
+        {
             return color.toString() + ChatColor.BOLD + action + ChatColor.RESET + color + " " + text
         }
 

@@ -16,6 +16,8 @@ import gg.scala.banana.BananaBuilder
 import gg.scala.banana.credentials.BananaCredentials
 import gg.scala.banana.options.BananaOptions
 import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
 import net.evilblock.cubed.menu.template.menu.TemplatePreviewMenu
@@ -25,6 +27,7 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.io.BufferedReader
@@ -40,6 +43,29 @@ object CubedCommand : BaseCommand() {
     @HelpCommand
     fun onHelp(help: CommandHelp) {
         help.showHelp()
+    }
+
+    @Subcommand("something")
+    fun onSomething(player: Player)
+    {
+        Something().openMenu(player)
+    }
+
+    class Something : PaginatedMenu()
+    {
+        override fun getPrePaginatedTitle(player: Player) = "Something"
+
+        override fun getAllPagesButtons(player: Player): Map<Int, Button>
+        {
+            val button = ItemBuilder(Material.PAPER).toButton()
+
+            return mutableMapOf<Int, Button>().also {
+                for (i in 0..400)
+                {
+                    it[it.size] = button
+                }
+            }
+        }
     }
 
     @Subcommand("find-username")

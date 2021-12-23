@@ -62,12 +62,14 @@ class CubedCommandManager(
 
             return@registerContext entity as NpcEntity?
         }
+
         commandContexts.registerIssuerOnlyContext(ConsoleCommandSender::class.java) { c ->
             if (c.sender !is ConsoleCommandSender) {
                 throw ConditionFailedException("Only console may perform this command.")
             }
             return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
         }
+
         commandContexts.registerContext(Entity::class.java) { c ->
             val firstArg = c.popFirstArg()
 
@@ -81,6 +83,7 @@ class CubedCommandManager(
                 }
             } ?: throw ConditionFailedException("No entity was found.")
         }
+
         commandContexts.registerContext(NpcTexture::class.java) { c ->
             val firstArg = c.popFirstArg()
 
@@ -98,9 +101,11 @@ class CubedCommandManager(
                 }
             }
         }
+
         commandCompletions.registerAsyncCompletion("npctextures") { c ->
             return@registerAsyncCompletion CubedConfig.getNpcTextureIds().toList()
         }
+
         commandContexts.registerContext(MenuTemplate::class.java) { c ->
             val firstArg = c.popFirstArg()
 
@@ -110,6 +115,7 @@ class CubedCommandManager(
                 throw ConditionFailedException("No menu template matching ${CC.YELLOW}${firstArg}${CC.RED} found.")
             }
         }
+
         commandCompletions.registerAsyncCompletion("menutemplates") { c ->
             val completions = mutableListOf<String>()
 
@@ -119,6 +125,7 @@ class CubedCommandManager(
 
             return@registerAsyncCompletion completions
         }
+
         commandContexts.registerContext(Duration::class.java) { c ->
             val firstArg = c.popFirstArg()
 

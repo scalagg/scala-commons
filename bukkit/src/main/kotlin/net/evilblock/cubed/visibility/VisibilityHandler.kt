@@ -65,7 +65,10 @@ object VisibilityHandler {
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            MinecraftProtocol.send(other, playerInfoAddPacket)
+            Tasks.delayed(1L)
+            {
+                MinecraftProtocol.send(other, playerInfoAddPacket)
+            }
         }
     }
 
@@ -78,7 +81,10 @@ object VisibilityHandler {
                 arrayListOf(MinecraftReflection.getHandle(player))
             )
 
-            MinecraftProtocol.send(other, playerInfoAddPacket)
+            Tasks.delayed(1L)
+            {
+                MinecraftProtocol.send(other, playerInfoAddPacket)
+            }
         }
     }
 
