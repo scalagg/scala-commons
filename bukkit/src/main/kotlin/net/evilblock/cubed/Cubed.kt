@@ -8,6 +8,9 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
+import gg.scala.banana.Banana
+import gg.scala.banana.BananaBuilder
+import gg.scala.banana.credentials.BananaCredentials
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
@@ -57,6 +60,7 @@ import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.store.uuidcache.UUIDCache
+import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
@@ -125,6 +129,22 @@ class Cubed : ExtendedJavaPlugin() {
             filterConsoleLogs()
 
             GlowEnchantment.registerEnchant()
+
+            Tasks.delayed(20L)
+            {
+                try
+                {
+                    uuidCache
+                } catch (ignored: Exception)
+                {
+                    logger.severe("COULD NOT FIND UUID CACHE IMPLEMENTATION! Fallback: Default implementation!")
+
+                    val banana = BananaBuilder()
+                        .credentials(BananaCredentials()).build()
+
+                    uuidCache = RedisUUIDCache(banana)
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             startupFailed = true

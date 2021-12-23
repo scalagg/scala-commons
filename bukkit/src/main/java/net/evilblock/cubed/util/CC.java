@@ -20,6 +20,7 @@ public class CC {
 
 	public static String PRI = CC.WHITE;
 	public static String SEC = CC.GREEN;
+
 	public static String B_PRI = PRI + BOLD;
 	public static String B_SEC = PRI + BOLD;
 
