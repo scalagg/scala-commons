@@ -17,11 +17,23 @@ import org.bukkit.inventory.InventoryView
 class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu, private val current: Boolean) : Button() {
 
     override fun getName(player: Player): String {
-        return "§ePage " + this.page
+        return CC.YELLOW + "Page #$page"
     }
 
     override fun getDescription(player: Player): List<String> {
-        return if (current) listOf(CC.GREEN + "This is the current page.") else listOf(CC.GRAY + "Click to switch to this page!")
+        val description = mutableListOf<String>()
+
+        if (current)
+        {
+            description.add("")
+            description.add("${CC.GREEN}You're on this page!")
+        } else
+        {
+            description.add("${CC.GREEN}Left-click${CC.WHITE} to switch to")
+            description.add("${CC.WHITE}this page.")
+        }
+
+        return description
     }
 
     override fun getMaterial(player: Player): Material {

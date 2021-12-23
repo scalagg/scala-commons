@@ -10,26 +10,29 @@ package net.evilblock.cubed.menu.pagination
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.BackButton
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.entity.Player
 
-class ViewAllPagesMenu(private val menu: PaginatedMenu) : Menu() {
+class ViewAllPagesMenu(
+    private val menu: PaginatedMenu
+) : Menu() {
 
     init {
         autoUpdate = true
+        placeholdBorders = true
     }
 
     override fun getTitle(player: Player): String {
-        return "Jump to page"
+        return "Page Selector"
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 36
+    override fun size(buttons: Map<Int, Button>): Int
+    {
+        return super.size(buttons) + 9
+    }
 
     override fun getButtons(player: Player): Map<Int, Button> {
         val buttons = HashMap<Int, Button>()
-
-        buttons[0] = BackButton {
-            menu.openMenu(player)
-        }
 
         var index = 10
         for (i in 1..menu.getPages(player)) {
@@ -40,6 +43,14 @@ class ViewAllPagesMenu(private val menu: PaginatedMenu) : Menu() {
         }
 
         return buttons
+    }
+
+    override fun onClose(player: Player, manualClose: Boolean)
+    {
+        Tasks.delayed(1L)
+        {
+            menu.openMenu(player)
+        }
     }
 
 }
