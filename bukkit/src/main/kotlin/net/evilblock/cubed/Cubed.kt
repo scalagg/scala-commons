@@ -103,7 +103,7 @@ class Cubed : ExtendedJavaPlugin() {
             runSetupCheck()
 
             CC.setup(
-                "GREEN", "YELLOW"
+                CC.GREEN, CC.YELLOW
             )
 
             TimeZone.setDefault(
