@@ -62,6 +62,7 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -100,6 +101,10 @@ class Cubed : ExtendedJavaPlugin() {
         try {
             saveDefaultConfig()
             runSetupCheck()
+
+            CC.setup(
+                "GREEN", "YELLOW"
+            )
 
             TimeZone.setDefault(
                 TimeZone.getTimeZone(

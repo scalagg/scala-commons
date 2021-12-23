@@ -16,13 +16,10 @@ public class CC {
 		B_SEC = secondary + BOLD;
 	}
 
-	public static final String BOLD = ChatColor.BOLD.toString();
-
-	public static String PRI = CC.WHITE;
-	public static String SEC = CC.GREEN;
-
-	public static String B_PRI = PRI + BOLD;
-	public static String B_SEC = PRI + BOLD;
+	public static String PRI;
+	public static String SEC;
+	public static String B_PRI;
+	public static String B_SEC;
 
 	public static final String BLUE = ChatColor.BLUE.toString();
 	public static final String AQUA = ChatColor.AQUA.toString();
@@ -33,6 +30,7 @@ public class CC {
 	public static final String GREEN = ChatColor.GREEN.toString();
 	public static final String WHITE = ChatColor.WHITE.toString();
 	public static final String BLACK = ChatColor.BLACK.toString();
+	public static final String BOLD = ChatColor.BOLD.toString();
 	public static final String ITALIC = ChatColor.ITALIC.toString();
 	public static final String STRIKE_THROUGH = ChatColor.STRIKETHROUGH.toString();
 	public static final String RESET = ChatColor.RESET.toString();
