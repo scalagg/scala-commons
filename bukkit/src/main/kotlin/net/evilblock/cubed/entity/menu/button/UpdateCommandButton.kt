@@ -16,7 +16,7 @@ import org.bukkit.inventory.InventoryView
 class UpdateCommandButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Update Command"
+        return "${CC.GREEN}Update Command"
     }
 
     override fun getDescription(player: Player): List<String> {

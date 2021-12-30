@@ -147,7 +147,7 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
 
         private inner class FactoryButton(private val factory: MenuTemplateButtonFactory) : Button() {
             override fun getName(player: Player): String {
-                return "${CC.GRAY}» ${CC.PRI}${factory.getName()}"
+                return "${CC.GREEN}${factory.getName()}"
             }
 
             override fun getMaterial(player: Player): Material {

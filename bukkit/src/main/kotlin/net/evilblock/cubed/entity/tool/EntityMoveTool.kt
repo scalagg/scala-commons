@@ -41,7 +41,7 @@ object EntityMoveTool : Listener {
     fun makeMoveTool(entity: Entity): ItemStack {
         val item = ItemBuilder.of(Material.MONSTER_EGG)
             .data(120)
-            .name("${CC.GRAY}» ${CC.PRI}Move ${entity.getTypeName()}")
+            .name("${CC.GREEN}Move ${entity.getTypeName()}")
             .setLore(arrayListOf<String>().also { desc ->
                 desc.add("${CC.GRAY}Place this mob egg wherever")
                 desc.add("${CC.GRAY}you'd like to move the NPC.")

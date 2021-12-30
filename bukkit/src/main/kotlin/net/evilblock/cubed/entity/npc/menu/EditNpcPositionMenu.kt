@@ -70,7 +70,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveUpButton : TexturedHeadButton(Constants.WOOD_ARROW_UP_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Up"
+            return "${CC.GREEN}Move Up"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -93,7 +93,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveDownButton : TexturedHeadButton(Constants.WOOD_ARROW_DOWN_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Down"
+            return "${CC.GREEN}Move Down"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -116,7 +116,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveForwardButton : TexturedHeadButton(Constants.WOOD_ARROW_UP_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Forward"
+            return "${CC.GREEN}Move Forward"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -160,7 +160,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveBackwardButton : TexturedHeadButton(Constants.WOOD_ARROW_DOWN_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Backward"
+            return "${CC.GREEN}Move Backward"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -179,7 +179,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveLeftButton : TexturedHeadButton(Constants.WOOD_ARROW_LEFT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Left"
+            return "${CC.GREEN}Move Left"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -223,7 +223,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class MoveRightButton : TexturedHeadButton(Constants.WOOD_ARROW_RIGHT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Move Right"
+            return "${CC.GREEN}Move Right"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -267,7 +267,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class LookLeftButton : TexturedHeadButton(Constants.WOOD_ARROW_LEFT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Look Left"
+            return "${CC.GREEN}Look Left"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -287,7 +287,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
     private inner class LookRightButton : TexturedHeadButton(Constants.WOOD_ARROW_RIGHT_TEXTURE) {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Look Right"
+            return "${CC.GREEN}Look Right"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -307,7 +307,7 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
 
 //    private inner class EditCoordButton(private val coord: Coord) : TexturedHeadButton() {
 //        override fun getName(player: Player): String {
-//            return "${CC.GRAY}» ${CC.PRI}Set ${coord.name} Coord"
+//            return "${CC.GREEN}Set ${coord.name} Coord"
 //        }
 //
 //        override fun getTexture(player: Player): String {

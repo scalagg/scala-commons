@@ -14,14 +14,14 @@ import org.bukkit.inventory.InventoryView
 class UpdateFloatingItemButton(private val hologram: HologramEntity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Update Floating Item"
+        return "${CC.GREEN}Update Floating Item"
     }
 
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update the floating item that appears above the hologram."))
             desc.add("")
-            desc.add("${CC.GREEN}Left-Click to update item.")
+            desc.add("${CC.YELLOW}Left-Click to update item.")
 
             if (hologram.floatingItem != null) {
                 desc.add("${CC.RED}Right-Click to remove item.")

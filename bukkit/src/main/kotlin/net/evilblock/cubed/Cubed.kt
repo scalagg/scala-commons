@@ -205,6 +205,8 @@ class Cubed : ExtendedJavaPlugin() {
         val commandManager = CubedCommandManager(this)
 
         commandManager.registerCommand(CubedCommand)
+        commandManager.registerCommand(CubedMenuCommand)
+
         commandManager.registerCommand(EntityCommand)
         commandManager.registerCommand(ItemHasKeyCommand)
         commandManager.registerCommand(PosterPlaceCommand)
@@ -212,8 +214,6 @@ class Cubed : ExtendedJavaPlugin() {
         commandManager.registerCommand(SpawnArmorStandCommand)
         commandManager.registerCommand(HologramCommand)
         commandManager.registerCommand(NpcCommand)
-
-        logger.info("Loaded command manager")
     }
 
     private fun loadHandlers() {
@@ -264,15 +264,14 @@ class Cubed : ExtendedJavaPlugin() {
         server.pluginManager.registerEvents(VisibilityListeners, this)
         server.pluginManager.registerEvents(NametagListener, this)
         server.pluginManager.registerEvents(EventListener, this)
-
-        logger.info("Loaded listeners")
     }
 
     private fun loadTasks() {
         ScoreboardThread().start()
 
-        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncMinuteMarkEvent> {
-            systemSave()
+        CubedScheduler.trackScheduledTask<
+                CubedScheduler.AsyncMinuteMarkEvent
+        > {
             uuidCache.load()
         }
 
@@ -281,8 +280,6 @@ class Cubed : ExtendedJavaPlugin() {
         Tasks.asyncTimer(Rainbow, 4L, 4L)
         Tasks.asyncTimer(UpdatingHologramTask, 10L, 10L)
         Tasks.asyncTimer(PersonalizedHologramTask, 10L, 10L)
-
-        logger.info("Loaded tasks")
     }
 
     private fun systemSave() {

@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta
 class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolean) -> Unit) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Update Skin"
+        return "${CC.GREEN}Update Skin"
     }
 
     override fun getDescription(player: Player): List<String> {

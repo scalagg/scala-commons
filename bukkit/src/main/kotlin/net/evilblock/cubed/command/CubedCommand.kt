@@ -45,29 +45,6 @@ object CubedCommand : BaseCommand() {
         help.showHelp()
     }
 
-    @Subcommand("something")
-    fun onSomething(player: Player)
-    {
-        Something().openMenu(player)
-    }
-
-    class Something : PaginatedMenu()
-    {
-        override fun getPrePaginatedTitle(player: Player) = "Something"
-
-        override fun getAllPagesButtons(player: Player): Map<Int, Button>
-        {
-            val button = ItemBuilder(Material.PAPER).toButton()
-
-            return mutableMapOf<Int, Button>().also {
-                for (i in 0..400)
-                {
-                    it[it.size] = button
-                }
-            }
-        }
-    }
-
     @Subcommand("find-username")
     @Description("Searches the UUID cache for a username by the given uuid")
     fun onFindUsername(sender: CommandSender, @Name("uuid") uuid: UUID) {
@@ -119,7 +96,7 @@ object CubedCommand : BaseCommand() {
 
         for (team in player.scoreboard.teams) {
             val entries = team.entries
-            player.sendMessage("${CC.GRAY}» ${CC.PRI}Team ${team.name} ${CC.GRAY}(${entries.size})")
+            player.sendMessage("${CC.GREEN}Team ${team.name} ${CC.GRAY}(${entries.size})")
 
             var last = true
             val print = entries.joinToString(transform = {

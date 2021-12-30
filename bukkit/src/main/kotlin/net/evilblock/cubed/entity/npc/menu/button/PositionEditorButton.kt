@@ -13,7 +13,7 @@ import org.bukkit.inventory.InventoryView
 class PositionEditorButton(private val npc: NpcEntity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Position Editor"
+        return "${CC.GREEN}Position Editor"
     }
 
     override fun getDescription(player: Player): List<String> {

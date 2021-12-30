@@ -28,7 +28,7 @@ class ApplyAnimationMenu(private val entity: Entity, private val use: (EntityAni
 
     private inner class AnimationButton(private val type: EntityAnimationType) : Button() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}${type.getName()}"
+            return "${CC.GREEN}${type.getName()}"
         }
 
         override fun getButtonItem(player: Player): ItemStack {

@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture
  */
 class CubedCommandManager(
     plugin: Plugin,
-    primary: ChatColor = ChatColor.GOLD,
+    primary: ChatColor = ChatColor.GREEN,
     secondary: ChatColor = ChatColor.YELLOW
 ) : PaperCommandManager(plugin) {
 
@@ -132,7 +132,7 @@ class CubedCommandManager(
             return@registerContext try {
                 Duration.parse(firstArg)
             } catch (ignored: Exception) {
-                throw ConditionFailedException("Invalid duration parsed. (Example: 1h30m)")
+                throw ConditionFailedException("That is an invalid duration. A valid duration would be: ${CC.BOLD}1h30m")
             }
         }
 

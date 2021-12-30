@@ -17,7 +17,7 @@ import org.bukkit.inventory.InventoryView
 class EditAnimationButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Apply Animation"
+        return "${CC.GREEN}Apply Animation"
     }
 
     override fun getDescription(player: Player): List<String> {

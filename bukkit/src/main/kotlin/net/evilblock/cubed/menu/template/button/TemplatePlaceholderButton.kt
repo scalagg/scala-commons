@@ -21,7 +21,7 @@ import java.lang.reflect.Type
 class TemplatePlaceholderButton : MenuTemplateButton(), CloneableMenuTemplateButton {
 
     override fun getEditorIcon(): ItemStack {
-        return ItemUtils.applySkullTexture(ItemBuilder.of(Material.SKULL_ITEM).name("${CC.GRAY}» ${CC.PRI}Template Placeholder").data(3).build(), TEXTURE)
+        return ItemUtils.applySkullTexture(ItemBuilder.of(Material.SKULL_ITEM).name("${CC.GREEN}Template Placeholder").data(3).build(), TEXTURE)
     }
 
     override fun getEditorActions(): List<ButtonAction> {

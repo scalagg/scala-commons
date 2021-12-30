@@ -114,7 +114,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class AddLineButton : AddButton() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Create New Line"
+            return "${CC.GREEN}Create New Line"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -245,7 +245,7 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class SaveButton : Button() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Save Changes"
+            return "${CC.GREEN}Save Changes"
         }
 
         override fun getDescription(player: Player): List<String> {

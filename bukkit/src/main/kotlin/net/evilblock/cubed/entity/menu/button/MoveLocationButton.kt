@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack
 class MoveLocationButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Move Location"
+        return "${CC.GREEN}Move Location"
     }
 
     override fun getDescription(player: Player): List<String> {

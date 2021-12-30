@@ -13,7 +13,7 @@ import org.bukkit.inventory.InventoryView
 class UpdateGearButton(private val npc: NpcEntity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.PRI}Update Gear"
+        return "${CC.GREEN}Update Gear"
     }
 
     override fun getDescription(player: Player): List<String> {

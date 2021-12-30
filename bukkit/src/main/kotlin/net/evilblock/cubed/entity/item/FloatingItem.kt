@@ -119,7 +119,7 @@ class FloatingItem(var itemStack: ItemStack, location: Location) : Entity(locati
 
     private inner class EditFloatingItemButton : Button() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Edit Floating Item"
+            return "${CC.GREEN}Edit Floating Item"
         }
 
         override fun getDescription(player: Player): List<String> {

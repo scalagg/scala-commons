@@ -72,7 +72,7 @@ class TemplateEditorMenu : PaginatedMenu() {
 
     private inner class CreateTemplateButton : AddButton() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.PRI}Create New Template"
+            return "${CC.GREEN}Create New Template"
         }
 
         override fun getDescription(player: Player): List<String> {
@@ -80,7 +80,7 @@ class TemplateEditorMenu : PaginatedMenu() {
                 "${CC.GRAY}Create a new template by completing",
                 "${CC.GRAY}the setup procedure.",
                 "",
-                "${CC.GREEN}Left-Click to create a new template."
+                "${CC.YELLOW}Click to create a new template."
             )
         }
 
@@ -170,7 +170,7 @@ class TemplateEditorMenu : PaginatedMenu() {
 
         private inner class FactoryButton(private val factory: MenuTemplateFactory) : Button() {
             override fun getName(player: Player): String {
-                return "${CC.GRAY}» ${CC.PRI}${factory.getName()}"
+                return "${CC.GREEN}${factory.getName()}"
             }
 
             override fun getMaterial(player: Player): Material {
