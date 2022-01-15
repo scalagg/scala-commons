@@ -149,7 +149,7 @@ abstract class PluginFramework : JavaPlugin() {
     }
 
     open fun systemLog(vararg messages: String) {
-        systemLog(prefix = "${ChatColor.DARK_RED}${ChatColor.BOLD}[$name]", messages = *messages)
+        systemLog(prefix = "${ChatColor.DARK_RED}${ChatColor.BOLD}[$name]", messages = messages)
     }
 
     open fun getSpawnLocation(): Location {
@@ -157,7 +157,7 @@ abstract class PluginFramework : JavaPlugin() {
     }
 
     companion object {
-        private val SYSTEM_PREFIX = "${ChatColor.DARK_RED}${ChatColor.BOLD}[SYSTEM]"
+        private val SYSTEM_PREFIX = "${ChatColor.RED}[System]"
 
         fun systemLog(prefix: String = SYSTEM_PREFIX, vararg messages: String) {
             for (message in messages) {

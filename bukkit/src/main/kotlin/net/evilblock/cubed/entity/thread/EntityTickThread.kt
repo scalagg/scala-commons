@@ -38,7 +38,7 @@ object EntityTickThread : Thread("Cubed - Entities") {
     private fun tickEntities() {
         if (lastAlert == null || System.currentTimeMillis() >= lastAlert!! + 60_000L) {
             if (thrownExceptions > 0) {
-                PluginFramework.systemLog(messages = *arrayOf("${ChatColor.YELLOW}[Entity Ticking] ${ChatColor.GRAY}There have been ${ChatColor.RED}${Numbers.format(thrownExceptions)} ${ChatColor.GRAY}thrown exceptions in the last 60 seconds!"))
+                PluginFramework.systemLog(messages = arrayOf("${ChatColor.YELLOW}[Entity Ticking] ${ChatColor.GRAY}There have been ${ChatColor.RED}${Numbers.format(thrownExceptions)} ${ChatColor.GRAY}thrown exceptions in the last 60 seconds!"))
             }
 
             thrownExceptions = 0
