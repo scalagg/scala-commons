@@ -251,11 +251,11 @@ class Cubed : ExtendedJavaPlugin() {
         ProtocolLibrary.getProtocolManager().addPacketListener(MenuPacketAdapter)
         ProtocolLibrary.getProtocolManager().addPacketListener(EntityPacketAdapter)
 
-        if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null)
-        {
-            ProtocolLibrary.getProtocolManager()
-                .addPacketListener(EntityHologramPatch(this))
-        }
+//        if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null)
+//        {
+//            ProtocolLibrary.getProtocolManager()
+//                .addPacketListener(EntityHologramPatch(this))
+//        }
 
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
