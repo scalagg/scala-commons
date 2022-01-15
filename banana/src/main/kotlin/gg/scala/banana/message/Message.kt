@@ -27,7 +27,8 @@ class Message(
     fun dispatch(channel: String, banana: Banana) {
         banana.useResource {
             it.publish(
-                channel, banana.options.gson.toJson(this)
+                channel,
+                banana.options.gson.toJson(this)
             )
             it.close()
         }

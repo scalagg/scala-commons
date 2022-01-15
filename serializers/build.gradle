@@ -23,7 +23,7 @@ dependencies {
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
     compileOnly 'com.google.code.gson:gson:2.8.9'
-    compileOnly 'org.mongodb:bson:4.4.0'
+    compileOnly "org.mongodb:mongo-java-driver:3.12.10"
 }
 
 compileKotlin {

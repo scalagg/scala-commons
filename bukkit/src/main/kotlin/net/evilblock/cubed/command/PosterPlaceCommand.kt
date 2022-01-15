@@ -40,7 +40,7 @@ object PosterPlaceCommand : BaseCommand() {
             PosterHandler.trackPoster(poster)
             PosterHandler.saveData()
 
-            val placedPoster = PlacedPoster(poster)
+            val placedPoster = PlacedPoster(poster, false)
             placedPoster.trackItemFrame(itemFrame)
             placedPoster.initializeData()
             placedPoster.setupItemFrame(itemFrame)

@@ -48,18 +48,13 @@ data class Banana(
 
     fun subscribe()
     {
+        pubSub = BananaSubscription(this)
+
         thread(name = "Banana - Subscribe Thread") {
             useResource({
-                try
-                {
-                    it.subscribe(
-                        BananaSubscription(this),
-                        options.channel
-                    )
-                } finally
-                {
-                    it.connect()
-                }
+                it.subscribe(
+                    pubSub, options.channel
+                )
             }, subscribeJedisPool)
         }
 
@@ -81,9 +76,15 @@ data class Banana(
                         subscribeJedisPool.close()
                     }
 
-                    if (pubSub.isSubscribed)
+                    try
                     {
-                        pubSub.unsubscribe()
+                        if (pubSub.isSubscribed)
+                        {
+                            pubSub.unsubscribe()
+                        }
+                    } catch (ignored: Exception)
+                    {
+                        println("[Banana] We were never subscribed to: ${options.channel}.")
                     }
 
                     println("[Banana] Disconnected from jedis channel \"${options.channel}\".")

@@ -11,6 +11,8 @@ import com.comphenix.protocol.ProtocolLibrary
 import gg.scala.banana.Banana
 import gg.scala.banana.BananaBuilder
 import gg.scala.banana.credentials.BananaCredentials
+import gg.scala.banana.options.BananaOptions
+import gg.scala.commons.entity.hologram.patch.EntityHologramPatch
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
@@ -145,7 +147,9 @@ class Cubed : ExtendedJavaPlugin() {
                     logger.severe("COULD NOT FIND UUID CACHE IMPLEMENTATION! Fallback: Default implementation!")
 
                     val banana = BananaBuilder()
-                        .credentials(BananaCredentials()).build()
+                        .credentials(BananaCredentials())
+                        .options(BananaOptions("cubed:uuid_cache"))
+                        .build()
 
                     uuidCache = RedisUUIDCache(banana)
                 }
@@ -247,6 +251,12 @@ class Cubed : ExtendedJavaPlugin() {
         ProtocolLibrary.getProtocolManager().addPacketListener(MenuPacketAdapter)
         ProtocolLibrary.getProtocolManager().addPacketListener(EntityPacketAdapter)
 
+        if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null)
+        {
+            ProtocolLibrary.getProtocolManager()
+                .addPacketListener(EntityHologramPatch(this))
+        }
+
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
         server.pluginManager.registerEvents(UUIDCacheListeners, this)
@@ -280,43 +290,6 @@ class Cubed : ExtendedJavaPlugin() {
         Tasks.asyncTimer(Rainbow, 4L, 4L)
         Tasks.asyncTimer(UpdatingHologramTask, 10L, 10L)
         Tasks.asyncTimer(PersonalizedHologramTask, 10L, 10L)
-    }
-
-    private fun systemSave() {
-        val startAt = System.currentTimeMillis()
-
-        PluginFramework.systemLog("Saving internal data...")
-
-        for (world in Bukkit.getWorlds()) {
-            try {
-                Tasks.sync {
-                    world.save()
-                }
-            } catch (exception: Exception) {
-                ErrorHandler.generateErrorLog(
-                    errorType = "systemSave-world",
-                    event = mapOf("WorldName" to world.name),
-                    exception = exception
-                )
-
-                PluginFramework.systemLog("${ChatColor.RED}Failed to save world ${world.name}!")
-            }
-        }
-
-        try {
-            saveHandlers()
-        } catch (exception: Exception) {
-            ErrorHandler.generateErrorLog(
-                errorType = "systemSave-handlers",
-                exception = exception
-            )
-
-            PluginFramework.systemLog("${ChatColor.RED}Failed to save handlers!")
-        }
-
-        val endAt = System.currentTimeMillis()
-
-        PluginFramework.systemLog("Finished internal save in ${endAt - startAt}ms!")
     }
 
     /**
