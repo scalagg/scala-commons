@@ -90,8 +90,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         HelperLibraryHandler.loadAll(
                             instance.get(null).javaClass
                         )
-
-                        println("[Cubed] Attempting to load ${clazz.simpleName}...")
                     }
                 } catch (ignored: Exception)
                 {

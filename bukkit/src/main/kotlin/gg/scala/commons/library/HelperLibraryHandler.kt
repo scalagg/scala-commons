@@ -3,6 +3,7 @@ package gg.scala.commons.library
 import com.google.common.base.Suppliers
 import gg.scala.commons.library.model.Library
 import me.lucko.helper.internal.LoaderUtils
+import me.lucko.helper.maven.LibraryLoader
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
@@ -15,36 +16,10 @@ import java.nio.file.Files
  */
 object HelperLibraryHandler
 {
-
-    private val ADD_URL_METHOD = Suppliers.memoize {
-        try
-        {
-            val addUrlMethod = URLClassLoader::class.java
-                .getDeclaredMethod("addURL", URL::class.java)
-
-            addUrlMethod.isAccessible = true
-            return@memoize addUrlMethod
-        } catch (e: NoSuchMethodException)
-        {
-            throw RuntimeException(e)
-        }
+    private val URL_INJECTOR = Suppliers.memoize {
+        gg.scala.commons.loader.URLClassLoaderAccess.create(LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader)
     }
 
-    /**
-     * Common maven repositories, consists
-     * of spigot-related repositories.
-     *
-     * These repositories are ordered by
-     * popularity.
-     */
-    @JvmStatic
-    val COMMON_REPOSITORIES = listOf(
-        "https://repo1.maven.org/maven2",
-        "https://jitpack.io",
-        "https://repo.dmulloy2.net/nexus/repository/public",
-        "https://maven.enginehub.org/repo/",
-        "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    )
 
     /**
      * Scans and registers all declared fields in a class
@@ -61,14 +36,12 @@ object HelperLibraryHandler
             internalLoad(
                 instance, forced
             )
-
-            println("[Cubed] Repository found for ${instance.artifactId}")
         }
     }
 
     private fun internalLoad(library: Library, url: String)
     {
-        println("[helper] ${
+        println("[Cubed] ${
             String.format(
                 "Loading dependency %s:%s:%s.",
                 library.groupId,
@@ -82,11 +55,11 @@ object HelperLibraryHandler
 
         if (!saveLocation.exists())
         {
-            println("[helper] Dependency '$name' is not already in the libraries folder. Attempting to download...")
+            println("[Cubed] Dependency '$name' is not already in the libraries folder. Attempting to download...")
 
             getUrl(url, library).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
 
-            println("[helper] Dependency '$name' successfully downloaded.")
+            println("[Cubed] Dependency '$name' successfully downloaded.")
         }
 
         if (!saveLocation.exists())
@@ -98,13 +71,13 @@ object HelperLibraryHandler
 
         try
         {
-            ADD_URL_METHOD.get().invoke(classLoader, saveLocation.toURI().toURL())
+            URL_INJECTOR.get().addURL(saveLocation.toURI().toURL())
         } catch (e: Exception)
         {
             throw RuntimeException("Unable to load dependency: $saveLocation", e)
         }
 
-        println("[helper] Loaded dependency '$name' successfully.")
+        println("[Cubed] Loaded dependency '$name' successfully.")
     }
 
     @Throws(MalformedURLException::class)
