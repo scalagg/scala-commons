@@ -1,9 +1,0 @@
-name: Cubed
-version: 1.3.2
-main: net.evilblock.cubed.Cubed
-
-authors: [joeleoli, Scala]
-website: https://www.evilblock.net, https://www.scala.gg
-
-depend: [ProtocolLib, helper]
-softdepend: [ViaVersion]

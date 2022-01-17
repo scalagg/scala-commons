@@ -14,6 +14,8 @@ import gg.scala.banana.credentials.BananaCredentials
 import gg.scala.banana.options.BananaOptions
 import gg.scala.commons.entity.hologram.patch.EntityHologramPatch
 import me.lucko.helper.plugin.ExtendedJavaPlugin
+import me.lucko.helper.plugin.ap.Plugin
+import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.command.*
 import net.evilblock.cubed.command.manager.CubedCommandManager
@@ -81,6 +83,14 @@ import java.util.*
 /**
  * Cubed Engine - Rapid plugin development
  */
+@Plugin(
+    name = "Cubed",
+    depends = [
+        PluginDependency("helper"),
+        PluginDependency("ProtocolLib"),
+        PluginDependency("ViaVersion", soft = true),
+    ]
+)
 class Cubed : ExtendedJavaPlugin() {
 
     companion object {
