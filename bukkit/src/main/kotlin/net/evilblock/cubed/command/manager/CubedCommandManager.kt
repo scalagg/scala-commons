@@ -19,7 +19,6 @@ import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.plugin.Plugin
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 /**
  * @author puugz

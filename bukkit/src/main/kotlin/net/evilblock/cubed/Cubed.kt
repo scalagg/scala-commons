@@ -8,7 +8,6 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import gg.scala.banana.Banana
 import gg.scala.banana.BananaBuilder
 import gg.scala.banana.credentials.BananaCredentials
 import gg.scala.banana.options.BananaOptions
@@ -35,7 +34,6 @@ import net.evilblock.cubed.entity.packet.EntityPacketAdapter
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.entity.tool.EntityPortTool
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
-import net.evilblock.cubed.logging.ErrorHandler
 import net.evilblock.cubed.logging.LogHandler
 import net.evilblock.cubed.logging.listener.ConsoleCommandLogListeners
 import net.evilblock.cubed.menu.ButtonListeners
@@ -49,7 +47,6 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagListener
 import net.evilblock.cubed.nametag.update.NametagUpdatesListeners
-import net.evilblock.cubed.plugin.PluginFramework
 import net.evilblock.cubed.plugin.event.EventListener
 import net.evilblock.cubed.poster.PosterHandler
 import net.evilblock.cubed.poster.placed.PlacedPosterHandler
@@ -73,7 +70,6 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.evilblock.cubed.visibility.VisibilityListeners
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BlockVector
@@ -91,26 +87,30 @@ import java.util.*
         PluginDependency("ViaVersion", soft = true),
     ]
 )
-class Cubed : ExtendedJavaPlugin() {
-
-    companion object {
+class Cubed : ExtendedJavaPlugin()
+{
+    companion object
+    {
         @JvmStatic
         lateinit var instance: Cubed
 
         @JvmStatic
         var startupFailed: Boolean = false
+
         @JvmStatic
         var running: Boolean = false
     }
 
     lateinit var uuidCache: UUIDCache
 
-    override fun enable() {
+    override fun enable()
+    {
         instance = this
 
         Reflection.DEBUG = config.getBoolean("debug", false)
 
-        try {
+        try
+        {
             saveDefaultConfig()
             runSetupCheck()
 
@@ -164,7 +164,8 @@ class Cubed : ExtendedJavaPlugin() {
                     uuidCache = RedisUUIDCache(banana)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Exception)
+        {
             e.printStackTrace()
             startupFailed = true
             server.shutdown()
@@ -176,18 +177,22 @@ class Cubed : ExtendedJavaPlugin() {
         running = true
     }
 
-    override fun disable() {
-        try {
+    override fun disable()
+    {
+        try
+        {
             saveHandlers()
 
             NpcStrategyLogic.restoreOriginalLines()
 
-            if (isPostersEnabled()) {
+            if (isPostersEnabled())
+            {
                 PlacedPosterHandler.onDisable()
             }
 
             LogHandler.completeFlush()
-        } catch (e: Exception) {
+        } catch (e: Exception)
+        {
             e.printStackTrace()
         }
 
@@ -200,8 +205,10 @@ class Cubed : ExtendedJavaPlugin() {
      *
      * @return true if checks are passed, otherwise false
      */
-    private fun runSetupCheck(): Boolean {
-        return if ((server.onlineMode && SpigotConfig.bungee) || (!server.onlineMode && !SpigotConfig.bungee)) {
+    private fun runSetupCheck(): Boolean
+    {
+        return if ((server.onlineMode && SpigotConfig.bungee) || (!server.onlineMode && !SpigotConfig.bungee))
+        {
             logger.severe("*************************")
             logger.severe("ENVIRONMENT CHECK FAILED")
             logger.severe("Online Mode: ${server.onlineMode}")
@@ -210,12 +217,14 @@ class Cubed : ExtendedJavaPlugin() {
 
             server.shutdown()
             false
-        } else {
+        } else
+        {
             true
         }
     }
 
-    private fun loadCommands() {
+    private fun loadCommands()
+    {
         val commandManager = CubedCommandManager(this)
 
         commandManager.registerCommand(CubedCommand)
@@ -230,12 +239,14 @@ class Cubed : ExtendedJavaPlugin() {
         commandManager.registerCommand(NpcCommand)
     }
 
-    private fun loadHandlers() {
+    private fun loadHandlers()
+    {
         Tasks.delayed(2L) {
             EntityHandler.initialLoad()
         }
 
-        if (isPostersEnabled()) {
+        if (isPostersEnabled())
+        {
             PosterHandler.initialLoad()
             PlacedPosterHandler.initialLoad()
         }
@@ -245,10 +256,12 @@ class Cubed : ExtendedJavaPlugin() {
         ScoreboardPreviewHandler.initialLoad()
     }
 
-    fun saveHandlers() {
+    fun saveHandlers()
+    {
         EntityHandler.saveData()
 
-        if (isPostersEnabled()) {
+        if (isPostersEnabled())
+        {
             PosterHandler.saveData()
             PlacedPosterHandler.saveData()
         }
@@ -256,16 +269,14 @@ class Cubed : ExtendedJavaPlugin() {
         MenuTemplateHandler.saveData()
     }
 
-    private fun loadListeners() {
+    private fun loadListeners()
+    {
         ProtocolLibrary.getProtocolManager().addPacketListener(InventoryPacketAdapter)
         ProtocolLibrary.getProtocolManager().addPacketListener(MenuPacketAdapter)
         ProtocolLibrary.getProtocolManager().addPacketListener(EntityPacketAdapter)
 
-//        if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null)
-//        {
-//            ProtocolLibrary.getProtocolManager()
-//                .addPacketListener(EntityHologramPatch(this))
-//        }
+//        ProtocolLibrary.getProtocolManager()
+//            .addPacketListener(EntityHologramPatch(this))
 
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
@@ -286,12 +297,13 @@ class Cubed : ExtendedJavaPlugin() {
         server.pluginManager.registerEvents(EventListener, this)
     }
 
-    private fun loadTasks() {
+    private fun loadTasks()
+    {
         ScoreboardThread().start()
 
         CubedScheduler.trackScheduledTask<
                 CubedScheduler.AsyncMinuteMarkEvent
-        > {
+                > {
             uuidCache.load()
         }
 
@@ -305,14 +317,16 @@ class Cubed : ExtendedJavaPlugin() {
     /**
      * Hi-jack Bukkit's logging filter to suppress the server's complaints about commands being dispatched async
      */
-    private fun filterConsoleLogs() {
+    private fun filterConsoleLogs()
+    {
         Bukkit.getLogger().setFilter {
             return@setFilter !it.message.contains("Command Dispatched Async")
                     && !it.message.contains("Please notify author of plugin")
         }
     }
 
-    fun isPostersEnabled(): Boolean {
+    fun isPostersEnabled(): Boolean
+    {
         return config.getBoolean("posters.enabled", false)
     }
 

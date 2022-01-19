@@ -1,2 +1,0 @@
-redis-connection-uri: "redis://localhost:6379/0"
-mongo-connection-uri: "mongodb://localhost:27017"

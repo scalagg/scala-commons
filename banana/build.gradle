@@ -1,52 +1,6 @@
-
-buildscript {
-    ext.kotlin_version = '1.6.0'
-}
-plugins {
-    id 'maven-publish'
-    id "org.jetbrains.kotlin.jvm" version "1.6.0"
-    id "com.github.johnrengelman.shadow" version "5.2.0"
-}
-
-group 'gg.scala'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-
-    maven {
-        url = "https://jitpack.io"
-    }
-}
-
-task prepareKotlinBuildScriptModel {
-
-}
-
-task wrapper(type: Wrapper){
-    gradleVersion = '7.2'
-}
-
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
-    compileOnly 'redis.clients:jedis:4.0.0'
+    compileOnly 'redis.clients:jedis:4.0.1'
     compileOnly 'com.google.code.gson:gson:2.8.9'
 }
-
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        }
-    }
-}
-
-shadowJar {
-    archiveClassifier.set("")
-
-    archiveFileName = "banana-lib.jar"
-}
-
-tasks.build.dependsOn(shadowJar)

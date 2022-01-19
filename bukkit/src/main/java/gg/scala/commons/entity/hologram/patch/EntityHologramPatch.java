@@ -11,12 +11,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.ScheduledPacket;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import net.evilblock.cubed.util.nms.MinecraftProtocol;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.myles.ViaVersion.ViaVersionPlugin;
-import us.myles.ViaVersion.api.ViaAPI;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,23 +27,17 @@ import java.util.List;
 public class EntityHologramPatch extends PacketAdapter {
     private static final Byte ENTITY_INVISIBLE = 32;
 
-    private final ViaAPI<Player> api;
-
     public EntityHologramPatch(JavaPlugin plugin) {
         super(plugin, ListenerPriority.HIGHEST,
                 PacketType.Play.Server.SPAWN_ENTITY_LIVING, PacketType.Play.Server.SPAWN_ENTITY,
                 PacketType.Play.Server.ATTACH_ENTITY, PacketType.Play.Server.ENTITY_METADATA,
                 PacketType.Play.Server.ENTITY_TELEPORT
         );
-
-        api = ViaVersionPlugin
-                .getPlugin(ViaVersionPlugin.class)
-                .getApi();
     }
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (api.getPlayerVersion(event.getPlayer()) > 5) {
+        if (MinecraftProtocol.getPlayerVersion(event.getPlayer()) > 5) {
             if (!event.isCancelled()) {
                 Entity entity;
                 List<WrappedWatchableObject> metadata;

@@ -7,6 +7,8 @@
 
 package net.evilblock.cubed.util.time
 
+import me.lucko.helper.time.DurationParser
+
 class Duration(private var time: Long) {
 
     fun get(): Long {
@@ -31,13 +33,11 @@ class Duration(private var time: Long) {
             }
 
             if (input.equals("perm", ignoreCase = true) || input.equals("permanent", ignoreCase = true) || input.equals("-s", true)) {
-                return Duration(Long.MAX_VALUE)
+                return PERMANENT
             }
 
             return Duration(
-                DateUtil.parseDuration(
-                    input
-                )
+                DurationParser.parse(input).toMillis()
             )
         }
     }

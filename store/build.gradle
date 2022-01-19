@@ -1,70 +1,14 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
-plugins {
-    id 'idea'
-    id 'java'
-    id 'maven-publish'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-
-    maven {
-        url = "https://jitpack.io"
-    }
-}
-
 dependencies {
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
 
     implementation project(':serializers')
     implementation project(':banana')
 
-    compileOnly 'redis.clients:jedis:4.0.0'
+    compileOnly 'redis.clients:jedis:4.0.1'
     compileOnly 'com.google.code.gson:gson:2.8.9'
 
     compileOnly 'org.mongodb:mongodb-driver:3.12.10'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
 
     implementation fileTree(dir: 'lib', include: '*.jar')
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-idea {
-    module {
-        downloadJavadoc = true
-        downloadSources = true
-    }
-}
-
-shadowJar {
-    classifier = null
-    archiveFileName = "cubed-${project.name}-${version}.jar"
-}
-
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        }
-    }
-}
-
-processResources {
-    filter ReplaceTokens, tokens: ["plugin.version": project.version ]
 }
