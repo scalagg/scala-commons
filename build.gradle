@@ -16,6 +16,17 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
+        maven {
+            name "Scala"
+            allowInsecureProtocol true
+            url "http://repository.scala.gg/repository/maven-releases/"
+
+            credentials {
+                username property("scala.credentials.username") as String
+                password property("scala.credentials.password") as String
+            }
+        }
+
         maven { url "https://jitpack.io" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
@@ -84,8 +95,11 @@ subprojects {
 
     publishing {
         publications {
-            shadow(MavenPublication) { publication ->
-                from components.kotlin
+            if (project.name != "bukkit")
+            {
+                shadow(MavenPublication) { publication ->
+                    from components.kotlin
+                }
             }
         }
 
@@ -103,5 +117,8 @@ subprojects {
         }
     }
 
-    tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
+    if (project.name != "bukkit")
+    {
+        tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
+    }
 }

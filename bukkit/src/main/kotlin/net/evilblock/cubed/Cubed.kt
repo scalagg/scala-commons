@@ -83,8 +83,7 @@ import java.util.*
     name = "Cubed",
     depends = [
         PluginDependency("helper"),
-        PluginDependency("ProtocolLib"),
-        PluginDependency("ViaVersion", soft = true),
+        PluginDependency("ProtocolLib")
     ]
 )
 class Cubed : ExtendedJavaPlugin()

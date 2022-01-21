@@ -17,7 +17,6 @@ import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import us.myles.ViaVersion.api.Via
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.*
@@ -211,13 +210,7 @@ object MinecraftProtocol {
 
     @JvmStatic
     fun getPlayerVersion(player: Player): Int {
-        val usingViaVersion = Cubed.instance.server.pluginManager.getPlugin("ViaVersion").let { plugin -> plugin != null && plugin.isEnabled }
-
-        return if (usingViaVersion) {
-            Via.getAPI().getPlayerVersion(player)
-        } else {
-            ProtocolLibrary.getProtocolManager().getProtocolVersion(player)
-        }
+        return ProtocolLibrary.getProtocolManager().getProtocolVersion(player)
     }
 
 }

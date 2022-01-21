@@ -16,9 +16,10 @@ dependencies {
     compileOnly "me.lucko:helper:5.6.9"
     kapt "me.lucko:helper:5.6.9"
 
+    compileOnly 'gg.scala.spigot:server:1.1.4'
+
     compileOnly "com.google.code.gson:gson:2.8.9"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compileOnly "com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
     implementation "org.apache.commons:commons-lang3:3.12.0"
