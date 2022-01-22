@@ -18,6 +18,8 @@ import org.apache.commons.io.FileUtils
 import org.bukkit.Bukkit
 import java.io.File
 import java.net.URL
+import java.net.URLConnection
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.properties.Delegates
 
@@ -108,9 +110,8 @@ object ScalaDownloaderConnector
 
             try
             {
-                FileUtils.copyURLToFile(
-                    downloadUrl, file,
-                    1000, 1000
+                FileUtils.copyInputStreamToFile(
+                    authenticate(downloadUrl).getInputStream(), file
                 )
 
                 plugin.logger.info("Successfully updated $fileToOverride (took ${
@@ -185,6 +186,21 @@ object ScalaDownloaderConnector
         }
 
         return assets
+    }
+
+    private fun authenticate(url: URL): URLConnection
+    {
+        val wrapper = ScalaDownloaderAuthenticationService.getWrapper()
+        val userpass = "${wrapper.username}:${wrapper.password}"
+
+        val base64Password = String(
+            Base64.getEncoder().encode(userpass.toByteArray())
+        )
+
+        return url.openConnection().apply {
+            connectTimeout = 1000; readTimeout = 1000
+            setRequestProperty("Authorization", "Basic $base64Password")
+        }
     }
 
     fun request(request: String): GetRequest
