@@ -29,7 +29,7 @@ object CloudSyncDiscoveryService
     }
 
     class DiscoverableAssets(
-        val assets: List<String> = listOf(
+        val assets: MutableList<String> = mutableListOf(
             "gg.scala.lemon:bukkit:Lemon",
             "net.evilblock.cubed:bukkit:cubed-bukkit",
         )
