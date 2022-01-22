@@ -69,11 +69,13 @@ object ScalaDownloaderConnector
             val fileToOverride = discoverable
                 .split(":")[2]
 
+            val jarFile = "$fileToOverride.jar"
+
             val file = pluginDirectory.listFiles()!!
                 .firstOrNull {
-                    it.name.startsWith(fileToOverride, true)
+                    it.name.startsWith(jarFile, true)
                 }
-                ?: File(pluginDirectory, "$fileToOverride.jar")
+                ?: File(pluginDirectory, jarFile)
 
             // creating the file if it
             // doesn't already exist
