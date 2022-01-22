@@ -179,6 +179,8 @@ object ScalaDownloaderConnector
 
         for (component in request.items)
         {
+            println("=========================")
+            println("===debug: " + component.group)
             // Checks if this asset should be updated
             ScalaDownloaderDiscoveryService
                 .discoverable.assets
@@ -188,6 +190,8 @@ object ScalaDownloaderConnector
                 }
                 ?: continue
 
+            println("===debug: Passed asset check")
+
             // Find the jar archive asset we need
             component.assets
                 .firstOrNull {
@@ -195,6 +199,8 @@ object ScalaDownloaderConnector
                             it.maven2.extension == "jar"
                 }
                 ?: continue
+
+            println("===debug: Passed JAR check")
 
             assets.add(component)
         }
