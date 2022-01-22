@@ -51,18 +51,13 @@ object ScalaDownloaderConnector
 
 
         getTrackedAssets().forEach { component ->
-            println("=========================")
-            println("===debug: " + component.group)
-
             val discoverable = ScalaDownloaderDiscoveryService
                 .discoverable.assets
                 .firstOrNull {
                     it.split(":")[0] == component.group &&
-                            it.split(":")[0] == component.name
+                            it.split(":")[1] == component.name
                 }
                 ?: return@forEach
-
-            println("===debug: Passed discovery check")
 
             val asset = component.assets
                 .firstOrNull {
@@ -70,8 +65,6 @@ object ScalaDownloaderConnector
                             it.maven2.extension == "jar"
                 }
                 ?: return@forEach
-
-            println("===debug: Passed jar check")
 
             val fileToOverride = discoverable
                 .split(":")[2]
@@ -138,18 +131,14 @@ object ScalaDownloaderConnector
 
             for (component in request.items)
             {
-                println("=========================")
-                println("===debug: " + component.group)
                 // Checks if this asset should be updated
                 ScalaDownloaderDiscoveryService
                     .discoverable.assets
                     .firstOrNull {
                         it.split(":")[0] == component.group &&
-                                it.split(":")[0] == component.name
+                                it.split(":")[1] == component.name
                     }
                     ?: continue
-
-                println("===debug: Passed asset check")
 
                 // Find the jar archive asset we need
                 component.assets
@@ -158,8 +147,6 @@ object ScalaDownloaderConnector
                                 it.maven2.extension == "jar"
                     }
                     ?: continue
-
-                println("===debug: Passed JAR check")
 
                 assets.add(component)
             }
@@ -171,18 +158,10 @@ object ScalaDownloaderConnector
     private fun getTrackedAssets(): List<ComponentWrapper>
     {
         val assets = mutableListOf<ComponentWrapper>()
-
         val request = Find.components()
-        println(request.items.joinToString {
-            it.group
-        })
 
         for (component in request.items)
         {
-            println("=========================")
-            println("===group: " + component.group)
-            println("===name: " + component.name)
-
             // Checks if this asset should be updated
             ScalaDownloaderDiscoveryService
                 .discoverable.assets
@@ -192,8 +171,6 @@ object ScalaDownloaderConnector
                 }
                 ?: continue
 
-            println("===debug: Passed asset check")
-
             // Find the jar archive asset we need
             component.assets
                 .firstOrNull {
@@ -201,8 +178,6 @@ object ScalaDownloaderConnector
                             it.maven2.extension == "jar"
                 }
                 ?: continue
-
-            println("===debug: Passed JAR check")
 
             assets.add(component)
         }
