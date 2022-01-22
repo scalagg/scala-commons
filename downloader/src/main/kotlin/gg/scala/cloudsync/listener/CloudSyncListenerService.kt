@@ -69,7 +69,7 @@ object CloudSyncListenerService
                                     .hash(Hashing.md5())
                                     .toString()
 
-                                if (md5Hash == asset.checksum.md5)
+                                if (md5Hash != asset.checksum.md5)
                                 {
                                     val fancyMessage = FancyMessage()
                                     fancyMessage.withMessage("${CC.D_AQUA}[$fileToOverride]${CC.YELLOW} You're not up-to-date! The newest version is: ${CC.GREEN}${asset.maven2!!.version}${CC.YELLOW}.")
