@@ -13,7 +13,7 @@ object Find
 {
     fun components(): ComponentRepositoryWrapper
     {
-        val request = ScalaDownloaderConnector.request(
+        var request = ScalaDownloaderConnector.request(
             ScalaCommonsDownloaderConstants.COMPONENTS
         )
 
@@ -22,6 +22,14 @@ object Find
 
         while (iterated == null || iterated.continuationToken != null)
         {
+            if (iterated?.continuationToken != null)
+            {
+                request = ScalaDownloaderConnector.request(
+                    ScalaCommonsDownloaderConstants.COMPONENTS +
+                            "&continuationToken=${iterated.continuationToken}"
+                )
+            }
+
             iterated = Serializers.gson
                 .fromJson(
                     request.asJson().body.toPrettyString(),
