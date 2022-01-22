@@ -95,11 +95,8 @@ subprojects {
 
     publishing {
         publications {
-            if (project.name != "bukkit")
-            {
-                shadow(MavenPublication) { publication ->
-                    from components.kotlin
-                }
+            shadow(MavenPublication) { publication ->
+                project.shadow.component(publication)
             }
         }
 
@@ -117,8 +114,5 @@ subprojects {
         }
     }
 
-    if (project.name != "bukkit")
-    {
-        tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
-    }
+    tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
 }

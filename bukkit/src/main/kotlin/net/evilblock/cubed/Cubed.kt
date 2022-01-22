@@ -11,7 +11,6 @@ import com.comphenix.protocol.ProtocolLibrary
 import gg.scala.banana.BananaBuilder
 import gg.scala.banana.credentials.BananaCredentials
 import gg.scala.banana.options.BananaOptions
-import gg.scala.commons.entity.hologram.patch.EntityHologramPatch
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
@@ -274,9 +273,6 @@ class Cubed : ExtendedJavaPlugin()
         ProtocolLibrary.getProtocolManager().addPacketListener(MenuPacketAdapter)
         ProtocolLibrary.getProtocolManager().addPacketListener(EntityPacketAdapter)
 
-//        ProtocolLibrary.getProtocolManager()
-//            .addPacketListener(EntityHologramPatch(this))
-
         server.pluginManager.registerEvents(ButtonListeners, this)
         server.pluginManager.registerEvents(SelectItemListeners, this)
         server.pluginManager.registerEvents(UUIDCacheListeners, this)
@@ -300,11 +296,7 @@ class Cubed : ExtendedJavaPlugin()
     {
         ScoreboardThread().start()
 
-        CubedScheduler.trackScheduledTask<
-                CubedScheduler.AsyncMinuteMarkEvent
-                > {
-            uuidCache.load()
-        }
+        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncMinuteMarkEvent> { uuidCache.load() }
 
         Tasks.asyncTimer(NpcStrategyLogic, 20L, 20L)
         Tasks.asyncTimer(MenuAutoUpdater, 2L, 2L)
