@@ -72,7 +72,7 @@ object CloudSyncConnector
 
             val file = pluginDirectory.listFiles()!!
                 .firstOrNull {
-                    it.name.startsWith(jarFile, true)
+                    it.name.equals(jarFile, true)
                 }
                 ?: File(pluginDirectory, jarFile)
 

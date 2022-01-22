@@ -55,7 +55,7 @@ object CloudSyncListenerService
 
                             val file = pluginDirectory.listFiles()!!
                                 .firstOrNull {
-                                    it.name.startsWith(jarFile, true)
+                                    it.name.equals(jarFile, true)
                                 }
 
                             // creating the file if it
