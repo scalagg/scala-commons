@@ -13,7 +13,7 @@ import xyz.mkotb.configapi.ConfigFactory
  */
 @Plugin(
     name = "cloudsync",
-    description = "Scala's advanced server-to-cloud synchronization tool.",
+    description = "Scala's advanced server <-> cloud synchronization tool.",
     depends = [
         PluginDependency("Cubed")
     ]
