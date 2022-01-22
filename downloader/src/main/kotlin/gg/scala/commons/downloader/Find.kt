@@ -17,11 +17,21 @@ object Find
             ScalaCommonsDownloaderConstants.COMPONENTS
         )
 
-        return Serializers.gson
-            .fromJson(
-                request.asJson().body.toPrettyString(),
-                ComponentRepositoryWrapper::class.java
-            )
+        val wrapper = ComponentRepositoryWrapper()
+        var iterated: ComponentRepositoryWrapper? = null
+
+        while (iterated == null || iterated.continuationToken != null)
+        {
+            iterated = Serializers.gson
+                .fromJson(
+                    request.asJson().body.toPrettyString(),
+                    ComponentRepositoryWrapper::class.java
+                )
+
+            wrapper.items.addAll(iterated.items)
+        }
+
+        return wrapper
     }
 
     fun asyncComponents(): CompletableFuture<ComponentRepositoryWrapper>

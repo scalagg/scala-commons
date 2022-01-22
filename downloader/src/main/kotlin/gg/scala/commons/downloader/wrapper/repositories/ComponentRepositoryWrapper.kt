@@ -7,5 +7,6 @@ import gg.scala.commons.downloader.wrapper.component.ComponentWrapper
  * @since 1/21/2022
  */
 class ComponentRepositoryWrapper(
-    val items: List<ComponentWrapper>
+    val items: MutableList<ComponentWrapper> = mutableListOf(),
+    val continuationToken: String? = null
 )
