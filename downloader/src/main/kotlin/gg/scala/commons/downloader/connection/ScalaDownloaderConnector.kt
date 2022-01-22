@@ -180,13 +180,15 @@ object ScalaDownloaderConnector
         for (component in request.items)
         {
             println("=========================")
-            println("===debug: " + component.group)
+            println("===group: " + component.group)
+            println("===name: " + component.name)
+
             // Checks if this asset should be updated
             ScalaDownloaderDiscoveryService
                 .discoverable.assets
                 .firstOrNull {
                     it.split(":")[0] == component.group &&
-                            it.split(":")[0] == component.name
+                            it.split(":")[1] == component.name
                 }
                 ?: continue
 
