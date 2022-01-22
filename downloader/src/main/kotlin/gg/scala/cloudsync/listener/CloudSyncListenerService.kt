@@ -1,6 +1,6 @@
-package gg.scala.commons.downloader.listener
+package gg.scala.cloudsync.listener
 
-import gg.scala.commons.downloader.connection.ScalaDownloaderConnector
+import gg.scala.cloudsync.connection.CloudSyncConnector
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent
  * @since 1/21/2022
  */
 @Service
-object ScalaDownloaderListenerService
+object CloudSyncListenerService
 {
     @Configure
     fun configure()
@@ -19,7 +19,7 @@ object ScalaDownloaderListenerService
         Events.subscribe(PlayerJoinEvent::class.java)
             .filter { it.player.isOp }
             .handler {
-                ScalaDownloaderConnector.getTrackedAssetsAsync()
+                CloudSyncConnector.getTrackedAssetsAsync()
                     .thenApplyAsync {
 
                     }

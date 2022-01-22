@@ -1,6 +1,6 @@
-package gg.scala.commons.downloader.wrapper.component
+package gg.scala.cloudsync.wrapper.component
 
-import gg.scala.commons.downloader.wrapper.component.asset.ComponentAssetWrapper
+import gg.scala.cloudsync.wrapper.component.asset.ComponentAssetWrapper
 import java.util.*
 
 /**

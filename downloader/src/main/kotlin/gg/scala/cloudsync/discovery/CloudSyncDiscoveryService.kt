@@ -1,4 +1,4 @@
-package gg.scala.commons.downloader.discovery
+package gg.scala.cloudsync.discovery
 
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
@@ -11,7 +11,7 @@ import kotlin.properties.Delegates
  * @since 1/21/2022
  */
 @Service(priority = 45)
-object ScalaDownloaderDiscoveryService
+object CloudSyncDiscoveryService
 {
     @Inject
     lateinit var factory: ConfigFactory

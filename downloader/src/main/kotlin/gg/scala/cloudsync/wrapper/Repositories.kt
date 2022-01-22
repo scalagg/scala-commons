@@ -1,7 +1,8 @@
-package gg.scala.commons.downloader
+package gg.scala.cloudsync.wrapper
 
-import gg.scala.commons.downloader.connection.ScalaDownloaderConnector
-import gg.scala.commons.downloader.wrapper.repositories.ComponentRepositoryWrapper
+import gg.scala.cloudsync.ScalaCloudSyncConstants
+import gg.scala.cloudsync.connection.CloudSyncConnector
+import gg.scala.cloudsync.wrapper.repositories.ComponentRepositoryWrapper
 import net.evilblock.cubed.serializers.Serializers
 import java.util.concurrent.CompletableFuture
 
@@ -9,12 +10,12 @@ import java.util.concurrent.CompletableFuture
  * @author GrowlyX
  * @since 1/21/2022
  */
-object Find
+object Repositories
 {
     fun components(): ComponentRepositoryWrapper
     {
-        var request = ScalaDownloaderConnector.request(
-            ScalaCommonsDownloaderConstants.COMPONENTS
+        var request = CloudSyncConnector.request(
+            ScalaCloudSyncConstants.COMPONENTS
         )
 
         val wrapper = ComponentRepositoryWrapper()
@@ -24,8 +25,8 @@ object Find
         {
             if (iterated?.continuationToken != null)
             {
-                request = ScalaDownloaderConnector.request(
-                    ScalaCommonsDownloaderConstants.COMPONENTS +
+                request = CloudSyncConnector.request(
+                    ScalaCloudSyncConstants.COMPONENTS +
                             "&continuationToken=${iterated.continuationToken}"
                 )
             }

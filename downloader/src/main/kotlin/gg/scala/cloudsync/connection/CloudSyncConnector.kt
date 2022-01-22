@@ -1,12 +1,12 @@
-package gg.scala.commons.downloader.connection
+package gg.scala.cloudsync.connection
 
 import com.google.common.hash.Hashing
 import com.google.common.io.Files
-import gg.scala.commons.downloader.Find
-import gg.scala.commons.downloader.ScalaCommonsDownloader
-import gg.scala.commons.downloader.authentication.ScalaDownloaderAuthenticationService
-import gg.scala.commons.downloader.discovery.ScalaDownloaderDiscoveryService
-import gg.scala.commons.downloader.wrapper.component.ComponentWrapper
+import gg.scala.cloudsync.wrapper.Repositories
+import gg.scala.cloudsync.ScalaCloudSync
+import gg.scala.cloudsync.authentication.CloudSyncAuthenticationService
+import gg.scala.cloudsync.discovery.CloudSyncDiscoveryService
+import gg.scala.cloudsync.wrapper.component.ComponentWrapper
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
@@ -14,16 +14,9 @@ import gg.scala.flavor.service.Service
 import kong.unirest.GetRequest
 import kong.unirest.Unirest
 import kong.unirest.UnirestInstance
-import org.apache.commons.codec.binary.Base64.encodeBase64
 import org.apache.commons.io.FileUtils
 import org.bukkit.Bukkit
 import java.io.File
-import java.net.Authenticator
-import java.net.PasswordAuthentication
-import java.net.URL
-import java.net.URLConnection
-import java.nio.charset.Charset
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
 import kotlin.properties.Delegates
@@ -34,10 +27,10 @@ import kotlin.properties.Delegates
  * @since 1/21/2022
  */
 @Service(priority = 40)
-object ScalaDownloaderConnector
+object CloudSyncConnector
 {
     @Inject
-    lateinit var plugin: ScalaCommonsDownloader
+    lateinit var plugin: ScalaCloudSync
 
     var unirest by Delegates
         .notNull<UnirestInstance>()
@@ -57,7 +50,7 @@ object ScalaDownloaderConnector
         )
 
         getTrackedAssets().forEach { component ->
-            val discoverable = ScalaDownloaderDiscoveryService
+            val discoverable = CloudSyncDiscoveryService
                 .discoverable.assets
                 .firstOrNull {
                     it.split(":")[0] == component.group &&
@@ -127,13 +120,13 @@ object ScalaDownloaderConnector
 
     fun getTrackedAssetsAsync(): CompletableFuture<List<ComponentWrapper>>
     {
-        return Find.asyncComponents().thenApply { request ->
+        return Repositories.asyncComponents().thenApply { request ->
             val assets = mutableListOf<ComponentWrapper>()
 
             for (component in request.items)
             {
                 // Checks if this asset should be updated
-                ScalaDownloaderDiscoveryService
+                CloudSyncDiscoveryService
                     .discoverable.assets
                     .firstOrNull {
                         it.split(":")[0] == component.group &&
@@ -159,12 +152,12 @@ object ScalaDownloaderConnector
     private fun getTrackedAssets(): List<ComponentWrapper>
     {
         val assets = mutableListOf<ComponentWrapper>()
-        val request = Find.components()
+        val request = Repositories.components()
 
         for (component in request.items)
         {
             // Checks if this asset should be updated
-            ScalaDownloaderDiscoveryService
+            CloudSyncDiscoveryService
                 .discoverable.assets
                 .firstOrNull {
                     it.split(":")[0] == component.group &&
@@ -189,7 +182,7 @@ object ScalaDownloaderConnector
     fun request(request: String): GetRequest
     {
         val wrapper =
-            ScalaDownloaderAuthenticationService.getWrapper()
+            CloudSyncAuthenticationService.getWrapper()
 
         return unirest.get(request)
             .basicAuth(wrapper.username, wrapper.password)

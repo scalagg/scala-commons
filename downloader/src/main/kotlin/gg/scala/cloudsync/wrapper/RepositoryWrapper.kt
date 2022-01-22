@@ -1,4 +1,4 @@
-package gg.scala.commons.downloader.wrapper
+package gg.scala.cloudsync.wrapper
 
 /**
  * @author GrowlyX
@@ -6,5 +6,5 @@ package gg.scala.commons.downloader.wrapper
  */
 interface RepositoryWrapper<T>
 {
-    val items: List<T>
+    val items: MutableList<T>
 }

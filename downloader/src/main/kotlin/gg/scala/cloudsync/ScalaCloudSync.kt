@@ -1,4 +1,4 @@
-package gg.scala.commons.downloader
+package gg.scala.cloudsync
 
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.flavor.Flavor
@@ -13,21 +13,22 @@ import xyz.mkotb.configapi.ConfigFactory
  */
 @Plugin(
     name = "cloudsync",
+    description = "Scala's advanced server-to-cloud synchronization tool.",
     depends = [
         PluginDependency("Cubed")
     ]
 )
-class ScalaCommonsDownloader : ExtendedScalaPlugin()
+class ScalaCloudSync : ExtendedScalaPlugin()
 {
-    val flavor by lazy {
-        Flavor.create<ScalaCommonsDownloader>(
+    private val flavor by lazy {
+        Flavor.create<ScalaCloudSync>(
             FlavorOptions(logger)
         )
     }
 
     override fun enable()
     {
-        flavor.bind<ScalaCommonsDownloader>() to this
+        flavor.bind<ScalaCloudSync>() to this
         flavor.bind<ConfigFactory>() to ConfigFactory.newFactory(this)
         flavor.startup()
     }

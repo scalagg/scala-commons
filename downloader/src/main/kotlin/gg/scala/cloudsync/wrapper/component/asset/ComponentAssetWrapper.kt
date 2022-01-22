@@ -1,4 +1,4 @@
-package gg.scala.commons.downloader.wrapper.component.asset
+package gg.scala.cloudsync.wrapper.component.asset
 
 /**
  * @author GrowlyX
