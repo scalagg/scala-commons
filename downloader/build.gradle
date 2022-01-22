@@ -8,8 +8,8 @@ dependencies {
 
     compileOnly 'gg.scala.spigot:sspigot-server:1.0.6'
 
-    compileOnly 'com.konghq:unirest-java:3.13.6:standalone'
-    compileOnly 'gg.scala.flavor:flavor:0.1.3'
+    implementation 'com.konghq:unirest-java:3.13.6:standalone'
+    implementation 'gg.scala.flavor:flavor:0.1.3'
 }
 
 shadowJar {

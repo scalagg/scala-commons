@@ -108,7 +108,7 @@ object CloudSyncConnector
                     )
                 }
 
-                plugin.logger.info(
+                plugin.logger.warning(
                     "Successfully updated $fileToOverride (took ${
                         System.currentTimeMillis() - start
                     }ms)!"
