@@ -14,14 +14,20 @@ import gg.scala.flavor.service.Service
 import kong.unirest.GetRequest
 import kong.unirest.Unirest
 import kong.unirest.UnirestInstance
+import org.apache.commons.codec.binary.Base64.encodeBase64
 import org.apache.commons.io.FileUtils
 import org.bukkit.Bukkit
 import java.io.File
+import java.net.Authenticator
+import java.net.PasswordAuthentication
 import java.net.URL
 import java.net.URLConnection
+import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.logging.Level
 import kotlin.properties.Delegates
+
 
 /**
  * @author GrowlyX
@@ -49,8 +55,6 @@ object ScalaDownloaderConnector
         val pluginDirectory = File(
             Bukkit.getWorldContainer(), "plugins"
         )
-
-
 
         getTrackedAssets().forEach { component ->
             val discoverable = ScalaDownloaderDiscoveryService
@@ -83,7 +87,6 @@ object ScalaDownloaderConnector
             // doesn't already exist
             if (!file.exists())
             {
-                println("===debug: file not found, creating")
                 file.createNewFile()
             } else
             {
@@ -101,29 +104,24 @@ object ScalaDownloaderConnector
                 }
             }
 
-            println("===debug: got through checksum checks")
-
-            val downloadUrl = URL(asset.downloadUrl)
-
             val start = System.currentTimeMillis()
             plugin.logger.info("Downloading the latest $fileToOverride archive...")
 
             try
             {
-                FileUtils.copyInputStreamToFile(
-                    authenticate(downloadUrl).getInputStream(), file
-                )
+                request(asset.downloadUrl).asObject {
+                    FileUtils.copyInputStreamToFile(
+                        it.content, file
+                    )
+                }
 
                 plugin.logger.info("Successfully updated $fileToOverride (took ${
                     System.currentTimeMillis() - start
                 }ms)!")
             } catch (exception: Exception)
             {
-                plugin.logger.warning("Oops, seems like an exception was thrown during the update process. (${exception.message})")
+                plugin.logger.log(Level.SEVERE, "Oops, seems like an exception was thrown during the update process.", exception)
             }
-
-            println("===debug: got through file stuff")
-            println("============================")
         }
     }
 
@@ -186,21 +184,6 @@ object ScalaDownloaderConnector
         }
 
         return assets
-    }
-
-    private fun authenticate(url: URL): URLConnection
-    {
-        val wrapper = ScalaDownloaderAuthenticationService.getWrapper()
-        val userpass = "${wrapper.username}:${wrapper.password}"
-
-        val base64Password = String(
-            Base64.getEncoder().encode(userpass.toByteArray())
-        )
-
-        return url.openConnection().apply {
-            connectTimeout = 1000; readTimeout = 1000
-            setRequestProperty("Authorization", "Basic $base64Password")
-        }
     }
 
     fun request(request: String): GetRequest

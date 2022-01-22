@@ -7,5 +7,5 @@ package gg.scala.commons.downloader
 object ScalaCommonsDownloaderConstants
 {
     @JvmStatic
-    val COMPONENTS = "https://repository.scala.gg/service/rest/v1/components?repository=maven-releases"
+    val COMPONENTS = "http://repository.scala.gg/service/rest/v1/components?repository=maven-releases"
 }
