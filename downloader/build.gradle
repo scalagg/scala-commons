@@ -6,10 +6,10 @@ dependencies {
     compileOnly "me.lucko:helper:5.6.9"
     kapt "me.lucko:helper:5.6.9"
 
-    compileOnly 'gg.scala.spigot:server:1.1.4'
+    compileOnly 'gg.scala.spigot:sspigot-server:1.0.6'
 
-    compileOnly 'com.konghq:unirest-java:3.13.6'
-    implementation 'gg.scala.flavor:flavor:0.1.3'
+    compileOnly 'com.konghq:unirest-java:3.13.6:standalone'
+    compileOnly 'gg.scala.flavor:flavor:0.1.3'
 }
 
 shadowJar {

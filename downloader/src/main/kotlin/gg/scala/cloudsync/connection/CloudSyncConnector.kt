@@ -32,7 +32,7 @@ object CloudSyncConnector
     @Inject
     lateinit var plugin: ScalaCloudSync
 
-    var unirest by Delegates
+    private var unirest by Delegates
         .notNull<UnirestInstance>()
 
     @Configure
@@ -108,12 +108,18 @@ object CloudSyncConnector
                     )
                 }
 
-                plugin.logger.info("Successfully updated $fileToOverride (took ${
-                    System.currentTimeMillis() - start
-                }ms)!")
+                plugin.logger.info(
+                    "Successfully updated $fileToOverride (took ${
+                        System.currentTimeMillis() - start
+                    }ms)!"
+                )
             } catch (exception: Exception)
             {
-                plugin.logger.log(Level.SEVERE, "Oops, seems like an exception was thrown during the update process.", exception)
+                plugin.logger.log(
+                    Level.SEVERE,
+                    "Oops, seems like an exception was thrown during the update process.",
+                    exception
+                )
             }
         }
     }
