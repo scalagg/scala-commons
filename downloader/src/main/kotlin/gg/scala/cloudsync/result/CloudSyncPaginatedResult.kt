@@ -13,7 +13,7 @@ object CloudSyncPaginatedResult : PaginatedResult<String>()
     {
         val split = result.split(":")
         return "${CC.WHITE}$resultIndex. ${CC.SEC}(Group: ${CC.GREEN}${split[0]}${CC.SEC}, Module: ${CC.LIGHT_PURPLE}${split[1]}${CC.SEC}, Archive: ${CC.RED}${split[2]}${CC.SEC})"
-    } // 2
+    }
 
     override fun getHeader(page: Int, maxPages: Int) =
         "${CC.PRI}=== ${CC.SEC}Tracked components ${CC.GRAY}($page/$maxPages) ${CC.PRI}==="
