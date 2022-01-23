@@ -16,5 +16,5 @@ object CloudSyncPaginatedResult : PaginatedResult<String>()
     }
 
     override fun getHeader(page: Int, maxPages: Int) =
-        "${CC.PRI}=== ${CC.WHITE}Tracked components ${CC.GRAY}($page/$maxPages) ${CC.PRI}==="
+        "${CC.PRI}=== ${CC.SEC}Tracked components ${CC.GRAY}($page/$maxPages) ${CC.PRI}==="
 }

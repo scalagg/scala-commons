@@ -28,6 +28,22 @@ object CloudSyncDiscoveryService
         )
     }
 
+    fun reload()
+    {
+        val newAssets = factory.fromFile(
+            "discoverable",
+            DiscoverableAssets::class.java
+        )
+
+        for (asset in newAssets.assets)
+        {
+            if (!discoverable.assets.contains(asset))
+            {
+                discoverable.assets.add(asset)
+            }
+        }
+    }
+
     class DiscoverableAssets(
         val assets: MutableList<String> = mutableListOf(
             "gg.scala.lemon:bukkit:Lemon",

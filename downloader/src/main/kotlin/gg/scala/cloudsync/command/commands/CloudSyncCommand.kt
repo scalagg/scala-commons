@@ -86,7 +86,7 @@ object CloudSyncCommand : BaseCommand()
         player.sendMessage("${CC.B_YELLOW}Available Assets:")
         player.sendMessage("${CC.WHITE}${
             component.assets
-                .joinToString { it.format }
+                .joinToString { it.maven2?.extension ?: "?" }
         }.")
     }
 }

@@ -52,6 +52,8 @@ object CloudSyncConnector
             Bukkit.getWorldContainer(), "plugins"
         )
 
+        CloudSyncDiscoveryService.reload()
+
         getTrackedAssets().forEach { component ->
             val discoverable = CloudSyncDiscoveryService
                 .discoverable.assets
