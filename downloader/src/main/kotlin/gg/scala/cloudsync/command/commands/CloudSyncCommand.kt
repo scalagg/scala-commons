@@ -1,6 +1,8 @@
 package gg.scala.cloudsync.command.commands
 
 import gg.scala.cloudsync.connection.CloudSyncConnector
+import gg.scala.cloudsync.discovery.CloudSyncDiscoveryService
+import gg.scala.cloudsync.result.CloudSyncPaginatedResult
 import gg.scala.cloudsync.wrapper.Repositories
 import gg.scala.cloudsync.wrapper.component.ComponentWrapper
 import net.evilblock.cubed.acf.BaseCommand
@@ -9,6 +11,7 @@ import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.acf.annotation.*
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.FancyMessage
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
@@ -38,6 +41,17 @@ object CloudSyncCommand : BaseCommand()
             fancyMessage.withMessage("${CC.D_AQUA}$name${CC.YELLOW} is outdated! The newest version is: ${CC.GREEN}${asset.maven2!!.version}${CC.YELLOW}.")
             fancyMessage.sendToPlayer(player)
         }
+    }
+
+    @Subcommand("tracked")
+    @Description("View all tracked components.")
+    fun onTracked(sender: CommandSender, @Optional page: Int?)
+    {
+        CloudSyncPaginatedResult.display(
+            sender, CloudSyncDiscoveryService
+                .discoverable.assets,
+            page ?: 1, "cloudsync tracked %s"
+        )
     }
 
     @Subcommand("information")
