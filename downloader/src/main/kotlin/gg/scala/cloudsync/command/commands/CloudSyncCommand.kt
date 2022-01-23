@@ -70,11 +70,9 @@ object CloudSyncCommand : BaseCommand()
         player.sendMessage("${CC.YELLOW}Latest version: ${CC.AQUA}${component.version}")
         player.sendMessage("")
         player.sendMessage("${CC.B_YELLOW}Available Assets:")
-
-        for (compAsset in component.assets)
-        {
-            player.sendMessage("${CC.WHITE} - ${compAsset.maven2?.extension ?: "N/A"}")
-            player.sendMessage("   ${CC.YELLOW}Checksum ${CC.GRAY}(md5)${CC.YELLOW}: ${CC.AQUA}${compAsset.checksum.md5}")
-        }
+        player.sendMessage("${CC.WHITE}${
+            component.assets
+                .joinToString { it.format }
+        }.")
     }
 }
