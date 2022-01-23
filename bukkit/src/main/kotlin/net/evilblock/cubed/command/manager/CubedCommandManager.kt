@@ -26,7 +26,7 @@ import java.util.*
  */
 class CubedCommandManager(
     plugin: Plugin,
-    primary: ChatColor = ChatColor.GREEN,
+    primary: ChatColor = ChatColor.GOLD,
     secondary: ChatColor = ChatColor.YELLOW
 ) : PaperCommandManager(plugin) {
 
