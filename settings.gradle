@@ -11,5 +11,4 @@ include 'bukkit'
 include 'serializers'
 include 'banana'
 include 'velocity'
-include 'downloader'
 
