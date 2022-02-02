@@ -8,10 +8,13 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
+import gg.scala.cache.uuid.ScalaStoreUuidCache
+import gg.scala.cache.uuid.impl.LocalUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
+import net.evilblock.cubed.cache.BukkitUuidCacheListener
 import net.evilblock.cubed.command.*
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.entity.Entity
@@ -43,7 +46,6 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagListener
 import net.evilblock.cubed.nametag.update.NametagUpdatesListeners
-import net.evilblock.cubed.plugin.event.EventListener
 import net.evilblock.cubed.poster.PosterHandler
 import net.evilblock.cubed.poster.placed.PlacedPosterHandler
 import net.evilblock.cubed.scheduler.CubedScheduler
@@ -56,7 +58,6 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Rainbow
@@ -132,6 +133,10 @@ class Cubed : ExtendedScalaPlugin()
             loadTasks()
 
             filterConsoleLogs()
+
+            ScalaStoreUuidCache.configure(
+                LocalUuidCacheTranslator
+            )
 
             GlowEnchantment.registerEnchant()
         } catch (e: Exception)
@@ -241,27 +246,35 @@ class Cubed : ExtendedScalaPlugin()
 
     private fun loadListeners()
     {
-        ProtocolLibrary.getProtocolManager().addPacketListener(InventoryPacketAdapter)
-        ProtocolLibrary.getProtocolManager().addPacketListener(MenuPacketAdapter)
-        ProtocolLibrary.getProtocolManager().addPacketListener(EntityPacketAdapter)
+        listOf(
+            InventoryPacketAdapter,
+            MenuPacketAdapter,
+            EntityPacketAdapter
+        ).forEach {
+            ProtocolLibrary.getProtocolManager()
+                .addPacketListener(it)
+        }
 
-        server.pluginManager.registerEvents(ButtonListeners, this)
-        server.pluginManager.registerEvents(SelectItemListeners, this)
-        server.pluginManager.registerEvents(UUIDCacheListeners, this)
-        server.pluginManager.registerEvents(EntityPacketAdapter, this) // this is not a mistake
-        server.pluginManager.registerEvents(EntityWatcherListeners, this)
-        server.pluginManager.registerEvents(LivingEntityListeners, this)
-        server.pluginManager.registerEvents(EntityMoveTool, this)
-        server.pluginManager.registerEvents(EntityPortTool, this)
-        server.pluginManager.registerEvents(EntitySelectionTool, this)
-        server.pluginManager.registerEvents(NpcEntityTeamUpdatesListeners, this)
-        server.pluginManager.registerEvents(MenuAutoUpdater, this)
-        server.pluginManager.registerEvents(ConsoleCommandLogListeners, this)
-        server.pluginManager.registerEvents(NametagUpdatesListeners, this)
-        server.pluginManager.registerEvents(ScoreboardListeners, this)
-        server.pluginManager.registerEvents(VisibilityListeners, this)
-        server.pluginManager.registerEvents(NametagListener, this)
-        server.pluginManager.registerEvents(EventListener, this)
+        listOf(
+            ButtonListeners,
+            SelectItemListeners,
+            BukkitUuidCacheListener,
+            EntityPacketAdapter,
+            EntityWatcherListeners,
+            LivingEntityListeners,
+            EntityMoveTool,
+            EntityPortTool,
+            EntitySelectionTool,
+            NpcEntityTeamUpdatesListeners,
+            MenuAutoUpdater,
+            ConsoleCommandLogListeners,
+            NametagUpdatesListeners,
+            VisibilityListeners,
+            ScoreboardListeners,
+            NametagListener,
+        ).forEach {
+            server.pluginManager.registerEvents(it, this)
+        }
     }
 
     private fun loadTasks()

@@ -23,6 +23,13 @@ object ScalaStoreUuidCache
         Logger.getGlobal().info("Loaded UUIDCache with ${translator.javaClass.simpleName}.")
     }
 
+    fun useTranslator(
+        lambda: ScalaStoreUuidCacheTranslator.() -> Unit
+    )
+    {
+        lambda.invoke(translator)
+    }
+
     /**
      * Finds a cached uniqueId, or
      * fetches & caches the newly fetched uniqueId.
