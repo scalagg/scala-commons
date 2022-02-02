@@ -26,7 +26,7 @@ data class Banana(
 )
 {
     private val subscribeJedisPool: JedisPool
-    private var publishJedisPool: JedisPool
+    var publishJedisPool: JedisPool
 
     private lateinit var pubSub: JedisPubSub
 
@@ -102,38 +102,45 @@ data class Banana(
         }, publishJedisPool)
     }
 
-    fun useResource(lambda: (Jedis) -> Unit)
+    fun <T> useResource(lambda: (Jedis) -> T): T?
     {
-        useResource(lambda, publishJedisPool)
+        return useResource(lambda, publishJedisPool)
     }
 
-    fun useResource(
-        lambda: (Jedis) -> Unit,
+    private fun <T> useResource(
+        lambda: (Jedis) -> T,
         jedisPool: JedisPool?
-    )
+    ): T?
     {
+        val resource = jedisPool?.resource
+            ?: throw RuntimeException("Jedis pool provided was null")
+
         try
         {
-            val resource = jedisPool?.resource
-                ?: throw RuntimeException("Jedis pool provided was null")
-
             if (credentials.authenticate)
             {
                 resource.auth(credentials.password)
             }
 
-            lambda.invoke(resource)
+            val thing = lambda
+                .invoke(resource)
 
             if (!jedisPool.isClosed)
             {
                 resource.close()
             }
+
+            return thing
         } catch (e: Exception)
         {
             options.exceptionHandler.onOutgoingPacket(
                 "CMD", e
             )
+
+            publishJedisPool.returnResource(resource)
         }
+
+        return null
     }
 
     fun registerClass(clazz: Class<*>)

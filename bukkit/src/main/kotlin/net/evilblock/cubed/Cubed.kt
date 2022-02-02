@@ -8,10 +8,7 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import gg.scala.banana.BananaBuilder
-import gg.scala.banana.credentials.BananaCredentials
-import gg.scala.banana.options.BananaOptions
-import me.lucko.helper.plugin.ExtendedJavaPlugin
+import gg.scala.commons.ExtendedScalaPlugin
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
@@ -59,8 +56,6 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.store.uuidcache.UUIDCache
-import net.evilblock.cubed.store.uuidcache.impl.RedisUUIDCache
 import net.evilblock.cubed.store.uuidcache.listener.UUIDCacheListeners
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
@@ -75,9 +70,6 @@ import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
 
-/**
- * Cubed Engine - Rapid plugin development
- */
 @Plugin(
     name = "Cubed",
     depends = [
@@ -85,7 +77,7 @@ import java.util.*
         PluginDependency("ProtocolLib")
     ]
 )
-class Cubed : ExtendedJavaPlugin()
+class Cubed : ExtendedScalaPlugin()
 {
     companion object
     {
@@ -98,8 +90,6 @@ class Cubed : ExtendedJavaPlugin()
         @JvmStatic
         var running: Boolean = false
     }
-
-    lateinit var uuidCache: UUIDCache
 
     override fun enable()
     {
@@ -144,24 +134,6 @@ class Cubed : ExtendedJavaPlugin()
             filterConsoleLogs()
 
             GlowEnchantment.registerEnchant()
-
-            Tasks.delayed(20L)
-            {
-                try
-                {
-                    uuidCache
-                } catch (ignored: Exception)
-                {
-                    logger.severe("COULD NOT FIND UUID CACHE IMPLEMENTATION! Fallback: Default implementation!")
-
-                    val banana = BananaBuilder()
-                        .credentials(BananaCredentials())
-                        .options(BananaOptions("cubed:uuid_cache"))
-                        .build()
-
-                    uuidCache = RedisUUIDCache(banana)
-                }
-            }
         } catch (e: Exception)
         {
             e.printStackTrace()
@@ -295,8 +267,6 @@ class Cubed : ExtendedJavaPlugin()
     private fun loadTasks()
     {
         ScoreboardThread().start()
-
-        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncMinuteMarkEvent> { uuidCache.load() }
 
         Tasks.asyncTimer(NpcStrategyLogic, 20L, 20L)
         Tasks.asyncTimer(MenuAutoUpdater, 2L, 2L)
