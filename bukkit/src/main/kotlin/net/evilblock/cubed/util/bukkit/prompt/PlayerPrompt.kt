@@ -7,8 +7,8 @@
 
 package net.evilblock.cubed.util.bukkit.prompt
 
+import gg.scala.cache.uuid.ScalaStoreUuidCache
 import net.evilblock.cubed.Cubed
-import net.evilblock.cubed.store.uuidcache.UUIDCache
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import org.bukkit.ChatColor
 import org.bukkit.conversations.ConversationContext
@@ -24,17 +24,10 @@ class PlayerPrompt(private val useFunc: (UUID) -> Unit) : StringPrompt() {
     }
 
     override fun acceptInput(context: ConversationContext, input: String): Prompt? {
-        var uuid: UUID?
-        try {
-            uuid = UUID.fromString(input)
+        val uuid: UUID? = try {
+            UUID.fromString(input)
         } catch (e: Exception) {
-            uuid = Cubed.instance.uuidCache.uuid(input)
-            if (uuid == null) {
-                val optionalProfile = UUIDCache.fetchFromMojang(input)
-                if (optionalProfile.isPresent) {
-                    uuid = optionalProfile.get().first
-                }
-            }
+            ScalaStoreUuidCache.uniqueId(input)
         }
 
         if (uuid == null) {

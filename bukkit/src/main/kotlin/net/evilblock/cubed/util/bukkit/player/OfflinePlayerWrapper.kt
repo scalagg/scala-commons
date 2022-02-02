@@ -1,5 +1,6 @@
 package net.evilblock.cubed.util.bukkit.player
 
+import gg.scala.cache.uuid.ScalaStoreUuidCache
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -26,14 +27,14 @@ class OfflinePlayerWrapper(val source: String) {
 
     fun loadSync(): Player? {
         val source = source.replace("'", "").replace("\"", "")
-        uniqueId = Cubed.instance.uuidCache.uuid(source)
+        uniqueId = ScalaStoreUuidCache.uniqueId(source)
 
         if (uniqueId == null) {
             name = this.source
             return null
         }
 
-        name = Cubed.instance.uuidCache.name(uniqueId!!)
+        name = ScalaStoreUuidCache.username(uniqueId!!)
 
         if (Bukkit.getPlayer(uniqueId) != null) {
             return Bukkit.getPlayer(uniqueId)

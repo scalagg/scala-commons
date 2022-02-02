@@ -4,7 +4,7 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.ExceptionHandler
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
-import net.evilblock.cubed.Cubed
+import gg.scala.cache.uuid.ScalaStoreUuidCache
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -21,16 +21,18 @@ import org.bukkit.plugin.Plugin
 import java.util.*
 
 /**
- * @author puugz
+ * @author GrowlyX, puugz
  * @since 10/08/2021 20:38
  */
 class CubedCommandManager(
     plugin: Plugin,
     primary: ChatColor = ChatColor.GOLD,
     secondary: ChatColor = ChatColor.YELLOW
-) : PaperCommandManager(plugin) {
+) : PaperCommandManager(plugin)
+{
 
-    init {
+    init
+    {
         enableUnstableAPI("help")
 
         listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
@@ -49,12 +51,16 @@ class CubedCommandManager(
         commandContexts.registerContext(NpcEntity::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            val entity: Entity = try {
+            val entity: Entity = try
+            {
                 EntityHandler.getEntityById(firstArg.toInt())
-            } catch (e: Exception) {
-                try {
+            } catch (e: Exception)
+            {
+                try
+                {
                     EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
-                } catch (e: Exception) {
+                } catch (e: Exception)
+                {
                     throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No NPC was found.")
@@ -63,7 +69,8 @@ class CubedCommandManager(
         }
 
         commandContexts.registerIssuerOnlyContext(ConsoleCommandSender::class.java) { c ->
-            if (c.sender !is ConsoleCommandSender) {
+            if (c.sender !is ConsoleCommandSender)
+            {
                 throw ConditionFailedException("Only console may perform this command.")
             }
             return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
@@ -72,12 +79,16 @@ class CubedCommandManager(
         commandContexts.registerContext(Entity::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            return@registerContext try {
+            return@registerContext try
+            {
                 EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
-            } catch (e: Exception) {
-                try {
+            } catch (e: Exception)
+            {
+                try
+                {
                     EntityHandler.getEntityById(firstArg.toInt())
-                } catch (e: Exception) {
+                } catch (e: Exception)
+                {
                     throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No entity was found.")
@@ -86,16 +97,20 @@ class CubedCommandManager(
         commandContexts.registerContext(NpcTexture::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            return@registerContext if (CubedConfig.hasNpcTexture(firstArg)) {
+            return@registerContext if (CubedConfig.hasNpcTexture(firstArg))
+            {
                 CubedConfig.getNpcTexture(firstArg)
-            } else {
+            } else
+            {
                 c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
 
                 val queryResponse = NpcTexture.fetchTextureByUsername(firstArg)
 
-                if (queryResponse.isPresent) {
+                if (queryResponse.isPresent)
+                {
                     queryResponse.get()
-                } else {
+                } else
+                {
                     throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${firstArg}${CC.RED}.")
                 }
             }
@@ -108,9 +123,11 @@ class CubedCommandManager(
         commandContexts.registerContext(MenuTemplate::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            return@registerContext try {
+            return@registerContext try
+            {
                 MenuTemplateHandler.findTemplate(firstArg)
-            } catch (ignored: Exception) {
+            } catch (ignored: Exception)
+            {
                 throw ConditionFailedException("No menu template matching ${CC.YELLOW}${firstArg}${CC.RED} found.")
             }
         }
@@ -128,29 +145,33 @@ class CubedCommandManager(
         commandContexts.registerContext(Duration::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            return@registerContext try {
+            return@registerContext try
+            {
                 Duration.parse(firstArg)
-            } catch (ignored: Exception) {
-                throw ConditionFailedException("That is an invalid duration. A valid duration would be: ${CC.BOLD}1h30m")
+            } catch (ignored: Exception)
+            {
+                throw ConditionFailedException("That's an invalid duration. Example: ${CC.BOLD}1h30m")
             }
         }
 
         commandContexts.registerContext(UUID::class.java) { c ->
             val firstArg = c.popFirstArg()
 
-            if (firstArg.length == 32) {
+            if (firstArg.length == 32)
+            {
                 return@registerContext UUIDUtil.formatUUID(firstArg)
                     ?: throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
-            } else if (firstArg.length <= 16) {
-                return@registerContext Cubed.instance.uuidCache.uuid(firstArg) ?: Cubed.instance.uuidCache.fetchUUID(
-                    firstArg
-                )
-                ?: throw ConditionFailedException("No player with the username ${CC.YELLOW}${firstArg}${CC.RED} exists.")
+            } else if (firstArg.length <= 16)
+            {
+                return@registerContext ScalaStoreUuidCache.uniqueId(firstArg)
+                    ?: throw ConditionFailedException("No player with the username ${CC.YELLOW}${firstArg}${CC.RED} exists.")
             }
 
-            return@registerContext try {
+            return@registerContext try
+            {
                 UUID.fromString(firstArg)
-            } catch (ignored: Exception) {
+            } catch (ignored: Exception)
+            {
                 throw ConditionFailedException("${CC.YELLOW}${firstArg}${CC.RED} is not a valid uuid.")
             }
         }

@@ -3,9 +3,7 @@ package net.evilblock.cubed.entity.npc.texture
 import com.google.gson.JsonParser
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
-import net.evilblock.cubed.Cubed
-import net.evilblock.cubed.store.uuidcache.UUIDCache
-import java.lang.IllegalStateException
+import gg.scala.cache.uuid.ScalaStoreUuidCache
 import java.util.*
 
 data class NpcTexture(val textureValue: String, val textureSignature: String) {
@@ -30,16 +28,7 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
          */
         @JvmStatic
         fun fetchTextureByUsername(username: String): Optional<NpcTexture> {
-            println(username)
-            var uuid = Cubed.instance.uuidCache.uuid(username)
-            if (uuid == null) {
-                val apiResponse = UUIDCache.fetchFromMojang(username)
-                if (!apiResponse.isPresent) {
-                    return Optional.empty()
-                }
-
-                uuid = apiResponse.get().first
-            }
+            val uuid: UUID = ScalaStoreUuidCache.uniqueId(username) ?: return Optional.empty()
 
             return try {
                 val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()

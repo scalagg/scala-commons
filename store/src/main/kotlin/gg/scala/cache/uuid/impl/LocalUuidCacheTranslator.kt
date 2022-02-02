@@ -38,8 +38,8 @@ object LocalUuidCacheTranslator : ScalaStoreUuidCacheTranslator
      */
     override fun update(pair: Pair<UUID, String>, commit: Boolean)
     {
-        usernameCache[pair.second] = pair.first
-        uniqueIdCache[pair.first] = pair.second.lowercase()
+        usernameCache[pair.second.lowercase()] = pair.first
+        uniqueIdCache[pair.first] = pair.second
     }
 
     /**
@@ -51,7 +51,7 @@ object LocalUuidCacheTranslator : ScalaStoreUuidCacheTranslator
      */
     override fun uniqueId(username: String): UUID?
     {
-        return usernameCache[username]
+        return usernameCache[username.lowercase()]
     }
 
     /**

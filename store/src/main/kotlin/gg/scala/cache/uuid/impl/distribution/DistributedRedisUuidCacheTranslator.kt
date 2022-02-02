@@ -14,6 +14,17 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinPool
 
 /**
+ * Commits the UUID, String [Pair]
+ * to our redis cache.
+ *
+ * [Banana] provides this cache &
+ * wraps generic jedis commands with
+ * a concurrent solution to replace with.
+ *
+ * This [Pair] is then distributed
+ * across all online instances,
+ * updating it without committing.
+ *
  * @author GrowlyX
  * @since 2/1/2022
  */
@@ -110,14 +121,14 @@ class DistributedRedisUuidCacheTranslator(
                 uniqueIdCache[pair.first] == null
 
         usernameCache[pair.second] = pair.first
-        uniqueIdCache[pair.first] = pair.second.lowercase()
+        uniqueIdCache[pair.first] = pair.second
 
         if (commit && needsUpdate)
         {
             ForkJoinPool.commonPool().execute {
                 safeUse {
                     it.hset(USERNAME_REDIS_LOC, pair.second.lowercase(), pair.first.toString())
-                    it.hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second.lowercase())
+                    it.hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second)
                 }
             }
 
@@ -137,7 +148,7 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun uniqueId(username: String): UUID?
     {
-        return usernameCache[username] ?: internalUniqueId(username)
+        return usernameCache[username.lowercase()] ?: internalUniqueId(username)
     }
 
     /**
@@ -162,7 +173,7 @@ class DistributedRedisUuidCacheTranslator(
     private fun internalUniqueId(username: String): UUID?
     {
         return safeUse {
-            UUID.fromString(it.hget(USERNAME_REDIS_LOC, username)!!)
+            UUID.fromString(it.hget(USERNAME_REDIS_LOC, username.lowercase())!!)
         }
     }
 
