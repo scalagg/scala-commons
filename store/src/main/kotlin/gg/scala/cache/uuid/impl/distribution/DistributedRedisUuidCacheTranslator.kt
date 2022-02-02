@@ -106,10 +106,13 @@ class DistributedRedisUuidCacheTranslator(
         pair: Pair<UUID, String>, commit: Boolean
     )
     {
+        val needsUpdate = usernameCache[pair.second] == null ||
+                uniqueIdCache[pair.first] == null
+
         usernameCache[pair.second] = pair.first
         uniqueIdCache[pair.first] = pair.second.lowercase()
 
-        if (commit)
+        if (commit && needsUpdate)
         {
             ForkJoinPool.commonPool().execute {
                 safeUse {
