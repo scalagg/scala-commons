@@ -25,6 +25,12 @@ import java.util.concurrent.ForkJoinPool
  * across all online instances,
  * updating it without committing.
  *
+ * Usernames as [String] form in pairs
+ * are scanned as their lowercase form
+ * to prevent us from encountering any
+ * issues while finding a match for the
+ * username in our [usernameCache] map.
+ *
  * @author GrowlyX
  * @since 2/1/2022
  */
@@ -117,10 +123,10 @@ class DistributedRedisUuidCacheTranslator(
         pair: Pair<UUID, String>, commit: Boolean
     )
     {
-        val needsUpdate = usernameCache[pair.second] == null ||
+        val needsUpdate = usernameCache[pair.second.lowercase()] == null ||
                 uniqueIdCache[pair.first] == null
 
-        usernameCache[pair.second] = pair.first
+        usernameCache[pair.second.lowercase()] = pair.first
         uniqueIdCache[pair.first] = pair.second
 
         if (commit && needsUpdate)
@@ -184,7 +190,6 @@ class DistributedRedisUuidCacheTranslator(
             banana.useResource(lambda)
         } catch (exception: Exception)
         {
-            exception.printStackTrace()
             null
         }
     }

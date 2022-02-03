@@ -16,7 +16,8 @@ object Serializers {
     @JvmStatic
     var gson: Gson = gsonBuilder.create()
 
-    val writerSettings: JsonWriterSettings = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build()
+    val writerSettings: JsonWriterSettings = JsonWriterSettings
+        .builder().outputMode(JsonMode.RELAXED).build()
 
     fun useGsonBuilderThenRebuild(use: (GsonBuilder) -> Unit) {
         synchronized(gsonBuilder) {
