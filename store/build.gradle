@@ -4,11 +4,11 @@ dependencies {
     implementation project(':serializers')
     implementation project(':banana')
 
-    compileOnly 'redis.clients:jedis:4.0.1'
+    compileOnly 'redis.clients:jedis:4.1.0'
     compileOnly 'com.google.code.gson:gson:2.8.9'
 
     compileOnly 'org.mongodb:mongodb-driver:3.12.10'
-    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
     implementation fileTree(dir: 'lib', include: '*.jar')
 }
