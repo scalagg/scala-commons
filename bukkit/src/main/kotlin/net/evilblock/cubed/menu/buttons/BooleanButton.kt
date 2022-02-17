@@ -25,21 +25,35 @@ class BooleanButton(
     override fun getName(player: Player): String {
         return if (value) {
             if (confirm) {
-                "${ChatColor.GREEN}${ChatColor.BOLD}Confirm"
+                "${ChatColor.GREEN}Confirm"
             } else {
-                "${ChatColor.GREEN}${ChatColor.BOLD}Yes"
+                "${ChatColor.GREEN}Yes"
             }
         } else {
             if (confirm) {
-                "${ChatColor.RED}${ChatColor.BOLD}Cancel"
+                "${ChatColor.RED}Cancel"
             } else {
-                "${ChatColor.RED}${ChatColor.BOLD}No"
+                "${ChatColor.RED}No"
             }
         }
     }
 
     override fun getDescription(player: Player): List<String> {
-        return ArrayList()
+        return listOf(
+            if (value) {
+                if (confirm) {
+                    "${ChatColor.GRAY}I want to proceed with this action."
+                } else {
+                    "${ChatColor.GRAY}I agree with this action."
+                }
+            } else {
+                if (confirm) {
+                    "${ChatColor.GRAY}I want to cancel this procedure."
+                } else {
+                    "${ChatColor.GRAY}I do not agree with this action."
+                }
+            }
+        )
     }
 
     override fun getDamageValue(player: Player): Byte {
@@ -47,10 +61,10 @@ class BooleanButton(
     }
 
     override fun getMaterial(player: Player): Material {
-        return Material.WOOL
+        return Material.CARPET
     }
 
-    override fun clicked(player: Player, i: Int, clickType: ClickType, view: InventoryView) {
+    override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         if (parent.called) {
             return
         }

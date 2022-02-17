@@ -131,15 +131,6 @@ object EntityPacketAdapter : PacketAdapter(
                 event.packet.dataWatcherModifier.write(0, dataWatcher)
             }
         }
-
-//        if (event.packetType == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-//            val entityId = event.packet.integers.read(0)
-//            println("spawning named entity $entityId for ${event.player.name}")
-//            val dataWatcher = event.packet.dataWatcherModifier.read(0)
-//            for ((key, value) in dataWatcher.asMap()) {
-//                println("$key - ${value.value}")
-//            }
-//        }
     }
 
     @EventHandler

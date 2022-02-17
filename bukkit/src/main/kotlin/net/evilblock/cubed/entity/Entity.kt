@@ -386,7 +386,7 @@ abstract class Entity(var location: Location) {
     }
 
     companion object {
-        private var entityId = -1337
+        private var entityId = 0
 
         fun nextEntityId(): Int {
             return entityId--

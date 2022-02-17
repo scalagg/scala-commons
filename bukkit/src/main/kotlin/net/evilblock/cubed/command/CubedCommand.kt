@@ -48,17 +48,6 @@ object CubedCommand : BaseCommand()
         sender.sendMessage("${CC.SEC}Found username: ${CC.PRI}$username")
     }
 
-    @Subcommand("fetch-cache")
-    @Description("Fetches the uuid cache")
-    fun onFlushCache(sender: CommandSender)
-    {
-        ScalaStoreUuidCache.useTranslator {
-            uniqueIdCache.forEach { (t, _) ->
-                sender.sendMessage(t.toString())
-            }
-        }
-    }
-
     @Subcommand("find-uuid")
     @Description("Searches the UUID cache for a UUID by the given username")
     @CommandCompletion("@players")

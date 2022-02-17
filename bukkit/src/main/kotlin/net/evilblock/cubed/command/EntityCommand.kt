@@ -38,7 +38,7 @@ object EntityCommand : BaseCommand() {
     @Subcommand("debug")
     fun onDebug(player: Player) {
         EntityTickThread.DEBUG = !EntityTickThread.DEBUG
-        player.sendMessage(EntityTickThread.DEBUG.toString())
+        player.sendMessage("${CC.SEC}Debug enabled: ${CC.PRI}${EntityTickThread.DEBUG.toString()}")
     }
 
     @Subcommand("debug-view")

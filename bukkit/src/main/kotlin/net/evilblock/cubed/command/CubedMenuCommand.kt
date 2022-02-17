@@ -11,6 +11,7 @@ import net.evilblock.cubed.menu.menus.RangeEditorMenu
 import net.evilblock.cubed.menu.menus.SelectColorMenu
 import net.evilblock.cubed.menu.menus.SelectItemStackMenu
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -38,7 +39,7 @@ object CubedMenuCommand : BaseCommand()
             title = "Are you sure?",
             confirm = true
         ) {
-            player.sendMessage("You selected: $it")
+            player.sendMessage("${CC.SEC}You selected: ${CC.PRI}$it")
         }.openMenu(player)
     }
 
@@ -47,7 +48,7 @@ object CubedMenuCommand : BaseCommand()
     fun onColorSelectionMenu(player: Player)
     {
         SelectColorMenu {
-            player.sendMessage("You selected: $it")
+            player.sendMessage("${CC.SEC}You selected: ${CC.PRI}$it")
         }.openMenu(player)
     }
 
@@ -56,7 +57,7 @@ object CubedMenuCommand : BaseCommand()
     fun onItemStackMenu(player: Player)
     {
         SelectItemStackMenu {
-            player.sendMessage("Your input: ${it.type.name}")
+            player.sendMessage("${CC.SEC}Your input: ${CC.PRI}${it.type.name}")
         }.openMenu(player)
     }
 
@@ -73,7 +74,7 @@ object CubedMenuCommand : BaseCommand()
     {
         override fun onChange(min: Int, max: Int)
         {
-            player.sendMessage("The min is: $min, and the max is: $max.")
+            player.sendMessage("${CC.SEC}The min is: ${CC.PRI}$min${CC.SEC}, and the max is: ${CC.PRI}$max${CC.SEC}.")
         }
     }
 
