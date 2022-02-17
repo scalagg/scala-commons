@@ -17,7 +17,8 @@ object ScoreboardListeners : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-        ScoreboardHandler.scoreboards[event.player.uniqueId] = Scoreboard(event.player)
+        ScoreboardHandler.scoreboards[event.player.uniqueId] =
+            Scoreboard(event.player).also { it.update() }
     }
 
     @EventHandler
