@@ -127,6 +127,8 @@ class Cubed : ExtendedScalaPlugin()
             LogHandler.initialLoad()
             BackupHandler.initialLoad()
 
+            EntityPacketAdapter
+
             loadCommands()
             loadHandlers()
             loadListeners()
@@ -249,7 +251,6 @@ class Cubed : ExtendedScalaPlugin()
         listOf(
             InventoryPacketAdapter,
             MenuPacketAdapter,
-            EntityPacketAdapter
         ).forEach {
             ProtocolLibrary.getProtocolManager()
                 .addPacketListener(it)
@@ -259,7 +260,6 @@ class Cubed : ExtendedScalaPlugin()
             ButtonListeners,
             SelectItemListeners,
             BukkitUuidCacheListener,
-            EntityPacketAdapter,
             EntityWatcherListeners,
             LivingEntityListeners,
             EntityMoveTool,

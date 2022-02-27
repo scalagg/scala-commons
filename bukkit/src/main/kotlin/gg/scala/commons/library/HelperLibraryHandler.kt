@@ -67,11 +67,14 @@ object HelperLibraryHandler
             throw RuntimeException("Unable to download dependency: $library")
         }
 
-        val classLoader = LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader
+        val classLoader = LoaderUtils.getPlugin()
+            .javaClass.classLoader as URLClassLoader
 
         try
         {
-            URL_INJECTOR.get().addURL(saveLocation.toURI().toURL())
+            URL_INJECTOR.get().addURL(
+                saveLocation.toURI().toURL()
+            )
         } catch (e: Exception)
         {
             throw RuntimeException("Unable to load dependency: $saveLocation", e)

@@ -16,9 +16,9 @@ dependencies {
     compileOnly "me.lucko:helper:5.6.9"
     kapt "me.lucko:helper:5.6.9"
 
-    compileOnly 'gg.scala.spigot:sspigot-server:1.0.6'
+    compileOnly 'gg.scala.spigot:sspigot-server:1.0.7'
 
-    compileOnly "com.google.code.gson:gson:2.8.9"
+    compileOnly 'com.google.code.gson:gson:2.9.0'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"

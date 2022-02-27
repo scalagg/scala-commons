@@ -8,9 +8,11 @@
 package net.evilblock.cubed.entity.packet
 
 import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.WrappedWatchableObject
+import me.lucko.helper.Events
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.event.PlayerDamageEntityEvent
@@ -33,10 +35,24 @@ object EntityPacketAdapter : PacketAdapter(
     Cubed.instance,
     PacketType.Play.Client.USE_ENTITY,
     PacketType.Play.Server.SPAWN_ENTITY_LIVING
-), Listener {
+) {
 
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
     private val lastRightClick = ConcurrentHashMap<UUID, Long>()
+
+    init
+    {
+        Events.subscribe(PlayerQuitEvent::class.java)
+            .handler {
+                useEntitySpamTimings.remove(it.player.uniqueId)
+                lastRightClick.remove(it.player.uniqueId)
+            }
+
+        ProtocolLibrary.getProtocolManager()
+            .addPacketListener(this)
+
+        println("[Cubed] Registered entity packet adapter.")
+    }
 
     override fun onPacketReceiving(event: PacketEvent) {
         if (event.packetType == PacketType.Play.Client.USE_ENTITY) {
@@ -67,6 +83,7 @@ object EntityPacketAdapter : PacketAdapter(
                     if (rightClickEvent.spamProtection) {
                         if (lastRightClick.contains(event.player.uniqueId)) {
                             val lastRightClick = lastRightClick[event.player.uniqueId]!!
+
                             if (System.currentTimeMillis() < lastRightClick + 500) {
                                 return
                             }
@@ -131,12 +148,6 @@ object EntityPacketAdapter : PacketAdapter(
                 event.packet.dataWatcherModifier.write(0, dataWatcher)
             }
         }
-    }
-
-    @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        useEntitySpamTimings.remove(event.player.uniqueId)
-        lastRightClick.remove(event.player.uniqueId)
     }
 
     /**

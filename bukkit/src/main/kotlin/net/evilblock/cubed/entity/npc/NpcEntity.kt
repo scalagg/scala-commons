@@ -95,7 +95,7 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
         }
 
         if (command != null) {
-            player.performCommand(command)
+            player.chat("/$command")
         }
     }
 

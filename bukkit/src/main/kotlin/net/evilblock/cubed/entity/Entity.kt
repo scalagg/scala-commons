@@ -208,7 +208,7 @@ abstract class Entity(var location: Location) {
      */
     open fun onRightClick(player: Player) {
         if (command != null) {
-            player.performCommand(command)
+            player.chat("/command")
         }
     }
 
