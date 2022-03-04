@@ -5,7 +5,7 @@ dependencies {
     implementation project(':banana')
 
     compileOnly 'redis.clients:jedis:4.1.0'
-    compileOnly 'com.google.code.gson:gson:2.8.9'
+    compileOnly 'com.google.code.gson:gson:2.9.0'
 
     compileOnly 'org.mongodb:mongodb-driver:3.12.10'
     compileOnly 'com.squareup.okhttp:okhttp:2.7.5'

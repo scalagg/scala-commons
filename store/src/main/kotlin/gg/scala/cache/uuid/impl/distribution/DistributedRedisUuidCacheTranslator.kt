@@ -188,9 +188,6 @@ class DistributedRedisUuidCacheTranslator(
         return try
         {
             banana.useResource(lambda)
-        } catch (exception: Exception)
-        {
-            null
-        }
+        } catch (throwable: Throwable) { null }
     }
 }
