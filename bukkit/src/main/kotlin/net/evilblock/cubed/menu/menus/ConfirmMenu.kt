@@ -11,6 +11,7 @@ import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.BooleanButton
+import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -25,6 +26,11 @@ open class ConfirmMenu(
 {
     var called: Boolean = false
 
+    init
+    {
+        placeholder = true
+    }
+
     override fun getButtons(player: Player): Map<Int, Button>
     {
         val buttons = HashMap<Int, Button>()
@@ -38,14 +44,6 @@ open class ConfirmMenu(
             buttons[2] = BooleanButton(this, true, confirm)
             buttons[6] = BooleanButton(this, false, confirm)
             buttons[4] = ExtraInfoButton()
-        }
-
-        for (i in 0..8)
-        {
-            if (!buttons.containsKey(i))
-            {
-                buttons[i] = Button.placeholder(Material.STAINED_GLASS_PANE, 14.toByte())
-            }
         }
 
         return buttons
