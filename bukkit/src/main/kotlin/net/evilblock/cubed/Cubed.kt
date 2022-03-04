@@ -11,6 +11,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.LocalUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.store.serializer.serializers.GsonSerializer
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
@@ -75,6 +76,7 @@ import java.util.*
     name = "Cubed",
     depends = [
         PluginDependency("helper"),
+        PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib")
     ]
 )
@@ -122,6 +124,10 @@ class Cubed : ExtendedScalaPlugin()
                     .registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                     .registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
                     .registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
+            }
+
+            GsonSerializer.provideCustomGson {
+                Serializers.gson
             }
 
             LogHandler.initialLoad()
