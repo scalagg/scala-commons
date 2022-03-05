@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
  * @author puugz
  * @since 08/07/2021 17:49
  */
-
 public class CC {
 
 	public static void setup(String primary, String secondary) {

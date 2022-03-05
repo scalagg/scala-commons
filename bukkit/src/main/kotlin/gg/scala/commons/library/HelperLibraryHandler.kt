@@ -20,7 +20,6 @@ object HelperLibraryHandler
         gg.scala.commons.loader.URLClassLoaderAccess.create(LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader)
     }
 
-
     /**
      * Scans and registers all declared fields in a class
      * which are [Library] instances.

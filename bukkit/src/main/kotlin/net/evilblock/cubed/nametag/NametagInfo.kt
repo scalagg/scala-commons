@@ -15,11 +15,12 @@ class NametagInfo constructor(val name: String, val prefix: String, val suffix: 
         return false
     }
 
-    override fun hashCode(): Int {
+    override fun hashCode(): Int
+    {
         var result = name.hashCode()
         result = 31 * result + prefix.hashCode()
         result = 31 * result + suffix.hashCode()
+        result = 31 * result + teamAddPacket.hashCode()
         return result
     }
-
 }
