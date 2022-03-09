@@ -5,6 +5,7 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCacheTranslator
 import io.lettuce.core.api.StatefulRedisConnection
 import java.util.*
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinPool
 
@@ -46,7 +47,7 @@ class DistributedRedisUuidCacheTranslator(
     /**
      * An initial startup method for this translator.
      */
-    override fun configure()
+    override fun configure(): CompletionStage<Void>
     {
         aware.listen(AWARE_LISTENER_PACKET) {
             val pair =
@@ -55,7 +56,7 @@ class DistributedRedisUuidCacheTranslator(
             update(pair, commit = false)
         }
 
-        aware.connect()
+        return aware.connect()
             .thenRun {
                 connection = aware
                     .internal().connect()

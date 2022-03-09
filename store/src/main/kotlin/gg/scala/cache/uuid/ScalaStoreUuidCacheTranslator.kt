@@ -1,6 +1,7 @@
 package gg.scala.cache.uuid
 
 import java.util.*
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -15,7 +16,7 @@ interface ScalaStoreUuidCacheTranslator
     /**
      * An initial startup method for this translator.
      */
-    fun configure()
+    fun configure(): CompletionStage<Void>
 
     /**
      * Pre-loads the cache through whatever

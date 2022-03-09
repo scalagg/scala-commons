@@ -17,10 +17,15 @@ object ScalaStoreUuidCache
     )
     {
         this.translator = translator
-        this.translator.configure()
-        this.translator.preLoadCache(async = false)
 
-        Logger.getGlobal().info("Loaded UUIDCache with ${translator.javaClass.simpleName}.")
+        Logger.getGlobal().info("Loading UUIDCache with ${translator.javaClass.simpleName}...")
+
+        this.translator.configure()
+            .thenRun {
+                this.translator.preLoadCache(async = false)
+
+                Logger.getGlobal().info("Loaded UUIDCache with ${translator.javaClass.simpleName}!")
+            }
     }
 
     fun useTranslator(

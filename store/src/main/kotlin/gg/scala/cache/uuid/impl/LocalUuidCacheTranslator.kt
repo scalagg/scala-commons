@@ -2,6 +2,8 @@ package gg.scala.cache.uuid.impl
 
 import gg.scala.cache.uuid.ScalaStoreUuidCacheTranslator
 import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -16,9 +18,9 @@ object LocalUuidCacheTranslator : ScalaStoreUuidCacheTranslator
     /**
      * An initial startup method for this translator.
      */
-    override fun configure()
+    override fun configure(): CompletionStage<Void>
     {
-
+        return CompletableFuture.completedFuture(null)
     }
 
     /**
