@@ -5,7 +5,7 @@
  * explicit permission from original author: Joel Evans
  */
 
-package net.evilblock.cubed.plugin
+package net.evilblock.cubed.event
 
 import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable

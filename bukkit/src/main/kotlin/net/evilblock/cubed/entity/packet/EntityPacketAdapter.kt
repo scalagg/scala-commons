@@ -35,12 +35,12 @@ object EntityPacketAdapter : PacketAdapter(
     Cubed.instance,
     PacketType.Play.Client.USE_ENTITY,
     PacketType.Play.Server.SPAWN_ENTITY_LIVING
-) {
-
+)
+{
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
     private val lastRightClick = ConcurrentHashMap<UUID, Long>()
 
-    init
+    fun configure()
     {
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {

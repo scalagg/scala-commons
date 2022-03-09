@@ -1,6 +1,7 @@
 package net.evilblock.cubed.command
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
@@ -13,17 +14,58 @@ import net.evilblock.cubed.menu.menus.SelectItemStackMenu
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
+import net.evilblock.cubed.util.bukkit.render.GraphicalTable
+import net.evilblock.cubed.util.text.ProgressBarBuilder
 import org.bukkit.Material
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 /**
  * @author GrowlyX
  * @since 12/30/2021
  */
-@CommandAlias("cubed-menu")
-@CommandPermission("cubed.command.menu-demo")
+@CommandAlias("cubed-demo")
+@CommandPermission("cubed.command.cubed-demo")
 object CubedMenuCommand : BaseCommand()
 {
+    @Subcommand("progress-bar")
+    @Description("A demo of Cubed's progress bar utility.")
+    fun onProgressBar(sender: Player, progress: Double)
+    {
+        if (progress > 100.0)
+        {
+            throw ConditionFailedException("This value must be less than 100.0.")
+        }
+
+        ProgressBarBuilder(
+            char = '❘',
+            steps = 100
+        ).build(progress).apply {
+            sender.sendMessage(this)
+        }
+    }
+
+    @Subcommand("graphical-tables")
+    @Description("A demo of Cubed's graphical tables.")
+    fun onGraphicalTables(sender: Player)
+    {
+        val table = GraphicalTable()
+        table.title("Hey ${sender.name}!")
+        table.borders(true)
+
+        for (row in 0..2)
+        {
+            for (column in 0..9)
+            {
+                table.addEntry(row, column, "$row, $column")
+            }
+        }
+
+        table.render().forEach {
+            sender.sendMessage(it)
+        }
+    }
+
     @Subcommand("paginated")
     @Description("A demo of Cubed's paginated menus.")
     fun onPaginatedDemo(player: Player)

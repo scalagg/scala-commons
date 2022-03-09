@@ -1,6 +1,6 @@
 package net.evilblock.cubed.nametag.update
 
-import net.evilblock.cubed.plugin.PluginEvent
+import net.evilblock.cubed.event.PluginEvent
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 

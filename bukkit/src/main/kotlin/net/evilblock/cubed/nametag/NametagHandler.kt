@@ -1,6 +1,5 @@
 package net.evilblock.cubed.nametag
 
-import com.google.common.primitives.Ints
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
@@ -10,7 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 object NametagHandler {
 
@@ -18,7 +17,8 @@ object NametagHandler {
 
     private val registeredTeams = Collections.synchronizedList(ArrayList<NametagInfo>())
     private var teamCreateIndex = 1
-    private var providers = ArrayList<NametagProvider>()
+
+    private var providers = CopyOnWriteArrayList<NametagProvider>()
 
     private var isNametagRestrictionEnabled: Boolean = false
     private var nametagRestrictBypass: String = ""
@@ -43,8 +43,7 @@ object NametagHandler {
 
     fun registerProvider(newProvider: NametagProvider) {
         providers.add(newProvider)
-
-        providers.sortWith { a, b -> Ints.compare(b.weight, a.weight) }
+        providers.sortByDescending { it.weight }
     }
 
     fun reloadPlayer(toRefresh: Player) {

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.logging
 
+import net.evilblock.cubed.scheduler.AsyncHourMarkEvent
 import net.evilblock.cubed.scheduler.CubedScheduler
 import net.evilblock.cubed.util.bukkit.Tasks
 import java.util.concurrent.ConcurrentHashMap
@@ -18,7 +19,7 @@ object LogHandler
 
     fun initialLoad()
     {
-        CubedScheduler.trackScheduledTask<CubedScheduler.AsyncHourMarkEvent> { completeFlush() }
+        CubedScheduler.trackScheduledTask<AsyncHourMarkEvent> { completeFlush() }
     }
 
     fun completeFlush()

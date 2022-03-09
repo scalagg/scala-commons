@@ -14,10 +14,11 @@ object BukkitUuidCacheListener : Listener
     @EventHandler
     fun onAsyncPreLogin(event: AsyncPlayerPreLoginEvent)
     {
+        val uniqueIdUsernamePair =
+            Pair(event.uniqueId, event.name)
+
         ScalaStoreUuidCache.useTranslator {
-            update(
-                Pair(event.uniqueId, event.name)
-            )
+            update(uniqueIdUsernamePair)
         }
     }
 }

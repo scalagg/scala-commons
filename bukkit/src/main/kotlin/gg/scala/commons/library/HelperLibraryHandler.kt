@@ -2,6 +2,7 @@ package gg.scala.commons.library
 
 import com.google.common.base.Suppliers
 import gg.scala.commons.library.model.Library
+import gg.scala.commons.loader.URLClassLoaderAccess
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.maven.LibraryLoader
 import java.io.File
@@ -17,16 +18,17 @@ import java.nio.file.Files
 object HelperLibraryHandler
 {
     private val URL_INJECTOR = Suppliers.memoize {
-        gg.scala.commons.loader.URLClassLoaderAccess.create(LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader)
+        URLClassLoaderAccess.create(LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader)
     }
 
     /**
      * Scans and registers all declared fields in a class
      * which are [Library] instances.
      */
-    fun loadAll(clazz: Class<*>, any: Any? = null)
+    fun loadAll(clazz: Class<*>)
     {
-        val fields = clazz.getAnnotationsByType(Library::class.java)
+        val fields = clazz
+            .getAnnotationsByType(Library::class.java)
 
         for (instance in fields)
         {

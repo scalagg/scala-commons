@@ -77,23 +77,14 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         if (classes.isNotEmpty())
         {
             classes.forEach { clazz ->
-                try
-                {
-                    val instance = clazz.fields.firstOrNull {
-                        it.name == "INSTANCE"
-                    }
+                kotlin.runCatching {
+                    val instance = clazz
+                        .kotlin.objectInstance
 
                     if (instance != null)
                     {
-                        instance.isAccessible = true
-
-                        HelperLibraryHandler.loadAll(
-                            instance.get(null).javaClass
-                        )
+                        HelperLibraryHandler.loadAll(instance::class.java)
                     }
-                } catch (ignored: Exception)
-                {
-                    ignored.printStackTrace()
                 }
             }
         }

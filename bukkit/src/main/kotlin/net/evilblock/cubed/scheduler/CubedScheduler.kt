@@ -104,28 +104,26 @@ object CubedScheduler
             }, minToHalfHour.toLong(), 30L, TimeUnit.MINUTES
         )
     }
+}
 
-    // classes to mark the Kotlin
-    // functions within the map.
-    class AsyncHourMarkEvent : ScheduledEventTracker
-    class AsyncHalfHourMarkEvent : ScheduledEventTracker
-    class AsyncMinuteMarkEvent : ScheduledEventTracker
+class AsyncHourMarkEvent : ScheduledEventTracker
+class AsyncHalfHourMarkEvent : ScheduledEventTracker
+class AsyncMinuteMarkEvent : ScheduledEventTracker
 
-    class HourMarkEvent : ScheduledEventTracker
-    {
-        override fun async(): Boolean = false
-    }
-    class HalfHourMarkEvent : ScheduledEventTracker
-    {
-        override fun async(): Boolean = false
-    }
-    class MinuteMarkEvent : ScheduledEventTracker
-    {
-        override fun async(): Boolean = false
-    }
+class HourMarkEvent : ScheduledEventTracker
+{
+    override fun async(): Boolean = false
+}
+class HalfHourMarkEvent : ScheduledEventTracker
+{
+    override fun async(): Boolean = false
+}
+class MinuteMarkEvent : ScheduledEventTracker
+{
+    override fun async(): Boolean = false
+}
 
-    interface ScheduledEventTracker
-    {
-        fun async(): Boolean = true
-    }
+interface ScheduledEventTracker
+{
+    fun async(): Boolean = true
 }

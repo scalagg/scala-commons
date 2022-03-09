@@ -15,8 +15,8 @@ import org.bukkit.ChatColor
 class ProgressBarBuilder(
     private val steps: Int = 10,
     private var char: Char = '⬛',
-    private var completedColor: String = "§a",
-    private var uncompletedColor: String = "§c"
+    private var completedColor: String = "§a§l",
+    private var uncompletedColor: String = "§e§l"
 ) {
 
     fun build(percentage: Double): String {

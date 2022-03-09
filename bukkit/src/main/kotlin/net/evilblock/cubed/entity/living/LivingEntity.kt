@@ -116,7 +116,7 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
                 val colorG = ((particleColor shr 8 and 255).toDouble() / 255.0).toFloat()
                 val colorB = ((particleColor shr 0 and 255).toDouble() / 255.0).toFloat()
 
-                val particleType = if (ambientEffect) {
+                val    particleType = if (ambientEffect) {
                     MinecraftReflection.getEnumParticle("SPELL_MOB_AMBIENT")
                 } else {
                     MinecraftReflection.getEnumParticle("SPELL_MOB")

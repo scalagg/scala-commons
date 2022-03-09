@@ -1,7 +1,7 @@
 package net.evilblock.cubed.entity.living.event
 
 import net.evilblock.cubed.entity.Entity
-import net.evilblock.cubed.plugin.PluginEvent
+import net.evilblock.cubed.event.PluginEvent
 import org.bukkit.event.Cancellable
 
 class EntityDamageEvent(val attacker: org.bukkit.entity.Entity?, val entity: Entity, var damage: Double) : PluginEvent(), Cancellable {

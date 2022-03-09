@@ -8,10 +8,16 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
+import gg.scala.aware.AwareBuilder
+import gg.scala.aware.AwareHub
+import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
+import gg.scala.aware.message.AwareMessage
+import gg.scala.aware.uri.WrappedAwareUri
 import gg.scala.cache.uuid.ScalaStoreUuidCache
-import gg.scala.cache.uuid.impl.LocalUuidCacheTranslator
+import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.store.serializer.serializers.GsonSerializer
+import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
@@ -142,8 +148,26 @@ class Cubed : ExtendedScalaPlugin()
 
             filterConsoleLogs()
 
+            val storeRedis = ScalaDataStoreSpigot
+                .INSTANCE.redis
+
+            AwareHub.configure(
+                WrappedAwareUri(
+                    storeRedis.hostname, storeRedis.port,
+                    storeRedis.password, 0
+                )
+            ) {
+                Serializers.gson
+            }
+
+            val aware = AwareBuilder
+                .of<AwareMessage>("UuidCache")
+                .codec(AwareMessageCodec)
+                .logger(logger)
+                .build()
+
             ScalaStoreUuidCache.configure(
-                LocalUuidCacheTranslator
+                DistributedRedisUuidCacheTranslator(aware)
             )
 
             GlowEnchantment.registerEnchant()
@@ -239,7 +263,7 @@ class Cubed : ExtendedScalaPlugin()
         ScoreboardPreviewHandler.initialLoad()
     }
 
-    fun saveHandlers()
+    private fun saveHandlers()
     {
         EntityHandler.saveData()
 
@@ -295,7 +319,8 @@ class Cubed : ExtendedScalaPlugin()
     }
 
     /**
-     * Hi-jack Bukkit's logging filter to suppress the server's complaints about commands being dispatched async
+     * Hi-jack Bukkit's logging filter to suppress
+     * the server's complaints about commands being dispatched async.
      */
     private fun filterConsoleLogs()
     {
@@ -305,9 +330,8 @@ class Cubed : ExtendedScalaPlugin()
         }
     }
 
-    fun isPostersEnabled(): Boolean
+    private fun isPostersEnabled(): Boolean
     {
         return config.getBoolean("posters.enabled", false)
     }
-
 }

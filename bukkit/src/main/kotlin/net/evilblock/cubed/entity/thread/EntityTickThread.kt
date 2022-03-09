@@ -4,10 +4,9 @@ import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.tick.TickableEntity
-import net.evilblock.cubed.plugin.PluginFramework
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.math.Numbers
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.GameMode
 
 object EntityTickThread : Thread("Cubed - Entities") {
@@ -38,7 +37,7 @@ object EntityTickThread : Thread("Cubed - Entities") {
     private fun tickEntities() {
         if (lastAlert == null || System.currentTimeMillis() >= lastAlert!! + 60_000L) {
             if (thrownExceptions > 0) {
-                PluginFramework.systemLog(messages = arrayOf("${ChatColor.YELLOW}[Entity Ticking] ${ChatColor.GRAY}There have been ${ChatColor.RED}${Numbers.format(thrownExceptions)} ${ChatColor.GRAY}thrown exceptions in the last 60 seconds!"))
+                Bukkit.broadcast("${CC.RED}[System] ${CC.D_RED}${Numbers.format(thrownExceptions)}${CC.RED} exceptions were thrown in the last ${CC.BOLD}60 seconds${CC.RED}.", "network.system-admin")
             }
 
             thrownExceptions = 0

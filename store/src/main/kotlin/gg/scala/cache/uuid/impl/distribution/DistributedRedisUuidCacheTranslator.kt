@@ -1,14 +1,9 @@
 package gg.scala.cache.uuid.impl.distribution
 
-import com.google.gson.reflect.TypeToken
-import gg.scala.banana.Banana
-import gg.scala.banana.annotate.Subscribe
-import gg.scala.banana.message.Message
-import gg.scala.banana.subscribe.marker.BananaHandler
+import gg.scala.aware.Aware
+import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCacheTranslator
-import net.evilblock.cubed.serializers.Serializers
-import redis.clients.jedis.Jedis
-import java.lang.reflect.Type
+import io.lettuce.core.api.StatefulRedisConnection
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinPool
@@ -16,10 +11,6 @@ import java.util.concurrent.ForkJoinPool
 /**
  * Commits the UUID, String [Pair]
  * to our redis cache.
- *
- * [Banana] provides this cache &
- * wraps generic jedis commands with
- * a concurrent solution to replace with.
  *
  * This [Pair] is then distributed
  * across all online instances,
@@ -35,7 +26,7 @@ import java.util.concurrent.ForkJoinPool
  * @since 2/1/2022
  */
 class DistributedRedisUuidCacheTranslator(
-    private val banana: Banana
+    private val aware: Aware<AwareMessage>
 ) : ScalaStoreUuidCacheTranslator
 {
     companion object
@@ -43,35 +34,32 @@ class DistributedRedisUuidCacheTranslator(
         const val USERNAME_REDIS_LOC = "DataStore:UuidCache:Username"
         const val UNIQUE_ID_REDIS_LOC = "DataStore:UuidCache:UUID"
 
-        const val JEDIS_LISTENER_PACKET = "UuidCache-Update"
-
-        @JvmStatic
-        val KT_PAIR_TYPE: Type = object : TypeToken<Pair<UUID, String>>()
-        {}.type
+        const val AWARE_LISTENER_PACKET = "UuidCache-Update"
     }
 
     override val uniqueIdCache = ConcurrentHashMap<UUID, String>()
     override val usernameCache = ConcurrentHashMap<String, UUID>()
+
+    private lateinit var connection:
+            StatefulRedisConnection<String, String>
 
     /**
      * An initial startup method for this translator.
      */
     override fun configure()
     {
-        banana.registerClass(object : BananaHandler
-        {
-            @Subscribe(JEDIS_LISTENER_PACKET)
-            fun onUuidCacheUpdate(message: Message)
-            {
-                val pair = Serializers.gson
-                    .fromJson<Pair<UUID, String>>(
-                        message["data"]!!, KT_PAIR_TYPE
-                    )
+        aware.listen(AWARE_LISTENER_PACKET) {
+            val pair =
+                retrieve<Pair<UUID, String>>("data")
 
-                update(pair, commit = false)
+            update(pair, commit = false)
+        }
+
+        aware.connect()
+            .thenRun {
+                connection = aware
+                    .internal().connect()
             }
-        })
-        banana.subscribe()
     }
 
     /**
@@ -81,9 +69,9 @@ class DistributedRedisUuidCacheTranslator(
     override fun preLoadCache(async: Boolean)
     {
         val loadFunction = {
-            safeUse {
+            useAndReturn {
                 val usernameEntries =
-                    it.hgetAll(USERNAME_REDIS_LOC)
+                    sync().hgetall(USERNAME_REDIS_LOC)
 
                 for (entry in usernameEntries)
                 {
@@ -92,7 +80,7 @@ class DistributedRedisUuidCacheTranslator(
                 }
 
                 val uniqueIdEntries =
-                    it.hgetAll(UNIQUE_ID_REDIS_LOC)
+                    sync().hgetall(UNIQUE_ID_REDIS_LOC)
 
                 for (entry in uniqueIdEntries)
                 {
@@ -131,17 +119,17 @@ class DistributedRedisUuidCacheTranslator(
 
         if (commit && needsUpdate)
         {
-            ForkJoinPool.commonPool().execute {
-                safeUse {
-                    it.hset(USERNAME_REDIS_LOC, pair.second.lowercase(), pair.first.toString())
-                    it.hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second)
+            useAndReturn {
+                this.async().apply {
+                    hset(USERNAME_REDIS_LOC, pair.second.lowercase(), pair.first.toString())
+                    hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second)
                 }
             }
 
-            Message(JEDIS_LISTENER_PACKET).apply {
-                this["data"] = Serializers.gson.toJson(pair)
-                this.dispatch(banana)
-            }
+            AwareMessage.of(
+                AWARE_LISTENER_PACKET, aware,
+                "data" to pair
+            ).publish()
         }
     }
 
@@ -171,23 +159,33 @@ class DistributedRedisUuidCacheTranslator(
 
     private fun internalUsername(uniqueId: UUID): String?
     {
-        return safeUse {
-            it.hget(UNIQUE_ID_REDIS_LOC, uniqueId.toString())
+        return useAndReturn {
+            sync().hget(UNIQUE_ID_REDIS_LOC, uniqueId.toString())
         }
     }
 
     private fun internalUniqueId(username: String): UUID?
     {
-        return safeUse {
-            UUID.fromString(it.hget(USERNAME_REDIS_LOC, username.lowercase())!!)
+        return useAndReturn {
+            val nullable = this.sync()
+                .hget(USERNAME_REDIS_LOC, username.lowercase())
+                ?: return@useAndReturn null
+
+            UUID.fromString(nullable)
         }
     }
 
-    private fun <T> safeUse(lambda: (Jedis) -> T): T?
+    private fun <T> useAndReturn(
+        lambda: StatefulRedisConnection<String, String>.() -> T?
+    ): T?
     {
         return try
         {
-            banana.useResource(lambda)
-        } catch (throwable: Throwable) { null }
+            lambda.invoke(connection)
+        } catch (exception: Throwable)
+        {
+            exception.printStackTrace()
+            null
+        }
     }
 }
