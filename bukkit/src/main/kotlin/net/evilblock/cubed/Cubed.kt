@@ -100,6 +100,14 @@ class Cubed : ExtendedScalaPlugin()
         var running: Boolean = false
     }
 
+    val aware by lazy {
+        AwareBuilder
+            .of<AwareMessage>("UuidCache")
+            .codec(AwareMessageCodec)
+            .logger(logger)
+            .build()
+    }
+
     override fun enable()
     {
         instance = this
@@ -160,12 +168,6 @@ class Cubed : ExtendedScalaPlugin()
                 Serializers.gson
             }
 
-            val aware = AwareBuilder
-                .of<AwareMessage>("UuidCache")
-                .codec(AwareMessageCodec)
-                .logger(logger)
-                .build()
-
             ScalaStoreUuidCache.configure(
                 DistributedRedisUuidCacheTranslator(aware)
             )
@@ -198,6 +200,8 @@ class Cubed : ExtendedScalaPlugin()
             }
 
             LogHandler.completeFlush()
+
+            aware.shutdown()
         } catch (e: Exception)
         {
             e.printStackTrace()
