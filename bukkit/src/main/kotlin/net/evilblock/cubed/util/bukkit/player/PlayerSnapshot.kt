@@ -9,6 +9,8 @@ open class PlayerSnapshot(player: Player) {
     val inventoryContents = player.inventory.contents
     val armorContents = player.inventory.armorContents
 
+    val potionEffects = player.activePotionEffects
+
     val gameMode = player.gameMode
     val health = player.health
     val foodLevel = player.foodLevel
@@ -17,7 +19,11 @@ open class PlayerSnapshot(player: Player) {
     val allowFly = player.allowFlight
 
     fun restore(player: Player, teleport: Boolean = true) {
-        if (teleport) player.teleport(location)
+        if (teleport)
+        {
+            player.teleport(location)
+        }
+
         player.inventory.contents = inventoryContents
         player.inventory.armorContents = armorContents
         player.gameMode = gameMode
@@ -25,6 +31,11 @@ open class PlayerSnapshot(player: Player) {
         player.foodLevel = foodLevel
         player.isFlying = flying
         player.allowFlight = allowFly
+
+        this.potionEffects.forEach {
+            player.addPotionEffect(it)
+        }
+
         player.updateInventory()
     }
 
