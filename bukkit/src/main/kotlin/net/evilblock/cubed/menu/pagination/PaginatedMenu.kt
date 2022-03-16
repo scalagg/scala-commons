@@ -9,6 +9,7 @@ package net.evilblock.cubed.menu.pagination
 
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.menu.distribution.MenuRowDistribution
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -24,8 +25,12 @@ abstract class PaginatedMenu : Menu()
         val PLACEHOLDER = ItemBuilder(Material.STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
     }
 
-    var page: Int = 1
-    var verticalView: Boolean = false
+    var page = 1
+
+    var verticalView = false
+    var applyHeader = true
+
+    var distribution = MenuRowDistribution.NONE
 
     override fun getTitle(player: Player): String
     {
@@ -60,9 +65,12 @@ abstract class PaginatedMenu : Menu()
     {
         val buttons = HashMap<Int, Button>()
 
-        for (i in 1..7)
+        if (applyHeader)
         {
-            buttons[i] = PLACEHOLDER
+            for (i in 1..7)
+            {
+                buttons[i] = PLACEHOLDER
+            }
         }
 
         val pageButtonSlots = getPageButtonSlots()
@@ -72,8 +80,13 @@ abstract class PaginatedMenu : Menu()
             buttons[pageButtonSlots.second] = PageButton(1, this)
         }
 
-        // insert entry buttons
         val buttonSlots = getAllPagesButtonSlots()
+            .ifEmpty {
+                this.distribution.allDistributed(
+                    size(buttons) / 9, buttons
+                )
+            }
+
         if (buttonSlots.isEmpty())
         {
             val minIndex = ((page - 1) * getMaxItemsPerPage(player).toDouble()).toInt()
@@ -91,6 +104,7 @@ abstract class PaginatedMenu : Menu()
         } else
         {
             val maxPerPage = buttonSlots.size
+
             val minIndex = (page - 1) * maxPerPage
             val maxIndex = page * maxPerPage
 
@@ -144,5 +158,4 @@ abstract class PaginatedMenu : Menu()
     {
         return emptyList()
     }
-
 }
