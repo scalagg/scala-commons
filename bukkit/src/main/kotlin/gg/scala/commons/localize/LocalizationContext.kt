@@ -10,5 +10,11 @@ enum class LocalizationContext(
 {
     EN_US("English (US)"),
     EN_UK("English (UK)"),
-    ES("Español")
+    ES("Español");
+
+    companion object
+    {
+        @JvmStatic
+        val DEFAULT = EN_US
+    }
 }

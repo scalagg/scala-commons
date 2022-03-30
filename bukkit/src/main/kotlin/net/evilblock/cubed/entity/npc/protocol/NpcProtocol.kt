@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.entity.npc.protocol
 
-import com.comphenix.packetwrapper.WrapperPlayServerAnimation
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
@@ -16,8 +15,6 @@ import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.minecraft.server.v1_8_R3.IChatBaseComponent
-import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn
 import org.bukkit.entity.Player
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -30,8 +27,7 @@ object NpcProtocol
 
     private val PACKET_PLAY_OUT_PLAYER_INFO_CLASS: Class<*> =
         MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo")!!
-    private val CHAT_SERIALIZER_CLASS: Class<*> = IChatBaseComponent.ChatSerializer::class.java
-//        MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo\$ChatSerializer")!!
+    private val CHAT_SERIALIZER_CLASS = IChatBaseComponent.ChatSerializer::class.java
     private val JSON_CONVERSION_METHOD: Method =
         Reflection.getDeclaredMethod(CHAT_SERIALIZER_CLASS, "a", String::class.java)!!
 
