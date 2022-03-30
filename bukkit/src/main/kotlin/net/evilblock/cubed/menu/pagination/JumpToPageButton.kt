@@ -14,23 +14,24 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryView
 
-class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu, private val current: Boolean) : Button() {
+class JumpToPageButton(
+    private val page: Int,
+    private val menu: PaginatedMenu,
+    private val current: Boolean
+) : Button() {
 
     override fun getName(player: Player): String {
-        return CC.YELLOW + "Page #$page"
+        return "${CC.B_YELLOW}Page #$page"
     }
 
     override fun getDescription(player: Player): List<String> {
         val description = mutableListOf<String>()
+        description += "${CC.GRAY}Click to open."
 
         if (current)
         {
-            description.add("")
-            description.add("${CC.GREEN}You're on this page!")
-        } else
-        {
-            description.add("${CC.GREEN}Left-click${CC.WHITE} to switch to")
-            description.add("${CC.WHITE}this page.")
+            description += ""
+            description += "${CC.GREEN}You're on this page!"
         }
 
         return description
@@ -47,7 +48,7 @@ class JumpToPageButton(private val page: Int, private val menu: PaginatedMenu, p
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         if (!current) {
             menu.modPage(player, page - menu.page)
-//        playNeutral(player)
+            playNeutral(player)
         }
     }
 }

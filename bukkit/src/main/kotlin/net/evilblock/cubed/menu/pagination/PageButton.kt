@@ -23,7 +23,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         when {
-            clickType == ClickType.RIGHT && hasNext(player) -> {
+            clickType == ClickType.MIDDLE && hasNext(player) && !menu.verticalView -> {
                 ViewAllPagesMenu(menu).openMenu(player)
                 playNeutral(player)
             }
@@ -31,7 +31,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
                 menu.modPage(player, mod)
                 playNeutral(player)
             }
-//            else -> playFail(player)
+            else -> playFail(player)
         }
     }
 
@@ -45,11 +45,15 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
             return " "
         }
 
-        return (if (mod > 0) CC.GREEN + "Next page" else CC.RED + "Previous page") + ChatColor.GRAY + " (" + CC.PRI + (menu.page + mod) + CC.GRAY + "/" + CC.PRI + menu.getPages(player) + CC.GRAY + ")"
+        return (if (mod > 0) CC.GREEN + (if (menu.verticalView) "Scroll down" else "Next page") else CC.RED + (if (menu.verticalView) "Scroll up" else "Previous page")) + ChatColor.GRAY + " (${menu.page + mod}/${menu.getPages(player)})"
     }
 
     override fun getDescription(player: Player): List<String> {
-        return if (hasNext(player)) listOf(CC.GRAY + "Right Click to view all pages!") else ArrayList()
+        return if (hasNext(player) && !menu.verticalView)
+            listOf(
+                CC.GRAY + "Middle click to view all",
+                "${CC.GRAY}available pages."
+            ) else ArrayList()
     }
 
     override fun getDamageValue(player: Player): Byte {
