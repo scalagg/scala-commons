@@ -22,7 +22,8 @@ object PosterItemFrameSerializer : JsonSerializer<List<ItemFrame>>, JsonDeserial
         return array
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): List<ItemFrame>? {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): List<ItemFrame>
+    {
         val found = arrayListOf<ItemFrame>()
 
         val array = json.asJsonArray
