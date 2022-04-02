@@ -5,8 +5,8 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCacheTranslator
 import io.lettuce.core.api.StatefulRedisConnection
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinPool
 
 /**
@@ -38,8 +38,8 @@ class DistributedRedisUuidCacheTranslator(
         const val AWARE_LISTENER_PACKET = "UuidCache-Update"
     }
 
-    override val uniqueIdCache = ConcurrentHashMap<UUID, String>()
-    override val usernameCache = ConcurrentHashMap<String, UUID>()
+    override val uniqueIdCache = mutableMapOf<UUID, String>()
+    override val usernameCache = mutableMapOf<String, UUID>()
 
     private lateinit var connection:
             StatefulRedisConnection<String, String>
@@ -49,18 +49,22 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun configure(): CompletionStage<Void>
     {
-        aware.listen(AWARE_LISTENER_PACKET) {
-            val pair =
-                retrieve<Pair<UUID, String>>("data")
+        return CompletableFuture.runAsync {
+            aware.listen(AWARE_LISTENER_PACKET) {
+                val pair =
+                    retrieve<Pair<UUID, String>>("data")
 
-            update(pair, commit = false)
-        }
-
-        return aware.connect()
-            .thenRun {
-                connection = aware
-                    .internal().connect()
+                update(pair, commit = false)
             }
+        }.thenCompose {
+            this.aware.connect()
+        }.thenRun {
+            connection = aware
+                .internal().connect()
+        }.exceptionally {
+            it.printStackTrace()
+            return@exceptionally null
+        }
     }
 
     /**
@@ -112,13 +116,14 @@ class DistributedRedisUuidCacheTranslator(
         pair: Pair<UUID, String>, commit: Boolean
     )
     {
-        val needsUpdate = usernameCache[pair.second.lowercase()] == null ||
-                uniqueIdCache[pair.first] == null
+        val updateRequired =
+            usernameCache[pair.second.lowercase()] == null ||
+            uniqueIdCache[pair.first] == null
 
         usernameCache[pair.second.lowercase()] = pair.first
         uniqueIdCache[pair.first] = pair.second
 
-        if (commit && needsUpdate)
+        if (commit && updateRequired)
         {
             useAndReturn {
                 this.async().apply {
@@ -143,7 +148,10 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun uniqueId(username: String): UUID?
     {
-        return usernameCache[username.lowercase()] ?: internalUniqueId(username)
+        return kotlin.runCatching {
+            usernameCache[username.lowercase()]
+                ?: internalUniqueId(username)
+        }.getOrNull()
     }
 
     /**

@@ -2,7 +2,6 @@ package gg.scala.cache.uuid
 
 import java.util.*
 import java.util.concurrent.CompletionStage
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * @author GrowlyX
@@ -10,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 interface ScalaStoreUuidCacheTranslator
 {
-    val uniqueIdCache: ConcurrentHashMap<UUID, String>
-    val usernameCache: ConcurrentHashMap<String, UUID>
+    val uniqueIdCache: MutableMap<UUID, String>
+    val usernameCache: MutableMap<String, UUID>
 
     /**
      * An initial startup method for this translator.

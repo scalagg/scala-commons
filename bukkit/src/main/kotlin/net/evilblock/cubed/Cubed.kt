@@ -100,7 +100,7 @@ class Cubed : ExtendedScalaPlugin()
         var running: Boolean = false
     }
 
-    val aware by lazy {
+    private val aware by lazy {
         AwareBuilder
             .of<AwareMessage>("UuidCache")
             .codec(AwareMessageCodec)
