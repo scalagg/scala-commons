@@ -18,6 +18,7 @@ import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
+import io.lettuce.core.ConnectionBuilder
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.backup.BackupHandler
