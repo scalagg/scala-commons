@@ -2,7 +2,7 @@ dependencies {
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
 
     compileOnly project(':serializers')
-    compileOnly "gg.scala.aware:aware:1.0.3"
+    compileOnly "gg.scala.aware:aware:1.0.5"
 
     compileOnly 'io.lettuce:lettuce-core:6.2.0-rev2'
 
