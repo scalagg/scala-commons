@@ -4,6 +4,8 @@ import gg.scala.commons.library.HelperLibraryHandler
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.util.ClassUtils
 import net.evilblock.cubed.util.bukkit.Tasks
+import org.apache.commons.lang.SystemUtils
+import org.bukkit.Bukkit
 
 /**
  * An extension of [ExtendedJavaPlugin] with support
@@ -68,6 +70,20 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     override fun load()
     {
+        val java11Enabled = SystemUtils
+            .isJavaVersionAtLeast(11)
+
+        if (!java11Enabled)
+        {
+            logger.info("[Compatability] This version of Cubed does not support java ${
+                SystemUtils.getJavaVersion()
+            }!")
+            logger.info("[Compatability] Please use a version higher than 11.")
+
+            Bukkit.shutdown()
+            return
+        }
+
         val `package` = description.main.replace(
             this.javaClass.simpleName, "library"
         )

@@ -72,6 +72,7 @@ import net.evilblock.cubed.util.bukkit.Rainbow
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.evilblock.cubed.visibility.VisibilityListeners
+import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -113,7 +114,8 @@ class Cubed : ExtendedScalaPlugin()
     {
         instance = this
 
-        Reflection.DEBUG = config.getBoolean("debug", false)
+        Reflection.DEBUG = config
+            .getBoolean("debug", false)
 
         try
         {
