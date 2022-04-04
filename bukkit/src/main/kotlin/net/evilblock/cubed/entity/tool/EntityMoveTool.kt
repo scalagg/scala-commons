@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.entity.tool
 
+import me.lucko.helper.shadows.nbt.NBTTagString
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -15,8 +16,8 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -76,8 +77,8 @@ object EntityMoveTool : Listener {
         for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
             if (isMoveTool(itemStack)) {
-                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
-                EntityHandler.getEntityByUuid(uuid)?.updateVisibility(false)
+//                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
+//                EntityHandler.getEntityByUuid(uuid)?.updateVisibility(false)
 
                 player.inventory.contents[i] = null
                 player.inventory.setItem(i, null)
@@ -97,7 +98,8 @@ object EntityMoveTool : Listener {
                 if (isMoveTool(itemInHand)) {
                     event.isCancelled = true
 
-                    val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
+                    val uuid = UUID.randomUUID()
+                    event.player.sendMessage("${ChatColor.GREEN}This functionality is temporailry disabled.")
 
                     val entity = EntityHandler.getEntityByUuid(uuid)
                     if (entity != null) {

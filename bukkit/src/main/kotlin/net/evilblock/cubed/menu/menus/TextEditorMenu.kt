@@ -114,15 +114,15 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class AddLineButton : AddButton() {
         override fun getName(player: Player): String {
-            return "${CC.GREEN}Create New Line"
+            return "${CC.GREEN}Create a new line"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
-                "${CC.GRAY}Create a new line by completing",
-                "${CC.GRAY}the setup procedure.",
+                "${CC.GRAY}Add a new line to this text",
+                "${CC.GRAY}by following our procedure.",
                 "",
-                "${CC.GREEN}Left-Click to create a new line."
+                "${CC.YELLOW}Click to add new line!"
             )
         }
 
@@ -245,15 +245,15 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class SaveButton : Button() {
         override fun getName(player: Player): String {
-            return "${CC.GREEN}Save Changes"
+            return "${CC.GREEN}Save changes"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
-                "${CC.GRAY}Saves any changes made to the",
-                "${CC.GRAY}lines of text.",
+                "${CC.GRAY}Saves any changes made",
+                "${CC.GRAY}to these lines of text.",
                 "",
-                "${CC.GREEN}Left-Click to save changes."
+                "${CC.YELLOW}Click to save changes!"
             )
         }
 
@@ -273,13 +273,15 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
 
     private inner class NoChangesButton : Button() {
         override fun getName(player: Player): String {
-            return "${CC.GRAY}» ${CC.RED}No Changes Made"
+            return "${CC.GREEN}Save changes"
         }
 
         override fun getDescription(player: Player): List<String> {
             return listOf(
-                "${CC.GRAY}No changes have been made to the",
-                "${CC.GRAY}lines of text."
+                "${CC.GRAY}Saves any changes made",
+                "${CC.GRAY}to these lines of text.",
+                "",
+                "${CC.RED}You need to make changes!"
             )
         }
 
