@@ -11,18 +11,27 @@ import com.google.gson.*
 import java.lang.reflect.Type
 import java.util.*
 
-class UUIDAdapter : JsonDeserializer<UUID>, JsonSerializer<UUID> {
-
+object UUIDAdapter : JsonDeserializer<UUID>, JsonSerializer<UUID>
+{
     @Throws(JsonParseException::class)
-    override fun deserialize(src: JsonElement?, type: Type, context: JsonDeserializationContext): UUID? {
-        return if (src == null || src.asString == null || src.asString.equals("null")) {
+    override fun deserialize(
+        src: JsonElement?, type: Type,
+        context: JsonDeserializationContext
+    ): UUID?
+    {
+        return if (src == null || src.asString == null || src.asString.equals("null"))
+        {
             null
-        } else {
+        } else
+        {
             UUID.fromString(src.asString)
         }
     }
-    override fun serialize(src: UUID, type: Type, context: JsonSerializationContext): JsonElement {
+
+    override fun serialize(
+        src: UUID, type: Type, context: JsonSerializationContext
+    ): JsonElement
+    {
         return JsonPrimitive(src.toString())
     }
-
 }

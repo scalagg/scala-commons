@@ -9,15 +9,12 @@ import java.util.*
 
 object Serializers {
 
-    private val gsonBuilder: GsonBuilder = GsonBuilder()
-        .registerTypeAdapter(UUID::class.java, UUIDAdapter())
+    private val gsonBuilder = GsonBuilder()
+        .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .serializeNulls()
 
     @JvmStatic
     var gson: Gson = gsonBuilder.create()
-
-    val writerSettings: JsonWriterSettings = JsonWriterSettings
-        .builder().outputMode(JsonMode.RELAXED).build()
 
     fun useGsonBuilderThenRebuild(use: (GsonBuilder) -> Unit) {
         synchronized(gsonBuilder) {

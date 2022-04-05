@@ -2,7 +2,7 @@ dependencies {
     implementation project(":serializers")
     implementation project(":store")
 
-    implementation "gg.scala.aware:aware:1.0.5"
+    implementation "gg.scala.aware:aware:1.0.7"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:1.6.20"
 
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
