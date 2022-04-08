@@ -6,6 +6,9 @@ backups: true
 posters:
   enabled: false
 
+scoreboard:
+  default: true
+
 nametags:
   enabled: true
   packet-restriction: false

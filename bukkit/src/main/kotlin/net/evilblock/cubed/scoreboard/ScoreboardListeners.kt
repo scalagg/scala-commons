@@ -13,17 +13,21 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
-object ScoreboardListeners : Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+object ScoreboardListeners : Listener
+{
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onPlayerJoinEvent(event: PlayerJoinEvent)
+    {
         ScoreboardHandler.scoreboards[event.player.uniqueId] =
-            Scoreboard(event.player).also { it.update() }
+            Scoreboard(event.player)
+                .apply {
+                    update()
+                }
     }
 
     @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+    fun onPlayerQuitEvent(event: PlayerQuitEvent)
+    {
         ScoreboardHandler.scoreboards.remove(event.player.uniqueId)
     }
-
 }

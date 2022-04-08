@@ -16,6 +16,9 @@ class ScoreboardThread : Thread("Cubed - Scoreboard") {
     override fun run() {
         while (true) {
             try {
+                val provider = ScoreboardHandler
+                    .scoreboardProvider ?: return
+
                 for (scoreboard in ScoreboardHandler.scoreboards.values) {
                     try {
                         if (System.currentTimeMillis() - scoreboard.createdAt >= 250L) {
@@ -26,7 +29,7 @@ class ScoreboardThread : Thread("Cubed - Scoreboard") {
                     }
                 }
 
-                sleep(ScoreboardHandler.scoreboardProvider.getInterval() * 50L)
+                sleep(provider.getInterval() * 50L)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }

@@ -7,29 +7,54 @@
 
 package net.evilblock.cubed.scoreboard
 
+import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-object ScoreboardHandler {
-
-    internal var scoreboardProvider: ScoreboardAdapter = DefaultScoreboardProvider()
-    internal val scoreboards: MutableMap<UUID, Scoreboard> = ConcurrentHashMap()
+object ScoreboardHandler
+{
+    internal val scoreboards = ConcurrentHashMap<UUID, Scoreboard>()
 
     var scoreboardOverride: ScoreboardOverride? = null
+    internal var scoreboardProvider: ScoreboardAdapter? = null
 
     @JvmStatic
-    fun configure(scoreboardProvider: ScoreboardAdapter) {
+    fun configure(scoreboardProvider: ScoreboardAdapter)
+    {
         this.scoreboardProvider = scoreboardProvider
     }
 
-    class DefaultScoreboardProvider : ScoreboardAdapter() {
-        override fun getTitle(player: Player): String {
-            return "Un-configured scoreboard"
-        }
+    init
+    {
+        val cubed = Cubed.instance
 
-        override fun getLines(board: LinkedList<String>, player: Player) {
-            board.add("Hey there, ${player.name}!")
+        if (
+            cubed.config
+                .getBoolean("scoreboard.default")
+        )
+        {
+            scoreboardProvider = object : ScoreboardAdapter()
+            {
+                override fun getTitle(player: Player) =
+                    "${CC.B_GOLD}scala.gg"
+
+                override fun getLines(
+                    board: LinkedList<String>, player: Player
+                )
+                {
+                    board.add("Your location:")
+                    board.add("${CC.GREEN}${
+                        player.location.x.toInt()
+                    }, ${player.location.y.toInt()}, ${
+                        player.location.z.toInt()
+                    }.")
+
+                    board.add("")
+                    board.add("${CC.GRAY}scala.gg")
+                }
+            }
         }
     }
 }
