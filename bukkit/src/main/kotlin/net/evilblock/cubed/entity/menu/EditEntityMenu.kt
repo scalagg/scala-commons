@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.entity.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
@@ -42,7 +43,7 @@ class EditEntityMenu(private val entity: Entity) : Menu() {
 
         for (i in 0..8) {
             if (!buttons.containsKey(i)) {
-                buttons[i] = Button.placeholder(Material.STAINED_GLASS_PANE, 7, " ")
+                buttons[i] = Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 15, " ")
             }
         }
 

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.pagination
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.distribution.MenuRowDistribution
@@ -22,7 +23,7 @@ abstract class PaginatedMenu : Menu()
     companion object
     {
         @JvmStatic
-        val PLACEHOLDER = ItemBuilder(Material.STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
+        val PLACEHOLDER = ItemBuilder(XMaterial.BLACK_STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
     }
 
     var page = 1

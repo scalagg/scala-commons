@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import org.bukkit.ChatColor
@@ -40,8 +41,9 @@ class SelectItemStackMenu(
             return listOf("${ChatColor.GRAY}Click on an item in your inventory to select it.")
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.COMPASS
+        override fun getMaterial(player: Player): XMaterial
+        {
+            return XMaterial.COMPASS
         }
     }
 

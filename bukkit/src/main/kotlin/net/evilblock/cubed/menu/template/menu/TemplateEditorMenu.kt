@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.template.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.AddButton
@@ -131,8 +132,8 @@ class TemplateEditorMenu : PaginatedMenu() {
             return description
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.ITEM_FRAME
+        override fun getMaterial(player: Player): XMaterial {
+            return XMaterial.ITEM_FRAME
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
@@ -173,8 +174,8 @@ class TemplateEditorMenu : PaginatedMenu() {
                 return "${CC.GREEN}${factory.getName()}"
             }
 
-            override fun getMaterial(player: Player): Material {
-                return Material.ITEM_FRAME
+            override fun getMaterial(player: Player): XMaterial {
+                return XMaterial.ITEM_FRAME
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

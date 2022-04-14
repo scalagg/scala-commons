@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.protocol.MenuCompatibility
 import org.bukkit.ChatColor
@@ -21,7 +22,8 @@ class ExitButton : Button() {
         return "${ChatColor.RED}${ChatColor.BOLD}Exit"
     }
 
-    override fun getMaterial(player: Player): Material {
+    override fun getMaterial(player: Player): XMaterial
+    {
         return MenuCompatibility.getBarrierOrReplacement()
     }
 

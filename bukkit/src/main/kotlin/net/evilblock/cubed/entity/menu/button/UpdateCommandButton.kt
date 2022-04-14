@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.menu.Button
@@ -29,8 +30,9 @@ class UpdateCommandButton(private val entity: Entity) : Button() {
         )
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.NAME_TAG
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.NAME_TAG
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

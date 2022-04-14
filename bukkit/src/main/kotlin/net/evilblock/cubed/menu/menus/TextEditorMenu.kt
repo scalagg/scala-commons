@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.buttons.AddButton
 import net.evilblock.cubed.menu.buttons.GlassButton
@@ -181,8 +182,9 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             return description
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.PAPER
+        override fun getMaterial(player: Player): XMaterial
+        {
+            return XMaterial.PAPER
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
@@ -257,8 +259,8 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             )
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.WOOL
+        override fun getMaterial(player: Player): XMaterial {
+            return XMaterial.LIME_WOOL
         }
 
         override fun getDamageValue(player: Player): Byte {
@@ -285,8 +287,8 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
             )
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.WOOL
+        override fun getMaterial(player: Player): XMaterial {
+            return XMaterial.LIGHT_GRAY_WOOL
         }
 
         override fun getDamageValue(player: Player): Byte {

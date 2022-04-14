@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.pagination
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.CC
 import org.bukkit.Material
@@ -37,8 +38,9 @@ class JumpToPageButton(
         return description
     }
 
-    override fun getMaterial(player: Player): Material {
-        return if (current) Material.ENCHANTED_BOOK else Material.BOOK
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return if (current) XMaterial.ENCHANTED_BOOK else XMaterial.BOOK
     }
 
     override fun getAmount(player: Player): Int {

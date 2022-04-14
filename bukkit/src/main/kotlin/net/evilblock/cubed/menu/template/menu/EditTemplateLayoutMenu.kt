@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.template.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.template.MenuTemplate
@@ -150,8 +151,9 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
                 return "${CC.GREEN}${factory.getName()}"
             }
 
-            override fun getMaterial(player: Player): Material {
-                return Material.STONE_BUTTON
+            override fun getMaterial(player: Player): XMaterial
+            {
+                return XMaterial.STONE_BUTTON
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

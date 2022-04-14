@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu
 
+import com.cryptomorin.xseries.XMaterial
 import com.google.common.base.Joiner
 import net.evilblock.cubed.util.Color
 import org.apache.commons.lang.StringUtils
@@ -34,8 +35,8 @@ abstract class Button {
         return emptyList()
     }
 
-    open fun getMaterial(player: Player): Material {
-        return Material.AIR
+    open fun getMaterial(player: Player): XMaterial {
+        return XMaterial.AIR
     }
 
     open fun getDamageValue(player: Player): Byte {
@@ -57,7 +58,11 @@ abstract class Button {
     }
 
     open fun getButtonItem(player: Player): ItemStack {
-        val buttonItem = ItemStack(getMaterial(player), getAmount(player), getDamageValue(player).toShort())
+        val buttonItem = ItemStack(
+            getMaterial(player).parseMaterial()!!,
+            getAmount(player), getDamageValue(player).toShort()
+        )
+
         val meta = buttonItem.itemMeta
 
         if (meta != null) {
@@ -133,8 +138,8 @@ abstract class Button {
                     }
                 }
 
-                override fun getMaterial(player: Player): Material {
-                    return item.type
+                override fun getMaterial(player: Player): XMaterial {
+                    return XMaterial.matchXMaterial(item.type)
                 }
 
                 override fun getDamageValue(player: Player): Byte {
@@ -154,8 +159,8 @@ abstract class Button {
                     return listOf()
                 }
 
-                override fun getMaterial(player: Player): Material {
-                    return material
+                override fun getMaterial(player: Player): XMaterial {
+                    return XMaterial.matchXMaterial(material)
                 }
 
                 override fun getDamageValue(player: Player): Byte {

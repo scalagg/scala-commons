@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.TexturedHeadButton
@@ -29,7 +30,7 @@ abstract class RangeEditorMenu(
         val buttons = hashMapOf<Int, Button>()
 
         for (i in 0..8) {
-            buttons[i] = Button.placeholder(Material.STAINED_GLASS_PANE, 7, " ")
+            buttons[i] = Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 15, " ")
         }
 
         buttons[2] = EditMinButton()

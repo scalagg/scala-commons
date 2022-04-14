@@ -26,46 +26,6 @@ object Constants {
     val EMAIL_REGEX = "[^@]+@[^@]+\\.[^@]+".toRegex()
 
     @JvmStatic
-    val CONTAINER_TYPES = listOf(
-        Material.CHEST,
-        Material.TRAPPED_CHEST,
-        Material.ENDER_CHEST,
-        Material.FURNACE,
-        Material.BURNING_FURNACE,
-        Material.DISPENSER,
-        Material.HOPPER,
-        Material.DROPPER,
-        Material.BREWING_STAND
-    )
-
-    @JvmStatic
-    val INTERACTIVE_TYPES = listOf(
-        Material.REDSTONE_COMPARATOR,
-        Material.REDSTONE_COMPARATOR_OFF,
-        Material.REDSTONE_COMPARATOR_ON,
-        Material.DIODE,
-        Material.DIODE_BLOCK_OFF,
-        Material.DIODE_BLOCK_ON,
-        Material.LEVER,
-        Material.WOOD_BUTTON,
-        Material.STONE_BUTTON,
-        Material.WOOD_PLATE,
-        Material.STONE_PLATE,
-        Material.IRON_PLATE,
-        Material.GOLD_PLATE,
-        Material.NOTE_BLOCK,
-        Material.TRAP_DOOR,
-        Material.IRON_DOOR,
-        Material.WOODEN_DOOR
-    )
-
-    @JvmStatic
-    val LOG_TYPES = listOf(
-        Material.LOG,
-        Material.LOG_2
-    )
-
-    @JvmStatic
     val HEART_SYMBOL = "❤"
 
     @JvmStatic

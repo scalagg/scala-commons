@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.template.defaults
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateFactory
@@ -25,7 +26,7 @@ class StaticMenuTemplate(id: String) : MenuTemplate<Any>(id) {
     }
 
     override fun createEntryButton(entry: Any): Button {
-        return Button.placeholder(Material.STAINED_GLASS_PANE, 14, "${ChatColor.DARK_RED}STATIC ENTRY BUTTON")
+        return Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 14, "${ChatColor.DARK_RED}STATIC ENTRY BUTTON")
     }
 
     object StaticMenuTemplateFactory : MenuTemplateFactory {

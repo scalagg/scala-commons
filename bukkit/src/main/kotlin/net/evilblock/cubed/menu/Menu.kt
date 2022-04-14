@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -103,7 +104,7 @@ abstract class Menu
 
         if (placeholdBorders)
         {
-            val placeholder = Button.placeholder(Material.STAINED_GLASS_PANE, 15.toByte(), " ")
+            val placeholder = Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 15.toByte(), " ")
 
             for (i in 0 until current)
             {
@@ -119,7 +120,7 @@ abstract class Menu
 
         if (placeholder)
         {
-            val placeholder = Button.placeholder(Material.STAINED_GLASS_PANE, 15.toByte(), " ")
+            val placeholder = Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 15.toByte(), " ")
 
             for (index in 0 until size(invButtons))
             {

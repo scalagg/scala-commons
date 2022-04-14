@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.pagination
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
@@ -60,8 +61,8 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
         return if (hasNext(player)) 3.toByte() else 15.toByte()
     }
 
-    override fun getMaterial(player: Player): Material {
-        return if (hasNext(player)) Material.SKULL_ITEM else Material.STAINED_GLASS_PANE
+    override fun getMaterial(player: Player): XMaterial {
+        return if (hasNext(player)) XMaterial.SKELETON_SKULL else XMaterial.BLACK_STAINED_GLASS_PANE
     }
 
     override fun getButtonItem(player: Player): ItemStack {

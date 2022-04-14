@@ -1,5 +1,6 @@
 package net.evilblock.cubed.menu.pagination
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
@@ -134,8 +135,9 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
             }
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.HOPPER
+        override fun getMaterial(player: Player): XMaterial
+        {
+            return XMaterial.HOPPER
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
@@ -211,8 +213,8 @@ abstract class CriteriaPaginatedMenu<T> : PaginatedMenu() {
             }
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.DIODE
+        override fun getMaterial(player: Player): XMaterial {
+            return XMaterial.REDSTONE_LAMP
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

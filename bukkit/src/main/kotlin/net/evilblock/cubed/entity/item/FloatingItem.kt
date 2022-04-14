@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.item
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
@@ -130,8 +131,9 @@ class FloatingItem(var itemStack: ItemStack, location: Location) : Entity(locati
             }
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.ITEM_FRAME
+        override fun getMaterial(player: Player): XMaterial
+        {
+            return XMaterial.ITEM_FRAME
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

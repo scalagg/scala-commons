@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.npc.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.menu.Button
@@ -31,8 +32,9 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.SKULL_ITEM
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.SKELETON_SKULL
     }
 
     override fun getDamageValue(player: Player): Byte {

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.template.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.template.MenuTemplate
@@ -42,7 +43,12 @@ class TemplatePreviewMenu(private val template: MenuTemplate<*>) : Menu() {
 
     private inner class PlaceholderButton : Button() {
         override fun getButtonItem(player: Player): ItemStack {
-            return ItemUtils.applySkullTexture(ItemBuilder.of(Material.SKULL_ITEM).name("${CC.YELLOW}Template Placeholder").data(3).build(), PLACEHOLDER_TEXTURE)
+            return ItemUtils.applySkullTexture(
+                ItemBuilder.of(XMaterial.SKELETON_SKULL)
+                    .name("${CC.YELLOW}Template Placeholder")
+                    .data(3).build(),
+                PLACEHOLDER_TEXTURE
+            )
         }
     }
 

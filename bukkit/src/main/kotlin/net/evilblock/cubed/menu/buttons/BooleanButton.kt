@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.buttons
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.menus.ConfirmMenu
 import org.bukkit.ChatColor
@@ -60,8 +61,15 @@ class BooleanButton(
         return (if (this.value) 5 else 14).toByte()
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.CARPET
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return if (this.value)
+        {
+            XMaterial.LIME_CARPET
+        } else
+        {
+            XMaterial.RED_CARPET
+        }
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

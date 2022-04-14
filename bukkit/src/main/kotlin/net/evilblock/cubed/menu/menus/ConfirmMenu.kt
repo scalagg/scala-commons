@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
@@ -77,9 +78,9 @@ open class ConfirmMenu(
             return extraInfo
         }
 
-        override fun getMaterial(player: Player): Material
+        override fun getMaterial(player: Player): XMaterial
         {
-            return Material.SIGN
+            return XMaterial.OAK_WALL_SIGN
         }
     }
 }

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.entity.tool
 
+import com.cryptomorin.xseries.XMaterial
 import me.lucko.helper.shadows.nbt.NBTTagString
 import me.lucko.shadow.ShadowFactory
 import net.evilblock.cubed.Cubed
@@ -41,7 +42,7 @@ object EntityMoveTool : Listener {
 
     @JvmStatic
     fun makeMoveTool(entity: Entity): ItemStack {
-        val item = ItemBuilder.of(Material.MONSTER_EGG)
+        val item = ItemBuilder.of(XMaterial.PIG_SPAWN_EGG)
             .data(120)
             .name("${CC.GREEN}Move ${entity.getTypeName()}")
             .setLore(arrayListOf<String>().also { desc ->

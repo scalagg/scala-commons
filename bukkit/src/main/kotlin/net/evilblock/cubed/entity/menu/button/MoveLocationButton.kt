@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.menu.Button
@@ -27,8 +28,9 @@ class MoveLocationButton(private val entity: Entity) : Button() {
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.MONSTER_EGG
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.PIG_SPAWN_EGG
     }
 
     override fun getButtonItem(player: Player): ItemStack {

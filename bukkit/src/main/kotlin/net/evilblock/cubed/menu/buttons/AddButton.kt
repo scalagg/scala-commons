@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.buttons
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -14,8 +15,9 @@ import org.bukkit.inventory.ItemStack
 
 abstract class AddButton : TexturedHeadButton(texture = HEAD_TEXTURE) {
 
-    override fun getMaterial(player: Player): Material {
-        return Material.SKULL_ITEM
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.SKELETON_SKULL
     }
 
     override fun getDamageValue(player: Player): Byte {

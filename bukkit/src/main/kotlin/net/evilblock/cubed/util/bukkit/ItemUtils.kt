@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.util.bukkit
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.nms.NBTUtil
@@ -346,14 +347,21 @@ object ItemUtils {
         return itemStack
     }
 
-    private val LEATHER_ARMOR_TYPES = listOf(Material.LEATHER_BOOTS, Material.LEATHER_LEGGINGS, Material.LEATHER_CHESTPLATE, Material.LEATHER_HELMET)
+    private val LEATHER_ARMOR_TYPES = listOf(
+        XMaterial.LEATHER_BOOTS,
+        XMaterial.LEATHER_LEGGINGS,
+        XMaterial.LEATHER_CHESTPLATE,
+        XMaterial.LEATHER_HELMET
+    )
 
     /**
      * Applies the given [color] to the given [itemStack]'s metadata if the [itemStack] is a leather armor type.
      */
     @JvmStatic
     fun colorLeatherArmor(itemStack: ItemStack, color: Color): ItemStack {
-        if (!LEATHER_ARMOR_TYPES.contains(itemStack.type)) {
+        if (!LEATHER_ARMOR_TYPES.contains(
+                XMaterial.matchXMaterial(itemStack.type)
+        )) {
             throw IllegalArgumentException("Item stack is not of leather armor type!")
         }
 

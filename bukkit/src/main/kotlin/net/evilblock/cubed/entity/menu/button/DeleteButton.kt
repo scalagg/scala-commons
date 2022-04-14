@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.menu.Button
@@ -26,7 +27,7 @@ class DeleteButton(private val entity: Entity) : Button() {
         }
     }
 
-    override fun getMaterial(player: Player): Material {
+    override fun getMaterial(player: Player): XMaterial {
         return MenuCompatibility.getBarrierOrReplacement()
     }
 

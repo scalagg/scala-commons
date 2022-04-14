@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.npc.menu
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.menu.Button
@@ -31,7 +32,9 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
     override fun getButtons(player: Player): Map<Int, Button> {
         return hashMapOf<Int, Button>().also { buttons ->
             buttons[3] = LookLeftButton()
-            buttons[4] = StaticItemStackButton(ItemStack(Material.SKULL_ITEM, 1, 0))
+            buttons[4] = StaticItemStackButton(ItemStack(
+                XMaterial.SKELETON_SKULL.parseMaterial(), 1, 0
+            ))
             buttons[5] = LookRightButton()
 
             buttons[18] = MoveUpButton()

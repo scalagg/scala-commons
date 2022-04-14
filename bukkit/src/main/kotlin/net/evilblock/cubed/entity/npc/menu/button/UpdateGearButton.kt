@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.npc.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.menu.EditNpcGearMenu
 import net.evilblock.cubed.menu.Button
@@ -24,8 +25,9 @@ class UpdateGearButton(private val npc: NpcEntity) : Button() {
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.DIAMOND_HELMET
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.DIAMOND_HELMET
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

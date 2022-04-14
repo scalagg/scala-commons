@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.npc.animation
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.entity.animation.EntityAnimationType
@@ -85,7 +86,7 @@ class RingsAnimation(entity: NpcEntity, private val color: Color) : EntityAnimat
         }
 
         override fun getIcon(): ItemStack {
-            return ItemStack(Material.RECORD_10)
+            return ItemStack(XMaterial.MUSIC_DISC_11.parseMaterial())
         }
 
         override fun startProcedure(player: Player, entity: Entity, complete: (EntityAnimation) -> Unit) {

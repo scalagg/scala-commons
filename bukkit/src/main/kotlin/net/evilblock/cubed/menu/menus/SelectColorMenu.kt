@@ -1,5 +1,6 @@
 package net.evilblock.cubed.menu.menus
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.util.bukkit.ColorUtil
@@ -28,8 +29,9 @@ class SelectColorMenu(private val use: (Color) -> Unit) : Menu() {
             return ColorUtil.toChatColor(color).toString() + ColorUtil.getColorName(color)
         }
 
-        override fun getMaterial(player: Player): Material {
-            return Material.WOOL
+        override fun getMaterial(player: Player): XMaterial
+        {
+            return XMaterial.WHITE_WOOL
         }
 
         override fun getDamageValue(player: Player): Byte {

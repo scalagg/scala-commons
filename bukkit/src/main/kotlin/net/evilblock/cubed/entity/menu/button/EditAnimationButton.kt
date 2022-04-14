@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.menu.ApplyAnimationMenu
@@ -32,8 +33,9 @@ class EditAnimationButton(private val entity: Entity) : Button() {
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.BLAZE_POWDER
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.BLAZE_POWDER
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.npc.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.npc.menu.EditNpcMessagesMenu
 import net.evilblock.cubed.menu.Button
@@ -25,8 +26,9 @@ class UpdateMessagesButton(private val npc: NpcEntity) : Button() {
         )
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.BOOK_AND_QUILL
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.WRITABLE_BOOK
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

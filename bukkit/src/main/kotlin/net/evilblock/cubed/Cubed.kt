@@ -178,7 +178,11 @@ class Cubed : ExtendedScalaPlugin()
                 DistributedRedisUuidCacheTranslator(aware)
             )
 
-            GlowEnchantment.registerEnchant()
+            kotlin.runCatching {
+                GlowEnchantment.registerEnchant()
+            }.onFailure {
+                logger.info("We were unable to register our GlowEnchantment due to compatability issues.")
+            }
         } catch (e: Exception)
         {
             e.printStackTrace()

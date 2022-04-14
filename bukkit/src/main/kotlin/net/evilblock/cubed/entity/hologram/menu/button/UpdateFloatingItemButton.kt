@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.hologram.menu.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.item.FloatingItem
 import net.evilblock.cubed.menu.Button
@@ -29,8 +30,9 @@ class UpdateFloatingItemButton(private val hologram: HologramEntity) : Button() 
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.ITEM_FRAME
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.ITEM_FRAME
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

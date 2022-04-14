@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.buttons
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -31,8 +32,8 @@ class BackButton(
         }
     }
 
-    override fun getMaterial(player: Player): Material {
-        return Material.ARROW
+    override fun getMaterial(player: Player): XMaterial {
+        return XMaterial.ARROW
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.buttons
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import org.bukkit.Material
@@ -15,8 +16,9 @@ import org.bukkit.inventory.ItemStack
 
 abstract class HelpButton : Button() {
 
-    override fun getMaterial(player: Player): Material {
-        return Material.SKULL_ITEM
+    override fun getMaterial(player: Player): XMaterial
+    {
+        return XMaterial.SKELETON_SKULL
     }
 
     override fun getDamageValue(player: Player): Byte {

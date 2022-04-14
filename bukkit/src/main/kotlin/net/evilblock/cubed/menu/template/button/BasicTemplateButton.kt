@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.template.button
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.menus.TextEditorMenu
@@ -35,7 +36,7 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
     }
 
     override fun getIcon(): ItemStack {
-        if (icon.type == Material.STAINED_GLASS_PANE && (!icon.hasItemMeta() || !icon.itemMeta.hasDisplayName())) {
+        if (icon.type == XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial() && (!icon.hasItemMeta() || !icon.itemMeta.hasDisplayName())) {
             val meta = icon.itemMeta
             meta.displayName = " "
             icon.itemMeta = meta
@@ -116,8 +117,8 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
                 return "${CC.PRI}Set Redirect"
             }
 
-            override fun getMaterial(player: Player): Material {
-                return Material.ENDER_PEARL
+            override fun getMaterial(player: Player): XMaterial {
+                return XMaterial.ENDER_PEARL
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
@@ -144,8 +145,8 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
                         return "${ChatColor.YELLOW}${destination.getName()}"
                     }
 
-                    override fun getMaterial(player: Player): Material {
-                        return Material.BEACON
+                    override fun getMaterial(player: Player): XMaterial {
+                        return XMaterial.BEACON
                     }
 
                     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
@@ -163,8 +164,8 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
                 return "${CC.PRI}Edit Commands"
             }
 
-            override fun getMaterial(player: Player): Material {
-                return Material.COMMAND
+            override fun getMaterial(player: Player): XMaterial {
+                return XMaterial.COMMAND_BLOCK
             }
 
             override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
