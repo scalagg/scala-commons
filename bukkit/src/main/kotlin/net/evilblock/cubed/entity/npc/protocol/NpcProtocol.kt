@@ -14,7 +14,6 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.minecraft.server.v1_8_R3.IChatBaseComponent
 import org.bukkit.entity.Player
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -27,7 +26,10 @@ object NpcProtocol
 
     private val PACKET_PLAY_OUT_PLAYER_INFO_CLASS: Class<*> =
         MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo")!!
-    private val CHAT_SERIALIZER_CLASS = IChatBaseComponent.ChatSerializer::class.java
+
+    private val CHAT_SERIALIZER_CLASS =
+        MinecraftReflection.getNMSClass("IChatBaseComponent\$ChatSerializer")!!
+
     private val JSON_CONVERSION_METHOD: Method =
         Reflection.getDeclaredMethod(CHAT_SERIALIZER_CLASS, "a", String::class.java)!!
 

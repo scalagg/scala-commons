@@ -8,6 +8,7 @@
 package net.evilblock.cubed.entity.tool
 
 import me.lucko.helper.shadows.nbt.NBTTagString
+import me.lucko.shadow.ShadowFactory
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -77,8 +78,16 @@ object EntityMoveTool : Listener {
         for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
             if (isMoveTool(itemStack)) {
-//                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
-//                EntityHandler.getEntityByUuid(uuid)?.updateVisibility(false)
+                val uuid = UUID.fromString(
+                    ShadowFactory.global()
+                        .shadow(
+                            NBTTagString::class.java,
+                            ItemUtils.readItemTagKey(itemStack, "EntityMoveTool")
+                        ).string
+                )
+
+                EntityHandler.getEntityByUuid(uuid)
+                    ?.updateVisibility(false)
 
                 player.inventory.contents[i] = null
                 player.inventory.setItem(i, null)

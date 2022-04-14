@@ -107,6 +107,9 @@ object MinecraftReflection {
             getVersion().startsWith("v1_12_") -> {
                 340
             }
+            getVersion().startsWith("v1_18_") -> {
+                758
+            }
             else -> {
                 throw IllegalStateException("Unknown server version")
             }
