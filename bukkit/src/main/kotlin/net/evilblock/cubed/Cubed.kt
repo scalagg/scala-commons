@@ -7,7 +7,9 @@
 
 package net.evilblock.cubed
 
+import com.comphenix.protocol.ProtocolLib
 import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.AwareHub
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
@@ -82,6 +84,7 @@ import java.util.*
 
 @Plugin(
     name = "Cubed",
+    apiVersion = "1.18",
     depends = [
         PluginDependency("helper"),
         PluginDependency("store-spigot"),
@@ -204,7 +207,13 @@ class Cubed : ExtendedScalaPlugin()
 
             LogHandler.completeFlush()
 
-            aware.shutdown()
+            try
+            {
+                aware.shutdown()
+            } catch (ignored: Exception)
+            {
+
+            }
         } catch (e: Exception)
         {
             e.printStackTrace()
