@@ -39,7 +39,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             )
     )
 
-    private lateinit var commandManager: CubedCommandManager
+    lateinit var commandManager: CubedCommandManager
 
     override fun load()
     {

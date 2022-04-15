@@ -27,8 +27,10 @@ dependencies {
     implementation fileTree(dir: "lib", include: "*.jar")
 
     // helper
-    compileOnly "me.lucko:helper:5.6.9"
-    kapt "me.lucko:helper:5.6.9"
+    compileOnly "me.lucko:helper:5.6.9.1"
+    kapt "me.lucko:helper:5.6.9.1"
+
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.20'
 
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
@@ -56,8 +58,6 @@ dependencies {
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.6'
 
     implementation 'org.reflections:reflections:0.10.2'
-
-//    compileOnly 'org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT'
 
     // scala
     compileOnly "gg.scala.spigot:sspigot-server:1.0.7"

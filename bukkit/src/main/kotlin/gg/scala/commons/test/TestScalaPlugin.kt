@@ -21,9 +21,9 @@ import org.bukkit.event.player.PlayerJoinEvent
  * @author GrowlyX
  * @since 4/14/2022
  */
-@Plugin(
-    name = "test"
-)
+//@Plugin(
+//    name = "test"
+//)
 class TestScalaPlugin : ExtendedScalaPlugin()
 {
     @ContainerEnable
