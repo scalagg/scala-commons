@@ -11,6 +11,7 @@ import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
+import gg.scala.commons.reflections.Reflections
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.command.manager.CubedCommandManager
@@ -19,8 +20,6 @@ import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.Listener
-import org.reflections.Reflections
-import org.reflections.util.ConfigurationBuilder
 import java.util.logging.Level
 
 /**
@@ -32,8 +31,9 @@ import java.util.logging.Level
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
-    private val reflections =
-        Reflections(this::class.java.`package`.name)
+    private val reflections by lazy {
+        Reflections(this::class.java.`package`.name, this)
+    }
 
     private lateinit var commandManager: CubedCommandManager
 
@@ -54,7 +54,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         }
 
         this.reflections
-            .getTypesAnnotatedWith(LibraryLoader::class.java)
+            .getTypesAnnotatedWith<LibraryLoader>()
             .mapNotNull {
                 it.objectInstance()
             }
@@ -67,7 +67,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     override fun enable()
     {
         this.reflections
-            .getMethodsAnnotatedWith(ContainerEnable::class.java)
+            .getMethodsAnnotatedWith<ContainerEnable>()
             .forEach {
                 kotlin.runCatching {
                     it.invoke(this)
@@ -102,7 +102,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         }
 
         this.reflections
-            .getMethodsAnnotatedWith(CommandManagerCustomizer::class.java)
+            .getMethodsAnnotatedWith<CommandManagerCustomizer>()
             .forEach { method ->
                 kotlin.runCatching {
                     method.invoke(
@@ -121,7 +121,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.reflections
-            .getTypesAnnotatedWith(AutoRegister::class.java)
+            .getTypesAnnotatedWith<AutoRegister>()
             .filter {
                 it.isAssignableFrom(ScalaCommand::class.java)
             }
@@ -136,7 +136,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.reflections
-            .getMethodsAnnotatedWith(ManualRegister::class.java)
+            .getMethodsAnnotatedWith<ManualRegister>()
             .forEach {
                 kotlin.runCatching {
                     it.invoke(this, this.commandManager)
@@ -146,7 +146,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.reflections
-            .getTypesAnnotatedWith(Listeners::class.java)
+            .getTypesAnnotatedWith<Listeners>()
             .mapNotNull {
                 it.objectInstance() ?: it.newInstance()
             }
@@ -156,7 +156,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.reflections
-            .getTypesAnnotatedWith(Repeating::class.java)
+            .getTypesAnnotatedWith<Repeating>()
             .mapNotNull {
                 it.objectInstance() ?: it.newInstance()
             }
@@ -177,7 +177,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     override fun disable()
     {
         this.reflections
-            .getMethodsAnnotatedWith(ContainerDisable::class.java)
+            .getMethodsAnnotatedWith<ContainerDisable>()
             .filter {
                 it.declaringClass == this::class.java
             }
@@ -192,7 +192,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.commandManager.unregisterCommands()
     }
 
-    fun Class<*>.objectInstance(): Any?
+    private fun Class<*>.objectInstance(): Any?
     {
         return kotlin.runCatching {
             getDeclaredField("INSTANCE").get(null)
