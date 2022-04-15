@@ -94,4 +94,8 @@ public class CC {
 	public static final String MENU_BAR = "$GRAY$S------------------------";
 	public static final String CHAT_BAR = "$GRAY$S------------------------------";
 	public static final String LONGER_CHAT_BAR = "$GRAY$S------------------------------------------------";
+
+	static {
+		setup("GREEN", "YELLOW");
+	}
 }

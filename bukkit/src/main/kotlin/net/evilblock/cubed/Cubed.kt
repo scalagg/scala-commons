@@ -96,10 +96,6 @@ class Cubed : ExtendedScalaPlugin()
             if (!runSetupCheck())
                 return@runCatching
 
-            CC.setup(
-                CC.GREEN, CC.YELLOW
-            )
-
             TimeZone.setDefault(
                 TimeZone.getTimeZone(config
                     .getString("timezone", "EST")
