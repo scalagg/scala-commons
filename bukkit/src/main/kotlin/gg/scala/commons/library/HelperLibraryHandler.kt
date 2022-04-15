@@ -5,6 +5,7 @@ import gg.scala.commons.library.model.Library
 import gg.scala.commons.loader.URLClassLoaderAccess
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.maven.LibraryLoader
+import net.evilblock.cubed.Cubed
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
@@ -42,25 +43,23 @@ object HelperLibraryHandler
 
     private fun internalLoad(library: Library, url: String)
     {
-        println("[Cubed] ${
-            String.format(
+        Cubed.instance.logger.info(
+            "[Libraries] " + String.format(
                 "Loading dependency %s:%s:%s.",
                 library.groupId,
                 library.artifactId,
                 library.version,
             )
-        }")
+        )
 
         val name = library.artifactId + "-" + library.version
         val saveLocation = File(getLibFolder(), "$name.jar")
 
         if (!saveLocation.exists())
         {
-            println("[Cubed] Dependency '$name' is not already in the libraries folder. Attempting to download...")
-
             getUrl(url, library).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
 
-            println("[Cubed] Dependency '$name' successfully downloaded.")
+            Cubed.instance.logger.info("[Libraries] Dependency '$name' successfully downloaded.")
         }
 
         if (!saveLocation.exists())
@@ -81,7 +80,7 @@ object HelperLibraryHandler
             throw RuntimeException("Unable to load dependency: $saveLocation", e)
         }
 
-        println("[Cubed] Loaded dependency '$name' successfully.")
+        Cubed.instance.logger.info("[Libraries] Loaded dependency '$name' successfully.")
     }
 
     @Throws(MalformedURLException::class)
@@ -95,7 +94,14 @@ object HelperLibraryHandler
         }
 
         repo += "%s/%s/%s/%s-%s.jar"
-        val url = String.format(repo, library.groupId.replace(".", "/"), library.artifactId, library.version, library.artifactId, library.version)
+        val url = String.format(
+            repo,
+            library.groupId.replace(".", "/"),
+            library.artifactId,
+            library.version,
+            library.artifactId,
+            library.version
+        )
         return URL(url)
     }
 
