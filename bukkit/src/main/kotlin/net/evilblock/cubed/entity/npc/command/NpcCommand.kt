@@ -7,10 +7,11 @@
 
 package net.evilblock.cubed.entity.npc.command
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.menu.EditEntityMenu
@@ -23,21 +24,25 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.lang.Math.floor
 
+@AutoRegister
 @CommandAlias("npc")
 @CommandPermission("cubed.npcs")
-object NpcCommand : BaseCommand() {
-
+object NpcCommand : ScalaCommand()
+{
     @Default
     @HelpCommand
-    fun onHelp(help: CommandHelp) {
+    fun onHelp(help: CommandHelp)
+    {
         help.showHelp()
     }
 
     @Subcommand("create")
     @Description("Spawn an NPC")
     @CommandPermission("cubed.npcs.create")
-    fun onCreate(player: Player, @Name("text") @Single text: String) {
-        if (text.length > 48) {
+    fun onCreate(player: Player, @Name("text") @Single text: String)
+    {
+        if (text.length > 48)
+        {
             throw ConditionFailedException("Text cannot be longer than 48 characters.");
         }
 
@@ -50,7 +55,7 @@ object NpcCommand : BaseCommand() {
         npc.spawn(player)
 
         EntityHandler.trackEntity(npc)
-        EntityHandler.saveData()
+        EntityHandler.close()
 
         player.sendMessage("${ChatColor.GREEN}Successfully created the NPC!")
     }
@@ -58,24 +63,30 @@ object NpcCommand : BaseCommand() {
     @Subcommand("delete-near")
     @Description("Deletes NPCs within a radius of blocks")
     @CommandPermission("cubed.npcs.delete")
-    fun onDeleteNear(player: Player, @Name("radius") @Default("5") radius: Int) {
+    fun onDeleteNear(player: Player, @Name("radius") @Default("5") radius: Int)
+    {
         val inRadius = arrayListOf<NpcEntity>()
 
-        for (npc in EntityHandler.getEntities().filterIsInstance<NpcEntity>()) {
-            if (player.world == npc.location.world && player.location.distanceSquared(npc.location) <= radius) {
+        for (npc in EntityHandler.getEntities().filterIsInstance<NpcEntity>())
+        {
+            if (player.world == npc.location.world && player.location.distanceSquared(npc.location) <= radius)
+            {
                 inRadius.add(npc)
             }
         }
 
-        if (inRadius.isEmpty()) {
+        if (inRadius.isEmpty())
+        {
             player.sendMessage("${ChatColor.RED}There aren't any NPCs nearby!")
             return
         }
 
         ConfirmMenu("Delete ${Numbers.format(inRadius.size)} NPCs?") { confirmed ->
-            if (confirmed) {
+            if (confirmed)
+            {
                 Tasks.async {
-                    for (npc in inRadius) {
+                    for (npc in inRadius)
+                    {
                         EntityHandler.forgetEntity(npc)
                         npc.destroyForCurrentWatchers()
                     }
@@ -88,11 +99,13 @@ object NpcCommand : BaseCommand() {
     @Subcommand("manage")
     @Description("Manage an NPC")
     @CommandPermission("cubed.npcs.manage")
-    fun onManage(player: Player) {
+    fun onManage(player: Player)
+    {
         player.sendMessage("${ChatColor.GREEN}Select (right-click) an NPC to manage...")
 
         EntitySelectionTool.attachSelectionHandler(player) { entity ->
-            if (entity is NpcEntity) {
+            if (entity is NpcEntity)
+            {
                 EditEntityMenu(entity).openMenu(player)
             }
         }
@@ -101,9 +114,11 @@ object NpcCommand : BaseCommand() {
     @Subcommand("spawn-defined")
     @Description("Spawns an NPC defined in the Cubed config")
     @CommandPermission("cubed.npcs.create")
-    fun execute(player: Player, @Name("id") id: String) {
+    fun execute(player: Player, @Name("id") id: String)
+    {
         val config = Cubed.instance.config
-        if (!config.contains("defined-npcs.$id")) {
+        if (!config.contains("defined-npcs.$id"))
+        {
             player.sendMessage("${ChatColor.RED}That NPC hasn't been defined!")
             return
         }
@@ -112,27 +127,36 @@ object NpcCommand : BaseCommand() {
         loc.x = kotlin.math.floor(loc.x) + 0.5
         loc.z = kotlin.math.floor(loc.z) + 0.5
 
-        val npc = NpcEntity(config.getStringList("defined-npcs.$id.lines").map { ChatColor.translateAlternateColorCodes('&', it) }, loc)
+        val npc = NpcEntity(
+            config.getStringList("defined-npcs.$id.lines").map { ChatColor.translateAlternateColorCodes('&', it) }, loc
+        )
         npc.initializeData()
 
-        if (config.contains("defined-npcs.$id.texture-value") && config.contains("defined-npcs.$id.texture-signature")) {
-            npc.updateTexture(config.getString("defined-npcs.$id.texture-value"), config.getString("defined-npcs.$id.texture-signature"))
-        } else if (config.contains("defined-npcs.$id.texture")) {
+        if (config.contains("defined-npcs.$id.texture-value") && config.contains("defined-npcs.$id.texture-signature"))
+        {
+            npc.updateTexture(
+                config.getString("defined-npcs.$id.texture-value"),
+                config.getString("defined-npcs.$id.texture-signature")
+            )
+        } else if (config.contains("defined-npcs.$id.texture"))
+        {
             npc.updateTextureByUsername(config.getString("defined-npcs.$id.texture")) { success, exception ->
-                if (!success) {
+                if (!success)
+                {
                     player.sendMessage("${ChatColor.RED}Failed to fetch NPC's texture!")
                 }
             }
         }
 
-        if (config.contains("defined-npcs.$id.command")) {
+        if (config.contains("defined-npcs.$id.command"))
+        {
             npc.command = config.getString("defined-npcs.$id.command")
         }
 
         npc.spawn(player)
 
         EntityHandler.trackEntity(npc)
-        EntityHandler.saveData()
+        EntityHandler.close()
 
         player.sendMessage("${ChatColor.GREEN}Successfully spawned the NPC!")
     }

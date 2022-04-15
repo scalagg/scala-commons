@@ -45,7 +45,7 @@ class EditNpcTextMenu(private val npc: NpcEntity) : TextEditorMenu(lines = npc.g
         npc.updateLines(lines)
 
         Tasks.async {
-            EntityHandler.saveData()
+            EntityHandler.close()
         }
     }
 

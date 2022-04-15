@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.entity.listener
 
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -14,6 +15,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.*
 
+@Listeners
 object EntityWatcherListeners : Listener {
 
     @EventHandler

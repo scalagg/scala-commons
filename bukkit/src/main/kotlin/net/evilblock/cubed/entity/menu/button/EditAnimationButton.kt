@@ -10,7 +10,6 @@ import net.evilblock.cubed.menu.menus.ConfirmMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.text.TextSplitter
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -44,7 +43,7 @@ class EditAnimationButton(private val entity: Entity) : Button() {
                 entity.animation = animation
 
                 Tasks.async {
-                    EntityHandler.saveData()
+                    EntityHandler.close()
                 }
             }.openMenu(player)
         } else if (clickType.isRightClick && entity.animation != null) {
@@ -55,7 +54,7 @@ class EditAnimationButton(private val entity: Entity) : Button() {
                     entity.animation = null
 
                     Tasks.async {
-                        EntityHandler.saveData()
+                        EntityHandler.close()
                     }
 
                     openMenu.openMenu(player)

@@ -21,7 +21,7 @@ object PosterHandler {
 
     private val posters: MutableMap<String, Poster> = hashMapOf()
 
-    fun initialLoad() {
+    fun configure() {
         if (dataFile.exists()) {
             Files.newReader(dataFile, Charsets.UTF_8).use { reader ->
                 val posters = Serializers.gson.fromJson(reader, dataType) as List<Poster>

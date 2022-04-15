@@ -1,5 +1,7 @@
 package net.evilblock.cubed.nametag
 
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
@@ -11,8 +13,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-object NametagHandler {
-
+@Service
+object NametagHandler
+{
     internal val teamMap = ConcurrentHashMap<UUID, HashMap<UUID, NametagInfo>>()
 
     private val registeredTeams = Collections.synchronizedList(ArrayList<NametagInfo>())
@@ -27,73 +30,94 @@ object NametagHandler {
 
     var updateInterval: Int = 2
 
-    fun initialLoad() {
-        if (Cubed.instance.config.getBoolean("nametags.enabled", false)) {
+    @Configure
+    fun configure()
+    {
+        if (Cubed.instance.config.getBoolean("nametags.enabled", false))
+        {
             Cubed.instance.logger.info("Auto-updating nametags are disabled by config")
             return
         }
 
         isNametagRestrictionEnabled = Cubed.instance.config.getBoolean("nametags.packet-restriction", false)
-        nametagRestrictBypass = Cubed.instance.config.getString("nametags.packet-restriction-bypass-prefix", "").replace("&", "§")
+        nametagRestrictBypass =
+            Cubed.instance.config.getString("nametags.packet-restriction-bypass-prefix", "").replace("&", "§")
 
         NametagThread().start()
 
         registerProvider(NametagProvider.DefaultNametagProvider())
     }
 
-    fun registerProvider(newProvider: NametagProvider) {
+    fun registerProvider(newProvider: NametagProvider)
+    {
         providers.add(newProvider)
         providers.sortByDescending { it.weight }
     }
 
-    fun reloadPlayer(toRefresh: Player) {
+    fun reloadPlayer(toRefresh: Player)
+    {
         val update = NametagUpdate(toRefresh)
 
-        if (async) {
+        if (async)
+        {
             NametagThread.pendingUpdates[update] = true
-        } else {
+        } else
+        {
             Tasks.sync {
                 applyUpdate(update)
             }
         }
     }
 
-    fun reloadOthersFor(refreshFor: Player) {
-        for (toRefresh in Bukkit.getOnlinePlayers()) {
-            if (refreshFor === toRefresh) {
+    fun reloadOthersFor(refreshFor: Player)
+    {
+        for (toRefresh in Bukkit.getOnlinePlayers())
+        {
+            if (refreshFor === toRefresh)
+            {
                 continue
             }
             reloadPlayer(toRefresh, refreshFor)
         }
     }
 
-    fun reloadPlayer(toRefresh: Player, refreshFor: Player) {
+    fun reloadPlayer(toRefresh: Player, refreshFor: Player)
+    {
         val update = NametagUpdate(toRefresh, refreshFor)
 
-        if (async) {
+        if (async)
+        {
             NametagThread.pendingUpdates[update] = true
-        } else {
+        } else
+        {
             applyUpdate(update)
         }
     }
 
-    internal fun applyUpdate(nametagUpdate: NametagUpdate) {
-        val toRefreshPlayer = Bukkit.getPlayerExact(nametagUpdate.toRefresh)?: return
+    internal fun applyUpdate(nametagUpdate: NametagUpdate)
+    {
+        val toRefreshPlayer = Bukkit.getPlayerExact(nametagUpdate.toRefresh) ?: return
 
-        if (nametagUpdate.refreshFor == null) {
-            for (refreshFor in Bukkit.getOnlinePlayers()) {
+        if (nametagUpdate.refreshFor == null)
+        {
+            for (refreshFor in Bukkit.getOnlinePlayers())
+            {
                 reloadPlayerInternal(toRefreshPlayer, refreshFor)
             }
-        } else {
+        } else
+        {
             val refreshForPlayer = Bukkit.getPlayerExact(nametagUpdate.refreshFor)
-            if (refreshForPlayer != null) {
+            if (refreshForPlayer != null)
+            {
                 reloadPlayerInternal(toRefreshPlayer, refreshForPlayer)
             }
         }
     }
 
-    private fun reloadPlayerInternal(toRefresh: Player, refreshFor: Player) {
-        if (!refreshFor.hasMetadata("Nametag-Applied")) {
+    private fun reloadPlayerInternal(toRefresh: Player, refreshFor: Player)
+    {
+        if (!refreshFor.hasMetadata("Nametag-Applied"))
+        {
             return
         }
 
@@ -102,19 +126,23 @@ object NametagHandler {
 
         NametagUpdateEvent(toRefresh).call()
 
-        while (provided == null) {
+        while (provided == null)
+        {
             provided = providers[providerIndex++].fetchNametag(toRefresh, refreshFor)
         }
 
-        if (isNametagRestrictionEnabled) {
+        if (isNametagRestrictionEnabled)
+        {
             val prefix = provided.prefix
-            if (!prefix.equals(nametagRestrictBypass, ignoreCase = true)) {
+            if (!prefix.equals(nametagRestrictBypass, ignoreCase = true))
+            {
                 return
             }
         }
 
         var teamInfoMap = HashMap<UUID, NametagInfo>()
-        if (teamMap.containsKey(refreshFor.uniqueId)) {
+        if (teamMap.containsKey(refreshFor.uniqueId))
+        {
             teamInfoMap = teamMap[refreshFor.uniqueId]!!
         }
 
@@ -123,15 +151,20 @@ object NametagHandler {
         teamMap[refreshFor.uniqueId] = teamInfoMap
     }
 
-    internal fun initiatePlayer(player: Player) {
-        for (teamInfo in registeredTeams) {
+    internal fun initiatePlayer(player: Player)
+    {
+        for (teamInfo in registeredTeams)
+        {
             teamInfo.teamAddPacket.send(player)
         }
     }
 
-    internal fun getOrCreate(prefix: String, suffix: String): NametagInfo {
-        for (teamInfo in registeredTeams) {
-            if (teamInfo.prefix == prefix && teamInfo.suffix == suffix) {
+    internal fun getOrCreate(prefix: String, suffix: String): NametagInfo
+    {
+        for (teamInfo in registeredTeams)
+        {
+            if (teamInfo.prefix == prefix && teamInfo.suffix == suffix)
+            {
                 return teamInfo
             }
         }
@@ -140,7 +173,8 @@ object NametagHandler {
         registeredTeams.add(newTeam)
 
         val addPacket = newTeam.teamAddPacket
-        for (player in Bukkit.getOnlinePlayers()) {
+        for (player in Bukkit.getOnlinePlayers())
+        {
             addPacket.send(player)
         }
 

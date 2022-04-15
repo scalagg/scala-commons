@@ -1,6 +1,8 @@
 package net.evilblock.cubed.scheduler
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import net.evilblock.cubed.util.bukkit.Tasks
 import java.util.*
 import java.util.concurrent.Executors
@@ -11,6 +13,7 @@ import kotlin.reflect.KClass
  * @author GrowlyX
  * @since 11/29/2021
  */
+@Service
 object CubedScheduler
 {
     val scheduled = mutableMapOf<KClass<*>, MutableList<() -> Unit>>()
@@ -23,7 +26,8 @@ object CubedScheduler
         scheduled[T::class]?.add(lambda)
     }
 
-    fun initialLoad()
+    @Configure
+    fun configure()
     {
         val executor = Executors.newSingleThreadScheduledExecutor(
             ThreadFactoryBuilder()

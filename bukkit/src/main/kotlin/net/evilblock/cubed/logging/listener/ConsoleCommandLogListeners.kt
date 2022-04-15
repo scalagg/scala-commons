@@ -7,12 +7,14 @@
 
 package net.evilblock.cubed.logging.listener
 
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.Cubed
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.ServerCommandEvent
 
+@Listeners
 object ConsoleCommandLogListeners : Listener {
 
     @EventHandler

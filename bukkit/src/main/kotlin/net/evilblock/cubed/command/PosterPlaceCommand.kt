@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.poster.Poster
 import net.evilblock.cubed.poster.PosterHandler
@@ -16,19 +18,23 @@ import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.Player
 import java.io.File
 
-object PosterPlaceCommand : BaseCommand() {
-
+@AutoRegister
+object PosterPlaceCommand : ScalaCommand()
+{
     @CommandAlias("place-poster|create-poster")
     @Description("Place a poster")
     @CommandPermission("cubed.posters.place")
-    fun execute(player: Player, @Name("fileName") fileName: String) {
+    fun execute(player: Player, @Name("fileName") fileName: String)
+    {
         val posterFile = File(File(Cubed.instance.dataFolder, "posters"), fileName)
-        if (!posterFile.exists()) {
+        if (!posterFile.exists())
+        {
             throw ConditionFailedException("Couldn't find `/plugins/Cubed/posters/$fileName`!")
         }
 
         PlacedPosterHandler.placeInteractionHandler.attachHandler(player) { event ->
-            if (event.rightClicked !is ItemFrame) {
+            if (event.rightClicked !is ItemFrame)
+            {
                 return@attachHandler
             }
 

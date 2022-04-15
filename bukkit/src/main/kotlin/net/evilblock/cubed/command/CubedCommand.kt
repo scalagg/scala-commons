@@ -7,12 +7,13 @@
 
 package net.evilblock.cubed.command
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
@@ -27,12 +28,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
 
-
+@AutoRegister
 @CommandAlias("cubed")
 @CommandPermission("op")
-object CubedCommand : BaseCommand()
+object CubedCommand : ScalaCommand()
 {
-
     @Default
     @HelpCommand
     fun onHelp(help: CommandHelp)

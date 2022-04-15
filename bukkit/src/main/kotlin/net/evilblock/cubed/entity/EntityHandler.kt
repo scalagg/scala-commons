@@ -10,6 +10,9 @@ package net.evilblock.cubed.entity
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.flavor.service.Close
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.entity.thread.EntityTickThread
@@ -19,9 +22,12 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-object EntityHandler {
+@Service
+object EntityHandler
+{
+    private val dataType = object : TypeToken<List<Entity>>()
+    {}.type
 
-    private val dataType = object : TypeToken<List<Entity>>() {}.type
     private val dataFile = File(Cubed.instance.dataFolder, "entities.json")
 
     internal var loaded: Boolean = false
@@ -51,14 +57,19 @@ object EntityHandler {
      */
     private val debugView: MutableSet<UUID> = ConcurrentHashMap.newKeySet(10)
 
-    fun initialLoad() {
-        if (dataFile.exists()) {
-            if (Cubed.instance.config.getBoolean("backups", true)) {
+    @Configure
+    fun configure()
+    {
+        if (dataFile.exists())
+        {
+            if (Cubed.instance.config.getBoolean("backups", true))
+            {
                 Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
             }
 
             Files.newReader(dataFile, Charsets.UTF_8).use { reader ->
-                val entities = Serializers.gson.fromJson(reader, object : TypeToken<List<Entity>>() {}.type) as List<Entity>
+                val entities = Serializers.gson.fromJson(reader, object : TypeToken<List<Entity>>()
+                {}.type) as List<Entity>
                 mapExistingEntities(entities)
             }
         }
@@ -68,60 +79,76 @@ object EntityHandler {
         loaded = true
     }
 
-    fun saveData() {
-        if (!loaded) {
+    @Close
+    fun close()
+    {
+        if (!loaded)
+        {
             return
         }
 
-        if (saving) {
+        if (saving)
+        {
             return
         }
 
         saving = true
 
-        try {
+        try
+        {
             val json = Serializers.gson.toJson(entities.filter { it.persistent }, dataType)
             java.nio.file.Files.write(dataFile.toPath(), json.toByteArray())
-        } catch (e: Exception) {
+        } catch (e: Exception)
+        {
             e.printStackTrace()
-        } finally {
+        } finally
+        {
             saving = false
         }
     }
 
-    private fun mapExistingEntities(entities: List<Entity>) {
-        for (entity in entities) {
+    private fun mapExistingEntities(entities: List<Entity>)
+    {
+        for (entity in entities)
+        {
             trackEntity(entity)
         }
     }
 
-    fun getEntities(): Set<Entity> {
+    fun getEntities(): Set<Entity>
+    {
         return entities
     }
 
-    fun <T : Entity> getEntitiesByType(type: Class<out T>): List<T> {
+    fun <T : Entity> getEntitiesByType(type: Class<out T>): List<T>
+    {
         return entities.filterIsInstance(type).toList()
     }
 
-    fun getEntityByUuid(uuid: UUID): Entity? {
+    fun getEntityByUuid(uuid: UUID): Entity?
+    {
         return this.entitiesByUuid[uuid]
     }
 
-    fun getEntityById(id: Int): Entity? {
+    fun getEntityById(id: Int): Entity?
+    {
         return this.entitiesById[id]
     }
 
-    fun isEntityTracked(entity: Entity): Boolean {
+    fun isEntityTracked(entity: Entity): Boolean
+    {
         return this.entities.contains(entity)
     }
 
-    fun trackEntity(entity: Entity) {
+    fun trackEntity(entity: Entity)
+    {
         this.entities.add(entity)
         this.entitiesById[entity.id] = entity
         this.entitiesByUuid[entity.uuid] = entity
     }
 
-    fun forgetEntity(entity: Entity) {
+    fun forgetEntity(entity: Entity)
+    {
         entity.onDeletion()
 
         this.entities.remove(entity)
@@ -129,43 +156,54 @@ object EntityHandler {
         this.entitiesByUuid.remove(entity.uuid)
     }
 
-    fun isTrackingInstanceEntities(player: Player): Boolean {
+    fun isTrackingInstanceEntities(player: Player): Boolean
+    {
         return this.instanceEntities.containsKey(player.uniqueId)
     }
 
-    fun startTrackingInstanceEntities(player: Player) {
+    fun startTrackingInstanceEntities(player: Player)
+    {
         this.instanceEntities[player.uniqueId] = ConcurrentHashMap.newKeySet()
     }
 
-    fun stopTrackingInstanceEntities(player: Player): MutableSet<Entity> {
+    fun stopTrackingInstanceEntities(player: Player): MutableSet<Entity>
+    {
         return this.instanceEntities.remove(player.uniqueId)!!
     }
 
-    fun getInstanceEntities(player: Player): MutableSet<Entity> {
+    fun getInstanceEntities(player: Player): MutableSet<Entity>
+    {
         return this.instanceEntities[player.uniqueId]!!
     }
 
-    fun isInstanceEntityTracked(player: Player, entity: Entity): Boolean {
+    fun isInstanceEntityTracked(player: Player, entity: Entity): Boolean
+    {
         return this.instanceEntities[player.uniqueId]!!.contains(entity)
     }
 
-    fun trackInstanceEntity(player: Player, entity: Entity) {
+    fun trackInstanceEntity(player: Player, entity: Entity)
+    {
         this.instanceEntities[player.uniqueId]!!.add(entity)
     }
 
-    fun forgetInstanceEntity(player: Player, entity: Entity): MutableSet<Entity> {
+    fun forgetInstanceEntity(player: Player, entity: Entity): MutableSet<Entity>
+    {
         return this.instanceEntities.remove(player.uniqueId)!!
     }
 
-    fun isDebugViewEnabled(player: Player): Boolean {
+    fun isDebugViewEnabled(player: Player): Boolean
+    {
         return debugView.contains(player.uniqueId)
     }
 
-    fun toggleDebugView(player: Player): Boolean {
-        return if (debugView.contains(player.uniqueId)) {
+    fun toggleDebugView(player: Player): Boolean
+    {
+        return if (debugView.contains(player.uniqueId))
+        {
             debugView.remove(player.uniqueId)
             false
-        } else {
+        } else
+        {
             debugView.add(player.uniqueId)
             true
         }

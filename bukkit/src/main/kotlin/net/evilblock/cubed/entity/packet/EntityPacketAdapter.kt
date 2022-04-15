@@ -12,6 +12,8 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.WrappedWatchableObject
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
@@ -29,6 +31,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+@Service
 object EntityPacketAdapter : PacketAdapter(
     Cubed.instance,
     PacketType.Play.Client.USE_ENTITY,
@@ -38,6 +41,7 @@ object EntityPacketAdapter : PacketAdapter(
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
     private val lastRightClick = ConcurrentHashMap<UUID, Long>()
 
+    @Configure
     fun configure()
     {
         Events.subscribe(PlayerQuitEvent::class.java)

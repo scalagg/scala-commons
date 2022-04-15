@@ -8,8 +8,10 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
+import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.util.CC
@@ -164,6 +166,24 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 this.server.pluginManager
                     .registerEvents(it as Listener, this)
+            }
+
+        this.reflections
+            .getTypesAnnotatedWith(Repeating::class.java)
+            .mapNotNull {
+                it.kotlin.objectInstance ?: it.newInstance()
+            }
+            .filterIsInstance<Runnable>()
+            .forEach {
+                val annotation = it.javaClass
+                    .getAnnotation(Repeating::class.java)!!
+
+                Schedulers.get(annotation.context)
+                    .runRepeating(
+                        it,
+                        annotation.delay,
+                        annotation.value
+                    )
             }
     }
 

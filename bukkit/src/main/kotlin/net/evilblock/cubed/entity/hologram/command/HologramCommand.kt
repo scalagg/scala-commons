@@ -7,9 +7,10 @@
 
 package net.evilblock.cubed.entity.hologram.command
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.annotation.*
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.hologram.updating.FormatUpdatingHologramEntity
@@ -20,13 +21,15 @@ import net.evilblock.cubed.util.text.TextUtil
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
+@AutoRegister
 @CommandAlias("hologram|holo")
 @CommandPermission("cubed.holograms")
-object HologramCommand : BaseCommand() {
-
+object HologramCommand : ScalaCommand()
+{
     @Default
     @HelpCommand
-    fun onHelp(help: CommandHelp) {
+    fun onHelp(help: CommandHelp)
+    {
         help.showHelp()
     }
 
@@ -34,21 +37,30 @@ object HologramCommand : BaseCommand() {
     @Syntax("<text> [-u]")
     @Description("Create a hologram")
     @CommandPermission("cubed.holograms.create")
-    fun onCreate(player: Player, input: String) {
+    fun onCreate(player: Player, input: String)
+    {
         val updating = input.endsWith("-s")
         val text = input.replaceFirst("-s", "")
         val hologramText = if (TextUtil.isBlank(text = text)) "" else text
 
-        val hologram = if (updating) {
-            FormatUpdatingHologramEntity(text = ChatColor.translateAlternateColorCodes('&', hologramText), location = player.eyeLocation)
-        } else {
-            HologramEntity(text = ChatColor.translateAlternateColorCodes('&', hologramText), location = player.eyeLocation)
+        val hologram = if (updating)
+        {
+            FormatUpdatingHologramEntity(
+                text = ChatColor.translateAlternateColorCodes('&', hologramText),
+                location = player.eyeLocation
+            )
+        } else
+        {
+            HologramEntity(
+                text = ChatColor.translateAlternateColorCodes('&', hologramText),
+                location = player.eyeLocation
+            )
         }
 
         hologram.initializeData()
 
         EntityHandler.trackEntity(hologram)
-        EntityHandler.saveData()
+        EntityHandler.close()
 
         player.sendMessage("${ChatColor.GREEN}Successfully created hologram!")
     }
@@ -56,11 +68,13 @@ object HologramCommand : BaseCommand() {
     @Subcommand("manage")
     @Description("Manage a hologram")
     @CommandPermission("cubed.holograms.manage")
-    fun onManage(player: Player) {
+    fun onManage(player: Player)
+    {
         player.sendMessage("${ChatColor.GREEN}Select (right-click) a hologram to manage...")
 
         EntitySelectionTool.attachSelectionHandler(player) { entity ->
-            if (entity is HologramEntity) {
+            if (entity is HologramEntity)
+            {
                 Tasks.sync {
                     EditEntityMenu(entity).openMenu(player)
                 }

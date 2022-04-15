@@ -1,11 +1,10 @@
 package net.evilblock.cubed.command
 
-import co.aikar.commands.BaseCommand
+import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Description
-import co.aikar.commands.annotation.Subcommand
+import co.aikar.commands.annotation.*
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.menus.ConfirmMenu
 import net.evilblock.cubed.menu.menus.RangeEditorMenu
@@ -17,17 +16,24 @@ import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.render.GraphicalTable
 import net.evilblock.cubed.util.text.ProgressBarBuilder
 import org.bukkit.Material
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 /**
  * @author GrowlyX
  * @since 12/30/2021
  */
+@AutoRegister
 @CommandAlias("cubed-demo")
 @CommandPermission("cubed.command.cubed-demo")
-object CubedMenuCommand : BaseCommand()
+object CubedMenuCommand : ScalaCommand()
 {
+    @Default
+    @HelpCommand
+    fun onHelp(help: CommandHelp)
+    {
+        help.showHelp()
+    }
+
     @Subcommand("progress-bar")
     @Description("A demo of Cubed's progress bar utility.")
     fun onProgressBar(sender: Player, progress: Double)

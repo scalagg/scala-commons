@@ -2,6 +2,7 @@ package net.evilblock.cubed.entity.tool
 
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.menu.menus.ConfirmMenu
@@ -18,6 +19,7 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+@Listeners
 object EntityPortTool : Listener {
 
     private val FILE_NAME_REGEX = "[\\w,\\s-]+(\\.[A-Za-z]{3})?".toRegex()

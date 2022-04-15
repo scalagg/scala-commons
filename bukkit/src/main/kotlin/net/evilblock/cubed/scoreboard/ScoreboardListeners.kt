@@ -7,17 +7,24 @@
 
 package net.evilblock.cubed.scoreboard
 
+import gg.scala.commons.annotations.Listeners
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
+@Listeners
 object ScoreboardListeners : Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoinEvent(event: PlayerJoinEvent)
     {
+        if (ScoreboardHandler.scoreboardProvider == null)
+        {
+            return
+        }
+
         ScoreboardHandler.scoreboards[event.player.uniqueId] =
             Scoreboard(event.player)
                 .apply {

@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.tool
 
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.event.PlayerRightClickEntityEvent
@@ -9,6 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.metadata.FixedMetadataValue
 
+@Listeners
 object EntitySelectionTool : Listener {
 
     @JvmStatic

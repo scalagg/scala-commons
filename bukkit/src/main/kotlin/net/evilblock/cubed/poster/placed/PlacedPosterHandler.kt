@@ -23,7 +23,7 @@ object PlacedPosterHandler {
     val placeInteractionHandler: EntityInteractionHandler = EntityInteractionHandler("PosterPlace")
     private val placedPosters: MutableList<PlacedPoster> = arrayListOf()
 
-    fun initialLoad() {
+    fun configure() {
         Cubed.instance.server.pluginManager.registerEvents(placeInteractionHandler, Cubed.instance)
 
         if (dataFile.exists()) {

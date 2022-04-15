@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu
 
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.event.Listener
@@ -17,6 +18,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.inventory.*
 import org.bukkit.event.player.PlayerQuitEvent
 
+@Listeners
 object ButtonListeners : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)

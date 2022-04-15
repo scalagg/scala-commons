@@ -50,7 +50,7 @@ class EditHologramTextMenu(private val hologram: HologramEntity) : TextEditorMen
         }
 
         Tasks.async {
-            EntityHandler.saveData()
+            EntityHandler.close()
         }
     }
 

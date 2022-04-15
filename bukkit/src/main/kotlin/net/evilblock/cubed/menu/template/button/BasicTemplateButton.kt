@@ -19,7 +19,6 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.menu.template.button.redirect.MenuDestination
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -181,7 +180,7 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
 
         override fun onSave(player: Player, list: List<String>) {
             commands = list.toMutableList()
-            MenuTemplateHandler.saveData()
+            MenuTemplateHandler.close()
         }
 
         override fun onClose(player: Player) {

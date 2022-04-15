@@ -8,6 +8,7 @@
 package net.evilblock.cubed.entity.tool
 
 import com.cryptomorin.xseries.XMaterial
+import gg.scala.commons.annotations.Listeners
 import me.lucko.helper.shadows.nbt.NBTTagString
 import me.lucko.shadow.ShadowFactory
 import net.evilblock.cubed.Cubed
@@ -38,6 +39,7 @@ import java.util.*
 /**
  * Handles bukkit events for Move Tool functionality and UX.
  */
+@Listeners
 object EntityMoveTool : Listener {
 
     @JvmStatic

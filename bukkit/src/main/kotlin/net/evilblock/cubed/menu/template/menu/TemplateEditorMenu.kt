@@ -18,7 +18,6 @@ import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateFactory
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -100,7 +99,7 @@ class TemplateEditorMenu : PaginatedMenu() {
 
                             factory.startProcedure(input) { template ->
                                 MenuTemplateHandler.trackTemplate(template)
-                                MenuTemplateHandler.saveData()
+                                MenuTemplateHandler.close()
 
                                 player.sendMessage("${CC.GREEN}Successfully created a new template.")
 
@@ -145,7 +144,7 @@ class TemplateEditorMenu : PaginatedMenu() {
                 ConfirmMenu("Are you sure?") { confirmed ->
                     if (confirmed) {
                         MenuTemplateHandler.forgetTemplate(template)
-                        MenuTemplateHandler.saveData()
+                        MenuTemplateHandler.close()
 
                         TemplateEditorMenu().openMenu(player)
                     }

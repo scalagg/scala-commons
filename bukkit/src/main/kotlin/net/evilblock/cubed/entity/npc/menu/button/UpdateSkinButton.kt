@@ -8,7 +8,6 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.text.TextSplitter
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import net.evilblock.cubed.util.bukkit.Tasks
-import org.bukkit.Material
 import org.bukkit.conversations.ConversationContext
 import org.bukkit.conversations.Prompt
 import org.bukkit.conversations.StringPrompt
@@ -68,7 +67,7 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
                             context.forWhom.sendRawMessage("${CC.GREEN}Successfully updated texture!")
 
                             Tasks.async {
-                                EntityHandler.saveData()
+                                EntityHandler.close()
                             }
                         } else {
                             if (thrown == null) {

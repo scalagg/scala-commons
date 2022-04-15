@@ -1,5 +1,6 @@
 package net.evilblock.cubed.menu.menus.listener
 
+import gg.scala.commons.annotations.Listeners
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.menus.SelectItemStackMenu
 import org.bukkit.Material
@@ -9,6 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.PlayerInventory
 
+@Listeners
 object SelectItemListeners : Listener {
 
     @EventHandler

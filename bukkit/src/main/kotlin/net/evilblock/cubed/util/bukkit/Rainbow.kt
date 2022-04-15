@@ -1,9 +1,12 @@
 package net.evilblock.cubed.util.bukkit
 
+import gg.scala.commons.annotations.runnables.Repeating
+import me.lucko.helper.promise.ThreadContext
 import org.bukkit.ChatColor
 
-object Rainbow : Runnable {
-
+@Repeating(4L, context = ThreadContext.ASYNC)
+object Rainbow : Runnable
+{
     private var index: Int = 0
 
     private val options = listOf(
@@ -24,14 +27,15 @@ object Rainbow : Runnable {
     @JvmStatic
     var currentColor: ChatColor = options.first()
 
-    override fun run() {
+    override fun run()
+    {
         index++
 
-        if (index >= options.size) {
+        if (index >= options.size)
+        {
             index = 0
         }
 
         currentColor = options[index]
     }
-
 }

@@ -17,7 +17,6 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.menu.template.button.BasicTemplateButton
 import net.evilblock.cubed.menu.template.button.TemplatePlaceholderButton
 import net.evilblock.cubed.util.CC
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -71,7 +70,7 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
         }
 
         template.boundButtons[slot] = BasicTemplateButton(itemStack.clone())
-        MenuTemplateHandler.saveData()
+        MenuTemplateHandler.close()
 
         return true
     }
@@ -116,7 +115,7 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
                     val templateButtonTypes = template.getTemplateButtonFactories()
                     if (templateButtonTypes.isEmpty()) {
                         template.boundButtons[slot] = TemplatePlaceholderButton()
-                        MenuTemplateHandler.saveData()
+                        MenuTemplateHandler.close()
                     } else {
                         PickFactoryButton(template) { factory ->
                             this@EditTemplateLayoutMenu.selectedButton = factory.createButton()

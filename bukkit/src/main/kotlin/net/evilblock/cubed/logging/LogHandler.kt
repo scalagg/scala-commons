@@ -7,21 +7,27 @@
 
 package net.evilblock.cubed.logging
 
+import gg.scala.flavor.service.Close
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import net.evilblock.cubed.scheduler.AsyncHourMarkEvent
 import net.evilblock.cubed.scheduler.CubedScheduler
 import net.evilblock.cubed.util.bukkit.Tasks
 import java.util.concurrent.ConcurrentHashMap
 
+@Service
 object LogHandler
 {
+    private var logFiles: MutableSet<LogFile> =
+        ConcurrentHashMap.newKeySet()
 
-    private var logFiles: MutableSet<LogFile> = ConcurrentHashMap.newKeySet()
-
-    fun initialLoad()
+    @Configure
+    fun configure()
     {
         CubedScheduler.trackScheduledTask<AsyncHourMarkEvent> { completeFlush() }
     }
 
+    @Close
     fun completeFlush()
     {
         for (logFile in logFiles)

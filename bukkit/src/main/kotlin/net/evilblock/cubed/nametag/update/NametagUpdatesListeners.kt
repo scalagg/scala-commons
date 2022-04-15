@@ -7,11 +7,13 @@
 
 package net.evilblock.cubed.nametag.update
 
+import gg.scala.commons.annotations.Listeners
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.scoreboard.DisplaySlot
 
+@Listeners
 object NametagUpdatesListeners : Listener {
 
     @EventHandler

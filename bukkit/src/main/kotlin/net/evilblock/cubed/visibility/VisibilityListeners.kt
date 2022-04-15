@@ -1,5 +1,6 @@
 package net.evilblock.cubed.visibility
 
+import gg.scala.commons.annotations.Listeners
 import org.apache.commons.lang.StringUtils
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChatTabCompleteEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
+@Listeners
 object VisibilityListeners : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
