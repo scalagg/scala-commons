@@ -5,6 +5,7 @@ import gg.scala.commons.annotations.Listeners
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.annotations.commands.ManualRegister
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
+import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.command.ScalaCommand
@@ -86,19 +87,44 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             secondary = ChatColor.getByChar(CC.SEC[1])
         )
 
+        for (customizer in CommandManagerCustomizers.customizers)
+        {
+            customizer.methods.forEach { method ->
+                kotlin.runCatching {
+                    method.invoke(
+                        customizer, this.commandManager
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to customize command manager", it)
+                }.onSuccess {
+                    logger.info("[Commands] [Default] Customized command manager through ${
+                        method.declaringClass.simpleName
+                    }#${
+                        method.name
+                    }().")
+                }
+            }
+        }
+
         this.reflections
             .getMethodsAnnotatedWith(CommandManagerCustomizer::class.java)
             .filter {
                 it.parameterCount == 1 && it.declaringClass.kotlin.objectInstance != null
             }
-            .forEach {
+            .forEach { method ->
                 kotlin.runCatching {
-                    it.invoke(
-                        it.declaringClass.kotlin.objectInstance!!,
+                    method.invoke(
+                        method.declaringClass.kotlin.objectInstance!!,
                         this.commandManager
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to customize command manager", it)
+                }.onSuccess {
+                    logger.info("[Commands] Customized command manager through ${
+                        method.declaringClass.simpleName
+                    }#${
+                        method.name
+                    }().")
                 }
             }
 
