@@ -9,6 +9,7 @@ package net.evilblock.cubed.util.nms
 
 import com.comphenix.protocol.wrappers.EnumWrappers
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.wrapper.Vector3FWrapper
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -78,8 +79,12 @@ object MinecraftReflection {
 
     @JvmStatic
     fun getVersion(): String {
-        val pkg = Bukkit.getServer().javaClass.getPackage().name
-        return pkg.substring(pkg.lastIndexOf(".") + 1)
+        return ServerVersion.getVersion().name
+    }
+
+    @JvmStatic
+    fun getServerVersion(): Int {
+        return ServerVersion.getVersion().protocolVersion
     }
 
     @JvmStatic
@@ -90,33 +95,6 @@ object MinecraftReflection {
     @JvmStatic
     fun getWorldServers(): List<*> {
         return MINECRAFT_SERVER_WORLD_SERVER_FIELD.get(getMinecraftServer()) as List<*>
-    }
-
-    @JvmStatic
-    fun getServerVersion(): Int {
-        if (SERVER_VERSION != -1) {
-            return SERVER_VERSION
-        }
-
-        SERVER_VERSION = when {
-            getVersion().startsWith("v1_7_") -> {
-                5
-            }
-            getVersion().startsWith("v1_8_") -> {
-                47
-            }
-            getVersion().startsWith("v1_12_") -> {
-                340
-            }
-            getVersion().startsWith("v1_18_") -> {
-                758
-            }
-            else -> {
-                throw IllegalStateException("Unknown server version")
-            }
-        }
-
-        return SERVER_VERSION
     }
 
     @JvmStatic

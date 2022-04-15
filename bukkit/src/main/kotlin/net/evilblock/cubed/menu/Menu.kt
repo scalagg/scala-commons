@@ -300,7 +300,7 @@ abstract class Menu
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
-        private val OPEN_CUSTOM_INVENTORY_METHOD: Method? = Reflection.getDeclaredMethod(
+        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection.getDeclaredMethod(
             MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
             "openCustomInventory",
             Inventory::class.java,

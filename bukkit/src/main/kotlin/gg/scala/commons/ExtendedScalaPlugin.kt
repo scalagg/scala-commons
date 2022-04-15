@@ -32,14 +32,10 @@ import java.util.logging.Level
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
-    private val reflections = Reflections(
-        ConfigurationBuilder()
-            .forPackage(
-                this::class.java.`package`.name
-            )
-    )
+    private val reflections =
+        Reflections(this::class.java.`package`.name)
 
-    lateinit var commandManager: CubedCommandManager
+    private lateinit var commandManager: CubedCommandManager
 
     override fun load()
     {
@@ -72,9 +68,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     {
         this.reflections
             .getMethodsAnnotatedWith(ContainerEnable::class.java)
-            .filter {
-                it.declaringClass == this::class.java
-            }
             .forEach {
                 kotlin.runCatching {
                     it.invoke(this)
@@ -110,9 +103,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.reflections
             .getMethodsAnnotatedWith(CommandManagerCustomizer::class.java)
-            .filter {
-                it.parameterCount == 1 && it.declaringClass.objectInstance() != null
-            }
             .forEach { method ->
                 kotlin.runCatching {
                     method.invoke(
@@ -147,9 +137,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.reflections
             .getMethodsAnnotatedWith(ManualRegister::class.java)
-            .filter {
-                it.parameterCount == 1
-            }
             .forEach {
                 kotlin.runCatching {
                     it.invoke(this, this.commandManager)
