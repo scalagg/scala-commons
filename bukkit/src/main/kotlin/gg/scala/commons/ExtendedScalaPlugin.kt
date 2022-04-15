@@ -85,8 +85,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.commandManager = CubedCommandManager(
             this,
-            primary = ChatColor.getByChar(CC.PRI),
-            secondary = ChatColor.getByChar(CC.SEC)
+            primary = ChatColor.getByChar(CC.PRI[1]),
+            secondary = ChatColor.getByChar(CC.SEC[1])
         )
 
         for (customizer in CommandManagerCustomizers.customizers)

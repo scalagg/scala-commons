@@ -96,6 +96,6 @@ public class CC {
 	public static final String LONGER_CHAT_BAR = "$GRAY$S------------------------------------------------";
 
 	static {
-		setup("GREEN", "YELLOW");
+		setup(GREEN, YELLOW);
 	}
 }

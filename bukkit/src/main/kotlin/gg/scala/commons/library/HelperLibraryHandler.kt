@@ -11,6 +11,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLClassLoader
 import java.nio.file.Files
+import java.util.logging.Logger
 
 /**
  * @author GrowlyX
@@ -43,7 +44,7 @@ object HelperLibraryHandler
 
     private fun internalLoad(library: Library, url: String)
     {
-        Cubed.instance.logger.info(
+        Logger.getGlobal().info(
             "[Libraries] " + String.format(
                 "Loading dependency %s:%s:%s.",
                 library.groupId,
@@ -59,7 +60,7 @@ object HelperLibraryHandler
         {
             getUrl(url, library).openStream().use { `is` -> Files.copy(`is`, saveLocation.toPath()) }
 
-            Cubed.instance.logger.info("[Libraries] Dependency '$name' successfully downloaded.")
+            Logger.getGlobal().info("[Libraries] Dependency '$name' successfully downloaded.")
         }
 
         if (!saveLocation.exists())
@@ -80,7 +81,7 @@ object HelperLibraryHandler
             throw RuntimeException("Unable to load dependency: $saveLocation", e)
         }
 
-        Cubed.instance.logger.info("[Libraries] Loaded dependency '$name' successfully.")
+        Logger.getGlobal().info("[Libraries] Loaded dependency '$name' successfully.")
     }
 
     @Throws(MalformedURLException::class)
