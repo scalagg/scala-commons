@@ -60,7 +60,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.reflections
             .getTypesAnnotatedWith(LibraryLoader::class.java)
             .mapNotNull {
-                it.kotlin.objectInstance
+                it.objectInstance()
             }
             .forEach {
                 HelperLibraryHandler
@@ -85,8 +85,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.commandManager = CubedCommandManager(
             this,
-            primary = ChatColor.getByChar(CC.PRI[1]),
-            secondary = ChatColor.getByChar(CC.SEC[1])
+            primary = ChatColor.getByChar(CC.PRI),
+            secondary = ChatColor.getByChar(CC.SEC)
         )
 
         for (customizer in CommandManagerCustomizers.customizers)
@@ -111,12 +111,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.reflections
             .getMethodsAnnotatedWith(CommandManagerCustomizer::class.java)
             .filter {
-                it.parameterCount == 1 && it.declaringClass.kotlin.objectInstance != null
+                it.parameterCount == 1 && it.declaringClass.objectInstance() != null
             }
             .forEach { method ->
                 kotlin.runCatching {
                     method.invoke(
-                        method.declaringClass.kotlin.objectInstance!!,
+                        method.declaringClass.objectInstance()!!,
                         this.commandManager
                     )
                 }.onFailure {
@@ -138,7 +138,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 kotlin.runCatching {
                     this.commandManager.registerCommand(
-                        (it.kotlin.objectInstance ?: it.newInstance()) as ScalaCommand
+                        (it.objectInstance() ?: it.newInstance()) as ScalaCommand
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)
@@ -161,7 +161,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.reflections
             .getTypesAnnotatedWith(Listeners::class.java)
             .mapNotNull {
-                it.kotlin.objectInstance ?: it.newInstance()
+                it.objectInstance() ?: it.newInstance()
             }
             .forEach {
                 this.server.pluginManager
@@ -171,7 +171,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.reflections
             .getTypesAnnotatedWith(Repeating::class.java)
             .mapNotNull {
-                it.kotlin.objectInstance ?: it.newInstance()
+                it.objectInstance() ?: it.newInstance()
             }
             .filterIsInstance<Runnable>()
             .forEach {
@@ -203,5 +203,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.commandManager.unregisterCommands()
+    }
+
+    fun Class<*>.objectInstance(): Any?
+    {
+        return kotlin.runCatching {
+            getDeclaredField("INSTANCE").get(null)
+        }.getOrNull()
     }
 }
