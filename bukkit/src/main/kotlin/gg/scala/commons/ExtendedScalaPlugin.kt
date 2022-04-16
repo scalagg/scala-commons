@@ -8,6 +8,7 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.custom.CustomAnnotationProcessors
 import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.runnables.Repeating
@@ -260,6 +261,28 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         annotation.value
                     )
             }
+
+        val processors =
+            CustomAnnotationProcessors
+            .processors
+
+        for (processor in processors)
+        {
+            this.packageIndexer.reflections
+                .getTypesAnnotatedWith(processor.key.java)
+                .map {
+                    it.objectInstance() ?: it.newInstance()
+                }
+                .forEach {
+                    this.logger.info("[Processor] Processing ${
+                        it.javaClass.simpleName
+                    } with @${
+                        processor.key.java.simpleName
+                    }.")
+
+                    processor.value.invoke(it)
+                }
+        }
 
         this.flavor.startup()
     }
