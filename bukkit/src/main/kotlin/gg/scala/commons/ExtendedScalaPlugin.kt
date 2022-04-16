@@ -8,6 +8,7 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
@@ -96,6 +97,37 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     override fun enable()
     {
         this.logger.info("Starting container enable process...")
+
+        this.packageIndexer
+            .getTypesAnnotatedWith<AutoBind>()
+            .forEach {
+                kotlin.runCatching {
+                    val instance = it.objectInstance()
+                        ?: it.newInstance()
+
+                    this.flavor.binders.add(
+                        FlavorBinder(instance::class) to instance
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to AutoBind", it)
+                }
+            }
+
+        this.packageIndexer
+            .getMethodsAnnotatedWith<AutoBind>()
+            .forEach {
+                kotlin.runCatching {
+                    val instance = it.invoke(
+                        it.declaringClass.objectInstance()!!
+                    )
+
+                    this.flavor.binders.add(
+                        FlavorBinder(instance::class) to instance
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to AutoBind", it)
+                }
+            }
 
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
