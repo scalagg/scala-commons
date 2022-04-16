@@ -61,11 +61,6 @@ import java.util.logging.Level
         PluginDependency("ProtocolLib")
     ]
 )
-@MavenLibrary(
-    groupId = "org.jetbrains.kotlin",
-    artifactId = "kotlin-reflect",
-    version = "1.6.20"
-)
 class Cubed : ExtendedScalaPlugin()
 {
     companion object
@@ -80,12 +75,6 @@ class Cubed : ExtendedScalaPlugin()
             .codec(AwareMessageCodec)
             .logger(logger)
             .build()
-    }
-
-    private val flavor by lazy {
-        Flavor.create<Cubed>(
-            FlavorOptions(logger)
-        )
     }
 
     @ContainerEnable
@@ -159,9 +148,6 @@ class Cubed : ExtendedScalaPlugin()
                 DistributedRedisUuidCacheTranslator(aware)
             )
 
-            flavor.bind<Cubed>() to this
-            flavor.startup()
-
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
             }.onFailure {
@@ -181,8 +167,6 @@ class Cubed : ExtendedScalaPlugin()
     fun containerDisable()
     {
         kotlin.runCatching {
-            flavor.close()
-
             if (isPostersEnabled())
             {
                 PosterHandler.saveData()

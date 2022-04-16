@@ -21,8 +21,6 @@ dependencies {
     compileOnly "me.lucko:helper:5.6.9.1"
     kapt "me.lucko:helper:5.6.9.1"
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
-
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"
 
@@ -49,7 +47,7 @@ dependencies {
     implementation "com.github.ben-manes.caffeine:caffeine:3.0.6"
 
     // scala
-//    compileOnly "org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT"
     compileOnly "gg.scala.spigot:sspigot-server:1.0.7"
     compileOnly "gg.scala.store:spigot:0.1.3"
 
