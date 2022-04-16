@@ -1,6 +1,5 @@
 package gg.scala.commons.annotations
 
-import org.atteo.classindex.IndexAnnotated
 
 /**
  * @author GrowlyX
@@ -9,5 +8,4 @@ import org.atteo.classindex.IndexAnnotated
 @Target(
     AnnotationTarget.CLASS
 )
-@IndexAnnotated
 annotation class LibraryLoader

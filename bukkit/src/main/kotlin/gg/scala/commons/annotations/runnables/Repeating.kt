@@ -1,7 +1,6 @@
 package gg.scala.commons.annotations.runnables
 
 import me.lucko.helper.promise.ThreadContext
-import org.atteo.classindex.IndexAnnotated
 
 /**
  * @author GrowlyX
@@ -10,7 +9,6 @@ import org.atteo.classindex.IndexAnnotated
 @Target(
     AnnotationTarget.CLASS
 )
-@IndexAnnotated
 annotation class Repeating(
     val value: Long,
     val delay: Long = 0L,

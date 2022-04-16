@@ -12,6 +12,9 @@ import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.commons.reflections.PackageIndexer
+import gg.scala.flavor.Flavor
+import gg.scala.flavor.FlavorBinder
+import gg.scala.flavor.FlavorOptions
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.command.manager.CubedCommandManager
@@ -19,8 +22,11 @@ import net.evilblock.cubed.util.CC
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Server
 import org.bukkit.event.Listener
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * An extension of [ExtendedJavaPlugin] with support
@@ -33,6 +39,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     private val packageIndexer by lazy {
         PackageIndexer(this)
+    }
+
+    private val flavor by lazy {
+        Flavor.create(
+            this::class,
+            FlavorOptions(logger)
+        )
     }
 
     private lateinit var commandManager: CubedCommandManager
@@ -52,10 +65,23 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             Bukkit.shutdown()
             return
         }
-    }
 
-    override fun enable()
-    {
+        this.flavor.binders.add(
+            FlavorBinder(this::class) to this
+        )
+
+        this.flavor
+            .bind<ExtendedScalaPlugin>() to this
+
+        this.flavor
+            .bind<JavaPlugin>() to this
+
+        this.flavor
+            .bind<Server>() to this.server
+
+        this.flavor
+            .bind<Logger>() to this.logger
+
         this.packageIndexer
             .getTypesAnnotatedWith<LibraryLoader>()
             .mapNotNull {
@@ -65,7 +91,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 HelperLibraryHandler
                     .loadAll(it::class.java)
             }
+    }
 
+    override fun enable()
+    {
         this.logger.info("Starting container enable process...")
 
         this.packageIndexer

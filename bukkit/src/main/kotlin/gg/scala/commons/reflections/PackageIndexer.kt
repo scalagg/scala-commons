@@ -15,16 +15,20 @@ import java.lang.reflect.Method
  * @since 4/15/2022
  */
 class PackageIndexer(
-    private val plugin: Plugin
+    plugin: Plugin
 )
 {
+    private val pluginClass =
+        plugin::class.java
+
     val reflections by lazy {
         Reflections(
             ConfigurationBuilder()
                 .forPackage(
-                    plugin::class.java.`package`.name,
-                    plugin::class.java.classLoader
+                    this.pluginClass.`package`.name,
+                    this.pluginClass.classLoader
                 )
+
                 .addScanners(
                     MethodAnnotationsScanner(),
                     TypeAnnotationsScanner()
