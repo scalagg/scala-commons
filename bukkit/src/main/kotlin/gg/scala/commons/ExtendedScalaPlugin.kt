@@ -135,10 +135,14 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.packageIndexer
             .getMethodsAnnotatedWith<CommandManagerCustomizer>()
             .forEach { method ->
+                val declaring = method.declaringClass
+                    .objectInstance() ?: method.declaringClass.newInstance()
+
+                this.flavor.inject(declaring)
+
                 kotlin.runCatching {
                     method.invoke(
-                        method.declaringClass.objectInstance()!!,
-                        this.commandManager
+                        declaring, this.commandManager
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to customize command manager", it)
@@ -182,6 +186,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 it.objectInstance() ?: it.newInstance()
             }
             .forEach {
+                this.flavor.inject(it)
+
                 this.server.pluginManager
                     .registerEvents(it as Listener, this)
             }
@@ -193,6 +199,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
             .filterIsInstance<Runnable>()
             .forEach {
+                this.flavor.inject(it)
+
                 val annotation = it.javaClass
                     .getAnnotation(Repeating::class.java)!!
 
@@ -203,6 +211,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         annotation.value
                     )
             }
+
+        this.flavor.startup()
     }
 
     override fun disable()
@@ -221,6 +231,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.commandManager.unregisterCommands()
+        this.flavor.close()
     }
 
     private fun Class<*>.objectInstance(): Any?
