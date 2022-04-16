@@ -339,8 +339,9 @@ abstract class Menu
             )!!,
             if (MinecraftReflection.isModern())
             {
-                MinecraftReflection
-                    .getNMSClass("inventory.Containers")!!
+                Reflection.getClassSuppressed(
+                    "net.minecraft.world.inventory.Containers"
+                )!!
             } else
             {
                 String::class.java
