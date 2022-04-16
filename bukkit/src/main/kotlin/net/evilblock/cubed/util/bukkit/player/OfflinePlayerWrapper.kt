@@ -1,16 +1,12 @@
 package net.evilblock.cubed.util.bukkit.player
 
 import gg.scala.cache.uuid.ScalaStoreUuidCache
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.minecraft.server.level.EntityPlayer
-import net.minecraft.server.level.PlayerInteractManager
-import java.util.UUID
-import org.bukkit.entity.Player
 import org.bukkit.Bukkit
-import java.lang.reflect.Constructor
+import org.bukkit.entity.Player
+import java.util.*
 
 class OfflinePlayerWrapper(val source: String)
 {
