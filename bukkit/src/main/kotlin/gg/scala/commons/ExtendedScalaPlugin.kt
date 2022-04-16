@@ -30,7 +30,6 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * An extension of [ExtendedJavaPlugin] with support
@@ -42,7 +41,7 @@ import kotlin.reflect.full.hasAnnotation
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     private val packageIndexer by lazy {
-        PackageIndexer(this)
+        this.flavor.reflections
     }
 
     private lateinit var flavor: Flavor
@@ -97,6 +96,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
             bind<ExtendedScalaPlugin>() to this@ExtendedScalaPlugin
             bind<JavaPlugin>() to this@ExtendedScalaPlugin
+
             bind<Server>() to server
             bind<Logger>() to logger
         }
