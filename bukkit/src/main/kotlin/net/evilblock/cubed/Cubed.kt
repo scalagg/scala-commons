@@ -88,14 +88,11 @@ class Cubed : ExtendedScalaPlugin()
         )
     }
 
-    init
-    {
-        instance = this
-    }
-
     @ContainerEnable
     fun containerEnable()
     {
+        instance = this
+
         kotlin.runCatching {
             Reflection.DEBUG = config
                 .getBoolean("debug", false)
@@ -105,14 +102,16 @@ class Cubed : ExtendedScalaPlugin()
             if (!runSetupCheck())
                 return@runCatching
 
-            TimeZone.setDefault(
-                TimeZone.getTimeZone(config
-                    .getString("timezone", "EST")
+            val default = TimeZone
+                .getTimeZone(
+                    config.getString("timezone", "EST")
                 )
-            )
+
+            TimeZone.setDefault(default)
 
             Serializers.useGsonBuilderThenRebuild { builder ->
-                builder.registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
+                builder
+                    .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
                     .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
                     .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
                     .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
@@ -126,13 +125,14 @@ class Cubed : ExtendedScalaPlugin()
                 Serializers.gson
             }
 
-            flavor.bind<Cubed>() to this
-            flavor.startup()
-
             if (isPostersEnabled())
             {
                 PosterHandler.configure()
                 PlacedPosterHandler.configure()
+
+                logger.info(
+                    "[Posters] Configured poster functionality!"
+                )
             }
 
             registerPacketListeners()
@@ -159,13 +159,20 @@ class Cubed : ExtendedScalaPlugin()
                 DistributedRedisUuidCacheTranslator(aware)
             )
 
+            flavor.bind<Cubed>() to this
+            flavor.startup()
+
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
             }.onFailure {
                 logger.info("We were unable to register our GlowEnchantment due to compatability issues.")
             }
         }.onFailure {
-            logger.log(Level.WARNING, "An exception was thrown during the startup process of Cubed, we're now shutting down.", it)
+            logger.log(
+                Level.WARNING,
+                "An exception was thrown during the startup process of Cubed, we're now shutting down.",
+                it
+            )
             server.shutdown()
         }
     }

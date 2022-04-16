@@ -7,8 +7,8 @@ import org.bson.json.JsonMode
 import org.bson.json.JsonWriterSettings
 import java.util.*
 
-object Serializers {
-
+object Serializers
+{
     private val gsonBuilder = GsonBuilder()
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .serializeNulls()
@@ -16,10 +16,23 @@ object Serializers {
     @JvmStatic
     var gson: Gson = gsonBuilder.create()
 
-    fun useGsonBuilderThenRebuild(use: (GsonBuilder) -> Unit) {
+    fun create(
+        use: GsonBuilder.() -> Unit
+    )
+    {
         synchronized(gsonBuilder) {
-            use.invoke(gsonBuilder)
-            gson = gsonBuilder.create()
+            this.gsonBuilder.use()
+            this.gson = gsonBuilder.create()
+        }
+    }
+
+    fun useGsonBuilderThenRebuild(
+        use: (GsonBuilder) -> Unit
+    )
+    {
+        synchronized(gsonBuilder) {
+            use.invoke(this.gsonBuilder)
+            this.gson = this.gsonBuilder.create()
         }
     }
 }

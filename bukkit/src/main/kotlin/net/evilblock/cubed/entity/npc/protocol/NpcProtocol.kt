@@ -55,7 +55,7 @@ object NpcProtocol
         Reflection.getConstructor(
             PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
             ENUM_PLAYER_INFO_ACTION_CLASS,
-            Iterable::class.java
+            Collection::class.java
         )!!
 
     private val PLAYER_INFO_DATA_CLASS =
@@ -64,14 +64,22 @@ object NpcProtocol
                 it.simpleName.equals("PlayerInfoData", true)
             }!!
 
+    private val PLAYER_INFO_DATA_CONSTRUCTOR_PARAMETERS = mutableListOf<Class<*>>()
+        .apply {
+            if (!MinecraftReflection.isModern())
+                this.add(PACKET_PLAY_OUT_PLAYER_INFO_CLASS)
+
+            this.add(MinecraftReflection.getGameProfileClass())
+            this.add(Int::class.java)
+            this.add(ENUM_GAME_MODE_CLASS)
+            this.add(I_CHAT_BASE_COMPONENT_CLASS)
+        }
+        .toTypedArray()
+
     private val PLAYER_INFO_DATA_CONSTRUCTOR =
         Reflection.getDeclaredConstructor(
             PLAYER_INFO_DATA_CLASS,
-            PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
-            MinecraftReflection.getGameProfileClass(),
-            Int::class.java,
-            ENUM_GAME_MODE_CLASS,
-            I_CHAT_BASE_COMPONENT_CLASS
+            *PLAYER_INFO_DATA_CONSTRUCTOR_PARAMETERS
         )!!
 
     private val SURVIVAL_GAME_MODE =
