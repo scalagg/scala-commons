@@ -48,8 +48,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     private lateinit var flavor: Flavor
     private lateinit var commandManager: CubedCommandManager
 
-    private val ignoreFlavor = this::class
-        .hasAnnotation<IgnoreProvidedFlavor>()
+    private val ignoreFlavor = this::class.java
+        .getAnnotation(IgnoreProvidedFlavor::class.java) != null
 
     fun flavor() = flavor
 
