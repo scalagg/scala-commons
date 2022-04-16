@@ -13,6 +13,7 @@ import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
+import net.minecraft.server.level.EntityPlayer
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -24,15 +25,40 @@ import kotlin.math.floor
 
 object MinecraftProtocol {
 
-    private val PLAYER_CONNECTION_FIELD: Field = Reflection.getDeclaredField(MinecraftReflection.getNMSClass("EntityPlayer")!!, "playerConnection")!!
-    private val SEND_PACKET_METHOD: Method = Reflection.getDeclaredMethod(MinecraftReflection.getNMSClass("PlayerConnection")!!, "sendPacket", MinecraftReflection.getNMSClass("Packet")!!)!!
+    private val PLAYER_CONNECTION_FIELD = Reflection
+        .getDeclaredField(
+            MinecraftReflection.ENTITY_PLAYER_CLASS,
+            if (MinecraftReflection.isModern())
+            {
+                "b"
+            } else
+            {
+                "playerConnection"
+            }
+        )!!
+
+    private val SEND_PACKET_METHOD =
+        Reflection.getDeclaredMethod(
+            MinecraftReflection.getNMSClass("PlayerConnection")!!,
+            "sendPacket", MinecraftReflection.getNMSClass("Packet")!!
+        )!!
 
     private val BLOCK_POSITION_CLASS = MinecraftReflection.getNMSClass("BlockPosition")
     private val BLOCK_POSITION_CONSTRUCTOR = BLOCK_POSITION_CLASS?.let { Reflection.getConstructor(it, Int::class.java, Int::class.java, Int::class.java) }
 
     @JvmStatic
     fun newPacket(name: String): Any {
-        return Reflection.callConstructor(MinecraftReflection.getNMSClass(name)!!)!!
+        return Reflection.callConstructor(
+            if (MinecraftReflection.isModern())
+            {
+                Reflection.getClassSuppressed(
+                    "net.minecraft.network.protocol.game.$name"
+                )!!
+            } else
+            {
+                MinecraftReflection.getNMSClass(name)!!
+            }
+        )!!
     }
 
     @JvmStatic

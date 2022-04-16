@@ -10,6 +10,7 @@ package net.evilblock.cubed.util.nms
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.wrapper.Vector3FWrapper
+import net.minecraft.core.particles.Particle
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -63,7 +64,13 @@ object MinecraftReflection
     private val MINECRAFT_SERVER_WORLD_SERVER_MODERN: Method? =
         Reflection.getMethodSuppressed(MINECRAFT_SERVER_CLASS, "F")
 
-    private val ENUM_PARTICLE_CLASS: Class<*>? = getNMSClass("EnumParticle")
+    private val ENUM_PARTICLE_CLASS: Class<*>? =
+        getNMSClass("EnumParticle")
+
+    private val ENUM_PARTICLE_MODERN_CLASS: Class<*>? =
+        Reflection.getClassSuppressed(
+            "net.minecraft.core.particles.ParticleParam"
+        )
 
     private val ENTITY_HUMAN_CLASS: Class<*> = if (!isModern())
     {
@@ -72,6 +79,16 @@ object MinecraftReflection
     {
         Reflection.getClassSuppressed(
             "net.minecraft.world.entity.player.EntityHuman"
+        )!!
+    }
+
+    val ENTITY_PLAYER_CLASS: Class<*> = if (!isModern())
+    {
+        getNMSClass("EntityPlayer")!!
+    } else
+    {
+        Reflection.getClassSuppressed(
+            "net.minecraft.server.level.EntityPlayer"
         )!!
     }
 
