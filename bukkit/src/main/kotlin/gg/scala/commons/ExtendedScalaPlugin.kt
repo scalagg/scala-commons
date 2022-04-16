@@ -9,6 +9,7 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.annotations.inject.AutoBind
+import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
@@ -28,6 +29,7 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * An extension of [ExtendedJavaPlugin] with support
@@ -42,20 +44,30 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         PackageIndexer(this)
     }
 
-    private val flavor by lazy {
-        Flavor.create(
-            this::class,
-            FlavorOptions(logger)
-        )
-    }
-
+    private lateinit var flavor: Flavor
     private lateinit var commandManager: CubedCommandManager
+
+    private val ignoreFlavor = this::class
+        .hasAnnotation<IgnoreProvidedFlavor>()
 
     fun flavor() = flavor
 
     fun flavor(
         lambda: Flavor.() -> Unit
-    ) = flavor.lambda()
+    )
+    {
+        if (ignoreFlavor)
+            return
+
+        flavor.lambda()
+    }
+
+    fun supplyFlavor(
+        flavor: Flavor
+    )
+    {
+        this.flavor = flavor
+    }
 
     override fun load()
     {
@@ -73,21 +85,20 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             return
         }
 
-        this.flavor.binders.add(
-            FlavorBinder(this::class) to this
+        this.flavor = Flavor.create(
+            this::class, FlavorOptions(logger)
         )
 
-        this.flavor
-            .bind<ExtendedScalaPlugin>() to this
+        this.flavor {
+            binders.add(
+                FlavorBinder(this::class) to this
+            )
 
-        this.flavor
-            .bind<JavaPlugin>() to this
-
-        this.flavor
-            .bind<Server>() to this.server
-
-        this.flavor
-            .bind<Logger>() to this.logger
+            bind<ExtendedScalaPlugin>() to this@ExtendedScalaPlugin
+            bind<JavaPlugin>() to this@ExtendedScalaPlugin
+            bind<Server>() to server
+            bind<Logger>() to logger
+        }
 
         this.packageIndexer
             .getTypesAnnotatedWith<LibraryLoader>()

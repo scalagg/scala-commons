@@ -9,8 +9,8 @@ plugins {
 }
 
 allprojects {
-    group 'net.evilblock.cubed'
-    version '1.3.6'
+    group "net.evilblock.cubed"
+    version "1.3.7"
 
     repositories {
         mavenLocal()
@@ -28,7 +28,7 @@ allprojects {
         }
 
         maven { url "https://jitpack.io" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 }
 
@@ -49,15 +49,15 @@ subprojects {
     compileJava {
         options.compilerArgs += ["-parameters"]
         options.fork = true
-        options.forkOptions.executable = 'javac'
+        options.forkOptions.executable = "javac"
     }
 
     shadowJar {
         archiveClassifier.set("")
 
-        exclude '**/*.kotlin_metadata'
-        exclude '**/*.kotlin_module'
-        exclude '**/*.kotlin_builtins'
+        exclude "**/*.kotlin_metadata"
+        exclude "**/*.kotlin_module"
+        exclude "**/*.kotlin_builtins"
 
         exclude "META-INF/"
 
