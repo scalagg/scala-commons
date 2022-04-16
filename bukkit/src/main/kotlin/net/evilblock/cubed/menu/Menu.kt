@@ -8,18 +8,14 @@
 package net.evilblock.cubed.menu
 
 import com.cryptomorin.xseries.XMaterial
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
@@ -228,9 +224,41 @@ abstract class Menu
         }
     }
 
-    private fun getWindowType(size: Int): String
+    private val characters = ('a'..'g').toList()
+
+    val reflection = MinecraftReflection
+        .getNMSClass("inventory.Containers")
+
+    private val containerMappings =
+        mutableMapOf<Char, Any>().apply {
+            if (reflection == null)
+                return@apply
+
+            for (character in characters)
+            {
+                val container = reflection
+                    .getDeclaredField(
+                        character.toString()
+                    )
+                    .get(null)
+                    ?: continue
+
+                this[character] = container
+            }
+        }
+
+    private fun getWindowType(size: Int): Any
     {
-        return "minecraft:chest"
+        return if (!MinecraftReflection.isModern())
+        {
+            "minecraft:chest"
+        } else
+        {
+            val sizeRow = (size / 9) - 1
+            val mapping = characters[sizeRow]
+
+            containerMappings[mapping]!!
+        }
     }
 
     fun update(player: Player)
@@ -296,7 +324,6 @@ abstract class Menu
 
     companion object
     {
-
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
@@ -304,16 +331,20 @@ abstract class Menu
             MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
             "openCustomInventory",
             Inventory::class.java,
-            MinecraftReflection.getNMSClass("EntityPlayer")!!,
-            String::class.java
+            MinecraftReflection.getNMSClass(
+                "${
+                    if (MinecraftReflection.isModern())
+                        "level." else ""
+                }EntityPlayer"
+            )!!,
+            if (MinecraftReflection.isModern())
+            {
+                MinecraftReflection
+                    .getNMSClass("inventory.Containers")!!
+            } else
+            {
+                String::class.java
+            }
         )
-
-        @JvmStatic
-        fun styleAction(color: ChatColor, action: String, text: String): String
-        {
-            return color.toString() + ChatColor.BOLD + action + ChatColor.RESET + color + " " + text
-        }
-
     }
-
 }

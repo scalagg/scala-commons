@@ -22,6 +22,7 @@ import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorOptions
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
+import me.lucko.helper.maven.MavenLibrary
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.entity.Entity
@@ -59,6 +60,11 @@ import java.util.logging.Level
         PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib")
     ]
+)
+@MavenLibrary(
+    groupId = "org.jetbrains.kotlin",
+    artifactId = "kotlin-reflect",
+    version = "1.6.20"
 )
 class Cubed : ExtendedScalaPlugin()
 {

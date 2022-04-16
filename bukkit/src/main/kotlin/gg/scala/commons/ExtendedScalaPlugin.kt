@@ -11,7 +11,7 @@ import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
-import gg.scala.commons.reflections.Reflections
+import gg.scala.commons.reflections.PackageIndexer
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.command.manager.CubedCommandManager
@@ -31,8 +31,8 @@ import java.util.logging.Level
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
-    private val reflections by lazy {
-        Reflections(this::class.java.`package`.name, this)
+    private val packageIndexer by lazy {
+        PackageIndexer(this::class.java.`package`.name, this)
     }
 
     private lateinit var commandManager: CubedCommandManager
@@ -52,27 +52,33 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             Bukkit.shutdown()
             return
         }
+    }
 
-        this.reflections
+    override fun enable()
+    {
+        this.packageIndexer
             .getTypesAnnotatedWith<LibraryLoader>()
             .mapNotNull {
                 it.objectInstance()
             }
             .forEach {
+                logger.info(it.javaClass.name)
+
                 HelperLibraryHandler
                     .loadAll(it::class.java)
             }
-    }
 
-    override fun enable()
-    {
-        this.reflections
+        this.logger.info("Starting container enable process...")
+
+        this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
             .forEach {
+                logger.info(it.name)
+
                 kotlin.runCatching {
                     it.invoke(this)
-                }.onFailure {
-                    logger.log(Level.WARNING, "Failed to enable container part!", it)
+                }.onFailure { throwable ->
+                    logger.log(Level.WARNING, "Failed to enable container part!", throwable)
                 }
             }
 
@@ -101,7 +107,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
         }
 
-        this.reflections
+        this.packageIndexer
             .getMethodsAnnotatedWith<CommandManagerCustomizer>()
             .forEach { method ->
                 kotlin.runCatching {
@@ -120,7 +126,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.reflections
+        this.packageIndexer
             .getTypesAnnotatedWith<AutoRegister>()
             .filter {
                 it.isAssignableFrom(ScalaCommand::class.java)
@@ -135,7 +141,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.reflections
+        this.packageIndexer
             .getMethodsAnnotatedWith<ManualRegister>()
             .forEach {
                 kotlin.runCatching {
@@ -145,7 +151,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.reflections
+        this.packageIndexer
             .getTypesAnnotatedWith<Listeners>()
             .mapNotNull {
                 it.objectInstance() ?: it.newInstance()
@@ -155,7 +161,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     .registerEvents(it as Listener, this)
             }
 
-        this.reflections
+        this.packageIndexer
             .getTypesAnnotatedWith<Repeating>()
             .mapNotNull {
                 it.objectInstance() ?: it.newInstance()
@@ -176,7 +182,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     override fun disable()
     {
-        this.reflections
+        this.packageIndexer
             .getMethodsAnnotatedWith<ContainerDisable>()
             .filter {
                 it.declaringClass == this::class.java

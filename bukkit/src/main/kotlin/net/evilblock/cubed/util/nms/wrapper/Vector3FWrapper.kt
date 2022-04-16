@@ -27,11 +27,18 @@ class Vector3FWrapper(val vector: Any) {
     }
 
     companion object {
-        private val VECTOR3F_CLASS = MinecraftReflection.getNMSClass("Vector3f")!!
-        private val VECTOR3F_x = Reflection.getDeclaredField(VECTOR3F_CLASS, "x")!!
-        private val VECTOR3F_y = Reflection.getDeclaredField(VECTOR3F_CLASS, "y")!!
-        private val VECTOR3F_z = Reflection.getDeclaredField(VECTOR3F_CLASS, "z")!!
-        private val VECTOR3F_CONSTRUCTOR = Reflection.getConstructor(VECTOR3F_CLASS, Float::class.java, Float::class.java, Float::class.java)!!
+        private val MODERN = MinecraftReflection.isModern()
+
+        private val VECTOR3F_CLASS = MinecraftReflection.getNMSClass("Vector3f")
+            ?: Reflection.getClassSuppressed("net.minecraft.core.Vector3f")!!
+
+        private val VECTOR3F_x = Reflection.getDeclaredField(VECTOR3F_CLASS, if (MODERN) "a" else "x")!!
+        private val VECTOR3F_y = Reflection.getDeclaredField(VECTOR3F_CLASS, if (MODERN) "b" else "y")!!
+        private val VECTOR3F_z = Reflection.getDeclaredField(VECTOR3F_CLASS, if (MODERN) "c" else "z")!!
+
+        private val VECTOR3F_CONSTRUCTOR = Reflection.getConstructor(
+            VECTOR3F_CLASS, Float::class.java, Float::class.java, Float::class.java
+        )!!
 
         private fun wrap(x: Float, y: Float, z: Float): Any {
             return VECTOR3F_CONSTRUCTOR.newInstance(x, y, z)
