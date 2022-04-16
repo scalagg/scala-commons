@@ -92,12 +92,27 @@ object NpcProtocol
         gameProfile: Any
     ): Any
     {
-        return PLAYER_INFO_DATA_CONSTRUCTOR.newInstance(
-            playerInfoPacket, gameProfile, 1, SURVIVAL_GAME_MODE, JSON_CONVERSION_METHOD
+        val arguments = mutableListOf<Any>()
+
+        if (!MinecraftReflection.isModern())
+        {
+            arguments.add(playerInfoPacket)
+        }
+
+        arguments.add(gameProfile)
+        arguments.add(1)
+        arguments.add(SURVIVAL_GAME_MODE)
+        arguments.add(
+            JSON_CONVERSION_METHOD
                 .invoke(
                     null, "{\"text\":\"[NPC] ${UUID.randomUUID().toString().substring(0, 8)}\",\"color\":\"dark_gray\"}"
                 )
         )
+
+        return PLAYER_INFO_DATA_CONSTRUCTOR
+            .newInstance(
+                *arguments.toTypedArray()
+            )
     }
 
     fun createDataWatcher(npc: NpcEntity): Any
