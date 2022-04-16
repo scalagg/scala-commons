@@ -117,7 +117,17 @@ object EntityMoveTool : Listener {
                     if (entity != null) {
                         // npc direction == flipped player yaw
                         val direction = event.player.eyeLocation.direction.multiply(-1)
-                        val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type, 1.0)
+
+                        val heightKey = NpcUtils.BLOCK_HEIGHTS.keys
+                            .firstOrNull {
+                                event.clickedBlock.type
+                                    .name.contains(it, true)
+                            }
+
+                        val height = NpcUtils.BLOCK_HEIGHTS
+                            .getOrDefault(
+                                heightKey ?: "", 1.0
+                            )
 
                         val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
                         updatedLocation.direction = direction
