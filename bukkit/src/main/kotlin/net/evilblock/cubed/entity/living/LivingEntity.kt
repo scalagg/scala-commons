@@ -1,5 +1,6 @@
 package net.evilblock.cubed.entity.living
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.living.effect.EntityEffect
 import net.evilblock.cubed.entity.living.event.EntityDamageEvent
@@ -33,18 +34,18 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
 
     override fun tick()
     {
-//        tickEffects()
+        tickEffects()
     }
 
     override fun onLeftClick(player: Player)
     {
         val damage = when (player.inventory.itemInHand.type)
         {
-            Material.WOOD_SWORD -> 3.0
-            Material.GOLD_SWORD -> 3.0
-            Material.STONE_SWORD -> 4.0
-            Material.IRON_SWORD -> 5.0
-            Material.DIAMOND_SWORD -> 6.0
+            XMaterial.WOODEN_SWORD.parseMaterial()!! -> 3.0
+            XMaterial.GOLDEN_SWORD.parseMaterial()!! -> 3.0
+            XMaterial.STONE_SWORD.parseMaterial()!! -> 4.0
+            XMaterial.IRON_SWORD.parseMaterial()!! -> 5.0
+            XMaterial.DIAMOND_SWORD.parseMaterial()!! -> 6.0
             else -> 2.0
         }
 

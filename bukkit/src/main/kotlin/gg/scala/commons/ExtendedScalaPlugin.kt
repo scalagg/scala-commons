@@ -32,7 +32,7 @@ import java.util.logging.Level
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     private val packageIndexer by lazy {
-        PackageIndexer(this::class.java.`package`.name, this)
+        PackageIndexer(this::class.java.`package`.name)
     }
 
     private lateinit var commandManager: CubedCommandManager
@@ -62,8 +62,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 it.objectInstance()
             }
             .forEach {
-                logger.info(it.javaClass.name)
-
                 HelperLibraryHandler
                     .loadAll(it::class.java)
             }
@@ -73,8 +71,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
             .forEach {
-                logger.info(it.name)
-
                 kotlin.runCatching {
                     it.invoke(this)
                 }.onFailure { throwable ->

@@ -88,12 +88,15 @@ class Cubed : ExtendedScalaPlugin()
         )
     }
 
+    init
+    {
+        instance = this
+    }
+
     @ContainerEnable
     fun containerEnable()
     {
         kotlin.runCatching {
-            instance = this
-
             Reflection.DEBUG = config
                 .getBoolean("debug", false)
 

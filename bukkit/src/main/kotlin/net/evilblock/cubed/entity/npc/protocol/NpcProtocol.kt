@@ -15,53 +15,79 @@ import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.entity.Player
-import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.*
 
 object NpcProtocol
 {
-    private val ENUM_GAME_MODE_CLASS: Class<*> = MinecraftReflection.getNMSClass("WorldSettings\$EnumGamemode")!!
-    private val I_CHAT_BASE_COMPONENT_CLASS: Class<*> = MinecraftReflection.getNMSClass("IChatBaseComponent")!!
+    private val ENUM_GAME_MODE_CLASS =
+        MinecraftReflection.getNMSClass("WorldSettings\$EnumGamemode")
+            ?: Reflection.getClassSuppressed(
+                "net.minecraft.world.level.EnumGamemode"
+            )!!
 
-    private val PACKET_PLAY_OUT_PLAYER_INFO_CLASS: Class<*> =
-        MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo")!!
+    private val I_CHAT_BASE_COMPONENT_CLASS =
+        MinecraftReflection.getNMSClass("IChatBaseComponent")
+            ?: Reflection.getClassSuppressed(
+                "net.minecraft.network.chat.IChatBaseComponent"
+            )!!
+
+    private val PACKET_PLAY_OUT_PLAYER_INFO_CLASS =
+        MinecraftProtocol.getPacketClass("PacketPlayOutPlayerInfo")
 
     private val CHAT_SERIALIZER_CLASS =
-        MinecraftReflection.getNMSClass("IChatBaseComponent\$ChatSerializer")!!
+        MinecraftReflection.getNMSClass("IChatBaseComponent\$ChatSerializer")
+            ?: I_CHAT_BASE_COMPONENT_CLASS.declaredClasses
+                .find {
+                    it.simpleName.equals("ChatSerializer", true)
+                }!!
 
     private val JSON_CONVERSION_METHOD: Method =
         Reflection.getDeclaredMethod(CHAT_SERIALIZER_CLASS, "a", String::class.java)!!
 
-    val ENUM_PLAYER_INFO_ACTION_CLASS: Class<*> =
-        MinecraftReflection.getNMSClass("PacketPlayOutPlayerInfo\$EnumPlayerInfoAction")!!
-    val PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR: Constructor<*> = Reflection.getConstructor(
-        PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
-        ENUM_PLAYER_INFO_ACTION_CLASS,
-        Iterable::class.java
-    )!!
+    val ENUM_PLAYER_INFO_ACTION_CLASS =
+        PACKET_PLAY_OUT_PLAYER_INFO_CLASS.declaredClasses
+            .find {
+                it.simpleName.equals("EnumPlayerInfoAction", true)
+            }!!
 
-    private val PLAYER_INFO_DATA_CLASS: Class<*> =
-        PACKET_PLAY_OUT_PLAYER_INFO_CLASS.declaredClasses.find { it.simpleName == "PlayerInfoData" }!!
-    private val PLAYER_INFO_DATA_CONSTRUCTOR: Constructor<*> = Reflection.getDeclaredConstructor(
-        PLAYER_INFO_DATA_CLASS,
-        PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
-        MinecraftReflection.getGameProfileClass(),
-        Int::class.java,
-        ENUM_GAME_MODE_CLASS,
-        I_CHAT_BASE_COMPONENT_CLASS
-    )!!
+    val PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR =
+        Reflection.getConstructor(
+            PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
+            ENUM_PLAYER_INFO_ACTION_CLASS,
+            Iterable::class.java
+        )!!
 
-    private val NOT_SET_GAMEMODE = Reflection.getEnum(ENUM_GAME_MODE_CLASS, "NOT_SET")!!
+    private val PLAYER_INFO_DATA_CLASS =
+        PACKET_PLAY_OUT_PLAYER_INFO_CLASS.declaredClasses
+            .find {
+                it.simpleName.equals("PlayerInfoData", true)
+            }!!
 
+    private val PLAYER_INFO_DATA_CONSTRUCTOR =
+        Reflection.getDeclaredConstructor(
+            PLAYER_INFO_DATA_CLASS,
+            PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
+            MinecraftReflection.getGameProfileClass(),
+            Int::class.java,
+            ENUM_GAME_MODE_CLASS,
+            I_CHAT_BASE_COMPONENT_CLASS
+        )!!
 
-    private fun createPlayerInfoData(playerInfoPacket: Any, gameProfile: Any): Any
+    private val SURVIVAL_GAME_MODE =
+        Reflection.getEnum(
+            ENUM_GAME_MODE_CLASS, "a"
+        )!!
+
+    private fun createPlayerInfoData(
+        playerInfoPacket: Any,
+        gameProfile: Any
+    ): Any
     {
         return PLAYER_INFO_DATA_CONSTRUCTOR.newInstance(
-            playerInfoPacket, gameProfile, 1, NOT_SET_GAMEMODE, JSON_CONVERSION_METHOD
+            playerInfoPacket, gameProfile, 1, SURVIVAL_GAME_MODE, JSON_CONVERSION_METHOD
                 .invoke(
-                    null,
-                    "{\"text\":\"[NPC] ${UUID.randomUUID().toString().substring(0, 8)}\",\"color\":\"dark_gray\"}"
+                    null, "{\"text\":\"[NPC] ${UUID.randomUUID().toString().substring(0, 8)}\",\"color\":\"dark_gray\"}"
                 )
         )
     }
@@ -85,31 +111,39 @@ object NpcProtocol
 
     fun sendSpawnPackets(player: Player, npc: NpcEntity)
     {
-        val playerInfoAddPacket = MinecraftProtocol.newPacket("PacketPlayOutPlayerInfo")
+        val playerInfoAddPacket =
+            MinecraftProtocol.newPacket("PacketPlayOutPlayerInfo")
+
         Reflection.setDeclaredFieldValue(
             playerInfoAddPacket,
             "a",
             Reflection.getEnum(ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!
         )
+
         Reflection.setDeclaredFieldValue(
             playerInfoAddPacket,
             "b",
             arrayListOf(createPlayerInfoData(playerInfoAddPacket, npc.profile))
         )
 
-        val playerInfoRemovePacket = MinecraftProtocol.newPacket("PacketPlayOutPlayerInfo")
+        val playerInfoRemovePacket = MinecraftProtocol
+            .newPacket("PacketPlayOutPlayerInfo")
+
         Reflection.setDeclaredFieldValue(
             playerInfoRemovePacket,
             "a",
             Reflection.getEnum(ENUM_PLAYER_INFO_ACTION_CLASS, "REMOVE_PLAYER")!!
         )
+
         Reflection.setDeclaredFieldValue(
             playerInfoRemovePacket,
             "b",
             arrayListOf(createPlayerInfoData(playerInfoRemovePacket, npc.profile))
         )
 
-        val entitySpawnPacket = MinecraftProtocol.newPacket("PacketPlayOutNamedEntitySpawn")
+        val entitySpawnPacket = MinecraftProtocol
+            .newPacket("PacketPlayOutNamedEntitySpawn")
+
         Reflection.setDeclaredFieldValue(entitySpawnPacket, "a", npc.id)
         Reflection.setDeclaredFieldValue(entitySpawnPacket, "b", npc.uuid)
         Reflection.setDeclaredFieldValue(entitySpawnPacket, "c", MinecraftReflection.mathFloor(npc.location.x * 32.0))

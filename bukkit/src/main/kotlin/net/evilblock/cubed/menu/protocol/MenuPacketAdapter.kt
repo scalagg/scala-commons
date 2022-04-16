@@ -13,12 +13,15 @@ import com.comphenix.protocol.events.PacketEvent
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.menu.Menu
 
-object MenuPacketAdapter : PacketAdapter(Cubed.instance, PacketType.Play.Client.CLOSE_WINDOW) {
+object MenuPacketAdapter : PacketAdapter(
+    Cubed.instance, PacketType.Play.Client.CLOSE_WINDOW
+)
+{
+    override fun onPacketReceiving(event: PacketEvent)
+    {
+        val openedMenus = Menu.currentlyOpenedMenus
 
-    override fun onPacketReceiving(event: PacketEvent) {
-        if (Menu.currentlyOpenedMenus.containsKey(event.player.uniqueId)) {
-            Menu.currentlyOpenedMenus[event.player.uniqueId]?.manualClose = true
-        }
+        if (openedMenus.containsKey(event.player.uniqueId))
+            openedMenus[event.player.uniqueId]?.manualClose = true
     }
-
 }
