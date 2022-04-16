@@ -51,6 +51,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     private lateinit var commandManager: CubedCommandManager
 
+    fun flavor() = flavor
+
+    fun flavor(
+        lambda: Flavor.() -> Unit
+    ) = flavor.lambda()
+
     override fun load()
     {
         val java11Enabled = SystemUtils
