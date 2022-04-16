@@ -48,15 +48,10 @@ dependencies {
     implementation "org.mongodb:mongodb-driver:3.12.10"
     implementation "com.github.ben-manes.caffeine:caffeine:3.0.6"
 
-    implementation 'org.scannotation:scannotation:1.0.3'
-
-    implementation "org.atteo.classindex:classindex:3.11"
-    kapt "org.atteo.classindex:classindex:3.11"
-
     // scala
-    compileOnly 'org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT'
+//    compileOnly "org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT"
 
-    implementation 'org.reflections:reflections:0.9.12'
+    implementation "org.reflections:reflections:0.9.12"
 
     compileOnly "gg.scala.spigot:sspigot-server:1.0.7"
     compileOnly "gg.scala.store:spigot:0.1.3"

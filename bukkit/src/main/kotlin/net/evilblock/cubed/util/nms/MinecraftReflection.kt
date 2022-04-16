@@ -55,7 +55,7 @@ object MinecraftReflection
     private val PROPERTY_MAP_PUT_METHOD: Method =
         Reflection.getMethodSuppressed(getPropertyMapClass(), "put", Any::class.java, Any::class.java)!!
 
-    private val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
+    val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
 
     private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field? =
         Reflection.getDeclaredField(MINECRAFT_SERVER_CLASS, "worlds")

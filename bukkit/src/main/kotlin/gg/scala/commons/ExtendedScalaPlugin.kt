@@ -32,7 +32,7 @@ import java.util.logging.Level
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     private val packageIndexer by lazy {
-        PackageIndexer(this::class.java.`package`.name)
+        PackageIndexer(this)
     }
 
     private lateinit var commandManager: CubedCommandManager
