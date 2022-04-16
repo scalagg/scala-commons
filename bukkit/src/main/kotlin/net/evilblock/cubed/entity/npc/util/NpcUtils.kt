@@ -1,6 +1,5 @@
 package net.evilblock.cubed.entity.npc.util
 
-import com.cryptomorin.xseries.XMaterial
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block

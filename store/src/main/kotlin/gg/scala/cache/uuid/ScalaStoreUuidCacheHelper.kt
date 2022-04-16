@@ -10,6 +10,7 @@ import java.util.logging.Logger
  * @author GrowlyX
  * @since 2/1/2022
  */
+@Suppress("DEPRECATION")
 object ScalaStoreUuidCacheHelper
 {
     private val parser = JsonParser()
@@ -20,6 +21,7 @@ object ScalaStoreUuidCacheHelper
      * Should not be called very often as the server could be rate-limited which will cause more issues.
      */
     @JvmStatic
+    @Suppress("DEPRECATION")
     fun fetchFromMojang(username: String): Optional<Pair<UUID, String>>
     {
         try

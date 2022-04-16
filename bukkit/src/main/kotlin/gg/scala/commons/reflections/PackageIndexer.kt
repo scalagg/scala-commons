@@ -1,11 +1,11 @@
 package gg.scala.commons.reflections
 
-import org.bukkit.plugin.Plugin
+import gg.scala.commons.ScalaCommonsConstants
 import org.reflections.Reflections
-import org.reflections.scanners.FieldAnnotationsScanner
 import org.reflections.scanners.MethodAnnotationsScanner
 import org.reflections.scanners.Scanners
 import org.reflections.scanners.TypeAnnotationsScanner
+import org.reflections.util.ConfigurationBuilder
 import java.lang.reflect.Method
 
 /**
@@ -13,31 +13,33 @@ import java.lang.reflect.Method
  * @since 4/15/2022
  */
 class PackageIndexer(
-    pkgName: String
+    private val packageName: String
 )
 {
-    val classes by lazy {
+    val reflections by lazy {
         Reflections(
-            pkgName,
-            MethodAnnotationsScanner(),
-            TypeAnnotationsScanner()
+            ConfigurationBuilder()
+                .forPackages(packageName)
+                .addScanners(
+                    MethodAnnotationsScanner(),
+                    TypeAnnotationsScanner()
+                )
         )
     }
 
     inline fun <reified T : Annotation> getMethodsAnnotatedWith(): List<Method>
     {
-        return this.classes
+        return reflections
             .get(
-                Scanners.MethodsAnnotated
-                    .with(T::class.java)
-                    .`as`(Method::class.java)
+                ScalaCommonsConstants
+                    .annotated<T>()
             )
             .toList()
     }
 
     inline fun <reified T : Annotation> getTypesAnnotatedWith(): List<Class<*>>
     {
-        return this.classes
+        return reflections
             .getTypesAnnotatedWith(T::class.java)
             .toList()
     }
