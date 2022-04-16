@@ -17,7 +17,8 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
-abstract class LivingEntity(location: Location) : Entity(location = location), TickableEntity {
+abstract class LivingEntity(location: Location) : Entity(location = location), TickableEntity
+{
 
     var health: Double = 20.0
     var dead: Boolean = false
@@ -30,12 +31,15 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
     var width = 0.6F
     var length = 1.8F
 
-    override fun tick() {
+    override fun tick()
+    {
 //        tickEffects()
     }
 
-    override fun onLeftClick(player: Player) {
-        val damage = when (player.inventory.itemInHand.type) {
+    override fun onLeftClick(player: Player)
+    {
+        val damage = when (player.inventory.itemInHand.type)
+        {
             Material.WOOD_SWORD -> 3.0
             Material.GOLD_SWORD -> 3.0
             Material.STONE_SWORD -> 4.0
@@ -47,22 +51,28 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
         attack(player, damage, false)
     }
 
-    open fun attack(attacker: org.bukkit.entity.Entity, damage: Double, ignoreCooldown: Boolean = false): Boolean {
-        if (!attackable || dead) {
+    open fun attack(attacker: org.bukkit.entity.Entity, damage: Double, ignoreCooldown: Boolean = false): Boolean
+    {
+        if (!attackable || dead)
+        {
             return false
         }
 
-        if (!ignoreCooldown) {
-            if (lastAttack != null && System.currentTimeMillis() < lastAttack!! + 500L) {
+        if (!ignoreCooldown)
+        {
+            if (lastAttack != null && System.currentTimeMillis() < lastAttack!! + 500L)
+            {
                 return false
             }
         }
 
-        if (attacker is Player) {
+        if (attacker is Player)
+        {
             val attackEvent = EntityDamageEvent(attacker, this, damage)
             attackEvent.call()
 
-            if (attackEvent.isCancelled) {
+            if (attackEvent.isCancelled)
+            {
                 return false
             }
         }
@@ -70,33 +80,40 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
         lastAttack = System.currentTimeMillis()
         health -= damage
 
-        if (health <= 0.0) {
+        if (health <= 0.0)
+        {
             kill(attacker)
             sendStatusPacket(3)
 
             Tasks.delayed(40L) {
                 destroyForCurrentWatchers()
             }
-        } else {
+        } else
+        {
             sendAnimationPacket(1)
         }
 
         return true
     }
 
-    open fun kill(killer: org.bukkit.entity.Entity) {
+    open fun kill(killer: org.bukkit.entity.Entity)
+    {
         dead = true
 
         EntityDeathEvent(killer, this).call()
     }
 
-    internal fun tickEffects() {
+    internal fun tickEffects()
+    {
         val iterator = effects.iterator()
-        while (iterator.hasNext()) {
+        while (iterator.hasNext())
+        {
             val effect = iterator.next()
-            if (!effect.isPermanent() && effect.isExpired()) {
+            if (!effect.isPermanent() && effect.isExpired())
+            {
                 iterator.remove()
-            } else {
+            } else
+            {
                 effect.effectType.tick(effect)
             }
         }
@@ -104,21 +121,26 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
         val particleColor = findParticlesColor()
         val ambientEffect = effects.any { it.effectType.isAmbient() }
 
-        if (particleColor > 0) {
+        if (particleColor > 0)
+        {
             var spawnParticle = ThreadLocalRandom.current().nextBoolean()
 
-            if (ambientEffect) {
+            if (ambientEffect)
+            {
                 spawnParticle = spawnParticle and (ThreadLocalRandom.current().nextInt(5) == 0)
             }
 
-            if (spawnParticle && particleColor > 0) {
+            if (spawnParticle && particleColor > 0)
+            {
                 val colorR = ((particleColor shr 16 and 255).toDouble() / 255.0).toFloat()
                 val colorG = ((particleColor shr 8 and 255).toDouble() / 255.0).toFloat()
                 val colorB = ((particleColor shr 0 and 255).toDouble() / 255.0).toFloat()
 
-                val    particleType = if (ambientEffect) {
+                val particleType = if (ambientEffect)
+                {
                     MinecraftReflection.getEnumParticle("SPELL_MOB_AMBIENT")
-                } else {
+                } else
+                {
                     MinecraftReflection.getEnumParticle("SPELL_MOB")
                 }!!
 
@@ -127,24 +149,32 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
                 val z = location.z + (ThreadLocalRandom.current().nextDouble() - 0.5) * this.width
                 val loc = Location(location.world, x, y, z)
 
-                ParticleUtil.sendsParticleToAll(location.world, ParticleMeta(loc, particleType, colorR, colorG, colorB, 1.0F, 1))
+                ParticleUtil.sendsParticleToAll(
+                    location.world,
+                    ParticleMeta(loc, particleType, colorR, colorG, colorB, 1.0F, 1)
+                )
             }
         }
     }
 
-    private fun findParticlesColor(): Int {
-        return if (effects.isEmpty()) {
+    private fun findParticlesColor(): Int
+    {
+        return if (effects.isEmpty())
+        {
             3694022
-        } else {
+        } else
+        {
             var colorR = 0.0f
             var colorG = 0.0f
             var colorB = 0.0f
             var amplifier = 0
 
             val iterator = effects.iterator()
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 val effect = iterator.next()
-                if (effect.effectType.isShowParticles()) {
+                if (effect.effectType.isShowParticles())
+                {
                     val particleColor = effect.effectType.getParticlesColor()!!.asRGB()
                     val particleAmplifier = effect.effectType.getParticlesAmplifier() + 1
 
@@ -155,9 +185,11 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
                 }
             }
 
-            if (amplifier == 0) {
+            if (amplifier == 0)
+            {
                 0
-            } else {
+            } else
+            {
                 colorR = colorR / amplifier.toFloat() * 255.0f
                 colorG = colorG / amplifier.toFloat() * 255.0f
                 colorB = colorB / amplifier.toFloat() * 255.0f
@@ -166,10 +198,13 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
         }
     }
 
-    open fun getHealthDisplay(): String {
-        return if (!dead) {
+    open fun getHealthDisplay(): String
+    {
+        return if (!dead)
+        {
             "${ChatColor.WHITE}${(health / 2.0).toInt()}${ChatColor.DARK_RED}${Constants.HEART_SYMBOL}"
-        } else {
+        } else
+        {
             "${ChatColor.GRAY}*DEAD*"
         }
     }

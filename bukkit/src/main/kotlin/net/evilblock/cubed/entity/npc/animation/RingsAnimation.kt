@@ -55,14 +55,14 @@ class RingsAnimation(entity: NpcEntity, private val color: Color) : EntityAnimat
         val particles = listOf(
             ParticleMeta(
                 yin,
-                MinecraftReflection.getEnumParticle("REDSTONE")!!,
+                FloatAnimation.REDSTONE,
                 color,
                 1F,
                 0
             ),
             ParticleMeta(
                 yang,
-                MinecraftReflection.getEnumParticle("REDSTONE")!!,
+                FloatAnimation.REDSTONE,
                 color,
                 1F,
                 0

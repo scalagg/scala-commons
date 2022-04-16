@@ -54,14 +54,14 @@ class MultiRingsAnimation(entity: NpcEntity, private val color: Color) : EntityA
         val particles = listOf(
             ParticleMeta(
                 yin,
-                MinecraftReflection.getEnumParticle("REDSTONE")!!,
+                FloatAnimation.REDSTONE,
                 color,
                 3F,
                 0
             ),
             ParticleMeta(
                 yang,
-                MinecraftReflection.getEnumParticle("REDSTONE")!!,
+                FloatAnimation.REDSTONE,
                 color,
                 3F,
                 0

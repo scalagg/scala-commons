@@ -10,7 +10,6 @@ package net.evilblock.cubed.util.nms
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.wrapper.Vector3FWrapper
-import net.minecraft.core.particles.Particle
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -89,6 +88,26 @@ object MinecraftReflection
     {
         Reflection.getClassSuppressed(
             "net.minecraft.server.level.EntityPlayer"
+        )!!
+    }
+
+    val PLAYER_CONNECTION_CLASS: Class<*> = if (!isModern())
+    {
+        getNMSClass("EntityPlayer")!!
+    } else
+    {
+        Reflection.getClassSuppressed(
+            "net.minecraft.server.network.PlayerConnection"
+        )!!
+    }
+
+    val PACKET_CLASS: Class<*> = if (!isModern())
+    {
+        getNMSClass("Packet")!!
+    } else
+    {
+        Reflection.getClassSuppressed(
+            "net.minecraft.network.protocol.Packet"
         )!!
     }
 
@@ -294,13 +313,20 @@ object MinecraftReflection
     @JvmStatic
     fun getEnumParticle(name: String): Any?
     {
-        if (ENUM_PARTICLE_CLASS == null)
+        if (ENUM_PARTICLE_CLASS != null)
         {
-            return null
+            return Reflection
+                .getEnum(ENUM_PARTICLE_CLASS, name)
         }
 
-        return Reflection
-            .getEnum(ENUM_PARTICLE_CLASS, name)
+        if (ENUM_PARTICLE_MODERN_CLASS != null)
+        {
+            return Reflection.getEnum(
+                ENUM_PARTICLE_MODERN_CLASS, name
+            )
+        }
+
+        return null
     }
 
     @JvmStatic

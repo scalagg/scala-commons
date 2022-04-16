@@ -9,17 +9,13 @@ package net.evilblock.cubed.util.nms
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.utility.MinecraftVersion
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import net.minecraft.server.level.EntityPlayer
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.lang.reflect.Field
-import java.lang.reflect.Method
 import java.util.*
 import kotlin.math.floor
 
@@ -29,22 +25,35 @@ object MinecraftProtocol {
         .getDeclaredField(
             MinecraftReflection.ENTITY_PLAYER_CLASS,
             if (MinecraftReflection.isModern())
-            {
-                "b"
-            } else
-            {
-                "playerConnection"
-            }
+                "b" else "playerConnection"
         )!!
 
     private val SEND_PACKET_METHOD =
         Reflection.getDeclaredMethod(
-            MinecraftReflection.getNMSClass("PlayerConnection")!!,
-            "sendPacket", MinecraftReflection.getNMSClass("Packet")!!
+            MinecraftReflection.PLAYER_CONNECTION_CLASS,
+            if (MinecraftReflection.isModern())
+                "a" else "sendPacket",
+            MinecraftReflection.PACKET_CLASS
         )!!
 
-    private val BLOCK_POSITION_CLASS = MinecraftReflection.getNMSClass("BlockPosition")
-    private val BLOCK_POSITION_CONSTRUCTOR = BLOCK_POSITION_CLASS?.let { Reflection.getConstructor(it, Int::class.java, Int::class.java, Int::class.java) }
+    private val BLOCK_POSITION_CLASS =
+        if (MinecraftReflection.isModern())
+        {
+            Reflection.getClassSuppressed(
+                "net.minecraft.core.BlockPosition"
+            )!!
+        } else
+        {
+            MinecraftReflection.getNMSClass("BlockPosition")!!
+        }
+
+    private val BLOCK_POSITION_CONSTRUCTOR =
+        Reflection.getConstructor(
+            BLOCK_POSITION_CLASS,
+            Int::class.java,
+            Int::class.java,
+            Int::class.java
+        )
 
     @JvmStatic
     fun newPacket(name: String): Any {
@@ -59,6 +68,22 @@ object MinecraftProtocol {
                 MinecraftReflection.getNMSClass(name)!!
             }
         )!!
+    }
+
+    @JvmStatic
+    fun getPacketClass(
+        name: String
+    ): Class<*>
+    {
+        return if (MinecraftReflection.isModern())
+        {
+            Reflection.getClassSuppressed(
+                "net.minecraft.network.protocol.game.$name"
+            )!!
+        } else
+        {
+            MinecraftReflection.getNMSClass(name)!!
+        }
     }
 
     @JvmStatic
@@ -80,19 +105,6 @@ object MinecraftProtocol {
 
     @JvmStatic
     fun newBlockActionPacket(block: Block, action: Int, param: Int): Any {
-        // block action packet structure for 1.12
-        // a = BlockPosition - location
-        // b = int - action
-        // c = int - parameter
-        // d = Block - block
-
-        // block action packet structure for 1.7.10
-        // a = int - block x
-        // b = int - block y
-        // c = int - block z
-        // d = int - action
-        // e = int - param
-        // f = Block - block
         val packet = newPacket("PacketPlayOutBlockAction")
 
         if (ProtocolLibrary.getProtocolManager().minecraftVersion.isAtLeast(MinecraftVersion.COLOR_UPDATE)) {
@@ -123,7 +135,7 @@ object MinecraftProtocol {
 
     fun buildEntityLookPacket(id: Int, yaw: Float, pitch: Float): Any {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutEntityLook")
-        val owningClass = MinecraftReflection.getNMSClass("PacketPlayOutEntity")!!
+        val owningClass = getPacketClass("PacketPlayOutEntity")
 
         Reflection.setDeclaredFieldValue(owningClass, packet, "a", id)
         Reflection.setDeclaredFieldValue(owningClass, packet, "e", AngleUtils.yawToBytes(yaw))
@@ -135,7 +147,7 @@ object MinecraftProtocol {
 
     fun buildEntityRelMovePacket(id: Int, from: Location, to: Location): Any {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutRelEntityMove")
-        val owningClass = MinecraftReflection.getNMSClass("PacketPlayOutEntity")!!
+        val owningClass = getPacketClass("PacketPlayOutEntity")
 
         val fromX = convert(from.x * 4096.0)
         val fromY = convert(from.y * 4096.0)
@@ -160,7 +172,7 @@ object MinecraftProtocol {
 
     fun buildEntityRelMoveLookPacket(id: Int, from: Location, to: Location): Any {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutRelEntityMoveLook")
-        val owningClass = MinecraftReflection.getNMSClass("PacketPlayOutEntity")!!
+        val owningClass = getPacketClass("PacketPlayOutEntity")
 
         val fromX = convert(from.x * 4096.0)
         val fromY = convert(from.y * 4096.0)
