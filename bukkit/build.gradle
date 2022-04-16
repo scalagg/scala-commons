@@ -54,9 +54,9 @@ dependencies {
     kapt "org.atteo.classindex:classindex:3.11"
 
     // scala
-//    compileOnly 'org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT'
 
-    implementation 'org.reflections:reflections:0.10.2'
+    implementation 'org.reflections:reflections:0.9.12'
 
     compileOnly "gg.scala.spigot:sspigot-server:1.0.7"
     compileOnly "gg.scala.store:spigot:0.1.3"
@@ -71,6 +71,8 @@ dependencies {
 shadowJar {
     relocate "co.aikar.commands", "net.evilblock.cubed.acf"
     relocate "co.aikar.locales", "net.evilblock.cubed.locales"
+
+    relocate "org.reflections", "net.evilblock.cubed.reflections"
 
     exclude "**/kotlin/**"
 }

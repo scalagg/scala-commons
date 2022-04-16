@@ -20,48 +20,67 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.SkullMeta
-import java.lang.reflect.Method
 import java.util.*
 
 object ItemUtils {
 
-    private val ITEM_STACK_CLASS: Class<*> = MinecraftReflection.getNMSClass("ItemStack")!!
-    private val CRAFT_ITEM_STACK_CLASS: Class<*> = MinecraftReflection.getCraftBukkitClass("inventory.CraftItemStack")!!
-    private val AS_NMS_COPY_METHOD: Method = Reflection.getMethodSuppressed(CRAFT_ITEM_STACK_CLASS, "asNMSCopy", ItemStack::class.java)!!
-    private val AS_BUKKIT_COPY_METHOD: Method = Reflection.getMethodSuppressed(CRAFT_ITEM_STACK_CLASS, "asBukkitCopy", ITEM_STACK_CLASS)!!
+    private val ITEM_STACK_CLASS =
+        MinecraftReflection.getNMSClass("ItemStack")
+            ?: Reflection.getClassSuppressed(
+                "net.minecraft.world.item.ItemStack"
+            )!!
 
-    private val EQUIPMENT_ITEMS = hashMapOf<Material, EquipmentSlot>().also {
-        it[Material.LEATHER_HELMET] = EquipmentSlot.HEAD
-        it[Material.LEATHER_CHESTPLATE] = EquipmentSlot.CHEST
-        it[Material.LEATHER_LEGGINGS] = EquipmentSlot.LEGS
-        it[Material.LEATHER_BOOTS] = EquipmentSlot.FEET
+    private val CRAFT_ITEM_STACK_CLASS =
+        MinecraftReflection.getCraftBukkitClass("inventory.CraftItemStack")!!
 
-        it[Material.IRON_HELMET] = EquipmentSlot.HEAD
-        it[Material.IRON_CHESTPLATE] = EquipmentSlot.CHEST
-        it[Material.IRON_LEGGINGS] = EquipmentSlot.LEGS
-        it[Material.IRON_BOOTS] = EquipmentSlot.FEET
+    private val AS_NMS_COPY_METHOD = Reflection
+        .getMethodSuppressed(
+            CRAFT_ITEM_STACK_CLASS,
+            "asNMSCopy", ItemStack::class.java
+        )!!
 
-        it[Material.GOLD_HELMET] = EquipmentSlot.HEAD
-        it[Material.GOLD_CHESTPLATE] = EquipmentSlot.CHEST
-        it[Material.GOLD_LEGGINGS] = EquipmentSlot.LEGS
-        it[Material.GOLD_BOOTS] = EquipmentSlot.FEET
+    private val AS_BUKKIT_COPY_METHOD = Reflection
+        .getMethodSuppressed(
+            CRAFT_ITEM_STACK_CLASS,
+            "asBukkitCopy", ITEM_STACK_CLASS
+        )!!
 
-        it[Material.DIAMOND_HELMET] = EquipmentSlot.HEAD
-        it[Material.DIAMOND_CHESTPLATE] = EquipmentSlot.CHEST
-        it[Material.DIAMOND_LEGGINGS] = EquipmentSlot.LEGS
-        it[Material.DIAMOND_BOOTS] = EquipmentSlot.FEET
+    private val EQUIPMENT_ITEMS =
+        mutableMapOf<XMaterial, EquipmentSlot>()
+            .apply {
+                this[XMaterial.LEATHER_HELMET] = EquipmentSlot.HEAD
+                this[XMaterial.LEATHER_CHESTPLATE] = EquipmentSlot.CHEST
+                this[XMaterial.LEATHER_LEGGINGS] = EquipmentSlot.LEGS
+                this[XMaterial.LEATHER_BOOTS] = EquipmentSlot.FEET
 
-        it[Material.PUMPKIN] = EquipmentSlot.HEAD
-    }
+                this[XMaterial.IRON_HELMET] = EquipmentSlot.HEAD
+                this[XMaterial.IRON_CHESTPLATE] = EquipmentSlot.CHEST
+                this[XMaterial.IRON_LEGGINGS] = EquipmentSlot.LEGS
+                this[XMaterial.IRON_BOOTS] = EquipmentSlot.FEET
 
-    private val ARMOR_EQUIPMENT_SLOTS = listOf(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+                this[XMaterial.GOLDEN_HELMET] = EquipmentSlot.HEAD
+                this[XMaterial.GOLDEN_CHESTPLATE] = EquipmentSlot.CHEST
+                this[XMaterial.GOLDEN_LEGGINGS] = EquipmentSlot.LEGS
+                this[XMaterial.GOLDEN_BOOTS] = EquipmentSlot.FEET
+
+                this[XMaterial.DIAMOND_HELMET] = EquipmentSlot.HEAD
+                this[XMaterial.DIAMOND_CHESTPLATE] = EquipmentSlot.CHEST
+                this[XMaterial.DIAMOND_LEGGINGS] = EquipmentSlot.LEGS
+                this[XMaterial.DIAMOND_BOOTS] = EquipmentSlot.FEET
+
+                this[XMaterial.PUMPKIN] = EquipmentSlot.HEAD
+            }
+
+    private val ARMOR_EQUIPMENT_SLOTS = listOf(
+        EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
+    )
 
     private val SWORDS = listOf(
-        Material.WOOD_SWORD,
-        Material.GOLD_SWORD,
-        Material.STONE_SWORD,
-        Material.IRON_SWORD,
-        Material.DIAMOND_SWORD
+        XMaterial.WOODEN_SWORD,
+        XMaterial.GOLDEN_SWORD,
+        XMaterial.STONE_SWORD,
+        XMaterial.IRON_SWORD,
+        XMaterial.DIAMOND_SWORD
     )
 
     @JvmStatic
@@ -338,7 +357,9 @@ object ItemUtils {
      */
     @JvmStatic
     fun getPlayerHeadItem(owner: String): ItemStack {
-        val itemStack = ItemStack(Material.SKULL_ITEM, 1, 3)
+        val itemStack = ItemStack(
+            XMaterial.SKELETON_SKULL.parseMaterial(), 1, 3
+        )
         val itemMeta = itemStack.itemMeta as SkullMeta
 
         itemMeta.owner = owner
@@ -373,7 +394,7 @@ object ItemUtils {
 
     @JvmStatic
     fun getEquipmentSlot(type: Material): EquipmentSlot? {
-        return EQUIPMENT_ITEMS[type]
+        return EQUIPMENT_ITEMS[XMaterial.matchXMaterial(type)]
     }
 
     @JvmStatic
@@ -382,18 +403,21 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun getSwords(): List<Material> {
+    fun getSwords(): List<XMaterial> {
         return SWORDS
     }
 
     @JvmStatic
     fun isSword(type: Material): Boolean {
-        return SWORDS.contains(type)
+        return SWORDS.contains(
+            XMaterial.matchXMaterial(type)
+        )
     }
 
     @JvmStatic
     fun isSword(item: ItemStack): Boolean {
-        return SWORDS.contains(item.type)
+        return SWORDS.contains(
+            XMaterial.matchXMaterial(item.type)
+        )
     }
-
 }
