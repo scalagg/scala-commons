@@ -22,8 +22,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
-object ItemUtils {
-
+object ItemUtils
+{
     private val ITEM_STACK_CLASS =
         MinecraftReflection.getNMSClass("ItemStack")
             ?: Reflection.getClassSuppressed(
@@ -84,20 +84,24 @@ object ItemUtils {
     )
 
     @JvmStatic
-    fun getNmsCopy(item: ItemStack): Any {
+    fun getNmsCopy(item: ItemStack): Any
+    {
         return AS_NMS_COPY_METHOD.invoke(null, item)
     }
 
     @JvmStatic
-    fun getBukkitCopy(item: Any): ItemStack {
+    fun getBukkitCopy(item: Any): ItemStack
+    {
         return AS_BUKKIT_COPY_METHOD.invoke(null, item) as ItemStack
     }
 
     @JvmStatic
-    fun getName(item: ItemStack): String {
+    fun getName(item: ItemStack): String
+    {
         var name = Reflection.callMethod(getNmsCopy(item), "getName") as String
 
-        if (name.contains(".")) {
+        if (name.contains("."))
+        {
             name = WordUtils.capitalize(item.type.toString().toLowerCase().replace("_", " "))
         }
 
@@ -105,25 +109,32 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun getDisplayName(itemStack: ItemStack): String {
-        return if (itemStack.hasItemMeta() && itemStack.itemMeta.hasDisplayName()) {
+    fun getDisplayName(itemStack: ItemStack): String
+    {
+        return if (itemStack.hasItemMeta() && itemStack.itemMeta.hasDisplayName())
+        {
             itemStack.itemMeta.displayName
-        } else {
+        } else
+        {
             getName(itemStack)
         }
     }
 
     @JvmStatic
-    fun getChatName(itemStack: ItemStack): String {
-        return if (itemStack.hasItemMeta() && itemStack.itemMeta.hasDisplayName()) {
+    fun getChatName(itemStack: ItemStack): String
+    {
+        return if (itemStack.hasItemMeta() && itemStack.itemMeta.hasDisplayName())
+        {
             ChatColor.stripColor(itemStack.itemMeta.displayName)
-        } else {
+        } else
+        {
             getName(itemStack)
         }
     }
 
     @JvmStatic
-    fun setMonsterEggType(item: ItemStack, type: EntityType): ItemStack {
+    fun setMonsterEggType(item: ItemStack, type: EntityType): ItemStack
+    {
         val idTag = NBTUtil.newTag()
         NBTUtil.setString(idTag, "id", type.getName())
 
@@ -136,12 +147,14 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun makeTexturedSkull(texture: String): ItemStack {
+    fun makeTexturedSkull(texture: String): ItemStack
+    {
         return applySkullTexture(ItemStack(Material.SKULL_ITEM, 1, 3), texture)
     }
 
     @JvmStatic
-    fun applySkullTexture(itemStack: ItemStack, texture: String): ItemStack {
+    fun applySkullTexture(itemStack: ItemStack, texture: String): ItemStack
+    {
         val nmsCopy = getNmsCopy(itemStack)
 
         val tag = NBTUtil.getOrCreateTag(nmsCopy)
@@ -166,30 +179,38 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun isSimilar(first: ItemStack, second: ItemStack): Boolean {
-        if (first.type != second.type) {
+    fun isSimilar(first: ItemStack, second: ItemStack): Boolean
+    {
+        if (first.type != second.type)
+        {
             return false
         }
 
-        if (first.durability != second.durability) {
+        if (first.durability != second.durability)
+        {
             return false
         }
 
-        if (first.hasItemMeta() != second.hasItemMeta()) {
+        if (first.hasItemMeta() != second.hasItemMeta())
+        {
             return false
         }
 
-        if (first.itemMeta.hasDisplayName() != second.itemMeta.hasDisplayName()) {
+        if (first.itemMeta.hasDisplayName() != second.itemMeta.hasDisplayName())
+        {
             return false
         }
 
-        if (first.itemMeta.hasDisplayName()) {
-            if (first.itemMeta.displayName != second.itemMeta.displayName) {
+        if (first.itemMeta.hasDisplayName())
+        {
+            if (first.itemMeta.displayName != second.itemMeta.displayName)
+            {
                 return false
             }
         }
 
-        if (first.itemMeta.hasLore() != second.itemMeta.hasLore()) {
+        if (first.itemMeta.hasLore() != second.itemMeta.hasLore())
+        {
             return false
         }
 
@@ -197,32 +218,40 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun hasSameLore(first: ItemStack, second: ItemStack): Boolean {
-        if (first.hasItemMeta() != second.hasItemMeta()) {
+    fun hasSameLore(first: ItemStack, second: ItemStack): Boolean
+    {
+        if (first.hasItemMeta() != second.hasItemMeta())
+        {
             return false
         }
 
-        if (!first.hasItemMeta()) {
+        if (!first.hasItemMeta())
+        {
             return true
         }
 
-        if (first.enchantments.isEmpty() && second.enchantments.isEmpty()) {
+        if (first.enchantments.isEmpty() && second.enchantments.isEmpty())
+        {
             return true
         }
 
         val firstLore = first.itemMeta.lore!!
         val secondLore = second.itemMeta.lore!!
 
-        if (firstLore.isEmpty() && secondLore.isEmpty()) {
+        if (firstLore.isEmpty() && secondLore.isEmpty())
+        {
             return true
         }
 
-        if (firstLore.size != secondLore.size) {
+        if (firstLore.size != secondLore.size)
+        {
             return false
         }
 
-        for (i in firstLore.indices) {
-            if (firstLore[i] != secondLore[i]) {
+        for (i in firstLore.indices)
+        {
+            if (firstLore[i] != secondLore[i])
+            {
                 return false
             }
         }
@@ -231,21 +260,27 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun hasSameEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        if (first.enchantments.isEmpty() && second.enchantments.isEmpty()) {
+    fun hasSameEnchantments(first: ItemStack, second: ItemStack): Boolean
+    {
+        if (first.enchantments.isEmpty() && second.enchantments.isEmpty())
+        {
             return true
         }
 
-        if (first.enchantments.size != second.enchantments.size) {
+        if (first.enchantments.size != second.enchantments.size)
+        {
             return false
         }
 
-        for (enchantment in first.enchantments) {
-            if (!second.containsEnchantment(enchantment.key)) {
+        for (enchantment in first.enchantments)
+        {
+            if (!second.containsEnchantment(enchantment.key))
+            {
                 return false
             }
 
-            if (enchantment.value != second.getEnchantmentLevel(enchantment.key)) {
+            if (enchantment.value != second.getEnchantmentLevel(enchantment.key))
+            {
                 return false
             }
         }
@@ -254,10 +289,12 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun itemTagHasKey(itemStack: ItemStack, key: String): Boolean {
+    fun itemTagHasKey(itemStack: ItemStack, key: String): Boolean
+    {
         val nmsCopy = getNmsCopy(itemStack)
 
-        if (!NBTUtil.hasTag(nmsCopy)) {
+        if (!NBTUtil.hasTag(nmsCopy))
+        {
             return false
         }
 
@@ -266,10 +303,12 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun readItemTagKey(itemStack: ItemStack, key: String): Any {
+    fun readItemTagKey(itemStack: ItemStack, key: String): Any
+    {
         val nmsCopy = getNmsCopy(itemStack)
 
-        if (!NBTUtil.hasTag(nmsCopy)) {
+        if (!NBTUtil.hasTag(nmsCopy))
+        {
             return false
         }
 
@@ -278,13 +317,15 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun addToItemTag(itemStack: ItemStack, key: String, value: String, preserve: Boolean = false): ItemStack {
+    fun addToItemTag(itemStack: ItemStack, key: String, value: String, preserve: Boolean = false): ItemStack
+    {
         val nmsCopy = getNmsCopy(itemStack)
         val tag = NBTUtil.getOrCreateTag(nmsCopy)
 
         NBTUtil.setString(tag, key, value)
 
-        if (preserve) {
+        if (preserve)
+        {
             preserveItemNBT(nmsCopy, tag, key)
         }
 
@@ -294,14 +335,17 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun addToItemTag(itemStack: ItemStack, pairs: List<Pair<String, String>>, preserve: Boolean = false): ItemStack {
+    fun addToItemTag(itemStack: ItemStack, pairs: List<Pair<String, String>>, preserve: Boolean = false): ItemStack
+    {
         val nmsCopy = getNmsCopy(itemStack)
         val tag = NBTUtil.getOrCreateTag(nmsCopy)
 
-        for (pair in pairs) {
+        for (pair in pairs)
+        {
             NBTUtil.setString(tag, pair.first, pair.second)
 
-            if (preserve) {
+            if (preserve)
+            {
                 preserveItemNBT(nmsCopy, tag, pair.first)
             }
         }
@@ -329,7 +373,8 @@ object ItemUtils {
 //    }
 
     @JvmStatic
-    fun preserveItemNBT(itemStack: ItemStack, key: String): ItemStack {
+    fun preserveItemNBT(itemStack: ItemStack, key: String): ItemStack
+    {
         val nmsCopy = getNmsCopy(itemStack)
         val tag = NBTUtil.getOrCreateTag(nmsCopy)
 
@@ -339,13 +384,16 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun preserveItemNBT(item: Any, tag: Any, key: String) {
-        if (NBTUtil.hasKey(tag, "PreserveNBT")) {
+    fun preserveItemNBT(item: Any, tag: Any, key: String)
+    {
+        if (NBTUtil.hasKey(tag, "PreserveNBT"))
+        {
             val currentKeys = NBTUtil.getString(tag, "PreserveNBT").split(",").toHashSet()
             currentKeys.add(key)
 
             NBTUtil.setString(tag, "PreserveNBT", currentKeys.joinToString(separator = ","))
-        } else {
+        } else
+        {
             NBTUtil.setString(tag, "PreserveNBT", key)
         }
 
@@ -356,7 +404,8 @@ object ItemUtils {
      * Gets a player head item with the skin of the given [owner].
      */
     @JvmStatic
-    fun getPlayerHeadItem(owner: String): ItemStack {
+    fun getPlayerHeadItem(owner: String): ItemStack
+    {
         val itemStack = ItemStack(
             XMaterial.SKELETON_SKULL.parseMaterial(), 1, 3
         )
@@ -379,10 +428,13 @@ object ItemUtils {
      * Applies the given [color] to the given [itemStack]'s metadata if the [itemStack] is a leather armor type.
      */
     @JvmStatic
-    fun colorLeatherArmor(itemStack: ItemStack, color: Color): ItemStack {
+    fun colorLeatherArmor(itemStack: ItemStack, color: Color): ItemStack
+    {
         if (!LEATHER_ARMOR_TYPES.contains(
                 XMaterial.matchXMaterial(itemStack.type)
-        )) {
+            )
+        )
+        {
             throw IllegalArgumentException("Item stack is not of leather armor type!")
         }
 
@@ -393,29 +445,34 @@ object ItemUtils {
     }
 
     @JvmStatic
-    fun getEquipmentSlot(type: Material): EquipmentSlot? {
+    fun getEquipmentSlot(type: Material): EquipmentSlot?
+    {
         return EQUIPMENT_ITEMS[XMaterial.matchXMaterial(type)]
     }
 
     @JvmStatic
-    fun isArmorEquipment(type: Material): Boolean {
+    fun isArmorEquipment(type: Material): Boolean
+    {
         return ARMOR_EQUIPMENT_SLOTS.contains(getEquipmentSlot(type))
     }
 
     @JvmStatic
-    fun getSwords(): List<XMaterial> {
+    fun getSwords(): List<XMaterial>
+    {
         return SWORDS
     }
 
     @JvmStatic
-    fun isSword(type: Material): Boolean {
+    fun isSword(type: Material): Boolean
+    {
         return SWORDS.contains(
             XMaterial.matchXMaterial(type)
         )
     }
 
     @JvmStatic
-    fun isSword(item: ItemStack): Boolean {
+    fun isSword(item: ItemStack): Boolean
+    {
         return SWORDS.contains(
             XMaterial.matchXMaterial(item.type)
         )
