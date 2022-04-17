@@ -14,7 +14,6 @@ import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.library.HelperLibraryHandler
-import gg.scala.commons.reflections.PackageIndexer
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
@@ -76,9 +75,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         if (!java11Enabled)
         {
-            logger.info("[Compatability] This version of ${description.name} does not support java ${
-                SystemUtils.getJavaVersion()
-            }!")
+            logger.info(
+                "[Compatability] This version of ${description.name} does not support java ${
+                    SystemUtils.getJavaVersion()
+                }!"
+            )
             logger.info("[Compatability] Please use a version higher than 11.")
 
             Bukkit.shutdown()
@@ -165,7 +166,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         for (customizer in CommandManagerCustomizers.customizers)
         {
-            customizer.methods.forEach { method ->
+            customizer.methods.filter {
+                it.getAnnotation(CommandManagerCustomizer::class.java) != null
+            }.forEach { method ->
                 kotlin.runCatching {
                     method.invoke(
                         customizer.objectInstance()
@@ -175,11 +178,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to customize command manager", it)
                 }.onSuccess {
-                    logger.info("[Commands] [Default] Customized command manager through ${
-                        method.declaringClass.simpleName
-                    }#${
-                        method.name
-                    }().")
+                    logger.info(
+                        "[Commands] [Default] Customized command manager through ${
+                            method.declaringClass.simpleName
+                        }#${
+                            method.name
+                        }()."
+                    )
                 }
             }
         }
@@ -199,11 +204,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to customize command manager", it)
                 }.onSuccess {
-                    logger.info("[Commands] Customized command manager through ${
-                        method.declaringClass.simpleName
-                    }#${
-                        method.name
-                    }().")
+                    logger.info(
+                        "[Commands] Customized command manager through ${
+                            method.declaringClass.simpleName
+                        }#${
+                            method.name
+                        }()."
+                    )
                 }
             }
 
@@ -266,7 +273,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         val processors =
             CustomAnnotationProcessors
-            .processors
+                .processors
 
         for (processor in processors)
         {
@@ -276,11 +283,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     it.objectInstance() ?: it.newInstance()
                 }
                 .forEach {
-                    this.logger.info("[Processor] Processing ${
-                        it.javaClass.simpleName
-                    } with @${
-                        processor.key.java.simpleName
-                    }.")
+                    this.logger.info(
+                        "[Processor] Processing ${
+                            it.javaClass.simpleName
+                        } with @${
+                            processor.key.java.simpleName
+                        }."
+                    )
 
                     processor.value.invoke(it)
                 }
