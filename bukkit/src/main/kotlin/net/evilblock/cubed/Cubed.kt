@@ -61,6 +61,11 @@ import java.util.logging.Level
         PluginDependency("ProtocolLib")
     ]
 )
+@MavenLibrary(
+    groupId = "org.jetbrains.kotlin",
+    artifactId = "kotlin-reflect",
+    version = "1.6.20"
+)
 class Cubed : ExtendedScalaPlugin()
 {
     companion object
