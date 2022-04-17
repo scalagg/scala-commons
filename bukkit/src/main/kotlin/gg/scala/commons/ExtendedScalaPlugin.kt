@@ -284,6 +284,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         annotation.delay,
                         annotation.value
                     )
+                    .bindWith(this)
             }
 
         val processors =
