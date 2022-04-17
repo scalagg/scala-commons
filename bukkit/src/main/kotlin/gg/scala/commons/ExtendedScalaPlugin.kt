@@ -168,7 +168,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             customizer.methods.forEach { method ->
                 kotlin.runCatching {
                     method.invoke(
-                        customizer, this.commandManager
+                        customizer.objectInstance()
+                            ?: customizer.newInstance(),
+                        this.commandManager
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to customize command manager", it)

@@ -6,9 +6,10 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsPerPage: Int = 9)
+abstract class PaginatedResult<T>
+@JvmOverloads
+constructor(private val resultsPerPage: Int = 9)
 {
-
     init
     {
         assert(resultsPerPage > 0)
@@ -33,7 +34,7 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
 
         if (page <= 0 || page > maxPages)
         {
-            sender.sendMessage(ChatColor.RED.toString() + "Page '" + page + "' not found. (" + ChatColor.YELLOW + "1 - " + maxPages + ChatColor.RED + ")")
+            sender.sendMessage(ChatColor.RED.toString() + "Page '" + page + "' was not found. (" + ChatColor.YELLOW + "1 - " + maxPages + ChatColor.RED + ")")
             return
         }
 
@@ -103,7 +104,5 @@ abstract class PaginatedResult<T> @JvmOverloads constructor(private val resultsP
     }
 
     abstract fun getHeader(page: Int, maxPages: Int): String
-
     abstract fun format(result: T, resultIndex: Int): String
-
 }
