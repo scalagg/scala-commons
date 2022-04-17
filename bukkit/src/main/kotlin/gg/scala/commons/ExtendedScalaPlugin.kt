@@ -301,11 +301,17 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         ).value
                     )
             }
-            .forEach {
+            .forEach { clazz ->
                 kotlin.runCatching {
                     this.flavor.inject(
-                        it.objectInstance() ?: it.newInstance()
+                        clazz.objectInstance() ?: clazz.newInstance()
                     )
+                }.onSuccess {
+                    logger.info("[Feature] Enabled feature ${
+                        clazz.simpleName
+                    } depending on plugin ${
+                        clazz.getAnnotation(SoftDependency::class.java).value
+                    }!")
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to enable dependant feature", it)
                 }
