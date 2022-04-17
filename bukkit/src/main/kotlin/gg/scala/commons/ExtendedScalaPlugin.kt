@@ -8,6 +8,7 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.container.ContainerPreEnable
 import gg.scala.commons.annotations.custom.CustomAnnotationProcessors
 import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
@@ -90,6 +91,16 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.flavor = Flavor.create(
             this::class, FlavorOptions(logger)
         )
+
+        this.packageIndexer
+            .getMethodsAnnotatedWith<ContainerPreEnable>()
+            .forEach {
+                kotlin.runCatching {
+                    it.invoke(this)
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to PreEnable container part", it)
+                }
+            }
 
         this.flavor {
             binders.add(
