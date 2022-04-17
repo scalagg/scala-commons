@@ -16,6 +16,8 @@ import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.config.ConfigContainerized
 import gg.scala.commons.library.HelperLibraryHandler
+import gg.scala.commons.localization.container.LocalizationContainerContextual
+import gg.scala.commons.localization.container.LocalizationContainerized
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
@@ -52,6 +54,16 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     val configContainerized by lazy {
         ConfigContainerized(this)
+    }
+
+    val localizationContainerized by lazy {
+        LocalizationContainerized(this)
+    }
+
+    val containerized by lazy {
+        mutableListOf(
+            configContainerized, localizationContainerized
+        )
     }
 
     private val ignoreFlavor = this::class.java
@@ -130,7 +142,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     .loadAll(it::class.java)
             }
 
-        this.configContainerized.inject()
+        for (containerized in this.containerized)
+        {
+            containerized.inject()
+        }
     }
 
     override fun enable()
@@ -168,7 +183,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.configContainerized.loadAll()
+        for (containerized in this.containerized)
+        {
+            containerized.loadAll()
+        }
 
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
@@ -354,6 +372,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     {
         return this.configContainerized
             .container<T>().getModelAs()
+    }
+
+    fun localized(identifier: String): LocalizationContainerContextual
+    {
+        return this.localizationContainerized.container(identifier)
     }
 
     private fun Class<*>.objectInstance(): Any?

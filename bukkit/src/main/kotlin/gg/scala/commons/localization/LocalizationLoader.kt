@@ -1,4 +1,4 @@
-package gg.scala.commons.localize
+package gg.scala.commons.localization
 
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -9,9 +9,9 @@ import java.io.InputStreamReader
  * @since 3/30/2022
  */
 enum class LocalizationLoader(
-    val load: (File) -> Map<String, String>,
-    val loadReader: (InputStreamReader) -> Map<String, String>,
-    val save: (Map<String, String>, File) -> Unit,
+    val load: (File) -> Map<String, Any>,
+    val loadReader: (InputStreamReader) -> Map<String, Any>,
+    val save: (Map<String, Any>, File) -> Unit,
     val fileExtension: String
 )
 {
@@ -19,13 +19,13 @@ enum class LocalizationLoader(
         val yaml = YamlConfiguration()
         yaml.load(it)
 
-        return@file mutableMapOf<String, String>()
+        return@file mutableMapOf<String, Any>()
             .apply {
                 val keys = yaml.getKeys(true)
 
                 keys.forEach { key ->
                     val value = yaml
-                        .getString(key)
+                        .get(key)
 
                     this[key] = value
                 }
@@ -34,13 +34,13 @@ enum class LocalizationLoader(
         val yaml = YamlConfiguration()
         yaml.load(it)
 
-        return@reader mutableMapOf<String, String>()
+        return@reader mutableMapOf<String, Any>()
             .apply {
                 val keys = yaml.getKeys(true)
 
                 keys.forEach { key ->
                     val value = yaml
-                        .getString(key)
+                        .get(key)
 
                     this[key] = value
                 }

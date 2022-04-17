@@ -1,4 +1,4 @@
-package gg.scala.commons.localize
+package gg.scala.commons.localization
 
 /**
  * @author GrowlyX

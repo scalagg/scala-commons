@@ -2,6 +2,7 @@ package gg.scala.commons.config
 
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.model.Containerized
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
@@ -11,7 +12,7 @@ import kotlin.reflect.KClass
  */
 class ConfigContainerized(
     val plugin: ExtendedScalaPlugin
-)
+) : Containerized
 {
     private val configFactory by lazy {
         ConfigFactory.newFactory(plugin)
@@ -25,7 +26,7 @@ class ConfigContainerized(
         return this.configContainers[T::class]!!
     }
 
-    fun inject()
+    override fun inject()
     {
         plugin.flavor {
             this.reflections
@@ -46,8 +47,7 @@ class ConfigContainerized(
         }
     }
 
-
-    fun loadAll()
+    override fun loadAll()
     {
         for (configContainer in this.configContainers)
         {
