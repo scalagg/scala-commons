@@ -34,6 +34,12 @@ class ConfigContainer(
             this.model = factory.fromFile(
                 annotation.value, annotation.model.java
             )
+        }.onSuccess {
+            this.plugin.logger.info("[Config] Loaded config ${
+                annotation.value
+            } injected into ${
+                annotation.model.simpleName
+            }.")
         }.onFailure {
             this.plugin.logger.info("[Config] Failed to load config by name \"${annotation.value}\"!")
         }

@@ -40,6 +40,12 @@ class ConfigContainerized(
 
                     for (config in configs)
                     {
+                        plugin.logger.info("[Config] Injected config ${
+                            config.value
+                        } into ${
+                            config.model.simpleName
+                        }.")
+
                         configContainers[config.model] =
                             ConfigContainer(plugin, configFactory, config)
                     }
