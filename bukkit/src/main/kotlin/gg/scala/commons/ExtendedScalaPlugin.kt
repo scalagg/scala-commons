@@ -13,6 +13,7 @@ import gg.scala.commons.annotations.container.flavor.LazyStartup
 import gg.scala.commons.annotations.custom.CustomAnnotationProcessors
 import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
+import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.config.ConfigContainerized
@@ -287,6 +288,26 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     it.invoke(this, this.commandManager)
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to manually register command", it)
+                }
+            }
+
+        this.packageIndexer
+            .getTypesAnnotatedWith<SoftDependency>()
+            .filter {
+                this.server.pluginManager
+                    .isPluginEnabled(
+                        it.getAnnotation(
+                            SoftDependency::class.java
+                        ).value
+                    )
+            }
+            .forEach {
+                kotlin.runCatching {
+                    this.flavor.inject(
+                        it.objectInstance() ?: it.newInstance()
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to enable dependant feature", it)
                 }
             }
 
