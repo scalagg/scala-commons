@@ -41,7 +41,7 @@ dependencies {
     implementation "com.google.code.gson:gson:2.9.0"
 
     // other
-    implementation "co.aikar:acf-paper:0.5.0-SNAPSHOT"
+    implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
     implementation "com.github.cryptomorin:XSeries:8.7.1"
     implementation "org.mongodb:mongodb-driver:3.12.10"
     implementation "com.github.ben-manes.caffeine:caffeine:3.0.6"
