@@ -9,6 +9,7 @@ import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.annotations.container.ContainerPreEnable
+import gg.scala.commons.annotations.container.flavor.LazyStartup
 import gg.scala.commons.annotations.custom.CustomAnnotationProcessors
 import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
@@ -346,7 +347,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
         }
 
-        this.flavor.startup()
+        if (
+            this::class.java
+                .getAnnotation(LazyStartup::class.java) == null
+        )
+        {
+            this.flavor.startup()
+        }
     }
 
     override fun disable()
