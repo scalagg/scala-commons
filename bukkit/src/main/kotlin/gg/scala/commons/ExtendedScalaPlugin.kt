@@ -27,6 +27,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Server
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.lang.reflect.Method
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -164,33 +165,42 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             secondary = ChatColor.getByChar(CC.SEC[1])
         )
 
+        val customized = mutableListOf<Method>()
+
         for (customizer in CommandManagerCustomizers.customizers)
         {
-            customizer.methods.filter {
-                it.getAnnotation(CommandManagerCustomizer::class.java) != null
-            }.forEach { method ->
-                kotlin.runCatching {
-                    method.invoke(
-                        customizer.objectInstance()
-                            ?: customizer.newInstance(),
-                        this.commandManager
-                    )
-                }.onFailure {
-                    logger.log(Level.WARNING, "Failed to customize command manager", it)
-                }.onSuccess {
-                    logger.info(
-                        "[Commands] [Default] Customized command manager through ${
-                            method.declaringClass.simpleName
-                        }#${
-                            method.name
-                        }()."
-                    )
+            customizer.methods
+                .filter {
+                    it.getAnnotation(CommandManagerCustomizer::class.java) != null
                 }
-            }
+                .forEach { method ->
+                    kotlin.runCatching {
+                        method.invoke(
+                            customizer.objectInstance()
+                                ?: customizer.newInstance(),
+                            this.commandManager
+                        )
+                    }.onFailure {
+                        this.logger.log(Level.WARNING, "Failed to customize command manager", it)
+                    }.onSuccess {
+                        customized.add(method)
+
+                        this.logger.info(
+                            "[Commands] [Default] Customized command manager through ${
+                                method.declaringClass.simpleName
+                            }#${
+                                method.name
+                            }()."
+                        )
+                    }
+                }
         }
 
         this.packageIndexer
             .getMethodsAnnotatedWith<CommandManagerCustomizer>()
+            .filter {
+                !customized.contains(it)
+            }
             .forEach { method ->
                 val declaring = method.declaringClass
                     .objectInstance() ?: method.declaringClass.newInstance()
