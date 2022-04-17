@@ -231,8 +231,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
             .forEach {
                 kotlin.runCatching {
+                    val instance = it.objectInstance()
+                        ?: it.newInstance()
+
+                    this.flavor.inject(instance)
+
                     this.commandManager.registerCommand(
-                        (it.objectInstance() ?: it.newInstance()) as ScalaCommand
+                        instance as ScalaCommand
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)
