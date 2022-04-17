@@ -186,11 +186,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         customized.add(method)
 
                         this.logger.info(
-                            "[Commands] [Default] Customized command manager through ${
+                            "[Commands] Command manager customization applied from ${
                                 method.declaringClass.simpleName
-                            }#${
-                                method.name
-                            }()."
+                            }."
                         )
                     }
                 }
@@ -215,11 +213,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     logger.log(Level.WARNING, "Failed to customize command manager", it)
                 }.onSuccess {
                     logger.info(
-                        "[Commands] Customized command manager through ${
+                        "[Commands] Command manager customization applied from ${
                             method.declaringClass.simpleName
-                        }#${
-                            method.name
-                        }()."
+                        }."
                     )
                 }
             }
