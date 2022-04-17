@@ -14,6 +14,7 @@ import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.config.ConfigContainerized
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
@@ -33,8 +34,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
- * An extension of [ExtendedJavaPlugin] with support
- * for [HelperLibraryHandler]'s runtime library installations.
+ * An extension of [ExtendedJavaPlugin] with
+ * support for our custom annotation-based
+ * plugin framework.
  *
  * @author GrowlyX
  * @since 10/15/2021
@@ -47,6 +49,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     private lateinit var flavor: Flavor
     private lateinit var commandManager: CubedCommandManager
+
+    val configContainerized by lazy {
+        ConfigContainerized(this)
+    }
 
     private val ignoreFlavor = this::class.java
         .getAnnotation(IgnoreProvidedFlavor::class.java) != null
@@ -123,6 +129,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 HelperLibraryHandler
                     .loadAll(it::class.java)
             }
+
+        this.configContainerized.inject()
     }
 
     override fun enable()
@@ -159,6 +167,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     logger.log(Level.WARNING, "Failed to AutoBind", it)
                 }
             }
+
+        this.configContainerized.loadAll()
 
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
@@ -338,6 +348,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.commandManager.unregisterCommands()
         this.flavor.close()
+    }
+
+    inline fun <reified T> config(): T
+    {
+        return this.configContainerized
+            .container<T>().getModelAs()
     }
 
     private fun Class<*>.objectInstance(): Any?

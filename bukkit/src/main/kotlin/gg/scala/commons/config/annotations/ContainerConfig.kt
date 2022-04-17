@@ -1,0 +1,16 @@
+package gg.scala.commons.config.annotations
+
+import kotlin.reflect.KClass
+
+/**
+ * @author GrowlyX
+ * @since 4/17/2022
+ */
+@Target(
+    AnnotationTarget.CLASS
+)
+@Repeatable
+annotation class ContainerConfig(
+    val value: String,
+    val model: KClass<out Any>
+)
