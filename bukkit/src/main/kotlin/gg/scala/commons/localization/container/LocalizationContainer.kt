@@ -38,7 +38,7 @@ class LocalizationContainer(
 
     fun getComponent(
         id: String,
-        vararg replacements: Pair<String, String>
+        vararg replacements: Pair<String, Any>
     ): Component
     {
         val value = this.cache
@@ -52,6 +52,8 @@ class LocalizationContainer(
             val component =
                 Component.empty()
 
+            var first = false
+
             for (message in list)
             {
                 var newMessage = message
@@ -59,13 +61,20 @@ class LocalizationContainer(
                 for (replacement in replacements)
                 {
                     newMessage = newMessage.replace(
-                        replacement.first, replacement.second
+                        "{${replacement.first}}",
+                        replacement.second.toString()
                     )
                 }
 
-                component.append(
-                    Component.newline()
-                )
+                if (!first)
+                {
+                    first = true
+                } else
+                {
+                    component.append(
+                        Component.newline()
+                    )
+                }
 
                 component.append(
                     this.miniMessage.deserialize(newMessage)
@@ -83,7 +92,8 @@ class LocalizationContainer(
             for (replacement in replacements)
             {
                 newMessage = newMessage.replace(
-                    replacement.first, replacement.second
+                    "{${replacement.first}}",
+                    replacement.second.toString()
                 )
             }
 
