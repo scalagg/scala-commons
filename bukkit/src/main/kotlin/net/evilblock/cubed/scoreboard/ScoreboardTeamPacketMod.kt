@@ -9,11 +9,14 @@ package net.evilblock.cubed.scoreboard
 
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
-import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.entity.Player
 
-class ScoreboardTeamPacketMod(teamName: String, prefix: String, suffix: String, players: MutableCollection<String>?, action: Int) {
-
+class ScoreboardTeamPacketMod(
+    teamName: String, prefix: String,
+    suffix: String, players: MutableCollection<String>?,
+    action: Int
+)
+{
     private val packet = PACKET_PLAY_OUT_SCOREBOARD_TEAM.newInstance()
 
     init {

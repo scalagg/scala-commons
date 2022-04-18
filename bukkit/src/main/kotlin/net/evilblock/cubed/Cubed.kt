@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
-
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
@@ -18,6 +11,7 @@ import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.proxy.Plugins
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorOptions
 import gg.scala.store.serializer.serializers.GsonSerializer
@@ -47,10 +41,14 @@ import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
 import java.util.logging.Level
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 @Plugin(
     name = "Cubed",
@@ -71,7 +69,7 @@ class Cubed : ExtendedScalaPlugin()
     companion object
     {
         @JvmStatic
-        lateinit var instance: Cubed
+        val instance by Plugins.get<Cubed>()
     }
 
     private val aware by lazy {
@@ -85,8 +83,6 @@ class Cubed : ExtendedScalaPlugin()
     @ContainerEnable
     fun containerEnable()
     {
-        instance = this
-
         kotlin.runCatching {
             Reflection.DEBUG = config
                 .getBoolean("debug", false)
