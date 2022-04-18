@@ -24,28 +24,23 @@ class LocalizationContainerized(
 
     override fun inject()
     {
-        plugin.flavor {
-            this.reflections
-                .getTypesAnnotatedWith<Localized>()
-                .forEach {
-                    val configs = it
-                        .getAnnotationsByType(Localized::class.java)
-                        .filter { config ->
-                            !configContainers.contains(config.value)
-                        }
+        val configs = this::class.java
+            .getAnnotationsByType(Localized::class.java)
 
-                    for (config in configs)
-                    {
-                        configContainers[config.value] =
-                            LocalizationContainerContextual(
-                                plugin::class, config.value,
-                                plugin.dataFolder.apply {
-                                    if (!exists())
-                                        mkdir()
-                                }, config.loader
-                            )
-                    }
-                }
+        for (config in configs)
+        {
+            plugin.logger.info("[Localization] Injecting with ${
+                config.value
+            }'s contextual.")
+
+            configContainers[config.value] =
+                LocalizationContainerContextual(
+                    plugin::class, config.value,
+                    plugin.dataFolder.apply {
+                        if (!exists())
+                            mkdir()
+                    }, config.loader
+                )
         }
     }
 

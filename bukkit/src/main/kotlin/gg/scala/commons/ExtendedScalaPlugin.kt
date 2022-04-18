@@ -47,7 +47,7 @@ import java.util.logging.Logger
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
-    private val packageIndexer by lazy {
+    val packageIndexer by lazy {
         this.flavor.reflections
     }
 
@@ -152,7 +152,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     override fun enable()
     {
-        this.logger.info("Starting container enable process...")
+        this.logger.info("Starting container initialization process...")
 
         this.packageIndexer
             .getTypesAnnotatedWith<AutoBind>()

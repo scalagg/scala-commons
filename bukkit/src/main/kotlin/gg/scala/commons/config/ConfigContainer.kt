@@ -3,6 +3,7 @@ package gg.scala.commons.config
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import xyz.mkotb.configapi.ConfigFactory
+import java.util.logging.Level
 import kotlin.reflect.KClass
 
 /**
@@ -41,7 +42,7 @@ class ConfigContainer(
                 annotation.model.simpleName
             }.")
         }.onFailure {
-            this.plugin.logger.info("[Config] Failed to load config by name \"${annotation.value}\"!")
+            this.plugin.logger.log(Level.WARNING, "[Config] Failed to load config by name \"${annotation.value}\"!", it)
         }
     }
 }

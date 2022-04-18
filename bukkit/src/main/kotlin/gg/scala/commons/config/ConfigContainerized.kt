@@ -28,28 +28,21 @@ class ConfigContainerized(
 
     override fun inject()
     {
-        plugin.flavor {
-            this.reflections
-                .getTypesAnnotatedWith<ContainerConfig>()
-                .forEach {
-                    val configs = it
-                        .getAnnotationsByType(ContainerConfig::class.java)
-                        .filter { config ->
-                            !configContainers.contains(config.model)
-                        }
+        val configs = this.plugin::class.java
+            .getAnnotationsByType(
+                ContainerConfig::class.java
+            )
 
-                    for (config in configs)
-                    {
-                        plugin.logger.info("[Config] Injected config ${
-                            config.value
-                        } into ${
-                            config.model.simpleName
-                        }.")
+        for (config in configs)
+        {
+            plugin.logger.info("[Config] Injected config ${
+                config.value
+            } into ${
+                config.model.simpleName
+            }.")
 
-                        configContainers[config.model] =
-                            ConfigContainer(plugin, configFactory, config)
-                    }
-                }
+            configContainers[config.model] =
+                ConfigContainer(plugin, configFactory, config)
         }
     }
 
