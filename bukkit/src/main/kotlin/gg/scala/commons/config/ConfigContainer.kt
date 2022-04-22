@@ -17,6 +17,7 @@ class ConfigContainer(
 )
 {
     var model: Any? = null
+    var injected = false
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getModelAs(kClass: KClass<T>): T

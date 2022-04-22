@@ -20,7 +20,10 @@ import java.util.logging.Logger
 object HelperLibraryHandler
 {
     private val URL_INJECTOR = Suppliers.memoize {
-        URLClassLoaderAccess.create(LoaderUtils.getPlugin().javaClass.classLoader as URLClassLoader)
+        URLClassLoaderAccess.create(
+            LoaderUtils.getPlugin()
+                .javaClass.classLoader as URLClassLoader
+        )
     }
 
     /**

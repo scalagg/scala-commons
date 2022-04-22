@@ -26,24 +26,43 @@ class ConfigContainerized(
         return this.configContainers[T::class]!!
     }
 
+    val waitingLateInject =
+        mutableListOf<ContainerConfig>()
+
     override fun inject()
     {
         val configs = this.plugin::class.java
             .getAnnotationsByType(
                 ContainerConfig::class.java
             )
+            .filter {
+                !it.lateInject
+            }
 
         for (config in configs)
         {
-            plugin.logger.info("[Config] Injected config ${
+            if (config.lateInject)
+            {
+                waitingLateInject.add(config)
+                continue
+            }
+
+            inject(config)
+        }
+    }
+
+    fun inject(config: ContainerConfig)
+    {
+        plugin.logger.info(
+            "[Config] Injected config ${
                 config.value
             } into ${
                 config.model.simpleName
-            }.")
+            }."
+        )
 
-            configContainers[config.model] =
-                ConfigContainer(plugin, configFactory, config)
-        }
+        configContainers[config.model] =
+            ConfigContainer(plugin, configFactory, config)
     }
 
     override fun loadAll()

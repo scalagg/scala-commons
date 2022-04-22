@@ -12,5 +12,6 @@ import kotlin.reflect.KClass
 @Repeatable
 annotation class ContainerConfig(
     val value: String,
-    val model: KClass<out Any>
+    val model: KClass<out Any>,
+    val lateInject: Boolean = false
 )

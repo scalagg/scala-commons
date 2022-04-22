@@ -307,11 +307,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         clazz.objectInstance() ?: clazz.newInstance()
                     )
                 }.onSuccess {
-                    logger.info("[Feature] Enabled feature ${
-                        clazz.simpleName
-                    } depending on plugin ${
-                        clazz.getAnnotation(SoftDependency::class.java).value
-                    }!")
+                    logger.info(
+                        "[Feature] Enabled feature ${
+                            clazz.simpleName
+                        } depending on plugin ${
+                            clazz.getAnnotation(SoftDependency::class.java).value
+                        }!"
+                    )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to enable dependant feature", it)
                 }
@@ -404,6 +406,20 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     inline fun <reified T> config(): T
     {
+        val container = this
+            .configContainerized
+
+        val lateInject = container
+            .waitingLateInject
+            .find {
+                it.model == T::class.java
+            }
+
+        if (lateInject != null)
+        {
+            container.inject(lateInject)
+        }
+
         return this.configContainerized
             .container<T>().getModelAs()
     }
