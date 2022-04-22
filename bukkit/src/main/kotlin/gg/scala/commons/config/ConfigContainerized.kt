@@ -3,6 +3,7 @@ package gg.scala.commons.config
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.model.Containerized
+import gg.scala.flavor.FlavorBinder
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 

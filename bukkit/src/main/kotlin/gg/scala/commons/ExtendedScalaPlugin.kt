@@ -1,5 +1,7 @@
 package gg.scala.commons
 
+import co.aikar.commands.BukkitCommandManager
+import co.aikar.commands.PaperCommandManager
 import gg.scala.commons.annotations.LibraryLoader
 import gg.scala.commons.annotations.Listeners
 import gg.scala.commons.annotations.commands.AutoRegister
@@ -15,11 +17,16 @@ import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.commons.annotations.runnables.Repeating
+import gg.scala.commons.annotations.scripts.RequiresScripts
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.config.ConfigContainerized
+import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.commons.localization.container.LocalizationContainerContextual
 import gg.scala.commons.localization.container.LocalizationContainerized
+import gg.scala.commons.scripts.ScriptPluginService
+import gg.scala.commons.scripts.binding.Scripts
+import gg.scala.commons.scripts.config.ScriptConfig
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
@@ -33,6 +40,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Server
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 import java.lang.reflect.Method
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -148,6 +156,28 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         {
             containerized.inject()
         }
+
+        if (
+            this::class.java
+                .getAnnotation(
+                    RequiresScripts::class.java
+                ) != null
+        )
+        {
+            val scriptFile = File(
+                this.dataFolder, "scripts"
+            )
+
+            this.configContainerized
+                .inject(
+                    ContainerConfig("scripts", ScriptConfig::class)
+                )
+
+            if (!scriptFile.exists())
+            {
+                scriptFile.mkdirs()
+            }
+        }
     }
 
     override fun enable()
@@ -190,6 +220,23 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             containerized.loadAll()
         }
 
+        if (
+            this::class.java
+                .getAnnotation(
+                    RequiresScripts::class.java
+                ) != null
+        )
+        {
+            val scriptService =
+                ScriptPluginService(this)
+
+            scriptService.enable()
+
+            this.flavor {
+                bind<Scripts>() to Scripts(scriptService)
+            }
+        }
+
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
             .forEach {
@@ -205,6 +252,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             primary = ChatColor.getByChar(CC.PRI[1]),
             secondary = ChatColor.getByChar(CC.SEC[1])
         )
+
+        flavor {
+            bind<CubedCommandManager>() to commandManager
+            bind<BukkitCommandManager>() to commandManager
+            bind<PaperCommandManager>() to commandManager
+        }
 
         val customized = mutableListOf<Method>()
 

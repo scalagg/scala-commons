@@ -30,21 +30,25 @@ class CubedCommandManager(
     secondary: ChatColor = ChatColor.YELLOW
 ) : PaperCommandManager(plugin)
 {
-
     init
     {
         enableUnstableAPI("help")
+        enableUnstableAPI("brigadier")
 
-        listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
+        listOf<MessageType>(
+            MessageType.HELP,
+            MessageType.INFO,
+            MessageType.SYNTAX
+        ).forEach {
             getFormat(it).setColor(3, ChatColor.GRAY)
             getFormat(it).setColor(2, secondary)
             getFormat(it).setColor(1, primary)
         }
 
-        defaultExceptionHandler = ExceptionHandler { command, _, sender, args, t ->
-            sender.sendMessage("${CC.RED}Something went terribly wrong while trying to perform this command.")
-            plugin.logger.info("[Exception] Thrown during \"/${command.execCommandLabel} ${args.joinToString(" ")}\": ${t.message}")
-
+        defaultExceptionHandler = ExceptionHandler { _, _, sender, _, _ ->
+            sender.sendMessage("${
+                ""
+            }${CC.RED}Something went terribly wrong while trying to perform this command.")
             return@ExceptionHandler true
         }
 

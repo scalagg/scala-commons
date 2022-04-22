@@ -20,7 +20,8 @@ dependencies {
     implementation "me.lucko:helper:5.6.9.1"
     kapt "me.lucko:helper:5.6.9.1"
 
-    implementation "me.lucko:helper-js:5.6.9"
+    implementation "me.lucko:scriptcontroller:1.2"
+    implementation 'io.github.classgraph:classgraph:4.8.143'
 
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"

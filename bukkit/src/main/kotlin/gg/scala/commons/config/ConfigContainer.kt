@@ -2,6 +2,7 @@ package gg.scala.commons.config
 
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.flavor.FlavorBinder
 import xyz.mkotb.configapi.ConfigFactory
 import java.util.logging.Level
 import kotlin.reflect.KClass
@@ -41,8 +42,14 @@ class ConfigContainer(
             } injected into ${
                 annotation.model.simpleName
             }.")
+
+            plugin.flavor().binders.add(
+                FlavorBinder(annotation.model) to getModelAs()
+            )
         }.onFailure {
-            this.plugin.logger.log(Level.WARNING, "[Config] Failed to load config by name \"${annotation.value}\"!", it)
+            this.plugin.logger.log(
+                Level.WARNING, "[Config] Failed to load config by name \"${annotation.value}\"!", it
+            )
         }
     }
 }
