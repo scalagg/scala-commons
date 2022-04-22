@@ -27,7 +27,7 @@ class ConfigContainerized(
     }
 
     val waitingLateInject =
-        mutableListOf<ContainerConfig>()
+        HashSet<ContainerConfig>()
 
     override fun inject()
     {

@@ -1,7 +1,8 @@
 debug: false
 timezone: EST
+info-command: true
 
-backups: true
+backups: false
 
 posters:
   enabled: false

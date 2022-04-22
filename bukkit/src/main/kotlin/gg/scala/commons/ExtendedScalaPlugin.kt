@@ -418,6 +418,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         if (lateInject != null)
         {
             container.inject(lateInject)
+            container.container<T>().load()
         }
 
         return this.configContainerized

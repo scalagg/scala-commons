@@ -1,5 +1,6 @@
 repositories {
     maven { url "https://maven.enginehub.org/repo/" }
+    maven { url "https://repo.helper.me/" }
     maven { url "https://repo.aikar.co/content/groups/aikar/" }
     maven { url "https://repo.dmulloy2.net/nexus/repository/public" }
 
@@ -16,8 +17,10 @@ dependencies {
     compileOnly fileTree(dir: "lib", include: "*.jar")
 
     // helper
-    compileOnly "me.lucko:helper:5.6.9.1"
+    implementation "me.lucko:helper:5.6.9.1"
     kapt "me.lucko:helper:5.6.9.1"
+
+    implementation "me.lucko:helper-js:5.6.9"
 
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"

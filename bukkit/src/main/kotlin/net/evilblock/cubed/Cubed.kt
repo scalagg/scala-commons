@@ -12,13 +12,15 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.proxy.Plugins
-import gg.scala.flavor.Flavor
-import gg.scala.flavor.FlavorOptions
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
+import me.lucko.helper.Commands
+import me.lucko.helper.internal.HelperImplementationPlugin
+import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.maven.MavenLibrary
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
+import me.lucko.helper.utils.Players
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
@@ -35,20 +37,15 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
 import java.util.logging.Level
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 @Plugin(
     name = "Cubed",
@@ -64,6 +61,7 @@ import kotlin.reflect.KProperty
     artifactId = "kotlin-reflect",
     version = "1.6.20"
 )
+@HelperImplementationPlugin
 class Cubed : ExtendedScalaPlugin()
 {
     companion object
@@ -88,6 +86,7 @@ class Cubed : ExtendedScalaPlugin()
                 .getBoolean("debug", false)
 
             saveDefaultConfig()
+            createInfoCommand()
 
             if (!runSetupCheck())
                 return@runCatching
@@ -162,6 +161,30 @@ class Cubed : ExtendedScalaPlugin()
             )
             server.shutdown()
         }
+    }
+
+    private fun createInfoCommand()
+    {
+        if (!config.getBoolean("info-command", true))
+            return
+
+        Commands.create()
+            .handler { c ->
+                val implementationPlugins = LoaderUtils
+                    .getHelperImplementationPlugins()
+
+                implementationPlugins.forEach {
+                    Players.msg(
+                        c.sender(),
+                        "&7[&bhelper&7] &7Running &3${it.name} version &b${
+                            it.description.version
+                        }&7."
+                    )
+                }
+            }
+            .registerAndBind(
+                this, "helper"
+            )
     }
 
     @ContainerDisable
