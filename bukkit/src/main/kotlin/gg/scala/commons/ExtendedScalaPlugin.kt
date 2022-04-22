@@ -24,6 +24,7 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.commons.localization.container.LocalizationContainerContextual
 import gg.scala.commons.localization.container.LocalizationContainerized
+import gg.scala.commons.quality.PluginQolInternal
 import gg.scala.commons.scripts.ScriptPluginService
 import gg.scala.commons.scripts.binding.Scripts
 import gg.scala.commons.scripts.config.ScriptConfig
@@ -75,6 +76,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             configContainerized, localizationContainerized
         )
     }
+
+    lateinit var qolInternal: PluginQolInternal
 
     private val ignoreFlavor = this::class.java
         .getAnnotation(IgnoreProvidedFlavor::class.java) != null
@@ -236,6 +239,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 bind<Scripts>() to Scripts(scriptService)
             }
         }
+
+        this.qolInternal = PluginQolInternal(this)
+        this.qolInternal.load()
+
+        flavor().bind<PluginQolInternal>() to this.qolInternal
 
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
@@ -483,7 +491,19 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         return this.localizationContainerized.container(identifier)
     }
 
-    private fun Class<*>.objectInstance(): Any?
+    inline fun <reified T> contract(): T?
+    {
+        val subTypes = this
+            .packageIndexer.reflections
+            .getSubTypesOf(T::class.java)
+            .firstOrNull()
+            ?: return null
+
+        return subTypes.objectInstance() as T
+            ?: subTypes.newInstance()
+    }
+
+    fun Class<*>.objectInstance(): Any?
     {
         return kotlin.runCatching {
             getDeclaredField("INSTANCE").get(null)

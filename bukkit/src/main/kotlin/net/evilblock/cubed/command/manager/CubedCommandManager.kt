@@ -5,6 +5,7 @@ import co.aikar.commands.ExceptionHandler
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
 import gg.scala.cache.uuid.ScalaStoreUuidCache
+import gg.scala.commons.ExtendedScalaPlugin
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -25,11 +26,22 @@ import java.util.*
  * @since 10/08/2021 20:38
  */
 class CubedCommandManager(
-    plugin: Plugin,
+    plugin: ExtendedScalaPlugin,
     primary: ChatColor = ChatColor.GOLD,
     secondary: ChatColor = ChatColor.YELLOW
 ) : PaperCommandManager(plugin)
 {
+    companion object
+    {
+        @JvmStatic
+        val FUNNY_WORDS = listOf(
+            "atrocious", "awful",
+            "dreadful", "unacceptable",
+            "horrendous", "horrid",
+            "shameful", "terrible"
+        )
+    }
+
     init
     {
         enableUnstableAPI("help")
@@ -46,9 +58,9 @@ class CubedCommandManager(
         }
 
         defaultExceptionHandler = ExceptionHandler { _, _, sender, _, _ ->
-            sender.sendMessage("${
-                ""
-            }${CC.RED}Something went terribly wrong while trying to perform this command.")
+            sender.sendMessage("${plugin.qolInternal.prefix}${CC.RED}Something went terribly wrong while trying to perform this command. This is ${
+                FUNNY_WORDS.random()
+            }.")
             return@ExceptionHandler true
         }
 
