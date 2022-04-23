@@ -11,7 +11,10 @@ import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.proxy.Plugins
+import gg.scala.commons.sentry.SentryConfig
+import gg.scala.commons.sentry.SentryService
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.Commands
@@ -39,6 +42,7 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import org.apache.logging.log4j.core.config.plugins.PluginConfiguration
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -55,6 +59,10 @@ import java.util.logging.Level
         PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib")
     ]
+)
+@ContainerConfig(
+    value = "sentry",
+    model = SentryConfig::class
 )
 @MavenLibrary(
     groupId = "org.jetbrains.kotlin",
@@ -152,6 +160,12 @@ class Cubed : ExtendedScalaPlugin()
                 GlowEnchantment.registerEnchant()
             }.onFailure {
                 logger.info("We were unable to register our GlowEnchantment due to compatability issues.")
+            }
+
+            kotlin.runCatching {
+                SentryService.initialize(this)
+            }.onFailure {
+                logger.log(Level.WARNING, "[Sentry] Failed to enable sentry support!", it)
             }
         }.onFailure {
             logger.log(
