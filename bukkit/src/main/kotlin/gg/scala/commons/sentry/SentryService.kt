@@ -5,6 +5,7 @@ import gg.scala.commons.annotations.custom.CustomAnnotationProcessors
 import gg.scala.commons.sentry.hints.RegisterHintProvider
 import gg.scala.commons.sentry.hints.SentryHintProvider
 import io.sentry.Sentry
+import io.sentry.protocol.SentryId
 import java.util.concurrent.Executors
 
 /**
@@ -28,7 +29,7 @@ object SentryService
         this.hintProviders.add(provider)
     }
 
-    fun log(throwable: Throwable)
+    fun log(throwable: Throwable, lambda: (SentryId?) -> Unit)
     {
         if (enabled)
         {
@@ -46,7 +47,11 @@ object SentryService
                 }
 
                 Sentry.captureException(throwable, hint)
+                    .apply(lambda)
             }
+        } else
+        {
+            lambda.invoke(null)
         }
     }
 

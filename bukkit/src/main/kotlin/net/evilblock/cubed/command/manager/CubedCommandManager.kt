@@ -6,6 +6,7 @@ import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.sentry.SentryService
 import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -57,10 +58,21 @@ class CubedCommandManager(
             getFormat(it).setColor(1, primary)
         }
 
-        defaultExceptionHandler = ExceptionHandler { _, _, sender, _, _ ->
-            sender.sendMessage("${plugin.qolInternal.prefix}${CC.RED}Something went terribly wrong while trying to perform this command. This is ${
-                FUNNY_WORDS.random()
-            }.")
+        defaultExceptionHandler = ExceptionHandler { _, _, sender, _, throwable ->
+            SentryService.log(throwable) {
+                var message = "${plugin.qolInternal.prefix}${CC.RED}Something went terribly wrong while trying to perform this command."
+
+                message += if (it != null)
+                {
+                    "Please sent the following code to a developer: ${CC.YELLOW}$it"
+                } else
+                {
+                    "Please report this bug to a developer."
+                }
+
+                sender.sendMessage(message)
+            }
+
             return@ExceptionHandler true
         }
 
