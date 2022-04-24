@@ -24,6 +24,7 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.commons.localization.container.LocalizationContainerContextual
 import gg.scala.commons.localization.container.LocalizationContainerized
+import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.quality.PluginQolInternal
 import gg.scala.commons.scripts.ScriptPluginService
 import gg.scala.commons.scripts.binding.Scripts
@@ -436,6 +437,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     processor.value.invoke(it)
                 }
         }
+
+        PreConfigureSubTypeProcessor
+            .processLocalSubTypeServices(this)
 
         if (
             this::class.java
