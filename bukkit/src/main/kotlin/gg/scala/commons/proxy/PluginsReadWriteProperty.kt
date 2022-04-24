@@ -1,5 +1,7 @@
 package gg.scala.commons.proxy
 
+import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.plugin.PluginBridge
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
@@ -15,7 +17,7 @@ import kotlin.reflect.KProperty
  * @author GrowlyX
  * @since 4/17/2022
  */
-class PluginsReadWriteProperty<T : JavaPlugin>(
+class PluginsReadWriteProperty<T : ExtendedScalaPlugin>(
     private val typeClass: KClass<T>
 ) : ReadWriteProperty<Any, T>
 {
@@ -28,8 +30,13 @@ class PluginsReadWriteProperty<T : JavaPlugin>(
     {
         if (this.internal == null)
         {
-            this.internal = JavaPlugin
-                .getPlugin(this.typeClass.java)
+            kotlin.runCatching {
+                this.internal = PluginBridge
+                    .plugin(this.typeClass)
+            }.onFailure {
+                this.internal = JavaPlugin
+                    .getPlugin(this.typeClass.java)
+            }
         }
 
         return this.internal as T

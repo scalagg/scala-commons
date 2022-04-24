@@ -42,7 +42,6 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
-import org.apache.logging.log4j.core.config.plugins.PluginConfiguration
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -75,7 +74,7 @@ class Cubed : ExtendedScalaPlugin()
     companion object
     {
         @JvmStatic
-        val instance by Plugins.get<Cubed>()
+        val instance by Plugins.plugin<Cubed>()
     }
 
     private val aware by lazy {

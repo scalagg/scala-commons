@@ -24,6 +24,7 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
 import gg.scala.commons.localization.container.LocalizationContainerContextual
 import gg.scala.commons.localization.container.LocalizationContainerized
+import gg.scala.commons.plugin.PluginBridge
 import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.quality.PluginQolInternal
 import gg.scala.commons.scripts.ScriptPluginService
@@ -80,7 +81,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     lateinit var qolInternal: PluginQolInternal
 
-    private val ignoreFlavor = this::class.java
+    private val ignoreInjector = this::class.java
         .getAnnotation(IgnoreProvidedFlavor::class.java) != null
 
     fun flavor() = flavor
@@ -89,7 +90,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         lambda: Flavor.() -> Unit
     )
     {
-        if (ignoreFlavor)
+        if (ignoreInjector)
             return
 
         flavor.lambda()
@@ -448,6 +449,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         {
             this.flavor.startup()
         }
+
+        PluginBridge.install(this)
     }
 
     override fun disable()
@@ -465,7 +468,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.commandManager.unregisterCommands()
+        PluginBridge.invalidate(this)
+
+        this.commandManager
+            .unregisterCommands()
+
         this.flavor.close()
     }
 
