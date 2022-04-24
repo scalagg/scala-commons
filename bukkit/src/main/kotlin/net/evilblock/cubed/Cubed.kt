@@ -23,6 +23,7 @@ import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.maven.MavenLibrary
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
+import me.lucko.helper.text.serializer.ComponentSerializers
 import me.lucko.helper.utils.Players
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
@@ -42,6 +43,8 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -111,6 +114,7 @@ class Cubed : ExtendedScalaPlugin()
                     .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
                     .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
                     .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
+                    .registerTypeAdapter(Component::class.java, GsonComponentSerializer.gson())
                     .registerTypeAdapter(Entity::class.java, EntitySerializer)
                     .registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                     .registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
