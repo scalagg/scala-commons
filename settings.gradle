@@ -3,5 +3,4 @@ include "store"
 include "bukkit"
 include "serializers"
 include "velocity"
-include "mappings"
 

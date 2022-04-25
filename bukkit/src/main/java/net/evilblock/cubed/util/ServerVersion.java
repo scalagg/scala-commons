@@ -24,9 +24,12 @@ public enum ServerVersion {
 
     private static final String NMS_VERSION_SUFFIX = Bukkit.getServer().getClass().getPackage().getName()
             .replace(".", ",").split(",")[3];
+
     private static final ServerVersion[] VALUES = values();
+
     public static ServerVersion[] reversedValues = new ServerVersion[VALUES.length];
     private static ServerVersion cachedVersion;
+
     private final int protocolVersion;
 
     ServerVersion(int protocolId) {

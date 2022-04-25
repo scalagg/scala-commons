@@ -15,6 +15,7 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.proxy.Plugins
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
+import gg.scala.commons.serializer.ComponentSerializer
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.Commands
@@ -42,6 +43,7 @@ import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -114,7 +116,10 @@ class Cubed : ExtendedScalaPlugin()
                     .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
                     .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
                     .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
-                    .registerTypeAdapter(Component::class.java, GsonComponentSerializer.gson())
+                    .registerTypeAdapter(
+                        Component::class.java,
+                        ComponentSerializer
+                    )
                     .registerTypeAdapter(Entity::class.java, EntitySerializer)
                     .registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                     .registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
