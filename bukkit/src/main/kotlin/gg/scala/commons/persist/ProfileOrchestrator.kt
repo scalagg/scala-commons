@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
  */
 abstract class ProfileOrchestrator<T : IDataStoreObject>
 {
-    lateinit var controller: DataStoreObjectController<T>
+    private lateinit var controller: DataStoreObjectController<T>
 
     fun find(player: Player): T? =
         controller.localCache()[player.uniqueId]
@@ -31,11 +31,11 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             .create(type())
 
         Events.subscribe(AsyncPlayerPreLoginEvent::class.java).handler {
-            controller.loadAndCache(
-                it.uniqueId,
-                { new(it.uniqueId) },
-                DataStoreStorageType.MONGO
-            )
+            controller.loadOptimalCopy(
+                it.uniqueId
+            ) {
+                new(it.uniqueId)
+            }
         }
 
         Events.subscribe(PlayerQuitEvent::class.java).handler {

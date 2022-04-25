@@ -1,7 +1,7 @@
 package gg.scala.commons.preconfigure
 
 import gg.scala.commons.ExtendedScalaPlugin
-import gg.scala.flavor.service.Configure
+import gg.scala.commons.persist.ProfileOrchestrator
 import gg.scala.flavor.service.Service
 import kotlin.reflect.KClass
 
@@ -13,6 +13,13 @@ object PreConfigureSubTypeProcessor
 {
     val processors =
         mutableMapOf<KClass<out Any>, (Any) -> Unit>()
+
+    init
+    {
+        this.register<ProfileOrchestrator<*>> {
+            it.subscribe()
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Any> register(
