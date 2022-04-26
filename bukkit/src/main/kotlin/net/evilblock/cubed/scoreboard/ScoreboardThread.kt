@@ -7,10 +7,29 @@
 
 package net.evilblock.cubed.scoreboard
 
+import gg.scala.flavor.service.Close
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.Cubed
+
+@Service
 class ScoreboardThread : Thread("Cubed - Scoreboard") {
 
     init {
         this.isDaemon = true
+    }
+
+    @Configure
+    fun configure()
+    {
+        this.isDaemon = true
+        this.start()
+    }
+
+    @Close
+    fun close()
+    {
+        stop()
     }
 
     override fun run() {

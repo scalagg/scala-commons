@@ -30,13 +30,26 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
         controller = DataStoreObjectControllerCache
             .create(type())
 
-        Events.subscribe(AsyncPlayerPreLoginEvent::class.java).handler {
-            controller.loadOptimalCopy(
-                it.uniqueId
-            ) {
-                new(it.uniqueId)
+        Events.subscribe(AsyncPlayerPreLoginEvent::class.java)
+            .handler {
+                val copy = controller
+                    .loadOptimalCopy(
+                        it.uniqueId
+                    ) {
+                        new(it.uniqueId)
+                    }.join()
+
+                val cached =
+                    find(it.uniqueId)
+
+                if (cached == null)
+                {
+                    this.controller
+                        .localCache()[it.uniqueId] = copy
+                }
+
+                this.postLoad(it.uniqueId)
             }
-        }
 
         Events.subscribe(PlayerQuitEvent::class.java).handler {
             controller.localCache().remove(it.player.uniqueId)
@@ -44,6 +57,11 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
                     this.controller.save(cached, DataStoreStorageType.MONGO)
                 }
         }
+    }
+
+    open fun postLoad(uniqueId: UUID)
+    {
+
     }
 
     abstract fun type(): KClass<T>

@@ -126,9 +126,10 @@ class Cubed : ExtendedScalaPlugin()
                     .registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
             }
 
-            GsonSerializer.provideCustomGson {
-                Serializers.gson
-            }
+            GsonSerializer
+                .provideCustomGson {
+                    Serializers.gson
+                }
 
             if (isPostersEnabled())
             {
@@ -141,7 +142,6 @@ class Cubed : ExtendedScalaPlugin()
             }
 
             registerPacketListeners()
-            ScoreboardThread().start()
 
             Bukkit.getLogger().setFilter {
                 return@setFilter !it.message.contains("Command Dispatched Async")

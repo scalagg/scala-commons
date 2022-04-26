@@ -9,14 +9,11 @@ package net.evilblock.cubed.scoreboard
 
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.entity.Player
 
-class ScoreboardTeamPacketMod(
-    teamName: String, prefix: String,
-    suffix: String, players: MutableCollection<String>?,
-    action: Int
-)
-{
+class ScoreboardTeamPacketMod(teamName: String, prefix: String, suffix: String, players: MutableCollection<String>?, action: Int) {
+
     private val packet = PACKET_PLAY_OUT_SCOREBOARD_TEAM.newInstance()
 
     init {
@@ -33,7 +30,7 @@ class ScoreboardTeamPacketMod(
             }
 
             if (action == 0) {
-                addAll(players)
+                addAll("g", players)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -46,7 +43,7 @@ class ScoreboardTeamPacketMod(
             Reflection.setDeclaredFieldValue(packet, "i", action)
             Reflection.setDeclaredFieldValue(packet, "f", 3)
 
-            addAll( players)
+            addAll("g", players)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -56,21 +53,46 @@ class ScoreboardTeamPacketMod(
         MinecraftProtocol.send(player, packet)
     }
 
-    private fun addAll(col: MutableCollection<String>?) {
+    private fun addAll(fieldName: String, col: MutableCollection<String>?) {
         if (col == null) {
             return
         }
 
         try {
-            (Reflection.getDeclaredFieldValue(packet, "g") as MutableCollection<String>).addAll(col)
+            (Reflection.getDeclaredFieldValue(packet, fieldName) as MutableCollection<String>).addAll(col)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     companion object {
-        private val PACKET_PLAY_OUT_SCOREBOARD_TEAM = MinecraftProtocol
-            .getPacketClass("PacketPlayOutScoreboardTeam")
+        private val PACKET_PLAY_OUT_SCOREBOARD_TEAM = MinecraftReflection.getNMSClass("PacketPlayOutScoreboardTeam")!!
+        // field structure 1.12
+        // a = string - team name
+        // b = string - display name
+        // c = string - prefix
+        // d = string - suffix
+        // e = string - visibility string
+        // f = string - team push string
+        // g = int - color
+        // h = collection of strings - player names
+        // i = int - action
+
+        // field structure 1.7
+        // a = string - team name
+        // b = string - display name
+        // c = string - prefix
+        // d = string - suffix
+        // e = collection of strings - player names
+        // f = int - action (0 = add, 1 = remove, 3 = changed)
+        // g = int - option data
+
+        // option data structure
+        // int var1 = 0
+        // if allowFriendlyFire
+        //      var1 |= 1
+        // if canSeeFriendlyInvisibles
+        //      var1 |= 2
     }
 
 }

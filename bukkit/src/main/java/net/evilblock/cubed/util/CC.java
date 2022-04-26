@@ -90,10 +90,7 @@ public class CC {
 	public static final String IL_PURPLE = L_PURPLE + I;
 	public static final String BLANK_LINE = "§8 §8 §1 §3 §3 §7 §8 §r";
 	public static final String BL = BLANK_LINE;
-	public static final String SB_BAR = "$GRAY$S-------------------";
-	public static final String MENU_BAR = "$GRAY$S------------------------";
-	public static final String CHAT_BAR = "$GRAY$S------------------------------";
-	public static final String LONGER_CHAT_BAR = "$GRAY$S------------------------------------------------";
+	public static final String SB_BAR = GRAY + S + "-------------------";
 
 	static {
 		setup(GREEN, YELLOW);

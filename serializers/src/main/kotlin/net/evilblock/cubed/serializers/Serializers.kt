@@ -2,6 +2,7 @@ package net.evilblock.cubed.serializers
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.LongSerializationPolicy
 import net.evilblock.cubed.serializers.impl.UUIDAdapter
 import org.bson.json.JsonMode
 import org.bson.json.JsonWriterSettings
@@ -10,6 +11,7 @@ import java.util.*
 object Serializers
 {
     private val gsonBuilder = GsonBuilder()
+        .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .serializeNulls()
 
