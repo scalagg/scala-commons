@@ -505,13 +505,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     inline fun <reified T> contract(): T?
     {
         val subTypes = this
-            .packageIndexer.reflections
-            .getSubTypesOf(T::class.java)
+            .packageIndexer
+            .getSubTypes<T>()
             .firstOrNull()
             ?: return null
 
         return subTypes.objectInstance() as T
-            ?: subTypes.newInstance()
+            ?: subTypes.newInstance() as T
     }
 
     fun Class<*>.objectInstance(): Any?

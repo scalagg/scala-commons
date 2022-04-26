@@ -3,6 +3,7 @@ package gg.scala.commons.preconfigure
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.persist.ProfileOrchestrator
 import gg.scala.flavor.service.Service
+import org.reflections.scanners.Scanners
 import kotlin.reflect.KClass
 
 /**
@@ -36,8 +37,11 @@ object PreConfigureSubTypeProcessor
     {
         processors.forEach { (type, processor) ->
             val services = plugin.packageIndexer
-                .reflections.getSubTypesOf(
-                    type::class.java
+                .reflections
+                .get(
+                    Scanners.SubTypes
+                        .with(type.java)
+                        .`as`(Class::class.java)
                 )
                 .filter {
                     it.isAnnotationPresent(Service::class.java)
