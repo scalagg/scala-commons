@@ -430,7 +430,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     this.logger.info(
                         "[Processor] Processing ${
                             it.javaClass.simpleName
-                        } annotation @${
+                        } annotated with ${
                             processor.key.java.simpleName
                         }."
                     )
