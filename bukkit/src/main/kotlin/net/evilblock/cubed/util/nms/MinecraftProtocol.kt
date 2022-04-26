@@ -31,8 +31,7 @@ object MinecraftProtocol {
     private val SEND_PACKET_METHOD =
         Reflection.getDeclaredMethod(
             MinecraftReflection.PLAYER_CONNECTION_CLASS,
-            if (MinecraftReflection.isModern())
-                "a" else "sendPacket",
+            "sendPacket",
             MinecraftReflection.PACKET_CLASS
         )!!
 

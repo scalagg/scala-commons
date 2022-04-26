@@ -137,7 +137,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.flavor {
             binders.add(
-                FlavorBinder(this::class) to this
+                FlavorBinder(this@ExtendedScalaPlugin::class) to this@ExtendedScalaPlugin
             )
 
             bind<ExtendedScalaPlugin>() to this@ExtendedScalaPlugin

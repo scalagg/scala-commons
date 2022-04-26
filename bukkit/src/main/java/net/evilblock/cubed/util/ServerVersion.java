@@ -62,10 +62,10 @@ public enum ServerVersion {
      * @return Server Version. (always cached)
      */
     public static ServerVersion getVersion() {
-        if (cachedVersion == null) {
-            cachedVersion = getVersionNoCache();
-        }
-        return cachedVersion;
+//        if (cachedVersion == null) {
+//            cachedVersion = getVersionNoCache();
+//        }
+        return v1_8_R3; // TODO: 4/25/2022 god
     }
 
     /**
