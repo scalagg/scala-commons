@@ -1,5 +1,6 @@
 package gg.scala.commons
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.BukkitCommandManager
 import co.aikar.commands.PaperCommandManager
 import gg.scala.commons.annotations.LibraryLoader
@@ -326,11 +327,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.packageIndexer.reflections
-            .getSubTypesOf(ScalaCommand::class.java)
-            .filter {
-                it.isAnnotationPresent(AutoRegister::class.java)
-            }
+        this.packageIndexer
+            .getTypesAnnotatedWith<AutoRegister>()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
@@ -339,7 +337,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     this.flavor.inject(instance)
 
                     this.commandManager.registerCommand(
-                        instance as ScalaCommand
+                        instance as BaseCommand
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)

@@ -13,6 +13,8 @@ object Serializers
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .serializeNulls()
 
+    fun builder() = this.gsonBuilder
+
     @JvmStatic
     var gson: Gson = gsonBuilder.create()
 
