@@ -135,11 +135,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.flavor {
-            binders.add(
-                FlavorBinder(this@ExtendedScalaPlugin::class) to this@ExtendedScalaPlugin
-            )
+        flavor().binders.add(
+            FlavorBinder(
+                this@ExtendedScalaPlugin::class
+            ) to this@ExtendedScalaPlugin
+        )
 
+        this.flavor {
             bind<ExtendedScalaPlugin>() to this@ExtendedScalaPlugin
             bind<JavaPlugin>() to this@ExtendedScalaPlugin
 
@@ -324,10 +326,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.packageIndexer
-            .getTypesAnnotatedWith<AutoRegister>()
+        this.packageIndexer.reflections
+            .getSubTypesOf(ScalaCommand::class.java)
             .filter {
-                it.isAssignableFrom(ScalaCommand::class.java)
+                it.isAnnotationPresent(AutoRegister::class.java)
             }
             .forEach {
                 kotlin.runCatching {
