@@ -7,12 +7,15 @@
 
 package net.evilblock.cubed.scoreboard
 
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+@Service
 object ScoreboardHandler
 {
     internal val scoreboards = ConcurrentHashMap<UUID, Scoreboard>()
@@ -20,13 +23,8 @@ object ScoreboardHandler
     var scoreboardOverride: ScoreboardOverride? = null
     internal var scoreboardProvider: ScoreboardAdapter? = null
 
-    @JvmStatic
-    fun configure(scoreboardProvider: ScoreboardAdapter)
-    {
-        this.scoreboardProvider = scoreboardProvider
-    }
-
-    init
+    @Configure
+    fun configure()
     {
         val cubed = Cubed.instance
 
@@ -44,6 +42,7 @@ object ScoreboardHandler
                     board: LinkedList<String>, player: Player
                 )
                 {
+                    board.add(CC.SB_BAR)
                     board.add("Your location:")
                     board.add("${CC.GREEN}${
                         player.location.x.toInt()
@@ -52,9 +51,16 @@ object ScoreboardHandler
                     }.")
 
                     board.add("")
-                    board.add("${CC.GRAY}scala.gg")
+                    board.add("${CC.GREEN}scala.gg")
+                    board.add(CC.SB_BAR)
                 }
             }
         }
+    }
+
+    @JvmStatic
+    fun configure(scoreboardProvider: ScoreboardAdapter)
+    {
+        this.scoreboardProvider = scoreboardProvider
     }
 }

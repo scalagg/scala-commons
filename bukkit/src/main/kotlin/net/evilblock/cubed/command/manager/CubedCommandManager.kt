@@ -60,14 +60,14 @@ class CubedCommandManager(
 
         defaultExceptionHandler = ExceptionHandler { _, _, sender, _, throwable ->
             SentryService.log(throwable) {
-                var message = "${plugin.qolInternal.prefix}${CC.RED}Something went terribly wrong while trying to perform this command."
+                var message = "${plugin.qolInternal.prefix} ${CC.RED}Something went terribly wrong while trying to perform this command."
 
                 message += if (it != null)
                 {
-                    "Please sent the following code to a developer: ${CC.YELLOW}$it"
+                    " Please sent the following code to a developer: ${CC.YELLOW}$it"
                 } else
                 {
-                    "Please report this bug to a developer."
+                    ""
                 }
 
                 sender.sendMessage(message)
