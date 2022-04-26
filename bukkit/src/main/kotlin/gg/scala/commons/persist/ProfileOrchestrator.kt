@@ -32,21 +32,12 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
 
         Events.subscribe(AsyncPlayerPreLoginEvent::class.java)
             .handler {
-                val copy = controller
+                controller
                     .loadOptimalCopy(
                         it.uniqueId
                     ) {
                         new(it.uniqueId)
                     }.join()
-
-                val cached =
-                    find(it.uniqueId)
-
-                if (cached == null)
-                {
-                    this.controller
-                        .localCache()[it.uniqueId] = copy
-                }
 
                 this.postLoad(it.uniqueId)
             }
