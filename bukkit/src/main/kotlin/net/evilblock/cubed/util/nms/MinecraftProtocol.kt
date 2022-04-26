@@ -9,9 +9,12 @@ package net.evilblock.cubed.util.nms
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.utility.MinecraftVersion
+import com.cryptomorin.xseries.ReflectionUtils
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
+import net.minecraft.server.v1_8_R3.PlayerConnection
+import net.minecraft.server.v1_8_R3.PlayerConnectionUtils
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -26,13 +29,6 @@ object MinecraftProtocol {
             MinecraftReflection.ENTITY_PLAYER_CLASS,
             if (MinecraftReflection.isModern())
                 "b" else "playerConnection"
-        )!!
-
-    private val SEND_PACKET_METHOD =
-        Reflection.getDeclaredMethod(
-            MinecraftReflection.PLAYER_CONNECTION_CLASS,
-            "sendPacket",
-            MinecraftReflection.PACKET_CLASS
         )!!
 
     private val BLOCK_POSITION_CLASS =
@@ -87,14 +83,12 @@ object MinecraftProtocol {
 
     @JvmStatic
     fun send(player: Player, packet: Any) {
-        SEND_PACKET_METHOD.invoke(PLAYER_CONNECTION_FIELD.get(MinecraftReflection.getHandle(player)), packet)
+        ReflectionUtils.sendPacket(player, packet)
     }
 
     @JvmStatic
     fun send(player: Player, vararg packets: Any) {
-        for (packet in packets) {
-            SEND_PACKET_METHOD.invoke(PLAYER_CONNECTION_FIELD.get(MinecraftReflection.getHandle(player)), packet)
-        }
+        ReflectionUtils.sendPacket(player, packets)
     }
 
     @JvmStatic

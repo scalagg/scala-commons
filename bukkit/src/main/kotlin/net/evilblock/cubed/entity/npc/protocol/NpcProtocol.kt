@@ -55,7 +55,8 @@ object NpcProtocol
         Reflection.getConstructor(
             PACKET_PLAY_OUT_PLAYER_INFO_CLASS,
             ENUM_PLAYER_INFO_ACTION_CLASS,
-            Collection::class.java
+            if (MinecraftReflection.isModern())
+                Collection::class.java else Iterable::class.java
         )!!
 
     private val PLAYER_INFO_DATA_CLASS =
@@ -84,7 +85,9 @@ object NpcProtocol
 
     private val SURVIVAL_GAME_MODE =
         Reflection.getEnum(
-            ENUM_GAME_MODE_CLASS, "a"
+            ENUM_GAME_MODE_CLASS,
+            if (MinecraftReflection.isModern())
+                "a" else "SURVIVAL"
         )!!
 
     private fun createPlayerInfoData(
