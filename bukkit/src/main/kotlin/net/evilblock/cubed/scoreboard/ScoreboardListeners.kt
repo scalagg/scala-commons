@@ -30,6 +30,8 @@ object ScoreboardListeners : Listener
                 .apply {
                     update()
                 }
+
+        println(ScoreboardHandler.scoreboards)
     }
 
     @EventHandler
