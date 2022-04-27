@@ -3,6 +3,7 @@ package net.evilblock.cubed.nametag
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
 import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
@@ -33,15 +34,17 @@ object NametagHandler
     @Configure
     fun configure()
     {
-        if (Cubed.instance.config.getBoolean("nametags.enabled", false))
+        val nametagConfig = Cubed.instance
+            .config<CommonsNametagConfig>()
+
+        if (nametagConfig.enabled)
         {
             Cubed.instance.logger.info("Auto-updating nametags are disabled by config")
             return
         }
 
-        isNametagRestrictionEnabled = Cubed.instance.config.getBoolean("nametags.packet-restriction", false)
-        nametagRestrictBypass =
-            Cubed.instance.config.getString("nametags.packet-restriction-bypass-prefix", "").replace("&", "§")
+        isNametagRestrictionEnabled = nametagConfig.packetRestriction
+        nametagRestrictBypass = nametagConfig.packetRestrictionPrefix
 
         NametagThread().start()
 

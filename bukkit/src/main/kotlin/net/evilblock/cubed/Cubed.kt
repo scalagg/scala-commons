@@ -26,6 +26,10 @@ import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import me.lucko.helper.text.serializer.ComponentSerializers
 import me.lucko.helper.utils.Players
+import net.evilblock.cubed.config.CommonsGeneralConfig
+import net.evilblock.cubed.config.CommonsNametagConfig
+import net.evilblock.cubed.config.CommonsPostersConfig
+import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
@@ -56,6 +60,7 @@ import org.spigotmc.SpigotConfig
 import java.util.*
 import java.util.logging.Level
 
+// plugin meta
 @Plugin(
     name = "scala-commons",
     apiVersion = "1.18",
@@ -66,10 +71,28 @@ import java.util.logging.Level
         PluginDependency("Vault", soft = true),
     ]
 )
+// configs
 @ContainerConfig(
     value = "sentry",
     model = SentryConfig::class
 )
+@ContainerConfig(
+    value = "settings",
+    model = CommonsGeneralConfig::class
+)
+@ContainerConfig(
+    value = "nametags",
+    model = CommonsNametagConfig::class
+)
+@ContainerConfig(
+    value = "posters",
+    model = CommonsPostersConfig::class
+)
+@ContainerConfig(
+    value = "scoreboard",
+    model = CommonsScoreboardConfig::class
+)
+// helper stuff
 @MavenLibrary(
     groupId = "org.jetbrains.kotlin",
     artifactId = "kotlin-reflect",
@@ -96,10 +119,11 @@ class Cubed : ExtendedScalaPlugin()
     fun containerEnable()
     {
         kotlin.runCatching {
-            Reflection.DEBUG = config
-                .getBoolean("debug", false)
+            val config = config<CommonsGeneralConfig>()
 
-            saveDefaultConfig()
+            Reflection.DEBUG =
+                config.debug
+
             createInfoCommand()
 
             if (!runSetupCheck())
@@ -107,7 +131,7 @@ class Cubed : ExtendedScalaPlugin()
 
             val default = TimeZone
                 .getTimeZone(
-                    config.getString("timezone", "EST")
+                    config.timezone
                 )
 
             TimeZone.setDefault(default)
@@ -189,7 +213,9 @@ class Cubed : ExtendedScalaPlugin()
 
     private fun createInfoCommand()
     {
-        if (!config.getBoolean("info-command", true))
+        val config = config<CommonsGeneralConfig>()
+
+        if (!config.infoCommand)
             return
 
         Commands.create()
@@ -274,6 +300,7 @@ class Cubed : ExtendedScalaPlugin()
 
     private fun isPostersEnabled(): Boolean
     {
-        return config.getBoolean("posters.enabled", false)
+        return config<CommonsPostersConfig>()
+            .enabled
     }
 }

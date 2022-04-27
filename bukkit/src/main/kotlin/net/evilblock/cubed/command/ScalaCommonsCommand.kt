@@ -15,6 +15,7 @@ import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
 import net.evilblock.cubed.menu.template.menu.TemplatePreviewMenu
@@ -33,6 +34,9 @@ import java.util.*
 @CommandPermission("op")
 object ScalaCommonsCommand : ScalaCommand()
 {
+    val prefix = Cubed.instance
+        .qolInternal.prefix
+
     @Default
     @HelpCommand
     fun onHelp(help: CommandHelp)
@@ -45,7 +49,7 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onFindUsername(sender: CommandSender, @Name("uuid") uuid: UUID)
     {
         val username = ScalaStoreUuidCache.username(uuid)
-        sender.sendMessage("${CC.SEC}Found username: ${CC.PRI}$username")
+        sender.sendMessage("$prefix ${CC.SEC}Found username: ${CC.PRI}$username")
     }
 
     @Subcommand("find-uuid")
@@ -54,17 +58,21 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onFindUUID(sender: CommandSender, @Name("username") username: String)
     {
         val uuid = ScalaStoreUuidCache.uniqueId(username)
-        sender.sendMessage("${CC.SEC}Found UUID: ${CC.PRI}$uuid")
+        sender.sendMessage("$prefix ${CC.SEC}Found UUID: ${CC.PRI}$uuid")
     }
 
     @Subcommand("reload")
     fun onReload(sender: CommandSender)
     {
-        Cubed.instance.reloadConfig()
+        Cubed.instance
+            .configContainerized
+            .loadAll()
 
-        Reflection.DEBUG =
-            Cubed.instance.config
-                .getBoolean("debug", false)
+        Reflection.DEBUG = Cubed.instance
+            .config<CommonsGeneralConfig>()
+            .debug
+
+        sender.sendMessage("$prefix ${CC.GREEN}You've reloaded all commons' configs.")
     }
 
     @Subcommand("menu-template-editor")
@@ -129,7 +137,7 @@ object ScalaCommonsCommand : ScalaCommand()
             }
         }
 
-        val builder = StringBuilder("${CC.SEC}There ")
+        val builder = StringBuilder("$prefix ${CC.SEC}There ")
         builder.append(
             if (scoreboards.size == 1)
                 "is ${CC.PRI}1 ${CC.SEC}scoreboard with "
@@ -169,6 +177,8 @@ object ScalaCommonsCommand : ScalaCommand()
         {
             ScoreboardPreviewHandler.previewMode.add(player.uniqueId)
         }
+
+        player.sendMessage("$prefix ${CC.GREEN}You've toggled preview mode.")
     }
 
     @Subcommand("scoreboard-editor")

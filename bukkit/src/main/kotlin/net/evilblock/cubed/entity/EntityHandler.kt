@@ -15,6 +15,7 @@ import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.backup.BackupHandler
+import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.serializers.Serializers
 import org.bukkit.entity.Player
@@ -62,7 +63,7 @@ object EntityHandler
     {
         if (dataFile.exists())
         {
-            if (Cubed.instance.config.getBoolean("backups", true))
+            if (Cubed.instance.config<CommonsGeneralConfig>().backups)
             {
                 Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
             }
