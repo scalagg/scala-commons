@@ -64,7 +64,8 @@ import java.util.logging.Level
     depends = [
         PluginDependency("helper"),
         PluginDependency("store-spigot"),
-        PluginDependency("ProtocolLib")
+        PluginDependency("ProtocolLib"),
+        PluginDependency("Vault", soft = true),
     ]
 )
 @ContainerConfig(
