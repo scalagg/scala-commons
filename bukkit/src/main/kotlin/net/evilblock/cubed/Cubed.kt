@@ -200,12 +200,12 @@ class Cubed : ExtendedScalaPlugin()
                 implementationPlugins.forEach {
                     Players.msg(
                         c.sender(),
-                        "&7[&${CC.PRI}helper&7] &7Running ${
-                            CC.SEC
+                        "&7[${CC.GREEN}helper&7] &7Running ${
+                            CC.GOLD
                         }${it.name}${
                             CC.GRAY
                         } version ${
-                            CC.PRI
+                            CC.YELLOW
                         }${
                             it.description.version
                         }&7."

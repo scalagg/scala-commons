@@ -23,7 +23,7 @@ object PosterPlaceCommand : ScalaCommand()
 {
     @CommandAlias("place-poster|create-poster")
     @Description("Place a poster")
-    @CommandPermission("cubed.posters.place")
+    @CommandPermission("commons.posters.place")
     fun execute(player: Player, @Name("fileName") fileName: String)
     {
         val posterFile = File(File(Cubed.instance.dataFolder, "posters"), fileName)

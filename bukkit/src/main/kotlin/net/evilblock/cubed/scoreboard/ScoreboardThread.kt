@@ -13,7 +13,7 @@ import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
 
 @Service
-object ScoreboardThread : Thread("Cubed - Scoreboard") {
+object ScoreboardThread : Thread("Commons - Scoreboard") {
 
     init {
         this.isDaemon = true

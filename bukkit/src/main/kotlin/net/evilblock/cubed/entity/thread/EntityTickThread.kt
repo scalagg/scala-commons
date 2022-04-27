@@ -9,7 +9,7 @@ import net.evilblock.cubed.util.math.Numbers
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 
-object EntityTickThread : Thread("Cubed - Entities") {
+object EntityTickThread : Thread("Commons - Entities") {
 
     var DEBUG = false
 
@@ -74,7 +74,7 @@ object EntityTickThread : Thread("Cubed - Entities") {
                 continue
             }
 
-            val showDebug = (player.isOp || player.hasPermission("cubed.entities.debug"))
+            val showDebug = (player.isOp || player.hasPermission("commons.entities.debug"))
                     && player.gameMode == GameMode.CREATIVE
                     && EntityHandler.isDebugViewEnabled(player)
 

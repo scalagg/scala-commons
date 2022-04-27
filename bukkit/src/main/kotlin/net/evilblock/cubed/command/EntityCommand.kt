@@ -28,7 +28,7 @@ import java.text.NumberFormat
 
 @AutoRegister
 @CommandAlias("entity")
-@CommandPermission("cubed.entities")
+@CommandPermission("commons.entities")
 object EntityCommand : ScalaCommand()
 {
     @Default
@@ -59,7 +59,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("export")
     @Description("Export a selection of entities")
-    @CommandPermission("cubed.entities.export")
+    @CommandPermission("commons.entities.export")
     fun onExport(player: Player)
     {
         if (EntityPortTool.isTracking(player))
@@ -76,7 +76,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("fast-edit|fe")
     @Description("Toggles fast edit for entities")
-    @CommandPermission("cubed.entities.manage")
+    @CommandPermission("commons.entities.manage")
     fun onFastEdit(player: Player)
     {
         if (player.hasMetadata("EntityFastEdit"))
@@ -110,7 +110,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("import")
     @Description("Import entities from a file")
-    @CommandPermission("cubed.entities.import")
+    @CommandPermission("commons.entities.import")
     fun onImport(player: Player, @Name("fileName") fileName: String)
     {
         val file = EntityPortTool.findImportDataFile(fileName)
@@ -133,7 +133,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("manage")
     @Description("Opens the untyped entity manager menu")
-    @CommandPermission("cubed.entities.manage")
+    @CommandPermission("commons.entities.manage")
     fun onManage(player: Player)
     {
         player.sendMessage("${CC.GREEN}Select (right-click) an NPC to manage...")
@@ -164,7 +164,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("save")
     @Description("Saves all entities to the disk")
-    @CommandPermission("cubed.entities.save")
+    @CommandPermission("commons.entities.save")
     fun onSave(sender: CommandSender)
     {
         EntityHandler.close()
@@ -173,7 +173,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("stats")
     @Description("Shows entity stats")
-    @CommandPermission("cubed.entities.stats")
+    @CommandPermission("commons.entities.stats")
     fun onStats(player: Player)
     {
         player.sendMessage("")
@@ -190,7 +190,7 @@ object EntityCommand : ScalaCommand()
 
     @Subcommand("tp|teleport")
     @Description("Teleport to a Hologram by supplying the Hologram's ID")
-    @CommandPermission("cubed.entities.manage")
+    @CommandPermission("commons.entities.manage")
     fun onTeleport(player: Player, @Name("id") entity: Entity)
     {
         player.teleport(entity.location)

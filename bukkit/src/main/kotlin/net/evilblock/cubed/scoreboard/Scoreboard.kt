@@ -52,7 +52,7 @@ class Scoreboard(private val player: Player) {
         if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null) {
             objective = scoreboard.getObjective(DisplaySlot.SIDEBAR)
         } else {
-            objective = scoreboard.registerNewObjective("Cubed", "dummy")
+            objective = scoreboard.registerNewObjective("Commons", "dummy")
             objective.displaySlot = DisplaySlot.SIDEBAR
         }
 

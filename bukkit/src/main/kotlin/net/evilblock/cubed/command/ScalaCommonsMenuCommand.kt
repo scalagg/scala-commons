@@ -23,9 +23,9 @@ import org.bukkit.entity.Player
  * @since 12/30/2021
  */
 @AutoRegister
-@CommandAlias("cubed-demo")
-@CommandPermission("cubed.command.cubed-demo")
-object CubedMenuCommand : ScalaCommand()
+@CommandAlias("scala-commons-demo")
+@CommandPermission("commons.command.demo")
+object ScalaCommonsMenuCommand : ScalaCommand()
 {
     @Default
     @HelpCommand

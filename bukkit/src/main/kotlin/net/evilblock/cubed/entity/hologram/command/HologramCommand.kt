@@ -23,7 +23,7 @@ import org.bukkit.entity.Player
 
 @AutoRegister
 @CommandAlias("hologram|holo")
-@CommandPermission("cubed.holograms")
+@CommandPermission("commons.holograms")
 object HologramCommand : ScalaCommand()
 {
     @Default
@@ -36,7 +36,7 @@ object HologramCommand : ScalaCommand()
     @Subcommand("create")
     @Syntax("<text> [-u]")
     @Description("Create a hologram")
-    @CommandPermission("cubed.holograms.create")
+    @CommandPermission("commons.holograms.create")
     fun onCreate(player: Player, input: String)
     {
         val updating = input.endsWith("-s")
@@ -67,7 +67,7 @@ object HologramCommand : ScalaCommand()
 
     @Subcommand("manage")
     @Description("Manage a hologram")
-    @CommandPermission("cubed.holograms.manage")
+    @CommandPermission("commons.holograms.manage")
     fun onManage(player: Player)
     {
         player.sendMessage("${ChatColor.GREEN}Select (right-click) a hologram to manage...")

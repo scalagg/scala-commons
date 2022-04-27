@@ -29,9 +29,9 @@ import org.bukkit.entity.Player
 import java.util.*
 
 @AutoRegister
-@CommandAlias("cubed")
+@CommandAlias("scala-commons|commons|sclib|lib")
 @CommandPermission("op")
-object CubedCommand : ScalaCommand()
+object ScalaCommonsCommand : ScalaCommand()
 {
     @Default
     @HelpCommand

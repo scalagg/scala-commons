@@ -31,7 +31,7 @@ object CubedScheduler
     {
         val executor = Executors.newSingleThreadScheduledExecutor(
             ThreadFactoryBuilder()
-                .setNameFormat("Cubed - Hour Event Thread")
+                .setNameFormat("Commons - Hour Event Thread")
                 .setDaemon(true).build()
         )
 

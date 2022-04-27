@@ -3,7 +3,7 @@ package net.evilblock.cubed.nametag
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import java.util.concurrent.ConcurrentHashMap
 
-internal class NametagThread : Thread("Cubed - Nametag Thread") {
+internal class NametagThread : Thread("Commons - Nametag Thread") {
 
     init {
         this.isDaemon = true

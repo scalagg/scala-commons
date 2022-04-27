@@ -96,7 +96,7 @@ object EntityPacketAdapter : PacketAdapter(
 
                     if (!rightClickEvent.isCancelled) {
                         // if export tool is enabled, mark/un-mark entity for export
-                        if (event.player.hasPermission("cubed.entity.export") && EntityPortTool.isTracking(event.player)) {
+                        if (event.player.hasPermission("commons.entity.export") && EntityPortTool.isTracking(event.player)) {
                             if (EntityPortTool.isTrackingEntity(event.player, entity)) {
                                 EntityPortTool.removeTrackedEntity(event.player, entity)
                                 event.player.sendMessage("${ChatColor.YELLOW}Entity #${entity.id} is no longer marked for export! ${ChatColor.GRAY}(${EntityPortTool.getTrackedEntities(event.player).size} selected)")

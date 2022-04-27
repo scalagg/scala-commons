@@ -77,7 +77,7 @@ object EntityPortTool : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (event.player.hasPermission("cubed.entity.export")) {
+        if (event.player.hasPermission("commons.entity.export")) {
             if (isTracking(event.player)) {
                 if ((event.action == Action.RIGHT_CLICK_BLOCK || event.action == Action.RIGHT_CLICK_AIR) && event.player.isSneaking) {
                     ConfirmMenu("Export entities?") { confirmed ->
