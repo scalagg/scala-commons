@@ -42,6 +42,7 @@ import net.evilblock.cubed.serialize.LocationAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
@@ -195,12 +196,18 @@ class Cubed : ExtendedScalaPlugin()
         Commands.create()
             .handler { c ->
                 val implementationPlugins = LoaderUtils
-                    .getHelperImplementationPlugins()
+                    .getHelperPlugins()
 
                 implementationPlugins.forEach {
                     Players.msg(
                         c.sender(),
-                        "&7[&bhelper&7] &7Running &3${it.name} version &b${
+                        "&7[&${CC.PRI}helper&7] &7Running ${
+                            CC.SEC
+                        }${it.name}${
+                            CC.GRAY
+                        } version ${
+                            CC.PRI
+                        }${
                             it.description.version
                         }&7."
                     )
