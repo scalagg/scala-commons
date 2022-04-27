@@ -56,8 +56,11 @@ import java.util.*
 import java.util.logging.Level
 
 @Plugin(
+    // TODO: 4/26/2022 switch from
+    //  Cubed -> scala-commons soon
     name = "Cubed",
     apiVersion = "1.18",
+    description = "Core utilities for Scala spigot plugins.",
     depends = [
         PluginDependency("helper"),
         PluginDependency("store-spigot"),
