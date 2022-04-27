@@ -61,7 +61,6 @@ import java.util.logging.Level
     apiVersion = "1.18",
     description = "Core utilities for Scala spigot plugins.",
     depends = [
-        PluginDependency("helper"),
         PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib"),
         PluginDependency("Vault", soft = true),
