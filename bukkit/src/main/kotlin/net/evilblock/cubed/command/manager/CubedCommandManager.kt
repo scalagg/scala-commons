@@ -7,11 +7,9 @@ import co.aikar.commands.PaperCommandManager
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.sentry.SentryService
-import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.NpcEntity
-import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
@@ -19,7 +17,6 @@ import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
-import org.bukkit.plugin.Plugin
 import java.util.*
 
 /**
@@ -120,32 +117,6 @@ class CubedCommandManager(
                     throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
                 }
             } ?: throw ConditionFailedException("No entity was found.")
-        }
-
-        commandContexts.registerContext(NpcTexture::class.java) { c ->
-            val firstArg = c.popFirstArg()
-
-            return@registerContext if (CubedConfig.hasNpcTexture(firstArg))
-            {
-                CubedConfig.getNpcTexture(firstArg)
-            } else
-            {
-                c.sender.sendMessage("${CC.GREEN}Attempting to fetch player texture...")
-
-                val queryResponse = NpcTexture.fetchTextureByUsername(firstArg)
-
-                if (queryResponse.isPresent)
-                {
-                    queryResponse.get()
-                } else
-                {
-                    throw ConditionFailedException("Failed to fetch player texture for ${CC.YELLOW}${firstArg}${CC.RED}.")
-                }
-            }
-        }
-
-        commandCompletions.registerAsyncCompletion("npctextures") { c ->
-            return@registerAsyncCompletion CubedConfig.getNpcTextureIds().toList()
         }
 
         commandContexts.registerContext(MenuTemplate::class.java) { c ->

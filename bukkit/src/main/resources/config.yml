@@ -14,13 +14,3 @@ nametags:
   enabled: true
   packet-restriction: false
   packet-restriction-bypass-prefix: ""
-
-defined-npcs:
-  sell-all:
-    lines:
-      - "&f&l[&3&l»&f&l] &b&lSell Your Items &f&l[&3&l«&f&l]"
-      - "&e&lRIGHT-CLICK"
-    texture-value: "ewogICJ0aW1lc3RhbXAiIDogMTYxODkxODA1MzAwOCwKICAicHJvZmlsZUlkIiA6ICJkZTU3MWExMDJjYjg0ODgwOGZlN2M5ZjQ0OTZlY2RhZCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfTWluZXNraW4iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNhYTkwZmI1ODAyMTMzNTRhYjUwZThhMmU0OTljMDg1ZDdjZTZhNGMzNTcxYjFjNDI5N2YzYzdjOGUxNzI2YSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
-    texture-signature: "yd0nEUWZvMtXr1/tPPtoGpwDoWpk33oViwA6T7frwdPOgr8ycExs7iNX1rP6b1o3KnsWUCmhKSEyehluyPHyG0E+gFI5wmFAIc0Sgoi3hjSubg/Wk0L/ueQRCiX2OjRSXurGX8skJYydlXs1fljVk8l4S8kMYBnPn6KrrDKA1e3TA4FWTHpG5zAAQaRNby8Ux1Byh8kwl2KROT/nmNoDcvYlOkOySrf5DvuDbZgHzMPpfrIr7a8II0eqBISg9HNClQ8l8eBKwVhmac2Qrkq1+RNs0HNN2IgYVvMB5IFkq8u3gUJ5pMowvwxjQ7VQzL8S7tGTVphIbMcU+xkChlDhIfgoVWr46E7qnukYjktYR/AfxsHXY0umLyGmXuCmU/Z/4txwwz1dnj09Ps2gFcrUFwQGdV3zjO5lnYz86Sa49NUkUM1Cu0PExyFHnifuUAONg3tpK9U2+gdoqrAL422B+7MjcWfrj/x7Gg3YEEJP9uxeAXnMBYreyUwQZ1C0vGS1dSyl/8GmHLRJrrcv4AeUe2ed3dkEqgmAkQsUWZG61KIH964Q6wdpMtI3YQD04q/4lOjZZxQ2BDZdKnyBMVoA94xgPUGntXPCAo2YTrLg8CGcPUVxXBefgz7vMnbiYfktNVMyDjTrYJTECCQNaGUKihMXEDUaZSZ7RgR1eJYAJL0="
-
-npc-textures: {}

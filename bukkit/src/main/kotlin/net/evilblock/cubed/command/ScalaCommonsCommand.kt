@@ -61,7 +61,10 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onReload(sender: CommandSender)
     {
         Cubed.instance.reloadConfig()
-        Reflection.DEBUG = Cubed.instance.config.getBoolean("debug", false)
+
+        Reflection.DEBUG =
+            Cubed.instance.config
+                .getBoolean("debug", false)
     }
 
     @Subcommand("menu-template-editor")

@@ -7,13 +7,11 @@
 
 package net.evilblock.cubed.entity.npc
 
-import net.evilblock.cubed.CubedConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.hologram.menu.button.UpdateFloatingItemButton
 import net.evilblock.cubed.entity.npc.animation.FloatAnimation
-import net.evilblock.cubed.entity.npc.animation.MultiRingsAnimation
 import net.evilblock.cubed.entity.npc.animation.RingsAnimation
 import net.evilblock.cubed.entity.npc.menu.button.*
 import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
@@ -190,15 +188,11 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
 
     fun updateTextureByUsername(username: String, onComplete: (Boolean, Exception?) -> Unit) {
         try {
-            var texture: NpcTexture? = null
-
-            if (CubedConfig.hasNpcTexture(username)) {
-                texture = CubedConfig.getNpcTexture(username)
-            }
-
-            if (texture == null) {
-                texture = NpcTexture.fetchTextureByUsername(username).orElseThrow { IllegalStateException("Failed to fetch texture by username") }
-            }
+            val texture = NpcTexture
+                .fetchTextureByUsername(username)
+                .orElseThrow {
+                    IllegalStateException("Failed to fetch texture by username")
+                }
 
             updateTexture(texture!!.textureValue, texture.textureSignature)
             onComplete.invoke(true, null)
