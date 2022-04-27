@@ -1,9 +1,11 @@
 package gg.scala.cache.uuid
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.gson.JsonParser
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
 /**
@@ -16,7 +18,10 @@ object ScalaStoreUuidCacheHelper
     private val parser = JsonParser()
     private val client = OkHttpClient()
 
-    private val invalidCache =
+    private val invalidCache = Caffeine.newBuilder()
+        .maximumSize(10_000)
+        .expireAfterWrite(1L, TimeUnit.MINUTES)
+        .build<String, String>()
 
     /**
      * Fetches a UUID and Username pair from the Mojang API.
@@ -26,6 +31,15 @@ object ScalaStoreUuidCacheHelper
     @Suppress("DEPRECATION")
     fun fetchFromMojang(username: String): Optional<Pair<UUID, String>>
     {
+        val invalid = this.invalidCache
+            .getIfPresent(username.lowercase())
+
+        if (invalid != null)
+        {
+            return Optional
+                .ofNullable(null)
+        }
+
         try
         {
             val request = Request.Builder().url("https://api.mojang.com/users/profiles/minecraft/$username").build()
@@ -47,7 +61,10 @@ object ScalaStoreUuidCacheHelper
             }
         } catch (e: Exception)
         {
+            this.invalidCache.put(username.lowercase(), username)
+
             Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $username")
+            Logger.getGlobal().info("This username will be considered \"invalid\" for the next minute.")
         }
 
         return Optional.ofNullable(null)
