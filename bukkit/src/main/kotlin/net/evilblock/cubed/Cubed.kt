@@ -75,7 +75,7 @@ import java.util.logging.Level
 @MavenLibrary(
     groupId = "org.jetbrains.kotlin",
     artifactId = "kotlin-reflect",
-    version = "1.6.20"
+    version = "1.6.21"
 )
 @HelperImplementationPlugin
 class Cubed : ExtendedScalaPlugin()

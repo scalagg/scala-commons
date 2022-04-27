@@ -16,6 +16,8 @@ object ScalaStoreUuidCacheHelper
     private val parser = JsonParser()
     private val client = OkHttpClient()
 
+    private val invalidCache =
+
     /**
      * Fetches a UUID and Username pair from the Mojang API.
      * Should not be called very often as the server could be rate-limited which will cause more issues.
