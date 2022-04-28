@@ -1,10 +1,4 @@
 dependencies {
     implementation project(":serializers")
     implementation project(":store")
-
-    implementation "gg.scala.aware:aware:1.0.7"
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"
-
-    implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
 }
