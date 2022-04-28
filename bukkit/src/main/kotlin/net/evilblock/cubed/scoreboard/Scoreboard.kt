@@ -144,6 +144,8 @@ class Scoreboard(private val player: Player) {
 
             this.removeScore(displayedScore)
         }
+
+        Cubed.instance.logger.info("Updated")
     }
 
     private fun createAndAddMember(score: String) {

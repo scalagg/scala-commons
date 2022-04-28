@@ -25,13 +25,8 @@ object ScoreboardListeners : Listener
             return
         }
 
-        ScoreboardHandler.scoreboards[event.player.uniqueId] =
-            Scoreboard(event.player)
-                .apply {
-                    update()
-                }
-
-        println(ScoreboardHandler.scoreboards)
+        ScoreboardHandler
+            .scoreboards[event.player.uniqueId] = Scoreboard(event.player)
     }
 
     @EventHandler

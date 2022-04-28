@@ -13,15 +13,21 @@ import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @Service
 object ScoreboardHandler
 {
-    internal val scoreboards = ConcurrentHashMap<UUID, Scoreboard>()
+    internal val scoreboards = mutableMapOf<UUID, Scoreboard>()
 
     var scoreboardOverride: ScoreboardOverride? = null
     internal var scoreboardProvider: ScoreboardAdapter? = null
+
+    private val executor = Executors
+        .newSingleThreadScheduledExecutor()
+
+    private var executorEnabled = false
 
     @Configure
     fun configure()
@@ -59,8 +65,22 @@ object ScoreboardHandler
     }
 
     @JvmStatic
-    fun configure(scoreboardProvider: ScoreboardAdapter)
+    fun configure(provider: ScoreboardAdapter)
     {
-        this.scoreboardProvider = scoreboardProvider
+        this.scoreboardProvider = provider
+
+        if (!this.executorEnabled)
+        {
+            this.executorEnabled = true
+        } else
+        {
+            this.executor.shutdownNow()
+        }
+
+        this.executor.scheduleAtFixedRate(
+            ScoreboardUpdater, 0L,
+            provider.getInterval() * 50L,
+            TimeUnit.MILLISECONDS
+        )
     }
 }
