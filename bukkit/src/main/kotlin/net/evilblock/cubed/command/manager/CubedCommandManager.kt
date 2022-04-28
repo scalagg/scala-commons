@@ -29,17 +29,6 @@ class CubedCommandManager(
     secondary: ChatColor = ChatColor.YELLOW
 ) : PaperCommandManager(plugin)
 {
-    companion object
-    {
-        @JvmStatic
-        val FUNNY_WORDS = listOf(
-            "atrocious", "awful",
-            "dreadful", "unacceptable",
-            "horrendous", "horrid",
-            "shameful", "terrible"
-        )
-    }
-
     init
     {
         enableUnstableAPI("help")
