@@ -20,13 +20,11 @@ object ScoreboardListeners : Listener
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoinEvent(event: PlayerJoinEvent)
     {
-        if (ScoreboardHandler.scoreboardProvider == null)
-        {
-            return
-        }
-
         ScoreboardHandler
-            .scoreboards[event.player.uniqueId] = Scoreboard(event.player)
+            .scoreboardProvider ?: return
+
+        ScoreboardHandler.scoreboards[event.player.uniqueId] =
+            Scoreboard(event.player)
     }
 
     @EventHandler
