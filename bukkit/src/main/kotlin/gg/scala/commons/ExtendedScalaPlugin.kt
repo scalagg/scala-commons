@@ -474,6 +474,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .unregisterCommands()
 
         this.flavor.close()
+
+        if (this.configContainerized.initialLoaded)
+        {
+            this.configContainerized.aware.shutdown()
+        }
     }
 
     inline fun <reified T> config(): T

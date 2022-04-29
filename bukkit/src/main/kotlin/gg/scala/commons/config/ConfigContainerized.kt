@@ -75,7 +75,7 @@ class ConfigContainerized(
             ConfigContainer(plugin, configFactory, config, this)
     }
 
-    private var initialLoaded = false
+    var initialLoaded = false
 
     override fun loadAll()
     {
