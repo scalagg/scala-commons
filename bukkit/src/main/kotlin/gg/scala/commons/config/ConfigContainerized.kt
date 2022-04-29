@@ -85,7 +85,14 @@ class ConfigContainerized(
             configContainer.value.load()
         }
 
-        if (!initialLoaded)
+        if (
+            !initialLoaded && this
+                .configContainers.values.map {
+                    it.annotation
+                }.any {
+                    it.crossSync
+                }
+        )
         {
             this.aware.connect()
                 .toCompletableFuture()
