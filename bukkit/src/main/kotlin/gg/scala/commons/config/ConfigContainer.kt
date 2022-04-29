@@ -95,7 +95,7 @@ class ConfigContainer(
                     this.containerized.aware,
                     "config" to Serializers
                         .gson.toJson(this.model)
-                )
+                ).publish()
             }
         }.onFailure {
             this.plugin.logger.log(
