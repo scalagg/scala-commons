@@ -69,6 +69,11 @@ class Scoreboard(private val player: Player) {
     }
 
     fun update() {
+        if (System.currentTimeMillis() - this.createdAt < 100L)
+        {
+            return
+        }
+
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride(this.player)
 

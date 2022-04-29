@@ -1,5 +1,9 @@
 package gg.scala.commons.config
 
+import gg.scala.aware.Aware
+import gg.scala.aware.AwareBuilder
+import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
+import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.model.Containerized
@@ -30,6 +34,13 @@ class ConfigContainerized(
     val waitingLateInject =
         HashSet<ContainerConfig>()
 
+    val aware by lazy {
+        AwareBuilder.of<AwareMessage>("config-sync")
+            .logger(plugin.logger)
+            .codec(AwareMessageCodec)
+            .build()
+    }
+
     override fun inject()
     {
         val configs = this.plugin::class.java
@@ -50,6 +61,10 @@ class ConfigContainerized(
 
             inject(config)
         }
+
+        this.aware.connect()
+            .toCompletableFuture()
+            .join()
     }
 
     fun inject(config: ContainerConfig)
@@ -63,7 +78,10 @@ class ConfigContainerized(
         )
 
         configContainers[config.model] =
-            ConfigContainer(plugin, configFactory, config)
+            ConfigContainer(plugin, configFactory, config, this)
+                .apply {
+                    inject()
+                }
     }
 
     override fun loadAll()

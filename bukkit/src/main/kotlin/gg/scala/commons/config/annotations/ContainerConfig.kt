@@ -13,5 +13,6 @@ import kotlin.reflect.KClass
 annotation class ContainerConfig(
     val value: String,
     val model: KClass<out Any>,
-    val lateInject: Boolean = false
+    val lateInject: Boolean = false,
+    val crossSync: Boolean = false
 )

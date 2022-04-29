@@ -60,7 +60,7 @@ dependencies {
     // reflekt
     compileOnly "com.github.GrowlyX:reflektion:a33bf04483"
 
-    implementation "gg.scala.aware:aware:1.0.7"
+    implementation "gg.scala.aware:aware:1.0.8"
     implementation "gg.scala.flavor:flavor:0.1.3.6"
 
     // lettuce
