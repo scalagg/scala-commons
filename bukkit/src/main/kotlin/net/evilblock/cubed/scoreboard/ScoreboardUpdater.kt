@@ -23,6 +23,11 @@ object ScoreboardUpdater : Runnable
             return
         }
 
+        if (Cubed.instance.disabling)
+        {
+            return
+        }
+
         for (scoreboard in ScoreboardHandler.scoreboards.values)
         {
             kotlin.runCatching {

@@ -112,6 +112,8 @@ class Cubed : ExtendedScalaPlugin()
             .build()
     }
 
+    var disabling = false
+
     @ContainerEnable
     fun containerEnable()
     {
@@ -243,6 +245,8 @@ class Cubed : ExtendedScalaPlugin()
     @ContainerDisable
     fun containerDisable()
     {
+        this.disabling = true
+
         kotlin.runCatching {
             if (isPostersEnabled())
             {

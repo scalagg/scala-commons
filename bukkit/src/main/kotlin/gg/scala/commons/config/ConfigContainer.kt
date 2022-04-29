@@ -4,7 +4,6 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.flavor.FlavorBinder
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.serializers.Serializers
 import xyz.mkotb.configapi.ConfigFactory
 import java.util.logging.Level
@@ -36,7 +35,7 @@ class ConfigContainer(
 
     private var injected = false
 
-    fun inject()
+    fun postInject()
     {
         if (injected)
             return

@@ -1,13 +1,11 @@
 package gg.scala.commons.config
 
-import gg.scala.aware.Aware
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.model.Containerized
-import gg.scala.flavor.FlavorBinder
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
@@ -79,15 +77,13 @@ class ConfigContainerized(
 
         configContainers[config.model] =
             ConfigContainer(plugin, configFactory, config, this)
-                .apply {
-                    inject()
-                }
     }
 
     override fun loadAll()
     {
         for (configContainer in this.configContainers)
         {
+            configContainer.value.postInject()
             configContainer.value.load()
         }
     }

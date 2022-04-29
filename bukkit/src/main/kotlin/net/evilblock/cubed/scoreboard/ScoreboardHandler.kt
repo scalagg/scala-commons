@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.scoreboard
 
+import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import net.evilblock.cubed.Cubed
@@ -62,6 +63,12 @@ object ScoreboardHandler
                 }
             }
         }
+    }
+
+    @Close
+    fun close()
+    {
+        this.executor.shutdownNow()
     }
 
     @JvmStatic
