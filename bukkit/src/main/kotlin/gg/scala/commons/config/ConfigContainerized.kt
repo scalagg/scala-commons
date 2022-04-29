@@ -59,10 +59,6 @@ class ConfigContainerized(
 
             inject(config)
         }
-
-        this.aware.connect()
-            .toCompletableFuture()
-            .join()
     }
 
     fun inject(config: ContainerConfig)
@@ -79,12 +75,23 @@ class ConfigContainerized(
             ConfigContainer(plugin, configFactory, config, this)
     }
 
+    private var initialLoaded = false
+
     override fun loadAll()
     {
         for (configContainer in this.configContainers)
         {
             configContainer.value.postInject()
             configContainer.value.load()
+        }
+
+        if (!initialLoaded)
+        {
+            this.aware.connect()
+                .toCompletableFuture()
+                .join()
+
+            this.initialLoaded = true
         }
     }
 }
