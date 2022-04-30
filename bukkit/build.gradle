@@ -66,7 +66,7 @@ dependencies {
     compileOnly "com.github.GrowlyX:reflektion:a33bf04483"
 
     // lettuce
-    implementation "io.lettuce:lettuce-core:6.2.0-rev2"
+    implementation 'io.lettuce:lettuce-core:6.3.0.STABLE'
 }
 
 shadowJar {
