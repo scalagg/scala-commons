@@ -45,8 +45,11 @@ class ConfigContainer(
             this.containerized.aware.listen(
                 this.annotation.model.java.simpleName
             ) {
-                val content = this.retrieve(
-                    "config", annotation.model
+                val content = Serializers.gson.fromJson(
+                    this.retrieve(
+                        "config", String::class
+                    ),
+                    annotation.model.java
                 )
 
                 model = content
@@ -90,7 +93,8 @@ class ConfigContainer(
                 AwareMessage.of(
                     this.annotation.model.java.simpleName,
                     this.containerized.aware,
-                    "config" to this.model!!
+                    "config" to Serializers
+                        .gson.toJson(this.model!!)
                 ).publish()
             }
         }.onFailure {

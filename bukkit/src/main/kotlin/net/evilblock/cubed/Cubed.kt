@@ -250,10 +250,14 @@ class Cubed : ExtendedScalaPlugin()
         kotlin.runCatching {
             if (isPostersEnabled())
             {
-                PosterHandler.saveData()
-                PlacedPosterHandler.saveData()
+                kotlin.runCatching {
+                    PosterHandler.saveData()
+                    PlacedPosterHandler.saveData()
 
-                PlacedPosterHandler.onDisable()
+                    PlacedPosterHandler.onDisable()
+                }.onFailure {
+                    logger.info("[Posters]Failed to save poster data!")
+                }
             }
 
             kotlin.runCatching {
