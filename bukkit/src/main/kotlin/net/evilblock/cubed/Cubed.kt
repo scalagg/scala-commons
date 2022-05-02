@@ -13,6 +13,7 @@ import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.proxy.Plugins
+import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
 import gg.scala.commons.serializer.ComponentSerializer
@@ -132,6 +133,10 @@ class Cubed : ExtendedScalaPlugin()
                 .getTimeZone(
                     config.timezone
                 )
+
+            flavor().inject(
+                ReplacementGlobalContainer
+            )
 
             TimeZone.setDefault(default)
 
@@ -256,7 +261,7 @@ class Cubed : ExtendedScalaPlugin()
 
                     PlacedPosterHandler.onDisable()
                 }.onFailure {
-                    logger.info("[Posters]Failed to save poster data!")
+                    logger.info("[Posters] Failed to save poster data!")
                 }
             }
 
