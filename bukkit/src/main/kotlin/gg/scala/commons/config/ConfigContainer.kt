@@ -6,6 +6,11 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.flavor.FlavorBinder
 import net.evilblock.cubed.serializers.Serializers
 import xyz.mkotb.configapi.ConfigFactory
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import kotlin.reflect.KClass
 
@@ -18,7 +23,7 @@ class ConfigContainer(
     private val factory: ConfigFactory,
     val annotation: ContainerConfig,
     private val containerized: ConfigContainerized
-)
+) : Runnable
 {
     var model: Any? = null
 
@@ -34,6 +39,53 @@ class ConfigContainer(
     }
 
     private var injected = false
+
+    private val configPath: Path by lazy {
+        val dataContainer =
+            plugin.dataFolder
+
+        File(
+            dataContainer,
+            "${this.annotation.value}.yml"
+        ).toPath()
+    }
+
+    private var lastModificationTimestamp = 0L
+
+    override fun run()
+    {
+        kotlin.runCatching {
+            val fileAttributes = Files
+                .readAttributes(
+                    this.configPath,
+                    BasicFileAttributes::class.java
+                )
+
+            val lastModified =
+                fileAttributes
+                    .lastModifiedTime()
+                    .toMillis()
+
+            if (this.lastModificationTimestamp == 0L)
+            {
+                this.lastModificationTimestamp = lastModified
+                return
+            }
+
+            if (lastModified != this.lastModificationTimestamp)
+            {
+                this.plugin.logger.info(
+                    "[Config] [Watcher] Detected config modification to ${
+                        annotation.value
+                    } injected into ${
+                        annotation.model.simpleName
+                    }, reloading model!"
+                )
+
+                this.load()
+            }
+        }
+    }
 
     fun postInject()
     {
@@ -73,6 +125,12 @@ class ConfigContainer(
             )
         }
 
+        ConfigExecutor
+            .scheduleAtFixedRate(
+                this, 500L,
+                500L, TimeUnit.MILLISECONDS
+            )
+
         this.injected = true
     }
 
@@ -102,11 +160,13 @@ class ConfigContainer(
                 Level.WARNING, "[Config] Failed to load config by name \"${annotation.value}\"!", it
             )
         }.onSuccess {
-            this.plugin.logger.info("[Config] Saved config ${
-                annotation.value
-            } injected into ${
-                annotation.model.simpleName
-            }.")
+            this.plugin.logger.info(
+                "[Config] Saved config ${
+                    annotation.value
+                } injected into ${
+                    annotation.model.simpleName
+                }."
+            )
         }
     }
 
@@ -117,11 +177,13 @@ class ConfigContainer(
                 annotation.value, annotation.model.java
             )
         }.onSuccess {
-            this.plugin.logger.info("[Config] Loaded config ${
-                annotation.value
-            } injected into ${
-                annotation.model.simpleName
-            }.")
+            this.plugin.logger.info(
+                "[Config] Loaded config ${
+                    annotation.value
+                } injected into ${
+                    annotation.model.simpleName
+                }."
+            )
 
             plugin.flavor().binders.add(
                 FlavorBinder(annotation.model) to getModelAs()
