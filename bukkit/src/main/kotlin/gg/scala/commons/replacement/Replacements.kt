@@ -1,11 +1,11 @@
 package gg.scala.commons.replacement
 
+import gg.scala.commons.Patterns
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import net.evilblock.cubed.util.Color
 import org.bukkit.entity.Player
-import java.util.regex.Pattern
 
 /**
  * @author GrowlyX
@@ -25,26 +25,13 @@ object Replacements
         ReplacementGlobalContainer.let { this.containers.add(it) }
     }
 
-    private val pattern =
-        Pattern.compile(
-            "\\\\%(([a-zA-Z\\d]+)-)(([a-zA-Z\\d-]+)_)([^%]+)\\\\%"
-        )
-
     fun apply(
         text: String,
         player: Player
     ): String
     {
-        val matcher = this
-            .pattern
+        val matcher = Patterns
             .matcher(text)
-
-        if (!matcher.find())
-        {
-            println("nothing was found lol;mao")
-
-            return text
-        }
 
         val builder = StringBuffer()
 
@@ -56,31 +43,17 @@ object Replacements
             val replacement = this.containers
                 .firstNotNullOfOrNull {
                     it.getReplacements()[identifier]
-                }
-
-            if (replacement == null)
-            {
-                println("didn't find replacement $identifier")
-                continue
-            }
+                } ?: continue
 
             val group = matcher
                 .group(4)
 
             val lambda =
                 replacement.replacements
-                    .replacements[group]
-
-            if (lambda == null)
-            {
-                println("didn't find group $group")
-                continue
-            }
+                    .replacements[group] ?: continue
 
             val parameters = matcher
                 .group(5)
-
-            println("params: $parameters")
 
             val parsed = lambda
                 .invoke(player, parameters)
