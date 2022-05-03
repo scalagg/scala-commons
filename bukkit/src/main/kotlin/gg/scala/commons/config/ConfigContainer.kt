@@ -3,8 +3,10 @@ package gg.scala.commons.config
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.util.Players
 import gg.scala.flavor.FlavorBinder
 import net.evilblock.cubed.serializers.Serializers
+import net.evilblock.cubed.util.CC
 import xyz.mkotb.configapi.ConfigFactory
 import java.io.File
 import java.nio.file.Files
@@ -82,8 +84,14 @@ class ConfigContainer(
                     }, reloading model!"
                 )
 
+                Players.operators().forEach {
+                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${annotation.value}.yml${CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
+                }
+
                 this.load()
             }
+
+            this.lastModificationTimestamp = lastModified
         }
     }
 
