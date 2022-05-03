@@ -31,7 +31,7 @@ object Replacements
 
     private val pattern =
         Pattern.compile(
-            "\\%s((?<identifier>[a-zA-Z0-9]+)-)((?<group>[a-zA-Z0-9]+)-)(?<parameters>[^%s%s]+)\\%s"
+            "\\%s((?<identifier>[a-zA-Z0-9]+)-)((?<group>[a-zA-Z0-9]+)_)(?<parameters>[^%s%s]+)\\%s"
                 .format("%", "%", "%", "%")
         )
 

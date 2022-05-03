@@ -19,7 +19,6 @@ import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.annotations.scripts.RequiresScripts
-import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.config.ConfigContainerized
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
