@@ -7,7 +7,6 @@ import net.evilblock.cubed.util.Color
 import org.bukkit.entity.Player
 import java.util.regex.Pattern
 
-
 /**
  * @author GrowlyX
  * @since 5/2/2022
@@ -19,9 +18,6 @@ object Replacements
     private val containers =
         mutableListOf<ReplacementContainer>()
 
-    private val expression =
-        "%(.|\\n)*?%".toPattern()
-
     @Configure
     fun configure()
     {
@@ -31,8 +27,7 @@ object Replacements
 
     private val pattern =
         Pattern.compile(
-            "\\%s((?<identifier>[a-zA-Z0-9]+)-)((?<group>[a-zA-Z0-9]+)_)(?<parameters>[^%s%s]+)\\%s"
-                .format("%", "%", "%", "%")
+            "\\%((?<identifier>[a-zA-Z\\d]+)-)((?<group>[a-zA-Z\\d]+)_)(?<parameters>[^%]+)\\%"
         )
 
     fun apply(
@@ -53,32 +48,39 @@ object Replacements
         while (matcher.find())
         {
             val identifier = matcher
-                .group("identifier")
+                .group(2)
 
             val replacement = this.containers
                 .firstNotNullOfOrNull {
                     it.getReplacements()[identifier]
                 }
-                ?: continue
+
+            if (replacement == null)
+            {
+                println("didn't find replacement $identifier")
+                continue
+            }
 
             val group = matcher
-                .group("parameters")
+                .group(4)
 
             val lambda =
                 replacement.replacements
                     .replacements[group]
-                    ?: continue
+
+            if (lambda == null)
+            {
+                println("didn't find group $group")
+                continue
+            }
 
             val parameters = matcher
-                .group("parameters")
+                .group(5)
+
+            println("params: $parameters")
 
             val parsed = lambda
                 .invoke(player, parameters)
-
-            if (parsed.isEmpty())
-            {
-                continue
-            }
 
             matcher.appendReplacement(
                 builder, parsed
@@ -86,7 +88,8 @@ object Replacements
         }
 
         return Color.translate(
-            matcher.appendTail(builder)
+            matcher
+                .appendTail(builder)
                 .toString()
         )
     }

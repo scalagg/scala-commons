@@ -14,6 +14,7 @@ import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.proxy.Plugins
 import gg.scala.commons.replacement.ReplacementGlobalContainer
+import gg.scala.commons.replacement.Replacements
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
 import gg.scala.commons.serializer.ComponentSerializer
@@ -134,9 +135,10 @@ class Cubed : ExtendedScalaPlugin()
                     config.timezone
                 )
 
-            flavor().inject(
-                ReplacementGlobalContainer
-            )
+            flavor {
+                inject(ReplacementGlobalContainer)
+                inject(Replacements)
+            }
 
             TimeZone.setDefault(default)
 
