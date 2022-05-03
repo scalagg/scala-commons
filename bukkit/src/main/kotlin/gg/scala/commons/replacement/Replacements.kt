@@ -27,7 +27,7 @@ object Replacements
 
     private val pattern =
         Pattern.compile(
-            "\\%((?<identifier>[a-zA-Z\\d]+)-)((?<group>[a-zA-Z\\d]+)_)(?<parameters>[^%]+)\\%"
+            "\\\\%(([a-zA-Z\\d]+)-)(([a-zA-Z\\d-]+)_)([^%]+)\\\\%"
         )
 
     fun apply(
@@ -35,11 +35,14 @@ object Replacements
         player: Player
     ): String
     {
-        val matcher = this.pattern
+        val matcher = this
+            .pattern
             .matcher(text)
 
         if (!matcher.find())
         {
+            println("nothing was found lol;mao")
+
             return text
         }
 
