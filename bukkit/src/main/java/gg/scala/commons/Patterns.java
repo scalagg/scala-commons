@@ -21,14 +21,4 @@ public class Patterns {
     {
         return PATTERN.matcher(expression);
     }
-
-    public static void main(String[] args) {
-        test("%tangerine-scoreboard-display_hub-1%");
-        test("§bPlayers: §f%tangerine-scoreboard-display_practice%");
-    }
-
-    public static void test(String expression)
-    {
-        System.out.println(expression + ": " + PATTERN.matcher(expression).find());
-    }
 }

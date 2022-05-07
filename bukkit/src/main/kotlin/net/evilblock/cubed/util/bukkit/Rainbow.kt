@@ -9,7 +9,7 @@ object Rainbow : Runnable
 {
     private var index: Int = 0
 
-    private val options = listOf(
+    val options = listOf(
         ChatColor.DARK_RED,
         ChatColor.RED,
         ChatColor.GOLD,
