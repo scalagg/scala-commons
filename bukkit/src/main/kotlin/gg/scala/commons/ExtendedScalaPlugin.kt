@@ -35,7 +35,7 @@ import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
-import net.evilblock.cubed.command.manager.CubedCommandManager
+import gg.scala.commons.command.ScalaCommandManager
 import net.evilblock.cubed.util.CC
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
@@ -63,7 +63,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     }
 
     private lateinit var flavor: Flavor
-    private lateinit var commandManager: CubedCommandManager
+    private lateinit var commandManager: ScalaCommandManager
 
     val configContainerized by lazy {
         ConfigContainerized(this)
@@ -259,14 +259,14 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        this.commandManager = CubedCommandManager(
+        this.commandManager = ScalaCommandManager(
             this,
             primary = ChatColor.getByChar(CC.PRI[1]),
             secondary = ChatColor.getByChar(CC.SEC[1])
         )
 
         flavor {
-            bind<CubedCommandManager>() to commandManager
+            bind<ScalaCommandManager>() to commandManager
             bind<BukkitCommandManager>() to commandManager
             bind<PaperCommandManager>() to commandManager
         }
