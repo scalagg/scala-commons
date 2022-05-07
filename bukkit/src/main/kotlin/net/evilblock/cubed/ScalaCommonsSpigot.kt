@@ -165,6 +165,11 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
             if (isPostersEnabled())
             {
+                flavor {
+                    inject(PosterHandler)
+                    inject(PlacedPosterHandler)
+                }
+
                 PosterHandler.configure()
                 PlacedPosterHandler.configure()
 

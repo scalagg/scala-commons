@@ -12,11 +12,13 @@ import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Service
+import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.serializers.Serializers
 import java.io.File
 
 @Service
+@IgnoreAutoScan
 object PosterHandler {
 
     @Inject

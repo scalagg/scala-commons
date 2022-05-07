@@ -22,7 +22,7 @@ object BungeeUtil
     lateinit var plugin: ScalaCommonsSpigot
 
     @Configure
-    private fun configure()
+    fun configure()
     {
         this.plugin.server
             .messenger.registerOutgoingPluginChannel(
