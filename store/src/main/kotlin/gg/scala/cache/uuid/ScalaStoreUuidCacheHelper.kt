@@ -61,7 +61,7 @@ object ScalaStoreUuidCacheHelper
             }
         } catch (e: Exception)
         {
-            this.invalidCache.put(username.lowercase(), username)
+            invalidCache.put(username.lowercase(), username)
 
             Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $username")
             Logger.getGlobal().info("This username will be considered \"invalid\" for the next minute.")

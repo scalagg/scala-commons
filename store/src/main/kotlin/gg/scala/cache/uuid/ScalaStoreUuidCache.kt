@@ -20,9 +20,9 @@ object ScalaStoreUuidCache
 
         Logger.getGlobal().info("Loading UUIDCache with ${translator.javaClass.simpleName}...")
 
-        this.translator.configure()
+        translator.configure()
             .thenRun {
-                this.translator.preLoadCache(async = false)
+                ScalaStoreUuidCache.translator.preLoadCache(async = false)
 
                 Logger.getGlobal().info("Loaded UUIDCache with ${translator.javaClass.simpleName}!")
             }
@@ -52,8 +52,7 @@ object ScalaStoreUuidCache
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper
-            .fetchFromMojang(username)
+        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(username)
 
         if (mojang.isPresent)
         {
@@ -85,8 +84,7 @@ object ScalaStoreUuidCache
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper
-            .fetchFromMojang(uniqueId)
+        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(uniqueId)
 
         if (mojang.isPresent)
         {
