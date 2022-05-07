@@ -9,7 +9,7 @@ package net.evilblock.cubed.scoreboard
 
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
@@ -27,8 +27,11 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.set
 
-class Scoreboard(private val player: Player) {
-
+class Scoreboard(
+    private val player: Player,
+    private val plugin: ScalaCommonsSpigot
+)
+{
     internal val createdAt: Long = System.currentTimeMillis()
     private val objective: Objective
     private val displayedScores: HashMap<String, Int> = HashMap()
@@ -42,21 +45,27 @@ class Scoreboard(private val player: Player) {
     private val prefixScoreSuffix: Array<String> = arrayOf("", "", "")
     private val localList: ThreadLocal<LinkedList<String>> = ThreadLocal.withInitial { LinkedList<String>() }
 
-    init {
-        val scoreboard = if (player.scoreboard == Bukkit.getScoreboardManager().mainScoreboard) {
+    init
+    {
+        val scoreboard = if (player.scoreboard == Bukkit.getScoreboardManager().mainScoreboard)
+        {
             Bukkit.getScoreboardManager().newScoreboard
-        } else {
+        } else
+        {
             player.scoreboard
         }
 
-        if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null) {
+        if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null)
+        {
             objective = scoreboard.getObjective(DisplaySlot.SIDEBAR)
-        } else {
+        } else
+        {
             objective = scoreboard.registerNewObjective("Commons", "dummy")
             objective.displaySlot = DisplaySlot.SIDEBAR
         }
 
-        if (player.scoreboard != scoreboard) {
+        if (player.scoreboard != scoreboard)
+        {
             player.scoreboard = scoreboard
         }
 
@@ -68,7 +77,8 @@ class Scoreboard(private val player: Player) {
         )
     }
 
-    fun update() {
+    fun update()
+    {
         if (System.currentTimeMillis() - this.createdAt < 100L)
         {
             return
@@ -77,27 +87,36 @@ class Scoreboard(private val player: Player) {
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride(this.player)
 
-        var title = ChatColor.translateAlternateColorCodes('&', if (shouldOverride) override!!.getTitle(player) else ScoreboardHandler.scoreboardProvider!!.getTitle(player))
+        var title = ChatColor.translateAlternateColorCodes(
+            '&',
+            if (shouldOverride) override!!.getTitle(player) else ScoreboardHandler.scoreboardProvider!!.getTitle(player)
+        )
 
         val lines = localList.get()
-        if (!lines.isEmpty()) {
+        if (!lines.isEmpty())
+        {
             lines.clear()
         }
 
         ScoreboardHandler.scoreboardProvider!!.preRun(player, this.objective.scoreboard)
 
-        if (ScoreboardPreviewHandler.previewGlobal || ScoreboardPreviewHandler.previewMode.contains(player.uniqueId)) {
+        if (ScoreboardPreviewHandler.previewGlobal || ScoreboardPreviewHandler.previewMode.contains(player.uniqueId))
+        {
             title = Color.translate(ScoreboardPreviewHandler.lines[0])
 
             ScoreboardPreviewHandler.lines.forEachIndexed { index, s ->
-                if (index != 0) {
+                if (index != 0)
+                {
                     this.localList.get().add(s)
                 }
             }
-        } else {
-            if (shouldOverride) {
+        } else
+        {
+            if (shouldOverride)
+            {
                 override!!.getLines(this.localList.get(), this.player)
-            } else {
+            } else
+            {
                 ScoreboardHandler.scoreboardProvider!!.getLines(this.localList.get(), this.player)
             }
         }
@@ -109,15 +128,25 @@ class Scoreboard(private val player: Player) {
         Preconditions.checkArgument(lines.size <= 15, "Too many lines passed! (${lines.size})" as Any)
         Preconditions.checkArgument(title.length <= 32, "Title is too long! (${title.length})" as Any)
 
-        if (this.objective.displayName != title) {
+        if (this.objective.displayName != title)
+        {
             this.objective.displayName = title
         }
 
-        for (s in lines) {
+        for (s in lines)
+        {
             val line = ChatColor.values()[nextValue].toString() + CC.WHITE + s
 
-            if (line.length > 48) {
-                throw IllegalArgumentException("Line is too long! Offending line: ${line.replace(ChatColor.COLOR_CHAR, '&')}")
+            if (line.length > 48)
+            {
+                throw IllegalArgumentException(
+                    "Line is too long! Offending line: ${
+                        line.replace(
+                            ChatColor.COLOR_CHAR,
+                            '&'
+                        )
+                    }"
+                )
             }
 
             val separated = this.separate(line, this.usedBaseScores)
@@ -127,23 +156,31 @@ class Scoreboard(private val player: Player) {
 
             this.recentlyUpdatedScores.add(score)
 
-            if (!this.sentTeamCreates.contains(score)) {
+            if (!this.sentTeamCreates.contains(score))
+            {
                 this.createAndAddMember(score)
             }
 
-            if (!this.displayedScores.containsKey(score) || this.displayedScores[score] != nextValue) {
+            if (!this.displayedScores.containsKey(score) || this.displayedScores[score] != nextValue)
+            {
                 this.setScore(score, nextValue)
             }
 
-            if (!this.scorePrefixes.containsKey(score) || !this.scorePrefixes[score].equals(prefix) || !this.scoreSuffixes[score].equals(suffix)) {
+            if (!this.scorePrefixes.containsKey(score) || !this.scorePrefixes[score].equals(prefix) || !this.scoreSuffixes[score].equals(
+                    suffix
+                )
+            )
+            {
                 this.updateScore(score, prefix, suffix)
             }
 
             --nextValue
         }
 
-        for (displayedScore in ImmutableSet.copyOf(this.displayedScores.keys)) {
-            if (this.recentlyUpdatedScores.contains(displayedScore)) {
+        for (displayedScore in ImmutableSet.copyOf(this.displayedScores.keys))
+        {
+            if (this.recentlyUpdatedScores.contains(displayedScore))
+            {
                 continue
             }
 
@@ -151,17 +188,21 @@ class Scoreboard(private val player: Player) {
         }
     }
 
-    private fun createAndAddMember(score: String) {
-        val scoreboardTeamAdd = ScoreboardTeamPacketMod(teamName = score, prefix = "_", suffix = "_", players = arrayListOf(), action = 0)
+    private fun createAndAddMember(score: String)
+    {
+        val scoreboardTeamAdd =
+            ScoreboardTeamPacketMod(teamName = score, prefix = "_", suffix = "_", players = arrayListOf(), action = 0)
         scoreboardTeamAdd.send(this.player)
 
-        val scoreboardTeamAddMember = ScoreboardTeamPacketMod(teamName = score, players = arrayListOf(score), action = 3)
+        val scoreboardTeamAddMember =
+            ScoreboardTeamPacketMod(teamName = score, players = arrayListOf(score), action = 3)
         scoreboardTeamAddMember.send(this.player)
 
         this.sentTeamCreates.add(score)
     }
 
-    private fun setScore(score: String, value: Int) {
+    private fun setScore(score: String, value: Int)
+    {
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
         Reflection.setDeclaredFieldValue(packet, "b", this.objective.name)
@@ -175,7 +216,8 @@ class Scoreboard(private val player: Player) {
         MinecraftProtocol.send(player, packet)
     }
 
-    private fun removeScore(score: String) {
+    private fun removeScore(score: String)
+    {
         this.displayedScores.remove(score)
         this.scorePrefixes.remove(score)
         this.scoreSuffixes.remove(score)
@@ -192,13 +234,15 @@ class Scoreboard(private val player: Player) {
         MinecraftProtocol.send(player, packet)
     }
 
-    private fun updateScore(score: String, prefix: String, suffix: String) {
+    private fun updateScore(score: String, prefix: String, suffix: String)
+    {
         this.scorePrefixes[score] = prefix
         this.scoreSuffixes[score] = suffix
         ScoreboardTeamPacketMod(score, prefix, suffix, null, 2).send(this.player)
     }
 
-    private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String> {
+    private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String>
+    {
         var line = ChatColor.translateAlternateColorCodes('&', line)
         var prefix = ""
         var score = ""
@@ -207,11 +251,14 @@ class Scoreboard(private val player: Player) {
         this.separateScores.clear()
         this.separateScoreBuilder.setLength(0)
 
-        for (element in line) {
-            if (element == '*' || this.separateScoreBuilder.length == 16 && this.separateScores.size < 3) {
+        for (element in line)
+        {
+            if (element == '*' || this.separateScoreBuilder.length == 16 && this.separateScores.size < 3)
+            {
                 this.separateScores.add(this.separateScoreBuilder.toString())
                 this.separateScoreBuilder.setLength(0)
-                if (element == '*') {
+                if (element == '*')
+                {
                     continue
                 }
             }
@@ -220,29 +267,38 @@ class Scoreboard(private val player: Player) {
 
         this.separateScores.add(this.separateScoreBuilder.toString())
 
-        when (this.separateScores.size) {
-            1 -> {
+        when (this.separateScores.size)
+        {
+            1 ->
+            {
                 score = this.separateScores[0]
             }
-            2 -> {
+            2 ->
+            {
                 score = this.separateScores[0]
                 suffix = this.separateScores[1]
             }
-            3 -> {
+            3 ->
+            {
                 prefix = this.separateScores[0]
                 score = this.separateScores[1]
                 suffix = this.separateScores[2]
             }
-            else -> {
-                Cubed.instance.logger.warning("Failed to separate scoreboard line. Input: $line")
+            else ->
+            {
+                plugin.logger.warning("Failed to separate scoreboard line. Input: $line")
             }
         }
 
-        if (usedBaseScores.contains(score)) {
-            if (score.length <= 14) {
-                for (chatColor in ChatColor.values()) {
+        if (usedBaseScores.contains(score))
+        {
+            if (score.length <= 14)
+            {
+                for (chatColor in ChatColor.values())
+                {
                     val possibleScore = chatColor.toString() + score
-                    if (!usedBaseScores.contains(possibleScore)) {
+                    if (!usedBaseScores.contains(possibleScore))
+                    {
                         score = possibleScore
                         break
                     }
@@ -250,15 +306,18 @@ class Scoreboard(private val player: Player) {
             }
         }
 
-        if (prefix.length > 16) {
+        if (prefix.length > 16)
+        {
             prefix = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
 
-        if (score.length > 16) {
+        if (score.length > 16)
+        {
             score = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
 
-        if (suffix.length > 16) {
+        if (suffix.length > 16)
+        {
             suffix = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
 

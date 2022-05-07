@@ -3,9 +3,10 @@ package net.evilblock.cubed.scoreboard.preview
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.serializers.Serializers
 import java.io.File
 import java.util.*
@@ -13,10 +14,15 @@ import java.util.*
 @Service
 object ScoreboardPreviewHandler
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     private val dataType = object : TypeToken<List<String>>()
     {}.type
 
-    private val dataFile = File(Cubed.instance.dataFolder, "scoreboard-preview.json")
+    private val dataFile by lazy {
+        File(plugin.dataFolder, "scoreboard-preview.json")
+    }
 
     var lines: MutableList<String> = arrayListOf()
 
@@ -34,7 +40,7 @@ object ScoreboardPreviewHandler
                     lines = Serializers.gson.fromJson(reader, dataType) as MutableList<String>
                 } catch (e: Exception)
                 {
-                    Cubed.instance.logger.severe("Failed to parse scoreboard-preview.json!")
+                    plugin.logger.severe("Failed to parse scoreboard-preview.json!")
                     e.printStackTrace()
                 }
             }

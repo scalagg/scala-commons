@@ -1,6 +1,5 @@
-rootProject.name = "cubed"
+rootProject.name = "scala-commons"
 include "store"
 include "bukkit"
 include "serializers"
 include "velocity"
-

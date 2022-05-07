@@ -8,9 +8,8 @@
 package net.evilblock.cubed.serialize
 
 import com.google.gson.*
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.nms.NBTUtil
 import org.bukkit.Color
 import org.bukkit.Material
@@ -229,7 +228,7 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
                             meta.addItemFlags(ItemFlag.valueOf(flag.asString))
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            Cubed.instance.logger.warning("Failed to deserialize an ItemFlag: \"$flag\"")
+                            ScalaCommonsSpigot.instance.logger.warning("Failed to deserialize an ItemFlag: \"$flag\"")
                         }
                     }
                 }

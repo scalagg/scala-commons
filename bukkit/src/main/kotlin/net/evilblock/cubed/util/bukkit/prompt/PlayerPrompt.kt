@@ -8,7 +8,6 @@
 package net.evilblock.cubed.util.bukkit.prompt
 
 import gg.scala.cache.uuid.ScalaStoreUuidCache
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import org.bukkit.ChatColor
 import org.bukkit.conversations.ConversationContext

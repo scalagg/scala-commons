@@ -7,11 +7,17 @@
 
 package net.evilblock.cubed.scoreboard
 
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.ScalaCommonsSpigot
 import java.util.logging.Level
 
+@Service
 object ScoreboardUpdater : Runnable
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     override fun run()
     {
         val provider = ScoreboardHandler
@@ -19,11 +25,11 @@ object ScoreboardUpdater : Runnable
 
         if (provider == null)
         {
-            Cubed.instance.logger.info("No scoreboard provider was registered!")
+            plugin.logger.info("No scoreboard provider was registered!")
             return
         }
 
-        if (Cubed.instance.disabling)
+        if (plugin.disabling)
         {
             return
         }
@@ -33,7 +39,7 @@ object ScoreboardUpdater : Runnable
             kotlin.runCatching {
                 scoreboard.update()
             }.onFailure {
-                Cubed.instance.logger.log(
+                plugin.logger.log(
                     Level.WARNING, "Exception during scoreboard tick", it
                 )
             }

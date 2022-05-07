@@ -98,12 +98,12 @@ import java.util.logging.Level
     version = "1.6.21"
 )
 @HelperImplementationPlugin
-class Cubed : ExtendedScalaPlugin()
+class ScalaCommonsSpigot : ExtendedScalaPlugin()
 {
     companion object
     {
         @JvmStatic
-        val instance by Plugins.plugin<Cubed>()
+        val instance by Plugins.plugin<ScalaCommonsSpigot>()
     }
 
     private val aware by lazy {

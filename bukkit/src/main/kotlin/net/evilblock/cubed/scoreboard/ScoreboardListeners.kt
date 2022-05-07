@@ -8,6 +8,8 @@
 package net.evilblock.cubed.scoreboard
 
 import gg.scala.commons.annotations.Listeners
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -17,6 +19,9 @@ import org.bukkit.event.player.PlayerJoinEvent
 @Listeners
 object ScoreboardListeners : Listener
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoinEvent(event: PlayerJoinEvent)
     {
@@ -24,7 +29,7 @@ object ScoreboardListeners : Listener
             .scoreboardProvider ?: return
 
         ScoreboardHandler.scoreboards[event.player.uniqueId] =
-            Scoreboard(event.player)
+            Scoreboard(event.player, plugin)
     }
 
     @EventHandler

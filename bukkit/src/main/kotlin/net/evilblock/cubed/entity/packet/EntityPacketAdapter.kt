@@ -15,7 +15,7 @@ import com.comphenix.protocol.wrappers.WrappedWatchableObject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.event.PlayerDamageEntityEvent
 import net.evilblock.cubed.entity.event.PlayerRightClickEntityEvent
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Service
 object EntityPacketAdapter : PacketAdapter(
-    Cubed.instance,
+    ScalaCommonsSpigot.instance,
     PacketType.Play.Client.USE_ENTITY,
     PacketType.Play.Server.SPAWN_ENTITY_LIVING
 )
@@ -52,8 +52,6 @@ object EntityPacketAdapter : PacketAdapter(
 
         ProtocolLibrary.getProtocolManager()
             .addPacketListener(this)
-
-        println("[Cubed] Registered entity packet adapter.")
     }
 
     override fun onPacketReceiving(event: PacketEvent) {

@@ -1,4 +1,4 @@
-package net.evilblock.cubed.command.manager
+package gg.scala.commons.command
 
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.ExceptionHandler
@@ -25,7 +25,7 @@ import java.util.*
  * @author GrowlyX, puugz
  * @since 10/08/2021 20:38
  */
-class CubedCommandManager(
+class ScalaCommandManager(
     plugin: ExtendedScalaPlugin,
     primary: ChatColor = ChatColor.GOLD,
     secondary: ChatColor = ChatColor.YELLOW

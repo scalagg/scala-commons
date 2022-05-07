@@ -8,7 +8,8 @@
 package net.evilblock.cubed.entity.listener
 
 import gg.scala.commons.annotations.Listeners
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.event.EventHandler
@@ -16,27 +17,37 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.*
 
 @Listeners
-object EntityWatcherListeners : Listener {
+object EntityWatcherListeners : Listener
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
     @EventHandler
-    fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+    fun onPlayerJoinEvent(event: PlayerJoinEvent)
+    {
         EntityHandler.startTrackingInstanceEntities(event.player)
     }
 
     @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        for (entity in EntityHandler.stopTrackingInstanceEntities(event.player)) {
+    fun onPlayerQuitEvent(event: PlayerQuitEvent)
+    {
+        for (entity in EntityHandler.stopTrackingInstanceEntities(event.player))
+        {
             entity.destroy(event.player)
         }
 
         Tasks.async {
-            for (entity in EntityHandler.getEntities()) {
-                try {
-                    if (entity.isWatcher(event.player.uniqueId)) {
+            for (entity in EntityHandler.getEntities())
+            {
+                try
+                {
+                    if (entity.isWatcher(event.player.uniqueId))
+                    {
                         entity.destroy(event.player)
                     }
-                } catch (e: Exception) {
-                    Cubed.instance.logger.warning("Failed to update entity ${entity.uuid} for player ${event.player.name}")
+                } catch (e: Exception)
+                {
+                    plugin.logger.warning("Failed to update entity ${entity.uuid} for player ${event.player.name}")
                     e.printStackTrace()
                 }
             }
@@ -44,15 +55,20 @@ object EntityWatcherListeners : Listener {
     }
 
     @EventHandler
-    fun onPlayerChangedWorldEvent(event: PlayerChangedWorldEvent) {
+    fun onPlayerChangedWorldEvent(event: PlayerChangedWorldEvent)
+    {
         Tasks.asyncDelayed(20L) {
-            for (entity in EntityHandler.getEntities()) {
-                try {
-                    if (entity.isVisibleToPlayer(event.player)) {
+            for (entity in EntityHandler.getEntities())
+            {
+                try
+                {
+                    if (entity.isVisibleToPlayer(event.player))
+                    {
                         entity.spawn(event.player)
                     }
-                } catch (e: Exception) {
-                    Cubed.instance.logger.warning("Failed to update entity ${entity.uuid} for player ${event.player.name}")
+                } catch (e: Exception)
+                {
+                    plugin.logger.warning("Failed to update entity ${entity.uuid} for player ${event.player.name}")
                     e.printStackTrace()
                 }
             }
@@ -60,13 +76,17 @@ object EntityWatcherListeners : Listener {
     }
 
     @EventHandler
-    fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
+    fun onPlayerRespawnEvent(event: PlayerRespawnEvent)
+    {
         Tasks.asyncDelayed(10L) {
-            for (entity in EntityHandler.getEntities()) {
-                if (entity.isWatcher(event.player.uniqueId)) {
+            for (entity in EntityHandler.getEntities())
+            {
+                if (entity.isWatcher(event.player.uniqueId))
+                {
                     entity.destroy(event.player)
 
-                    if (entity.isVisibleToPlayer(event.player)) {
+                    if (entity.isVisibleToPlayer(event.player))
+                    {
                         entity.spawn(event.player)
                     }
                 }

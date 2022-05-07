@@ -10,13 +10,22 @@ package net.evilblock.cubed.poster
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.serializers.Serializers
 import java.io.File
 
+@Service
 object PosterHandler {
 
-    private val dataFile: File = File(Cubed.instance.dataFolder, "posters.json")
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
+    private val dataFile by lazy {
+        File(plugin.dataFolder, "posters.json")
+    }
+
     private val dataType = object : TypeToken<List<Poster>>() {}.type
 
     private val posters: MutableMap<String, Poster> = hashMapOf()
@@ -30,7 +39,7 @@ object PosterHandler {
                         poster.readImage()
                         trackPoster(poster)
                     } catch (e: Exception) {
-                        Cubed.instance.logger.severe("Failed to read image of poster: ${poster.imageFile.path}")
+                        plugin.logger.severe("Failed to read image of poster: ${poster.imageFile.path}")
                         e.printStackTrace()
                     }
                 }

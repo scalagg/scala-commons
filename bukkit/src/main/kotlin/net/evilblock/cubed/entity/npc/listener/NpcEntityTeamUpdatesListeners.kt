@@ -8,17 +8,23 @@
 package net.evilblock.cubed.entity.npc.listener
 
 import gg.scala.commons.annotations.Listeners
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
 @Listeners
-object NpcEntityTeamUpdatesListeners : Listener {
+object NpcEntityTeamUpdatesListeners : Listener
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
     @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        event.player.removeMetadata("NPC_NAME_SB", Cubed.instance)
+    fun onPlayerQuitEvent(event: PlayerQuitEvent)
+    {
+        event.player.removeMetadata(
+            "NPC_NAME_SB", plugin
+        )
     }
-
 }

@@ -11,7 +11,7 @@ import com.cryptomorin.xseries.XMaterial
 import gg.scala.commons.annotations.Listeners
 import me.lucko.helper.shadows.nbt.NBTTagString
 import me.lucko.shadow.ShadowFactory
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.util.NpcUtils
@@ -19,6 +19,7 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -199,9 +200,9 @@ object EntityMoveTool : Listener {
         if (isMoveTool(event.itemDrop.itemStack)) {
             event.isCancelled = true
 
-            Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, {
+            Tasks.delayed(1L) {
                 clearInventoryOfTool(event.player)
-            }, 1L)
+            }
         }
     }
 

@@ -10,10 +10,11 @@ package net.evilblock.cubed.menu.template
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.menu.template.defaults.StaticMenuTemplate
 import net.evilblock.cubed.serializers.Serializers
 import java.io.File
@@ -21,6 +22,9 @@ import java.io.File
 @Service
 object MenuTemplateHandler
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     private val DATA_TYPE = object : TypeToken<List<MenuTemplate<*>>>()
     {}.type
 
@@ -29,7 +33,7 @@ object MenuTemplateHandler
 
     private fun getDataFile(): File
     {
-        return File(Cubed.instance.dataFolder, "menu-templates.json")
+        return File(plugin.dataFolder, "menu-templates.json")
     }
 
     @Configure

@@ -1,8 +1,9 @@
 package net.evilblock.cubed.nametag
 
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
@@ -17,6 +18,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Service
 object NametagHandler
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     internal val teamMap = ConcurrentHashMap<UUID, HashMap<UUID, NametagInfo>>()
 
     private val registeredTeams = Collections.synchronizedList(ArrayList<NametagInfo>())
@@ -34,12 +38,12 @@ object NametagHandler
     @Configure
     fun configure()
     {
-        val nametagConfig = Cubed.instance
+        val nametagConfig = this.plugin
             .config<CommonsNametagConfig>()
 
         if (nametagConfig.enabled)
         {
-            Cubed.instance.logger.info("Auto-updating nametags are disabled by config")
+            plugin.logger.info("Auto-updating nametags are disabled by config")
             return
         }
 

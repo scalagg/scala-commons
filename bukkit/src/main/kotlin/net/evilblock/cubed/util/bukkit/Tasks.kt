@@ -7,92 +7,129 @@
 
 package net.evilblock.cubed.util.bukkit
 
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
-object Tasks {
+@Service
+object Tasks
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
     @JvmStatic
-    fun sync(lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTask(Cubed.instance) {
-            lambda.invoke()
-        }
+    fun sync(lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTask(plugin) {
+                lambda.invoke()
+            }
     }
 
     @JvmStatic
-    fun delayed(delay: Long, lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, {
-            lambda.invoke()
-        }, delay)
+    fun delayed(delay: Long, lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskLater(plugin, {
+                lambda.invoke()
+            }, delay)
     }
 
     @JvmStatic
-    fun delayed(delay: Long, runnable: Runnable): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, runnable, delay)
+    fun delayed(delay: Long, runnable: Runnable): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskLater(plugin, runnable, delay)
     }
 
     @JvmStatic
-    fun delayed(delay: Long, runnable: BukkitRunnable): BukkitTask {
-        return runnable.runTaskLater(Cubed.instance, delay)
+    fun delayed(delay: Long, runnable: BukkitRunnable): BukkitTask
+    {
+        return runnable.runTaskLater(plugin, delay)
     }
 
     @JvmStatic
-    fun timer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskTimer(Cubed.instance, {
-            lambda.invoke()
-        }, delay, interval)
+    fun timer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskTimer(plugin, {
+                lambda.invoke()
+            }, delay, interval)
     }
 
     @JvmStatic
-    fun timer(delay: Long, interval: Long, runnable: Runnable): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskTimer(Cubed.instance, runnable, delay, interval)
+    fun timer(delay: Long, interval: Long, runnable: Runnable): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskTimer(
+                plugin, runnable,
+                delay, interval
+            )
     }
 
     @JvmStatic
-    fun timer(delay: Long, interval: Long, runnable: BukkitRunnable): BukkitTask {
-        return runnable.runTaskTimer(Cubed.instance, delay, interval)
+    fun timer(delay: Long, interval: Long, runnable: BukkitRunnable): BukkitTask
+    {
+        return runnable.runTaskTimer(plugin, delay, interval)
     }
 
     @JvmStatic
-    fun async(lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskAsynchronously(Cubed.instance) {
-            lambda.invoke()
-        }
+    fun async(lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskAsynchronously(plugin) {
+                lambda.invoke()
+            }
     }
 
     @JvmStatic
-    fun asyncDelayed(delay: Long, lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskLaterAsynchronously(Cubed.instance, {
-            lambda.invoke()
-        }, delay)
+    fun asyncDelayed(delay: Long, lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskLaterAsynchronously(plugin, {
+                lambda.invoke()
+            }, delay)
     }
 
     @JvmStatic
-    fun asyncDelayed(runnable: Runnable, delay: Long): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskLaterAsynchronously(Cubed.instance, runnable, delay)
+    fun asyncDelayed(runnable: Runnable, delay: Long): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskLaterAsynchronously(
+                plugin, runnable, delay
+            )
     }
 
     @JvmStatic
-    fun asyncDelayed(runnable: BukkitRunnable, delay: Long): BukkitTask {
-        return runnable.runTaskLaterAsynchronously(Cubed.instance, delay)
+    fun asyncDelayed(runnable: BukkitRunnable, delay: Long): BukkitTask
+    {
+        return runnable.runTaskLaterAsynchronously(plugin, delay)
     }
 
     @JvmStatic
-    fun asyncTimer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskTimerAsynchronously(Cubed.instance, {
-            lambda.invoke()
-        }, delay, interval)
+    fun asyncTimer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskTimerAsynchronously(plugin, {
+                lambda.invoke()
+            }, delay, interval)
     }
 
     @JvmStatic
-    fun asyncTimer(runnable: Runnable, delay: Long, interval: Long): BukkitTask {
-        return Cubed.instance.server.scheduler.runTaskTimerAsynchronously(Cubed.instance, runnable, delay, interval)
+    fun asyncTimer(runnable: Runnable, delay: Long, interval: Long): BukkitTask
+    {
+        return plugin.server.scheduler
+            .runTaskTimerAsynchronously(
+                plugin, runnable,
+                delay, interval
+            )
     }
 
     @JvmStatic
-    fun asyncTimer(runnable: BukkitRunnable, delay: Long, interval: Long): BukkitTask {
-        return runnable.runTaskTimerAsynchronously(Cubed.instance, delay, interval)
+    fun asyncTimer(runnable: BukkitRunnable, delay: Long, interval: Long): BukkitTask
+    {
+        return runnable.runTaskTimerAsynchronously(plugin, delay, interval)
     }
-
 }
