@@ -7,20 +7,28 @@
 
 package net.evilblock.cubed.util.bukkit
 
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.conversations.ConversationFactory
 import org.bukkit.conversations.Prompt
 import org.bukkit.entity.Player
 
-object ConversationUtil {
+@Service
+object ConversationUtil
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
     @JvmStatic
-    fun startConversation(player: Player, prompt: Prompt) {
-        if (player.openInventory != null) {
+    fun startConversation(player: Player, prompt: Prompt)
+    {
+        if (player.openInventory != null)
+        {
             player.closeInventory()
         }
 
-        val factory = ConversationFactory(Cubed.instance)
+        val factory = ConversationFactory(plugin)
             .withModality(false)
             .withFirstPrompt(prompt)
             .withLocalEcho(false)
@@ -28,5 +36,4 @@ object ConversationUtil {
 
         player.beginConversation(factory.buildConversation(player))
     }
-
 }

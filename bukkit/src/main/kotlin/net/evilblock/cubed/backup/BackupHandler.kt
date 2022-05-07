@@ -1,8 +1,9 @@
 package net.evilblock.cubed.backup
 
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -10,10 +11,15 @@ import java.util.*
 @Service
 object BackupHandler
 {
-    private val backupFolder = File(
-        Cubed.instance.dataFolder.parentFile.parentFile,
-        "backups"
-    )
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
+    private val backupFolder by lazy {
+        File(
+            plugin.dataFolder.parentFile.parentFile,
+            "backups"
+        )
+    }
 
     @Configure
     fun configure()

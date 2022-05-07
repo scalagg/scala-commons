@@ -7,10 +7,11 @@
 
 package net.evilblock.cubed.scoreboard
 
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.util.*
@@ -20,6 +21,9 @@ import java.util.concurrent.TimeUnit
 @Service
 object ScoreboardHandler
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     internal val scoreboards = mutableMapOf<UUID, Scoreboard>()
 
     var scoreboardOverride: ScoreboardOverride? = null
@@ -33,11 +37,8 @@ object ScoreboardHandler
     @Configure
     fun configure()
     {
-        val cubed = Cubed.instance
-
         if (
-            cubed.config
-                .getBoolean("scoreboard.default")
+            this.plugin.config.getBoolean("scoreboard.default")
         )
         {
             scoreboardProvider = object : ScoreboardAdapter()

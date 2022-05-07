@@ -7,7 +7,7 @@
 
 package net.evilblock.cubed.entity
 
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
@@ -26,7 +26,8 @@ import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class Entity(var location: Location) {
+abstract class Entity(var location: Location)
+{
 
     /**
      * The ID of this entity.
@@ -89,15 +90,18 @@ abstract class Entity(var location: Location) {
      *
      * Therefore, this method is called immediately after deserialization.
      */
-    open fun initializeData() {
+    open fun initializeData()
+    {
         this.id = nextEntityId()
         this.persistent = true
         this.root = true
         this.currentWatchers = ConcurrentHashMap.newKeySet()
         this.debugView = ConcurrentHashMap()
 
-        if (isMultiPartEntity()) {
-            for (childEntity in getChildEntities()) {
+        if (isMultiPartEntity())
+        {
+            for (childEntity in getChildEntities())
+            {
                 childEntity.initializeData()
                 childEntity.persistent = false
                 childEntity.root = false
@@ -106,16 +110,20 @@ abstract class Entity(var location: Location) {
 
         initialized = true
 
-        if (animation != null) {
+        if (animation != null)
+        {
             animation!!.entity = this
         }
     }
 
-    open fun onDeletion() {
+    open fun onDeletion()
+    {
         destroyForCurrentWatchers()
 
-        if (isMultiPartEntity()) {
-            for (child in getChildEntities()) {
+        if (isMultiPartEntity())
+        {
+            for (child in getChildEntities())
+            {
                 child.destroyForCurrentWatchers()
                 child.onDeletion()
             }
@@ -125,17 +133,22 @@ abstract class Entity(var location: Location) {
     /**
      * Updates the [Entity.location] of this entity to the given [location] and sends updates to the current watchers.
      */
-    open fun updateLocation(location: Location) {
+    open fun updateLocation(location: Location)
+    {
         this.location = location
 
-        for (player in getCurrentWatcherPlayers()) {
-            if (isVisibleToPlayer(player)) {
+        for (player in getCurrentWatcherPlayers())
+        {
+            if (isVisibleToPlayer(player))
+            {
                 sendRepositionPackets(player)
             }
         }
 
-        if (debugView.isNotEmpty()) {
-            for (hologram in debugView.values) {
+        if (debugView.isNotEmpty())
+        {
+            for (hologram in debugView.values)
+            {
                 hologram.updateLocation(getDebugViewLocation())
             }
         }
@@ -144,54 +157,66 @@ abstract class Entity(var location: Location) {
     /**
      * Gets a prepped location that's used to spawn/reposition an entity.
      */
-    open fun getAdjustedLocation(player: Player): Location {
+    open fun getAdjustedLocation(player: Player): Location
+    {
         return location
     }
 
     /**
      *
      */
-    open fun getDebugViewLocation(): Location {
+    open fun getDebugViewLocation(): Location
+    {
         return location.clone().subtract(0.0, 0.0, 0.0)
     }
 
-    open fun getAttachedHologram(): HologramEntity? {
+    open fun getAttachedHologram(): HologramEntity?
+    {
         return null
     }
 
-    fun isInitialized(): Boolean {
+    fun isInitialized(): Boolean
+    {
         return initialized
     }
 
     /**
      * If this entity is visible.
      */
-    open fun isVisible(): Boolean {
+    open fun isVisible(): Boolean
+    {
         return !hidden
     }
 
     /**
      * If this entity is visible to the given [player].
      */
-    open fun isVisibleToPlayer(player: Player): Boolean {
+    open fun isVisibleToPlayer(player: Player): Boolean
+    {
         return !hidden && location.world == player.world && location.distance(player.location) <= 32.0
     }
 
     /**
      * Updates the visibility of this entity.
      */
-    open fun updateVisibility(hidden: Boolean) {
+    open fun updateVisibility(hidden: Boolean)
+    {
         val hasChanged = hidden != this.hidden
 
         this.hidden = hidden
 
-        if (hasChanged) {
-            if (this.hidden) {
-                for (player in getCurrentWatcherPlayers()) {
+        if (hasChanged)
+        {
+            if (this.hidden)
+            {
+                for (player in getCurrentWatcherPlayers())
+                {
                     destroy(player)
                 }
-            } else {
-                for (player in getCurrentWatcherPlayers()) {
+            } else
+            {
+                for (player in getCurrentWatcherPlayers())
+                {
                     spawn(player)
                 }
             }
@@ -201,23 +226,30 @@ abstract class Entity(var location: Location) {
     /**
      * Called when the given [player] left-clicks this entity.
      */
-    open fun onLeftClick(player: Player) {}
+    open fun onLeftClick(player: Player)
+    {
+    }
 
     /**
      * Called when the given [player] right-clicks this entity.
      */
-    open fun onRightClick(player: Player) {
-        if (command != null) {
+    open fun onRightClick(player: Player)
+    {
+        if (command != null)
+        {
             player.chat("/command")
         }
     }
 
-    open fun isDamageable(): Boolean {
+    open fun isDamageable(): Boolean
+    {
         return false
     }
 
-    open fun spawn(player: Player) {
-        if (currentWatchers.contains(player.uniqueId)) {
+    open fun spawn(player: Player)
+    {
+        if (currentWatchers.contains(player.uniqueId))
+        {
             return
         }
 
@@ -227,34 +259,43 @@ abstract class Entity(var location: Location) {
         sendUpdatePackets(player)
 
         val multiPart = isMultiPartEntity()
-        if (multiPart) {
-            for (childEntity in getChildEntities()) {
+        if (multiPart)
+        {
+            for (childEntity in getChildEntities())
+            {
                 childEntity.spawn(player)
             }
         }
     }
 
-    open fun update(player: Player) {
-        if (!currentWatchers.contains(player.uniqueId)) {
+    open fun update(player: Player)
+    {
+        if (!currentWatchers.contains(player.uniqueId))
+        {
             return
         }
 
         sendUpdatePackets(player)
 
-        if (isMultiPartEntity()) {
-            for (childEntity in getChildEntities()) {
+        if (isMultiPartEntity())
+        {
+            for (childEntity in getChildEntities())
+            {
                 childEntity.update(player)
             }
         }
     }
 
-    open fun destroy(player: Player) {
+    open fun destroy(player: Player)
+    {
         currentWatchers.remove(player.uniqueId)
 
         sendDestroyPackets(player)
 
-        if (isMultiPartEntity()) {
-            for (childEntity in getChildEntities()) {
+        if (isMultiPartEntity())
+        {
+            for (childEntity in getChildEntities())
+            {
                 childEntity.destroy(player)
             }
         }
@@ -262,26 +303,31 @@ abstract class Entity(var location: Location) {
         debugView.remove(player.uniqueId)?.destroyForCurrentWatchers()
     }
 
-    fun hasAnyWatchers(): Boolean {
+    fun hasAnyWatchers(): Boolean
+    {
         return currentWatchers.isNotEmpty()
     }
 
     /**
      * Gets a list of [Player] objects mapped from the [currentWatchers] list.
      */
-    fun getCurrentWatcherPlayers(): List<Player> {
+    fun getCurrentWatcherPlayers(): List<Player>
+    {
         return currentWatchers.mapNotNull { Bukkit.getPlayer(it) }
     }
 
-    fun isWatcher(playerUuid: UUID): Boolean {
+    fun isWatcher(playerUuid: UUID): Boolean
+    {
         return currentWatchers.contains(playerUuid)
     }
 
     /**
      * Sends entity updates to all current watchers.
      */
-    open fun updateForCurrentWatchers() {
-        for (player in getCurrentWatcherPlayers()) {
+    open fun updateForCurrentWatchers()
+    {
+        for (player in getCurrentWatcherPlayers())
+        {
             update(player)
         }
     }
@@ -289,46 +335,57 @@ abstract class Entity(var location: Location) {
     /**
      * Destroys the entity for all current watchers.
      */
-    open fun destroyForCurrentWatchers() {
-        for (player in getCurrentWatcherPlayers()) {
+    open fun destroyForCurrentWatchers()
+    {
+        for (player in getCurrentWatcherPlayers())
+        {
             destroy(player)
         }
     }
 
-    open fun resendForCurrentWatchers() {
-        for (player in getCurrentWatcherPlayers()) {
+    open fun resendForCurrentWatchers()
+    {
+        for (player in getCurrentWatcherPlayers())
+        {
             destroy(player)
             spawn(player)
         }
     }
 
-    open fun isMultiPartEntity(): Boolean {
+    open fun isMultiPartEntity(): Boolean
+    {
         return false
     }
 
-    open fun isRootOfMultiPartEntity(): Boolean {
+    open fun isRootOfMultiPartEntity(): Boolean
+    {
         return root
     }
 
-    fun canDisplayDebug(): Boolean {
+    fun canDisplayDebug(): Boolean
+    {
         val multiPart = isMultiPartEntity()
         return !multiPart || (multiPart && isRootOfMultiPartEntity())
     }
 
-    open fun renderDebugInformation(): List<String> {
+    open fun renderDebugInformation(): List<String>
+    {
         return listOf("(ID: #${id})")
     }
 
-    open fun getChildEntities(): Set<Entity> {
+    open fun getChildEntities(): Set<Entity>
+    {
         return emptySet()
     }
 
-    open fun getEditorButtons(player: Player, menu: Menu): MutableList<Button> {
+    open fun getEditorButtons(player: Player, menu: Menu): MutableList<Button>
+    {
         return arrayListOf<Button>().also { buttons ->
             buttons.add(UpdateCommandButton(this))
             buttons.add(MoveLocationButton(this))
 
-            if (getAnimationTypes().isNotEmpty()) {
+            if (getAnimationTypes().isNotEmpty())
+            {
                 buttons.add(EditAnimationButton(this))
             }
 
@@ -336,70 +393,78 @@ abstract class Entity(var location: Location) {
         }
     }
 
-    open fun getAnimationTypes(): List<EntityAnimationType> {
+    open fun getAnimationTypes(): List<EntityAnimationType>
+    {
         return emptyList()
     }
 
-    open fun sendSpawnPackets(player: Player) {}
+    open fun sendSpawnPackets(player: Player)
+    {
+    }
 
-    open fun sendDestroyPackets(player: Player) {
+    open fun sendDestroyPackets(player: Player)
+    {
         val destroyPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityDestroy")
         Reflection.setDeclaredFieldValue(destroyPacket, "a", intArrayOf(id))
 
         MinecraftProtocol.send(player, destroyPacket)
     }
 
-    open fun sendUpdatePackets(player: Player) {}
+    open fun sendUpdatePackets(player: Player)
+    {
+    }
 
-    open fun sendRepositionPackets(player: Player) {
+    open fun sendRepositionPackets(player: Player)
+    {
         val entityTeleportPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityTeleport")
         Reflection.setDeclaredFieldValue(entityTeleportPacket, "a", id)
         Reflection.setDeclaredFieldValue(entityTeleportPacket, "b", location.x)
         Reflection.setDeclaredFieldValue(entityTeleportPacket, "c", location.y)
         Reflection.setDeclaredFieldValue(entityTeleportPacket, "d", location.z)
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "e", AngleUtils.yawToBytes(location.yaw ))
+        Reflection.setDeclaredFieldValue(entityTeleportPacket, "e", AngleUtils.yawToBytes(location.yaw))
         Reflection.setDeclaredFieldValue(entityTeleportPacket, "f", AngleUtils.yawToBytes(location.pitch))
 
         MinecraftProtocol.send(player, entityTeleportPacket)
     }
 
-    fun sendStatusPacket(status: Byte) {
+    fun sendStatusPacket(status: Byte)
+    {
         val packet = MinecraftProtocol.newPacket("PacketPlayOutEntityStatus").also {
             Reflection.setDeclaredFieldValue(it, "a", id)
             Reflection.setDeclaredFieldValue(it, "b", status)
         }
 
-        for (watcher in getCurrentWatcherPlayers()) {
+        for (watcher in getCurrentWatcherPlayers())
+        {
             MinecraftProtocol.send(watcher, packet)
         }
     }
 
-    fun sendAnimationPacket(id: Int) {
+    fun sendAnimationPacket(id: Int)
+    {
         val packet = MinecraftProtocol.newPacket("PacketPlayOutAnimation").also {
             Reflection.setDeclaredFieldValue(it, "a", this.id)
             Reflection.setDeclaredFieldValue(it, "b", id)
         }
 
-        for (watcher in getCurrentWatcherPlayers()) {
+        for (watcher in getCurrentWatcherPlayers())
+        {
             MinecraftProtocol.send(watcher, packet)
         }
     }
 
-    companion object {
+    companion object
+    {
         private var entityId = 0
 
-        fun nextEntityId(): Int {
+        fun nextEntityId(): Int
+        {
             return entityId--
         }
 
-        fun currId(): Int {
+        fun currId(): Int
+        {
             return entityId
         }
-
-        @JvmStatic
-        protected fun isUsingViaVersion(): Boolean {
-            return Cubed.instance.server.pluginManager.getPlugin("ViaVersion").let { plugin -> plugin != null && plugin.isEnabled }
-        }
     }
-
 }

@@ -8,34 +8,41 @@
 package net.evilblock.cubed.util.bungee
 
 import com.google.common.io.ByteStreams
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import gg.scala.flavor.service.Configure
+import gg.scala.flavor.service.Service
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.entity.Player
+import java.util.logging.Level
 
-object BungeeUtil {
+@Service
+object BungeeUtil
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
-    private var registered: Boolean = false
-
-    private fun registerChannel() {
-        Cubed.instance.server.messenger.registerOutgoingPluginChannel(Cubed.instance, "BungeeCord")
+    @Configure
+    private fun configure()
+    {
+        this.plugin.server
+            .messenger.registerOutgoingPluginChannel(
+                this.plugin, "BungeeCord"
+            )
     }
 
     @JvmStatic
-    fun sendToServer(player: Player, server: String) {
-        if (!registered) {
-            registerChannel()
-            registered = true
-        }
-
-        try {
+    fun sendToServer(player: Player, server: String)
+    {
+        kotlin.runCatching {
             val out = ByteStreams.newDataOutput()
             out.writeUTF("Connect")
             out.writeUTF(server)
 
-            player.sendPluginMessage(Cubed.instance, "BungeeCord", out.toByteArray())
-        } catch (e: Exception) {
-            e.printStackTrace()
+            player.sendPluginMessage(
+                this.plugin, "BungeeCord", out.toByteArray()
+            )
+        }.onFailure {
+            plugin.logger.log(Level.WARNING, "Unable to send plugin message to ${player.name}", it)
         }
-
     }
-
 }

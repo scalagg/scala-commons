@@ -8,10 +8,11 @@
 package net.evilblock.cubed.entity.npc.strategy
 
 import gg.scala.commons.annotations.runnables.Repeating
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Service
 import me.lucko.helper.promise.ThreadContext
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -21,6 +22,9 @@ import java.util.*
 @Repeating(20L, context = ThreadContext.ASYNC)
 object NpcStrategyLogic : Runnable
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     private val originalLines: MutableMap<UUID, List<String>> = hashMapOf()
 
     override fun run()
@@ -49,7 +53,7 @@ object NpcStrategyLogic : Runnable
                     }
                 } catch (e: Exception)
                 {
-                    Cubed.instance.logger.severe("Failed to process NPC phrase logic")
+                    plugin.logger.severe("Failed to process NPC phrase logic")
                 }
             }
         }

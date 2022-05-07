@@ -12,7 +12,8 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.menu.EditEntityMenu
@@ -31,6 +32,9 @@ import java.text.NumberFormat
 @CommandPermission("commons.entities")
 object EntityCommand : ScalaCommand()
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     @Default
     @HelpCommand
     fun onHelp(help: CommandHelp)
@@ -81,11 +85,11 @@ object EntityCommand : ScalaCommand()
     {
         if (player.hasMetadata("EntityFastEdit"))
         {
-            player.removeMetadata("EntityFastEdit", Cubed.instance)
+            player.removeMetadata("EntityFastEdit", plugin)
             player.sendMessage("${CC.RED}Fast edit is now disabled!")
         } else
         {
-            player.setMetadata("EntityFastEdit", FixedMetadataValue(Cubed.instance, true))
+            player.setMetadata("EntityFastEdit", FixedMetadataValue(plugin, true))
             player.sendMessage("${CC.GREEN}Fast edit is now enabled!")
         }
     }

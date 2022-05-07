@@ -12,7 +12,6 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
-import net.evilblock.cubed.Cubed
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.npc.NpcEntity

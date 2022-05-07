@@ -7,7 +7,7 @@
 
 package net.evilblock.cubed.nametag.update
 
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -81,7 +81,7 @@ class NametagUpdates(
             player.scoreboard = scoreboard
         }
 
-        player.setMetadata("NAMETAG_UPDATES_SB", FixedMetadataValue(Cubed.instance, scoreboard))
+        player.setMetadata("NAMETAG_UPDATES_SB", FixedMetadataValue(ScalaCommonsSpigot.instance, scoreboard))
     }
 
     fun enforceSendSync(player: Player, team: String) {

@@ -4,8 +4,6 @@ import com.google.common.base.Suppliers
 import gg.scala.commons.library.model.Library
 import gg.scala.commons.loader.URLClassLoaderAccess
 import me.lucko.helper.internal.LoaderUtils
-import me.lucko.helper.maven.LibraryLoader
-import net.evilblock.cubed.Cubed
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL

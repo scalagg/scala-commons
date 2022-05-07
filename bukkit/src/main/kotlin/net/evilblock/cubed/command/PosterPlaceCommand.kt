@@ -1,6 +1,5 @@
 package net.evilblock.cubed.command
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
@@ -8,7 +7,8 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.poster.Poster
 import net.evilblock.cubed.poster.PosterHandler
 import net.evilblock.cubed.poster.placed.PlacedPoster
@@ -21,15 +21,21 @@ import java.io.File
 @AutoRegister
 object PosterPlaceCommand : ScalaCommand()
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     @CommandAlias("place-poster|create-poster")
     @Description("Place a poster")
     @CommandPermission("commons.posters.place")
     fun execute(player: Player, @Name("fileName") fileName: String)
     {
-        val posterFile = File(File(Cubed.instance.dataFolder, "posters"), fileName)
+        val posterFile = File(
+            File(plugin.dataFolder, "posters"), fileName
+        )
+
         if (!posterFile.exists())
         {
-            throw ConditionFailedException("Couldn't find `/plugins/Cubed/posters/$fileName`!")
+            throw ConditionFailedException("Couldn't find `/plugins/scala-commons/posters/$fileName`!")
         }
 
         PlacedPosterHandler.placeInteractionHandler.attachHandler(player) { event ->

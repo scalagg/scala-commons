@@ -8,20 +8,25 @@
 package net.evilblock.cubed.logging.listener
 
 import gg.scala.commons.annotations.Listeners
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.ServerCommandEvent
 
-// @Listeners
-object ConsoleCommandLogListeners : Listener {
+@Listeners
+object ConsoleCommandLogListeners : Listener
+{
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
 
     @EventHandler
-    fun onServerCommandEvent(event: ServerCommandEvent) {
-        if (event.sender is ConsoleCommandSender) {
-            Cubed.instance.logger.info("[Console Command] ${event.command}")
+    fun onServerCommandEvent(event: ServerCommandEvent)
+    {
+        if (event.sender is ConsoleCommandSender)
+        {
+            plugin.logger.info("[Console Command] ${event.command}")
         }
     }
-
 }

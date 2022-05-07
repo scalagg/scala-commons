@@ -8,14 +8,13 @@
 package net.evilblock.cubed.menu.menus
 
 import com.cryptomorin.xseries.XMaterial
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.BooleanButton
-import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
 
 open class ConfirmMenu(
@@ -52,12 +51,10 @@ open class ConfirmMenu(
 
     override fun onClose(player: Player, manualClose: Boolean)
     {
-        Cubed.instance.server.scheduler.runTaskLater(Cubed.instance, {
+        Tasks.delayed(1L) {
             if (!called)
-            {
                 invokeCallback(false)
-            }
-        }, 1L)
+        }
     }
 
     fun invokeCallback(confirm: Boolean)

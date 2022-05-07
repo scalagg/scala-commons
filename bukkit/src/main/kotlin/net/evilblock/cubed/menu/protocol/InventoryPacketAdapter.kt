@@ -16,9 +16,10 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.events.PacketAdapter
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.util.bukkit.Tasks
 
-object InventoryPacketAdapter : PacketAdapter(Cubed.instance, PacketType.Play.Client.CLIENT_COMMAND, PacketType.Play.Client.CLOSE_WINDOW) {
+object InventoryPacketAdapter : PacketAdapter(ScalaCommonsSpigot.instance, PacketType.Play.Client.CLIENT_COMMAND, PacketType.Play.Client.CLOSE_WINDOW) {
 
     override fun onPacketReceiving(event: PacketEvent?) {
         val player = event!!.player
@@ -26,13 +27,23 @@ object InventoryPacketAdapter : PacketAdapter(Cubed.instance, PacketType.Play.Cl
 
         if (packet.type === PacketType.Play.Client.CLIENT_COMMAND && packet.clientCommands.size() != 0 && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
             if (!currentlyOpen.contains(player.uniqueId)) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Cubed.instance) { Bukkit.getPluginManager().callEvent(PlayerOpenInventoryEvent(player)) }
+                Tasks.sync {
+                    Bukkit.getPluginManager()
+                        .callEvent(
+                            PlayerOpenInventoryEvent(player)
+                        )
+                }
             }
 
             currentlyOpen.add(player.uniqueId)
         } else if (packet.type === PacketType.Play.Client.CLOSE_WINDOW) {
             if (currentlyOpen.contains(player.uniqueId)) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Cubed.instance) { Bukkit.getPluginManager().callEvent(PlayerCloseInventoryEvent(player)) }
+                Tasks.sync {
+                    Bukkit.getPluginManager()
+                        .callEvent(
+                            PlayerCloseInventoryEvent(player)
+                        )
+                }
             }
 
             currentlyOpen.remove(player.uniqueId)

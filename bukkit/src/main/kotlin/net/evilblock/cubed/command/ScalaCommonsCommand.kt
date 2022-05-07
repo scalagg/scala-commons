@@ -14,7 +14,8 @@ import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
-import net.evilblock.cubed.Cubed
+import gg.scala.flavor.inject.Inject
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
@@ -34,8 +35,12 @@ import java.util.*
 @CommandPermission("op")
 object ScalaCommonsCommand : ScalaCommand()
 {
-    val prefix = Cubed.instance
-        .qolInternal.prefix
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
+    val prefix by lazy {
+        plugin.qolInternal.prefix
+    }
 
     @Default
     @HelpCommand
@@ -64,11 +69,11 @@ object ScalaCommonsCommand : ScalaCommand()
     @Subcommand("reload")
     fun onReload(sender: CommandSender)
     {
-        Cubed.instance
+        plugin
             .configContainerized
             .loadAll()
 
-        Reflection.DEBUG = Cubed.instance
+        Reflection.DEBUG = plugin
             .config<CommonsGeneralConfig>()
             .debug
 

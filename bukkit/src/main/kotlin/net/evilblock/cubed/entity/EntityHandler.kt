@@ -10,10 +10,11 @@ package net.evilblock.cubed.entity
 import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.Cubed
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.thread.EntityTickThread
@@ -26,10 +27,15 @@ import java.util.concurrent.ConcurrentHashMap
 @Service
 object EntityHandler
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     private val dataType = object : TypeToken<List<Entity>>()
     {}.type
 
-    private val dataFile = File(Cubed.instance.dataFolder, "entities.json")
+    private val dataFile by lazy {
+        File(plugin.dataFolder, "entities.json")
+    }
 
     internal var loaded: Boolean = false
     internal var saving: Boolean = false
@@ -63,7 +69,7 @@ object EntityHandler
     {
         if (dataFile.exists())
         {
-            if (Cubed.instance.config<CommonsGeneralConfig>().backups)
+            if (plugin.config<CommonsGeneralConfig>().backups)
             {
                 Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
             }
