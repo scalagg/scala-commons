@@ -6,8 +6,10 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.recorder.Recorder
 import gg.scala.commons.rassist.replay.ReplayReviewer
+import me.lucko.helper.Events
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -40,6 +42,11 @@ object ScalaReplayAssistCommand : ScalaCommand()
         this.reviewer = viewer
 
         viewer.start()
+
+        Events.subscribe(PlayerInteractEvent::class.java)
+            .handler {
+
+            }
     }
 
     @CommandAlias("start-recording")

@@ -6,10 +6,17 @@ import com.comphenix.protocol.wrappers.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import gg.scala.commons.rassist.dao.packet.ReplayPacketConverter;
+import gg.scala.commons.rassist.dao.packet.enums.PacketAnimationType;
+import gg.scala.commons.rassist.dao.packet.enums.PacketEquipmentSlot;
 import gg.scala.commons.rassist.util.ReplayPacketUtils;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -240,6 +247,46 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ANIMATION);
         packet.getIntegers().write(0, player.getEntityId() + 3000)
             .write(1, 0);
+        return packet;
+    }
+
+    @NotNull
+    @Override
+    public PacketContainer createDestroyPacket(@NotNull Player player) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_DESTROY);
+        packet.getIntegerArrays().write(0, new int[]{player.getEntityId() + 3000});
+
+        return packet;
+    }
+
+    @NotNull
+    @Override
+    public PacketContainer createEntityDamagePacket(@NotNull Player player, @NotNull EntityEffect effect) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_STATUS);
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
+        packet.getBytes().write(0, effect.getData());
+
+        return packet;
+    }
+
+    @NotNull
+    @Override
+    public PacketContainer createEntityEquipmentPacket(@NotNull Player player, @NotNull PacketEquipmentSlot slot, @NotNull ItemStack item) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_EQUIPMENT);
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
+        packet.getIntegers().write(1, (int) slot.getValue());
+        packet.getItemModifier().write(0, item);
+
+        return packet;
+    }
+
+    @NotNull
+    @Override
+    public PacketContainer createEntityAnimationPacket(@NotNull Player player, @NotNull PacketAnimationType animation) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.ANIMATION);
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
+        packet.getIntegers().write(1, animation.getValue());
+
         return packet;
     }
 }
