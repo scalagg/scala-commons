@@ -6,12 +6,14 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.recorder.Recorder
 import gg.scala.commons.rassist.replay.ReplayReviewer
-import me.lucko.helper.Events
+import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
+import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.zip.DeflaterOutputStream
+import java.util.zip.InflaterOutputStream
 
 /**
  * @author GrowlyX
@@ -68,9 +70,83 @@ object ScalaReplayAssistCommand : ScalaCommand()
             "${CC.GREEN}We've stopping your recording"
         )
 
+        val start = System.currentTimeMillis()
+
         return recording!!.stopAndSave()
             .thenAccept {
                 this.replay = it
+
+                val serialized = Serializers
+                    .gson.toJson(it)
+                    .encodeToByteArray()
+
+                val outputStream = ByteArrayOutputStream()
+                val deflate = DeflaterOutputStream(outputStream)
+
+                deflate.write(serialized)
+                deflate.flush()
+                deflate.close()
+
+                val output = outputStream
+                    .toByteArray()
+
+                player.sendMessage("${CC.D_AQUA}A ${
+                    it.metadata.timestamps.duration
+                }ms (${
+                    it.metadata.timestamps.duration / 1000
+                }s) long replay:")
+                player.sendMessage("")
+
+                player.sendMessage(
+                    "${CC.GREEN}This replay is: ${
+                        CC.WHITE
+                    }${
+                        serialized.size / 1000
+                    }kb, or ${
+                        serialized.size / 1000000
+                    }mb in size"
+                )
+
+                player.sendMessage("")
+
+                player.sendMessage(
+                    "${CC.GREEN}The compressed replay is: ${
+                        CC.WHITE
+                    }${
+                        output.size / 1000
+                    }kb, or ${
+                        output.size / 1000000
+                    }mb in size"
+                )
+
+
+                val outputStreamInfl = ByteArrayOutputStream()
+                val inflator = InflaterOutputStream(outputStreamInfl)
+
+                inflator.write(output)
+                inflator.flush()
+                inflator.close()
+
+                val inflated = outputStreamInfl
+                    .toByteArray()
+
+                player.sendMessage(
+                    "${CC.GREEN}The decompressed replay is: ${
+                        CC.WHITE
+                    }${
+                        inflated.size / 1000
+                    }kb, or ${
+                        inflated.size / 1000000
+                    }mb in size"
+                )
+
+                player.sendMessage("")
+
+                player.sendMessage(
+                    "${CC.GREEN}It took ${
+                        System.currentTimeMillis() - start
+                    }ms to properly serialize this replay"
+                )
 
                 player.sendMessage("${CC.GREEN}Stopped your recording")
             }
