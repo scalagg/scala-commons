@@ -1,10 +1,15 @@
 package gg.scala.commons.rassist.replay
 
+import com.comphenix.protocol.events.ListenerPriority
+import com.comphenix.protocol.events.PacketAdapter
+import com.comphenix.protocol.events.PacketEvent
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.dao.packet.ReplayPacketWrapper
+import gg.scala.commons.rassist.packet.ReplayPacketBridge
 import me.lucko.helper.Schedulers
 import me.lucko.helper.protocol.Protocol
 import me.lucko.helper.scheduler.Task
+import me.lucko.helper.terminable.composite.CompositeTerminable
 import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.entity.Player
 import java.util.logging.Level
@@ -18,7 +23,11 @@ import kotlin.math.roundToInt
 class ReplayReviewer(
     private val replay: Replay,
     private val reviewers: List<Player>
-) : Runnable
+) : Runnable, PacketAdapter(
+    ScalaCommonsSpigot.instance,
+    ListenerPriority.LOWEST,
+    ReplayPacketBridge.packetTypesInternal
+)
 {
     private var currentTick = 1.0
     private var currentPacket = 2
@@ -34,10 +43,28 @@ class ReplayReviewer(
     }
 
     private lateinit var task: Task
+    private lateinit var terminable: CompositeTerminable
 
     fun start()
     {
         this.playing = true
+        this.terminable =
+            CompositeTerminable.create()
+
+        Protocol
+            .subscribe(
+                ListenerPriority.LOWEST,
+                *ReplayPacketBridge
+                    .packetTypesInternal
+                    .toTypedArray()
+            )
+            .handler {
+//                if (this.playing)
+//                {
+//                    it.isCancelled = true
+//                }
+            }
+            .bindWith(terminable)
 
         this.task = Schedulers.sync()
             .runRepeating(
@@ -61,12 +88,15 @@ class ReplayReviewer(
 
     fun stop()
     {
+        this.terminable
+            .closeAndReportException()
+
         this.task.stop()
     }
 
     fun reset()
     {
-        currentPacket = 3
+        currentPacket = 2
         currentTick = 1.0
         updateXpBar()
     }

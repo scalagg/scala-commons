@@ -1,7 +1,7 @@
 package gg.scala.commons.rassist.packet
 
 import com.comphenix.protocol.PacketType
-import gg.scala.commons.rassist.dao.packet.versions.ReplayPacketConverter_v1_8_R3
+import gg.scala.commons.rassist.dao.packet.versions.ReplayPacketConverterLegacyImp
 
 /**
  * @author GrowlyX
@@ -36,7 +36,7 @@ object ReplayPacketBridge
     }
 
     private val converter =
-        ReplayPacketConverter_v1_8_R3()
+        ReplayPacketConverterLegacyImp()
 
     fun converter() = converter
 }

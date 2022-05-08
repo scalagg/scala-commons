@@ -9,9 +9,6 @@ import gg.scala.commons.rassist.dao.packet.ReplayPacketConverter;
 import gg.scala.commons.rassist.dao.packet.enums.PacketAnimationType;
 import gg.scala.commons.rassist.dao.packet.enums.PacketEquipmentSlot;
 import gg.scala.commons.rassist.util.ReplayPacketUtils;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -23,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.UUID;
 
-public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
+public class ReplayPacketConverterLegacyImp implements ReplayPacketConverter {
 
     private static final BiMap<PacketType, Integer> PACKET_IDS = HashBiMap.create();
 

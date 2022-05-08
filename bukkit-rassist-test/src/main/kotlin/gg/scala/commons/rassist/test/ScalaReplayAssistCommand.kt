@@ -33,7 +33,7 @@ object ScalaReplayAssistCommand : ScalaCommand()
     }
 
     @CommandAlias("start-replay")
-    fun onReplay(player: Player)
+    fun onReplay(player: Player, float: Float)
     {
         val viewer = ReplayReviewer(
             replay!!, listOf(player)
@@ -41,12 +41,8 @@ object ScalaReplayAssistCommand : ScalaCommand()
 
         this.reviewer = viewer
 
+        viewer.updateSpeed(float)
         viewer.start()
-
-        Events.subscribe(PlayerInteractEvent::class.java)
-            .handler {
-
-            }
     }
 
     @CommandAlias("start-recording")

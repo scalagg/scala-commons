@@ -6,6 +6,7 @@ import gg.scala.commons.rassist.dao.packet.enums.PacketAnimationType
 import gg.scala.commons.rassist.dao.packet.enums.PacketEquipmentSlot
 import org.bukkit.EntityEffect
 import org.bukkit.Location
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
