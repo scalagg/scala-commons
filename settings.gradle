@@ -1,5 +1,16 @@
 rootProject.name = "scala-commons"
-include "store"
-include "bukkit"
-include "serializers"
+
+// bukkit
+include(
+    "bukkit",
+    "bukkit-rassist"
+)
+
+// cross-platform
+include(
+    "store",
+    "serializers"
+)
+
+// velocity
 include "velocity"

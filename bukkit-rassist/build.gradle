@@ -1,0 +1,10 @@
+repositories {
+    maven { url "https://repo.dmulloy2.net/nexus/repository/public" }
+}
+
+dependencies {
+    compileOnly project(":bukkit")
+    compileOnly "gg.scala.spigot:sspigot-server:1.0.7"
+    compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"
+    compileOnly "me.lucko:helper:5.6.10.1"
+}
