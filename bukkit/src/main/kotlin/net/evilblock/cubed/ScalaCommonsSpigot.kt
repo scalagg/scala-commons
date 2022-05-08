@@ -106,7 +106,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         val instance by Plugins.plugin<ScalaCommonsSpigot>()
     }
 
-    private val aware by lazy {
+    val aware by lazy {
         AwareBuilder
             .of<AwareMessage>("UuidCache")
             .codec(AwareMessageCodec)

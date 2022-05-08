@@ -2,8 +2,12 @@ package gg.scala.commons.rassist.replay
 
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.dao.packet.ReplayPacketWrapper
+import me.lucko.helper.Schedulers
 import me.lucko.helper.protocol.Protocol
+import me.lucko.helper.scheduler.Task
+import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.entity.Player
+import java.util.logging.Level
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -29,9 +33,16 @@ class ReplayReviewer(
         this.speed = float
     }
 
+    private lateinit var task: Task
+
     fun start()
     {
         this.playing = true
+
+        this.task = Schedulers.sync()
+            .runRepeating(
+                this, 0L, 1L
+            )
     }
 
     fun skip(ticks: Int)
@@ -46,6 +57,11 @@ class ReplayReviewer(
         }
 
         this.updateXpBar()
+    }
+
+    fun stop()
+    {
+        this.task.stop()
     }
 
     fun reset()
@@ -80,28 +96,24 @@ class ReplayReviewer(
 
     private fun executeTick(tick: Double)
     {
-        var packet: List<ReplayPacketWrapper>
+        var packet: ReplayPacketWrapper?
 
         while (
             replay.getPacket(currentPacket)
-                .also { packet = it }
-                .isNotEmpty() &&
-            packet[0].time <= tick * 50
+                .also { packet = it } != null &&
+            packet!!.time <= tick * 50
         )
         {
             for (reviewer in this.reviewers)
             {
-                if (!reviewer.isOnline)
-                    continue
-
                 kotlin.runCatching {
-                    for (wrapper in packet)
-                    {
-                        Protocol.manager()
-                            .sendWirePacket(
-                                reviewer, wrapper
-                            )
-                    }
+                    Protocol.manager()
+                        .sendWirePacket(
+                            reviewer, packet
+                        )
+                }.onFailure {
+                    ScalaCommonsSpigot.instance.logger
+                        .log(Level.WARNING, "something went wong", it)
                 }
             }
 

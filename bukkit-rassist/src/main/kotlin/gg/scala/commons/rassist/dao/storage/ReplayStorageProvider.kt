@@ -10,4 +10,7 @@ import java.util.UUID
 interface ReplayStorageProvider
 {
     fun persist(uniqueId: UUID, replay: Replay)
+    fun retrieve(uniqueId: UUID): Replay?
+
+    fun all(): List<Replay>
 }

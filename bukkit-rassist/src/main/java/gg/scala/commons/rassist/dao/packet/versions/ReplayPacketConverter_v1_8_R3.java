@@ -2,23 +2,19 @@ package gg.scala.commons.rassist.dao.packet.versions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
-import java.util.Collections;
-import java.util.UUID;
-
 import gg.scala.commons.rassist.dao.packet.ReplayPacketConverter;
 import gg.scala.commons.rassist.util.ReplayPacketUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.UUID;
 
 public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
 
@@ -89,25 +85,34 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return type.getCurrentId();
     }
 
+    @NotNull
     @Override
     public PacketType getPacketType(int id) {
         return PACKET_IDS.inverse().getOrDefault(id,
             PacketType.findCurrent(PacketType.Protocol.PLAY, PacketType.Sender.SERVER, id));
     }
 
+    @NotNull
     @Override
-    public PacketContainer createLoginSuccessPacket(Player player) {
+    public PacketContainer createLoginSuccessPacket(@NotNull Player player) {
         PacketContainer packet = new PacketContainer(PacketType.Login.Server.SUCCESS);
+
         packet.getGameProfiles().write(0,
-            new WrappedGameProfile(UUID.nameUUIDFromBytes(new byte[0]), "Player"));
+            new WrappedGameProfile(
+                UUID.randomUUID(), player.getName()
+            )
+        );
+
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createLoginPacket(Player player) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.LOGIN);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getGameModes().write(0, EnumWrappers.NativeGameMode.NOT_SET);
+
         packet.getIntegers().write(1, player.getWorld().getDifficulty().getValue());
         packet.getDifficulties().write(0,
             EnumWrappers.Difficulty.valueOf(player.getWorld().getDifficulty().name()));
@@ -117,8 +122,9 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
-    public PacketContainer createPlayerListItemPacket(Player player) {
+    public PacketContainer createPlayerListItemPacket(@NotNull Player player) {
         PlayerInfoData playerInfoData = new PlayerInfoData(WrappedGameProfile.fromPlayer(player),
             1,
             EnumWrappers.NativeGameMode.NOT_SET,
@@ -129,15 +135,17 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
-    public PacketContainer createPlayerSpawnPacket(Player player) {
+    public PacketContainer createPlayerSpawnPacket(@NotNull Player player) {
         return createPlayerSpawnPacket(player, player.getLocation());
     }
 
+    @NotNull
     @Override
     public PacketContainer createPlayerSpawnPacket(Player player, Location location) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getUUIDs().write(0, player.getUniqueId());
         packet.getIntegers().write(1, ReplayPacketUtils.toFixedPointNumber(location.getX()))
             .write(2, ReplayPacketUtils.toFixedPointNumber(location.getY()))
@@ -150,6 +158,7 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createPositionPacket(Location position) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.POSITION);
@@ -164,10 +173,11 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createPositionPacket(Player player, Vector move) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getBytes().write(0, (byte) ReplayPacketUtils.toFixedPointNumber(move.getX()))
             .write(1, (byte) ReplayPacketUtils.toFixedPointNumber(move.getY()))
             .write(2, (byte) ReplayPacketUtils.toFixedPointNumber(move.getZ()));
@@ -175,11 +185,12 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createPositionLookPacket(Player player, Vector move, float yaw,
                                                     float pitch) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getBytes().write(0, (byte) ReplayPacketUtils.toFixedPointNumber(move.getX()))
             .write(1, (byte) ReplayPacketUtils.toFixedPointNumber(move.getY()))
             .write(2, (byte) ReplayPacketUtils.toFixedPointNumber(move.getZ()));
@@ -189,20 +200,22 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createLookPacket(Player player, float yaw, float pitch) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getBytes().write(0, ReplayPacketUtils.toAngle(yaw));
         packet.getBytes().write(1, ReplayPacketUtils.toAngle(pitch));
         packet.getBooleans().write(0, player.isOnGround());
         return packet;
     }
 
+    @NotNull
     @Override
-    public PacketContainer createTeleportPacket(Player player, Location location) {
+    public PacketContainer createTeleportPacket(Player player, @NotNull Location location) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT);
-        packet.getIntegers().write(0, player.getEntityId())
+        packet.getIntegers().write(0, player.getEntityId() + 3000)
             .write(1, ReplayPacketUtils.toFixedPointNumber(player.getLocation().getX()))
             .write(2, ReplayPacketUtils.toFixedPointNumber(player.getLocation().getY()))
             .write(3, ReplayPacketUtils.toFixedPointNumber(player.getLocation().getZ()));
@@ -212,18 +225,20 @@ public class ReplayPacketConverter_v1_8_R3 implements ReplayPacketConverter {
         return packet;
     }
 
+    @NotNull
     @Override
     public PacketContainer createHeadRotationPacket(Player player, float yaw) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
-        packet.getIntegers().write(0, player.getEntityId());
+        packet.getIntegers().write(0, player.getEntityId() + 3000);
         packet.getBytes().write(0, ReplayPacketUtils.toAngle(yaw));
         return packet;
     }
 
+    @NotNull
     @Override
-    public PacketContainer convertAnimationPacket(Player player, PacketContainer oldPacket) {
+    public PacketContainer convertAnimationPacket(Player player, @NotNull PacketContainer oldPacket) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ANIMATION);
-        packet.getIntegers().write(0, player.getEntityId())
+        packet.getIntegers().write(0, player.getEntityId() + 3000)
             .write(1, 0);
         return packet;
     }

@@ -22,7 +22,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.event.player.PlayerTeleportEvent
-import org.bukkit.util.Vector
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
@@ -97,12 +96,12 @@ class Recorder(
                     .createPositionPacket(recordedPlayer.location)
             )
 
-            savePacket(
-                recordedPlayer,
-                ReplayPacketBridge
-                    .converter()
-                    .createPlayerListItemPacket(recordedPlayer)
-            )
+//            savePacket(
+//                recordedPlayer,
+//                ReplayPacketBridge
+//                    .converter()
+//                    .createPlayerListItemPacket(recordedPlayer)
+//            )
 
             savePacket(
                 recordedPlayer,
@@ -205,14 +204,14 @@ class Recorder(
             .bindWith(terminable)
     }
 
-    fun stopAndSave(): CompletableFuture<Void>
+    fun stopAndSave(): CompletableFuture<Replay>
     {
         this.metadata.timestamps.ending =
             System.currentTimeMillis()
 
         val replay = Replay(
             this.metadata,
-            this.packets
+            this.packets[players[0]]!!
         )
 
         this.terminable
@@ -222,9 +221,11 @@ class Recorder(
             .removePacketListener(this)
 
         return CompletableFuture
-            .runAsync {
+            .supplyAsync {
                 RAssistBridge.storage()
                     .persist(this.uniqueId, replay)
+
+                replay
             }
             .exceptionally {
                 ScalaCommonsSpigot.instance.logger.log(

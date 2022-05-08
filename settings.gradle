@@ -1,9 +1,10 @@
 rootProject.name = "scala-commons"
 
-// bukkit
+// bukkit & rassist replays
 include(
     "bukkit",
-    "bukkit-rassist"
+    "bukkit-rassist",
+    "bukkit-rassist-test"
 )
 
 // cross-platform

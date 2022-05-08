@@ -9,24 +9,16 @@ import java.util.*
  */
 data class Replay(
     val metadata: ReplayMetadata,
-    val packets: Map<UUID, LinkedList<ReplayPacketWrapper>>
+    val packets: LinkedList<ReplayPacketWrapper>
 )
 {
-    fun getPacket(index: Int): List<ReplayPacketWrapper>
+    fun getPacket(index: Int): ReplayPacketWrapper?
     {
-        val packets =
-            mutableListOf<ReplayPacketWrapper>()
-
-        for (key in this.packets.keys)
+        if (index >= 0 && index < packets.size)
         {
-            val list = this.packets[key]!!
-
-            if (index >= 0 && index < list.size)
-            {
-                packets.add(list[index])
-            }
+            return packets[index]
         }
 
-        return packets
+        return null
     }
 }
