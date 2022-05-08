@@ -70,15 +70,19 @@ object ScalaReplayAssistCommand : ScalaCommand()
             "${CC.GREEN}We've stopping your recording"
         )
 
-        val start = System.currentTimeMillis()
+
 
         return recording!!.stopAndSave()
             .thenAccept {
                 this.replay = it
 
+                val start = System.currentTimeMillis()
+
                 val serialized = Serializers
                     .gson.toJson(it)
                     .encodeToByteArray()
+
+                val stop = System.currentTimeMillis()
 
                 val outputStream = ByteArrayOutputStream()
                 val deflate = DeflaterOutputStream(outputStream)
@@ -89,6 +93,8 @@ object ScalaReplayAssistCommand : ScalaCommand()
 
                 val output = outputStream
                     .toByteArray()
+
+                val newSTop = System.currentTimeMillis()
 
                 player.sendMessage("${CC.D_AQUA}A ${
                     it.metadata.timestamps.duration
@@ -143,9 +149,15 @@ object ScalaReplayAssistCommand : ScalaCommand()
                 player.sendMessage("")
 
                 player.sendMessage(
-                    "${CC.GREEN}It took ${
-                        System.currentTimeMillis() - start
-                    }ms to properly serialize this replay"
+                    "${CC.GREEN}It took ${CC.D_AQUA}${
+                        stop - start
+                    }ms${CC.GREEN} to serialize this replay"
+                )
+
+                player.sendMessage(
+                    "${CC.GREEN}It took ${CC.D_AQUA}${
+                        newSTop - stop
+                    }ms${CC.GREEN} to compress this replay"
                 )
 
                 player.sendMessage("${CC.GREEN}Stopped your recording")
