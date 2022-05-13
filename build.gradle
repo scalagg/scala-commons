@@ -19,10 +19,10 @@ allprojects {
 
         maven {
             name "Scala"
-            url "${System.getenv("artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
+            url "${System.getenv("env.artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
             credentials {
-                username "${System.getenv("artifactory_user") ?: "${artifactory_user}"}"
-                password "${System.getenv("artifactory_password") ?: "${artifactory_password}"}"
+                username "${System.getenv("env.artifactory_user") ?: "${artifactory_user}"}"
+                password "${System.getenv("env.artifactory_password") ?: "${artifactory_password}"}"
             }
         }
     }
@@ -72,10 +72,10 @@ subprojects {
         repositories {
             maven {
                 name "scala"
-                url "${System.getenv("artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
+                url "${System.getenv("env.artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
                 credentials {
-                    username "${System.getenv("artifactory_user") ?: "${artifactory_user}"}"
-                    password "${System.getenv("artifactory_password") ?: "${artifactory_password}"}"
+                    username "${System.getenv("env.artifactory_user") ?: "${artifactory_user}"}"
+                    password "${System.getenv("env.artifactory_password") ?: "${artifactory_password}"}"
                 }
             }
         }
