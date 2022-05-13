@@ -24,8 +24,6 @@ allprojects {
     group "gg.scala.commons"
     version "2.0.0"
 
-
-
     repositories {
         mavenCentral()
 
@@ -49,6 +47,8 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: "com.jfrog.artifactory"
+
     apply plugin: "java"
     apply plugin: "maven-publish"
 
@@ -56,8 +56,6 @@ subprojects {
 
     apply plugin: "org.jetbrains.kotlin.jvm"
     apply plugin: "org.jetbrains.kotlin.kapt"
-
-    apply plugin: "com.jfrog.artifactory"
 
     compileKotlin {
         kotlinOptions.javaParameters = true
