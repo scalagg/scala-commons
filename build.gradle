@@ -12,6 +12,14 @@ String environmental(String key)
     final String environment =
         System.getenv(key)
 
+    System.out.println()
+
+    System.getenv().entrySet().forEach {
+        System.out.println("${it.key}=${it.value}")
+    }
+
+    System.out.println()
+
     if (environment != null)
     {
         return environment
