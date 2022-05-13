@@ -24,6 +24,8 @@ allprojects {
     group "gg.scala.commons"
     version "2.0.0"
 
+
+
     repositories {
         mavenCentral()
 
@@ -31,9 +33,11 @@ allprojects {
             name "Scala"
             url "${environmental("artifactory_contextUrl")}/gradle-release"
 
-            credentials {
-                System.out.println(environmental("artifactory_user"))
+            authentication {
+                basic(BasicAuthentication)
+            }
 
+            credentials {
                 username environmental("artifactory_user")
                 password environmental("artifactory_password")
             }
