@@ -10,13 +10,15 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
 
-class UpdateMessagesButton(private val npc: NpcEntity) : Button() {
-
-    override fun getName(player: Player): String {
+class UpdateMessagesButton(private val npc: NpcEntity) : Button()
+{
+    override fun getName(player: Player): String
+    {
         return "${CC.GREEN}Update Messages"
     }
 
-    override fun getDescription(player: Player): List<String> {
+    override fun getDescription(player: Player): List<String>
+    {
         return listOf(
             "${CC.GRAY}Update the messages that are sent to",
             "${CC.GRAY}a player when they right-click this NPC.",
@@ -28,18 +30,26 @@ class UpdateMessagesButton(private val npc: NpcEntity) : Button() {
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial.WRITABLE_BOOK
+        return XMaterial
+            .matchXMaterial(
+                Material.BOOK_AND_QUILL
+            )
     }
 
-    override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-        if (clickType.isLeftClick) {
-            if (npc.messages == null) {
+    override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
+    {
+        if (clickType.isLeftClick)
+        {
+            if (npc.messages == null)
+            {
                 npc.messages = arrayListOf()
             }
 
             EditNpcMessagesMenu(npc).openMenu(player)
-        } else {
-            if (npc.messages != null) {
+        } else
+        {
+            if (npc.messages != null)
+            {
                 npc.messages = null
                 player.sendMessage("${CC.GREEN}Unset messages!")
             }

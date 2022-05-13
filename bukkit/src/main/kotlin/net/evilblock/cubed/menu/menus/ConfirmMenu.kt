@@ -15,6 +15,7 @@ import net.evilblock.cubed.menu.buttons.BooleanButton
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.entity.Player
 
 open class ConfirmMenu(
@@ -77,7 +78,10 @@ open class ConfirmMenu(
 
         override fun getMaterial(player: Player): XMaterial
         {
-            return XMaterial.OAK_WALL_SIGN
+            return XMaterial
+                .matchXMaterial(
+                    Material.SIGN
+                )
         }
     }
 }

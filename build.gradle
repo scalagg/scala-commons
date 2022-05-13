@@ -18,10 +18,11 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 
         maven {
-            url "${artifactory_contextUrl}/gradle-release"
+            name "Scala"
+            url "${System.getenv("artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
             credentials {
-                username "${artifactory_user}"
-                password "${artifactory_password}"
+                username "${System.getenv("artifactory_user") ?: "${artifactory_user}"}"
+                password "${System.getenv("artifactory_password") ?: "${artifactory_password}"}"
             }
         }
     }
@@ -71,10 +72,10 @@ subprojects {
         repositories {
             maven {
                 name "scala"
-                url "${artifactory_contextUrl}/${artifactory_release}"
+                url "${System.getenv("artifactory_contextUrl") ?: "${artifactory_contextUrl}"}/gradle-release"
                 credentials {
-                    username "${artifactory_user}"
-                    password "${artifactory_password}"
+                    username "${System.getenv("artifactory_user") ?: "${artifactory_user}"}"
+                    password "${System.getenv("artifactory_password") ?: "${artifactory_password}"}"
                 }
             }
         }
