@@ -27,18 +27,20 @@ allprojects {
     repositories {
         mavenCentral()
 
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-
         maven {
             name "Scala"
             url "${environmental("artifactory_contextUrl")}/gradle-release"
 
             credentials {
-                username = environmental("artifactory_user")
-                password = environmental("artifactory_password")
+                System.out.println(environmental("artifactory_user"))
+
+                username environmental("artifactory_user")
+                password environmental("artifactory_password")
             }
         }
+
+        maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 }
 
@@ -89,8 +91,8 @@ subprojects {
                 url "${environmental("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
-                    username = environmental("artifactory_user")
-                    password = environmental("artifactory_password")
+                    username environmental("artifactory_user")
+                    password environmental("artifactory_password")
                 }
             }
         }
