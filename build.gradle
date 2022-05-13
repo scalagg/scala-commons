@@ -31,7 +31,7 @@ allprojects {
 
         maven {
             name "Scala"
-            url "${environmental("artifactory_contextUrl")}/gradle-release"
+            url "${environmental("artifactory_contextUrl")}/gradle-release-local"
 
             authentication {
                 basic(BasicAuthentication)
