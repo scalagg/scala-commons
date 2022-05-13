@@ -12,14 +12,6 @@ String environmental(String key)
     final String environment =
         System.getenv(key)
 
-    System.out.println()
-
-    System.getenv().entrySet().forEach {
-        System.out.println("${it.key}=${it.value}")
-    }
-
-    System.out.println()
-
     if (environment != null)
     {
         return environment
@@ -41,9 +33,10 @@ allprojects {
         maven {
             name "Scala"
             url "${environmental("artifactory_contextUrl")}/gradle-release"
+
             credentials {
-                username environmental("artifactory_user")
-                password environmental("artifactory_password")
+                username = environmental("artifactory_user")
+                password = environmental("artifactory_password")
             }
         }
     }
@@ -94,9 +87,10 @@ subprojects {
             maven {
                 name "Scala"
                 url "${environmental("artifactory_contextUrl")}/gradle-release"
+
                 credentials {
-                    username environmental("artifactory_user")
-                    password environmental("artifactory_password")
+                    username = environmental("artifactory_user")
+                    password = environmental("artifactory_password")
                 }
             }
         }
