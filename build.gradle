@@ -27,20 +27,6 @@ allprojects {
     repositories {
         mavenCentral()
 
-        maven {
-            name "Scala"
-            url "${environmental("artifactory_contextUrl")}/gradle-release-local"
-
-            authentication {
-                basic(BasicAuthentication)
-            }
-
-            credentials {
-                username environmental("artifactory_user")
-                password environmental("artifactory_password")
-            }
-        }
-
         maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
@@ -56,6 +42,22 @@ subprojects {
 
     apply plugin: "org.jetbrains.kotlin.jvm"
     apply plugin: "org.jetbrains.kotlin.kapt"
+
+    repositories {
+        maven {
+            name "Scala"
+            url "${environmental("artifactory_contextUrl")}/gradle-release-local"
+
+            authentication {
+                basic(BasicAuthentication)
+            }
+
+            credentials {
+                username environmental("artifactory_user")
+                password environmental("artifactory_password")
+            }
+        }
+    }
 
     compileKotlin {
         kotlinOptions.javaParameters = true
