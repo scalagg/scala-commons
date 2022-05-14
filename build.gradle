@@ -45,19 +45,16 @@ subprojects {
 
     repositories {
         maven {
-            name "Scala"
-            url "${environmental("artifactory_contextUrl")}/gradle-release-local"
-
-            authentication {
-                basic(BasicAuthentication)
-            }
+            url "${environmental("artifactory_contextUrl")}/gradle-release"
 
             credentials {
-                username environmental("artifactory_user")
-                password environmental("artifactory_password")
+                setUsername(
+                    environmental("artifactory_user")
+                )
+                setPassword(
+                    environmental("artifactory_password")
+                )
             }
-
-            System.out.println(credentials.username + credentials.password)
         }
     }
 
