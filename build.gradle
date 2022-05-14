@@ -56,6 +56,8 @@ subprojects {
                 username environmental("artifactory_user")
                 password environmental("artifactory_password")
             }
+
+            System.out.println(credentials.username + credentials.password)
         }
     }
 
