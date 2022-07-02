@@ -46,7 +46,7 @@ object SentryService
                     break
                 }
 
-                Sentry.captureException(throwable, hint)
+                Sentry.captureException(throwable, null)
                     .apply(lambda)
             }
         } else

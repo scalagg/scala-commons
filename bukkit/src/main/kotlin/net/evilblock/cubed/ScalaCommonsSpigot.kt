@@ -91,12 +91,6 @@ import java.util.logging.Level
     value = "scoreboard",
     model = CommonsScoreboardConfig::class
 )
-// helper stuff
-@MavenLibrary(
-    groupId = "org.jetbrains.kotlin",
-    artifactId = "kotlin-reflect",
-    version = "1.7.0"
-)
 @HelperImplementationPlugin
 class ScalaCommonsSpigot : ExtendedScalaPlugin()
 {
