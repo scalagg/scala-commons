@@ -19,7 +19,6 @@ import kotlin.math.min
 
 abstract class PaginatedMenu : Menu()
 {
-
     companion object
     {
         @JvmStatic

@@ -95,7 +95,7 @@ import java.util.logging.Level
 @MavenLibrary(
     groupId = "org.jetbrains.kotlin",
     artifactId = "kotlin-reflect",
-    version = "1.6.21"
+    version = "1.7.0"
 )
 @HelperImplementationPlugin
 class ScalaCommonsSpigot : ExtendedScalaPlugin()

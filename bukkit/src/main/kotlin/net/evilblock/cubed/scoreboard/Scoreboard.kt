@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableSet
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
-import net.evilblock.cubed.util.Color
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
@@ -33,6 +32,7 @@ class Scoreboard(
 )
 {
     internal val createdAt: Long = System.currentTimeMillis()
+
     private val objective: Objective
     private val displayedScores: HashMap<String, Int> = HashMap()
     private val scorePrefixes: HashMap<String, String> = HashMap()
@@ -60,7 +60,7 @@ class Scoreboard(
             objective = scoreboard.getObjective(DisplaySlot.SIDEBAR)
         } else
         {
-            objective = scoreboard.registerNewObjective("Commons", "dummy")
+            objective = scoreboard.registerNewObjective("Cubed", "dummy")
             objective.displaySlot = DisplaySlot.SIDEBAR
         }
 
@@ -68,26 +68,14 @@ class Scoreboard(
         {
             player.scoreboard = scoreboard
         }
-
-        val provider = ScoreboardHandler
-            .scoreboardProvider
-
-        provider?.onScoreboardCreate(
-            player, scoreboard
-        )
     }
 
     fun update()
     {
-        if (System.currentTimeMillis() - this.createdAt < 100L)
-        {
-            return
-        }
-
         val override = ScoreboardHandler.scoreboardOverride
         val shouldOverride = override != null && override.shouldOverride(this.player)
 
-        var title = ChatColor.translateAlternateColorCodes(
+        val title = ChatColor.translateAlternateColorCodes(
             '&',
             if (shouldOverride) override!!.getTitle(player) else ScoreboardHandler.scoreboardProvider!!.getTitle(player)
         )
@@ -102,14 +90,7 @@ class Scoreboard(
 
         if (ScoreboardPreviewHandler.previewGlobal || ScoreboardPreviewHandler.previewMode.contains(player.uniqueId))
         {
-            title = Color.translate(ScoreboardPreviewHandler.lines[0])
-
-            ScoreboardPreviewHandler.lines.forEachIndexed { index, s ->
-                if (index != 0)
-                {
-                    this.localList.get().add(s)
-                }
-            }
+            this.localList.get().addAll(ScoreboardPreviewHandler.lines)
         } else
         {
             if (shouldOverride)
@@ -135,7 +116,9 @@ class Scoreboard(
 
         for (s in lines)
         {
-            val line = ChatColor.values()[nextValue].toString() + CC.WHITE + s
+            val line = ChatColor
+                .values()[nextValue]
+                .toString() + CC.WHITE + s
 
             if (line.length > 48)
             {
@@ -161,14 +144,18 @@ class Scoreboard(
                 this.createAndAddMember(score)
             }
 
-            if (!this.displayedScores.containsKey(score) || this.displayedScores[score] != nextValue)
+            if (
+                !this.displayedScores.containsKey(score) ||
+                this.displayedScores[score] != nextValue
+            )
             {
                 this.setScore(score, nextValue)
             }
 
-            if (!this.scorePrefixes.containsKey(score) || !this.scorePrefixes[score].equals(prefix) || !this.scoreSuffixes[score].equals(
-                    suffix
-                )
+            if (
+                !this.scorePrefixes.containsKey(score) ||
+                !this.scorePrefixes[score].equals(prefix) ||
+                !this.scoreSuffixes[score].equals(suffix)
             )
             {
                 this.updateScore(score, prefix, suffix)
@@ -234,16 +221,22 @@ class Scoreboard(
         MinecraftProtocol.send(player, packet)
     }
 
-    private fun updateScore(score: String, prefix: String, suffix: String)
+    private fun updateScore(
+        score: String, prefix: String, suffix: String
+    )
     {
         this.scorePrefixes[score] = prefix
         this.scoreSuffixes[score] = suffix
-        ScoreboardTeamPacketMod(score, prefix, suffix, null, 2).send(this.player)
+
+        ScoreboardTeamPacketMod(
+            score, prefix, suffix, null, 2
+        ).send(this.player)
     }
 
     private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String>
     {
-        var line = ChatColor.translateAlternateColorCodes('&', line)
+        var line = ChatColor
+            .translateAlternateColorCodes('&', line)
         var prefix = ""
         var score = ""
         var suffix = ""
@@ -329,5 +322,4 @@ class Scoreboard(
 
         return this.prefixScoreSuffix
     }
-
 }

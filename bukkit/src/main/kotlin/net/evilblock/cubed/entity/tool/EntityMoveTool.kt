@@ -9,9 +9,6 @@ package net.evilblock.cubed.entity.tool
 
 import com.cryptomorin.xseries.XMaterial
 import gg.scala.commons.annotations.Listeners
-import me.lucko.helper.shadows.nbt.NBTTagString
-import me.lucko.shadow.ShadowFactory
-import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.util.NpcUtils
@@ -20,6 +17,7 @@ import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.evilblock.cubed.util.bukkit.Tasks
+import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -82,13 +80,7 @@ object EntityMoveTool : Listener {
         for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
             if (isMoveTool(itemStack)) {
-                val uuid = UUID.fromString(
-                    ShadowFactory.global()
-                        .shadow(
-                            NBTTagString::class.java,
-                            ItemUtils.readItemTagKey(itemStack, "EntityMoveTool")
-                        ).string
-                )
+                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
 
                 EntityHandler.getEntityByUuid(uuid)
                     ?.updateVisibility(false)
@@ -111,24 +103,13 @@ object EntityMoveTool : Listener {
                 if (isMoveTool(itemInHand)) {
                     event.isCancelled = true
 
-                    val uuid = UUID.randomUUID()
-                    event.player.sendMessage("${ChatColor.GREEN}This functionality is temporailry disabled.")
+                    val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
 
                     val entity = EntityHandler.getEntityByUuid(uuid)
                     if (entity != null) {
                         // npc direction == flipped player yaw
                         val direction = event.player.eyeLocation.direction.multiply(-1)
-
-                        val heightKey = NpcUtils.BLOCK_HEIGHTS.keys
-                            .firstOrNull {
-                                event.clickedBlock.type
-                                    .name.contains(it, true)
-                            }
-
-                        val height = NpcUtils.BLOCK_HEIGHTS
-                            .getOrDefault(
-                                heightKey ?: "", 1.0
-                            )
+                        val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
 
                         val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
                         updatedLocation.direction = direction
@@ -239,3 +220,4 @@ object EntityMoveTool : Listener {
     }
 
 }
+

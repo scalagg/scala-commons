@@ -29,11 +29,6 @@ object ScoreboardUpdater : Runnable
             return
         }
 
-        if (plugin.disabling)
-        {
-            return
-        }
-
         for (scoreboard in ScoreboardHandler.scoreboards.values)
         {
             kotlin.runCatching {
