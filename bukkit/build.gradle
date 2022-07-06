@@ -16,8 +16,8 @@ dependencies {
     compileOnly fileTree(dir: "lib", include: "*.jar")
 
     // helper
-    implementation "me.lucko:helper:5.6.10.1"
-    kapt "me.lucko:helper:5.6.10.1"
+    implementation "me.lucko:helper:5.6.10.2"
+    kapt "me.lucko:helper:5.6.10.2"
 
     // sentry
     implementation "io.sentry:sentry:6.0.0"
@@ -66,7 +66,7 @@ dependencies {
     compileOnly "com.github.GrowlyX:reflektion:a33bf04483"
 
     // lettuce
-    implementation "io.lettuce:lettuce-core:6.3.0.STABLE"
+    implementation "io.lettuce:lettuce-core:6.1.8.RELEASE"
 }
 
 shadowJar {
