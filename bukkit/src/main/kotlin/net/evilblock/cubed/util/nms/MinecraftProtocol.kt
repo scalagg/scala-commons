@@ -83,12 +83,12 @@ object MinecraftProtocol {
 
     @JvmStatic
     fun send(player: Player, packet: Any) {
-        ReflectionUtils.sendPacket(player, packet).join()
+        ReflectionUtils.sendPacketSync(player, packet)
     }
 
     @JvmStatic
     fun send(player: Player, vararg packets: Any) {
-        ReflectionUtils.sendPacket(player, packets).join()
+        ReflectionUtils.sendPacketSync(player, packets)
     }
 
     @JvmStatic
