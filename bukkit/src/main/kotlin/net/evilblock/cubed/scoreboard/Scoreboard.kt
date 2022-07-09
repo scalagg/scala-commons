@@ -133,6 +133,7 @@ class Scoreboard(
             }
 
             val separated = this.separate(line, this.usedBaseScores)
+
             val prefix = separated[0]
             val score = separated[1]
             val suffix = separated[2]
