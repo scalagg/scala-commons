@@ -23,7 +23,6 @@ import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.Commands
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
-import me.lucko.helper.maven.MavenLibrary
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import me.lucko.helper.utils.Players

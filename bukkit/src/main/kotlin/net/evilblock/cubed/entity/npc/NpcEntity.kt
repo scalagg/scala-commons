@@ -62,7 +62,7 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
 
         super.initializeData()
 
-        nametag = NametagUpdates(text = "d", invisible = true, priority = 99)
+        nametag = NametagUpdates(text = "", invisible = true, priority = 99)
         profile = MinecraftReflection.newGameProfile(uuid, nametag.name)
         metadata = NpcProtocol.createDataWatcher(this)
 
