@@ -39,7 +39,7 @@ class UpdateFloatingItemButton(private val hologram: HologramEntity) : Button() 
         if (clickType.isLeftClick) {
             SelectItemStackMenu { itemStack ->
                 hologram.setFloatingItem(FloatingItem(itemStack, hologram.getFloatingItemLocation()))
-            }
+            }.openMenu(player)
         } else if (clickType.isRightClick && hologram.floatingItem != null) {
             hologram.removeFloatingItem()
         }

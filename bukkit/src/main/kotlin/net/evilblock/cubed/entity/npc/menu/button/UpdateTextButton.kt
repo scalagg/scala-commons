@@ -27,7 +27,7 @@ class UpdateTextButton(private val npc: NpcEntity) : Button() {
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial.OAK_WALL_SIGN
+        return XMaterial.matchXMaterial(Material.SIGN)
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

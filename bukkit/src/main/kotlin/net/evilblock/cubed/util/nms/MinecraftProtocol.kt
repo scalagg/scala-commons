@@ -13,8 +13,7 @@ import com.cryptomorin.xseries.ReflectionUtils
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import net.minecraft.server.v1_8_R3.PlayerConnection
-import net.minecraft.server.v1_8_R3.PlayerConnectionUtils
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
