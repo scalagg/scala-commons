@@ -37,7 +37,7 @@ class ConvertedConfig(
         model.java.getAnnotation(ConfigFileName::class.java)!!.value
     )
 
-    override fun saveModel(model: Any)
+    override fun saveModel(model: Any?)
     {
         if (!file.exists())
             file.createNewFile()
