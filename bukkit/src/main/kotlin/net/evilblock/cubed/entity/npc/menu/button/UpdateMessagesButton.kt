@@ -23,7 +23,7 @@ class UpdateMessagesButton(private val npc: NpcEntity) : Button()
             "${CC.GRAY}Update the messages that are sent to",
             "${CC.GRAY}a player when they right-click this NPC.",
             "",
-            "${CC.GREEN}Left-Click to update messages.",
+            "${CC.YELLOW}Left-Click to update messages.",
             "${CC.RED}Right-Click to unset messages."
         )
     }

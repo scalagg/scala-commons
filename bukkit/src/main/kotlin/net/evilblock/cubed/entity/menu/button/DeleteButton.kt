@@ -16,7 +16,7 @@ import org.bukkit.inventory.InventoryView
 class DeleteButton(private val entity: Entity) : Button() {
 
     override fun getName(player: Player): String {
-        return "${CC.GRAY}» ${CC.RED}Delete ${entity.getTypeName()}"
+        return "${CC.RED}Delete ${entity.getTypeName()}"
     }
 
     override fun getDescription(player: Player): List<String> {

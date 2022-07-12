@@ -21,7 +21,7 @@ class PositionEditorButton(private val npc: NpcEntity) : Button() {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update this NPC's position using fine adjustments."))
             desc.add("")
-            desc.add("${CC.GREEN}Left-Click to open position editor.")
+            desc.add("${CC.YELLOW}Left-Click to open position editor.")
         }
     }
 

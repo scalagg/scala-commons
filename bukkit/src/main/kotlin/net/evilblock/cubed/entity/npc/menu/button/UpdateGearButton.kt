@@ -21,7 +21,7 @@ class UpdateGearButton(private val npc: NpcEntity) : Button() {
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update this NPC's weapon and armor."))
             desc.add("")
-            desc.add("${CC.GREEN}Left-Click to update gear.")
+            desc.add("${CC.YELLOW}Left-Click to update gear.")
         }
     }
 

@@ -21,7 +21,7 @@ class UpdateTextButton(private val npc: NpcEntity) : Button() {
             "${CC.GRAY}Update the lines of text that",
             "${CC.GRAY}appear above this NPC.",
             "",
-            "${CC.GREEN}Left-Click to update text."
+            "${CC.YELLOW}Left-Click to update text."
         )
     }
 

@@ -83,11 +83,11 @@ object NpcProtocol
             *PLAYER_INFO_DATA_CONSTRUCTOR_PARAMETERS
         )!!
 
-    private val SURVIVAL_GAME_MODE =
+    private val NOT_SET_GAMEMODE =
         Reflection.getEnum(
             ENUM_GAME_MODE_CLASS,
             if (MinecraftReflection.isModern())
-                "a" else "SURVIVAL"
+                "a" else "NOT_SET"
         )!!
 
     private fun createPlayerInfoData(
@@ -103,8 +103,8 @@ object NpcProtocol
         }
 
         arguments.add(gameProfile)
-        arguments.add(1)
-        arguments.add(SURVIVAL_GAME_MODE)
+        arguments.add(0)
+        arguments.add(NOT_SET_GAMEMODE)
         arguments.add(
             JSON_CONVERSION_METHOD
                 .invoke(

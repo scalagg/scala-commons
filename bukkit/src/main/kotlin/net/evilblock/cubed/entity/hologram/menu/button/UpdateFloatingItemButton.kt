@@ -38,7 +38,13 @@ class UpdateFloatingItemButton(private val hologram: HologramEntity) : Button() 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         if (clickType.isLeftClick) {
             SelectItemStackMenu { itemStack ->
-                hologram.setFloatingItem(FloatingItem(itemStack, hologram.getFloatingItemLocation()))
+                val item = FloatingItem(
+                    itemStack,
+                    hologram.getFloatingItemLocation()
+                )
+                item.initializeData()
+
+                hologram.setFloatingItem(item)
             }.openMenu(player)
         } else if (clickType.isRightClick && hologram.floatingItem != null) {
             hologram.removeFloatingItem()

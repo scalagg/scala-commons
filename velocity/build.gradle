@@ -1,4 +1,11 @@
 dependencies {
     implementation project(":serializers")
     implementation project(":store")
+
+    implementation "co.aikar:acf-velocity:0.5.1-SNAPSHOT"
+}
+
+shadowJar {
+    relocate "co.aikar.commands", "gg.scala.commons.acf"
+    relocate "co.aikar.locales", "gg.scala.commons.locales"
 }

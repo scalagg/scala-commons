@@ -7,45 +7,36 @@
 
 package net.evilblock.cubed.entity.menu
 
-import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.menu.Button
-import net.evilblock.cubed.menu.Menu
-import org.bukkit.Material
+import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import org.bukkit.entity.Player
 
-class EditEntityMenu(private val entity: Entity) : Menu() {
+class EditEntityMenu(private val entity: Entity) : PaginatedMenu() {
 
-    override fun getTitle(player: Player): String {
-        return "Edit ${entity.getTypeName()} #${entity.id}"
+    init
+    {
+        placeholdBorders = true
+        updateAfterClick = true
     }
 
-    override fun getButtons(player: Player): Map<Int, Button> {
-        val buttons = hashMapOf<Int, Button>()
+    override fun size(buttons: Map<Int, Button>) = 36
 
-        val editorButtons = entity.getEditorButtons(player, this)
-        if (editorButtons.size in 3..5) {
-            val startAt: Int = when (editorButtons.size) {
-                3 -> 2
-                4 -> 1
-                5 -> 0
-                else -> 0
-            }
+    override fun getAllPagesButtonSlots() = listOf(
+        10, 11, 12, 13, 14, 15, 16,
+        19, 20, 21, 22, 23, 24, 25
+    )
 
-            for ((index, button) in editorButtons.withIndex()) {
-                buttons[startAt + (index * 2)] = button
-            }
-        } else {
-            for (button in editorButtons) {
-                buttons[buttons.size] = button
-            }
-        }
+    override fun getPrePaginatedTitle(player: Player) =
+        "Edit ${entity.getTypeName()} #${entity.id}"
 
-        for (i in 0..8) {
-            if (!buttons.containsKey(i)) {
-                buttons[i] = Button.placeholder(XMaterial.BLACK_STAINED_GLASS_PANE.parseMaterial()!!, 15, " ")
+    override fun getAllPagesButtons(player: Player): Map<Int, Button> {
+        val buttons = mutableMapOf<Int, Button>()
+
+        entity.getEditorButtons(player, this)
+            .forEach {
+                buttons[buttons.size] = it
             }
-        }
 
         return buttons
     }

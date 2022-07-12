@@ -495,6 +495,19 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         {
             container.inject(lateInject)
             container.container<T>().load()
+        } else
+        {
+            val lateInjectCustom = container
+                .waitingLateInjectCustom
+                .find {
+                    it.model == T::class.java
+                }
+
+            if (lateInjectCustom != null)
+            {
+                container.customInjection(lateInjectCustom)
+                container.container<T>().load()
+            }
         }
 
         return this.configContainerized
@@ -520,7 +533,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     fun Class<*>.objectInstance(): Any?
     {
-        return kotlin.runCatching {
+        return runCatching {
             getDeclaredField("INSTANCE").get(null)
         }.getOrNull()
     }

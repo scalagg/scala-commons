@@ -5,6 +5,9 @@ import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.config.convert.ConvertedConfig
+import gg.scala.commons.config.convert.annotations.ConfigConverted
+import gg.scala.commons.config.convert.annotations.ConfigLateInject
 import gg.scala.commons.model.Containerized
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
@@ -30,7 +33,10 @@ class ConfigContainerized(
     }
 
     val waitingLateInject =
-        HashSet<ContainerConfig>()
+        hashSetOf<ContainerConfig>()
+
+    val waitingLateInjectCustom =
+        hashSetOf<ConvertedConfig>()
 
     val aware by lazy {
         AwareBuilder.of<AwareMessage>("config-sync")
@@ -59,6 +65,22 @@ class ConfigContainerized(
 
             inject(config)
         }
+
+        this.plugin.flavor().reflections
+            .getTypesAnnotatedWith<ConfigConverted>()
+            .forEach {
+                val converted = ConvertedConfig(
+                    plugin, it.kotlin, this
+                )
+
+                if (converted.annotation.lateInject)
+                {
+                    waitingLateInjectCustom.add(converted)
+                    return@forEach
+                }
+
+                customInjection(converted)
+            }
     }
 
     fun inject(config: ContainerConfig)
@@ -73,6 +95,19 @@ class ConfigContainerized(
 
         configContainers[config.model] =
             ConfigContainer(plugin, configFactory, config, this)
+    }
+
+    fun customInjection(container: ConfigContainer)
+    {
+        plugin.logger.info(
+            "[Config] Injected config ${
+                container.annotation.value
+            } into ${
+                container.annotation.model.simpleName
+            }."
+        )
+
+        configContainers[container.annotation.model] = container
     }
 
     var initialLoaded = false

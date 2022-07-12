@@ -20,9 +20,9 @@ import kotlin.reflect.KClass
  * @author GrowlyX
  * @since 4/17/2022
  */
-class ConfigContainer(
+open class ConfigContainer(
     val plugin: ExtendedScalaPlugin,
-    private val factory: ConfigFactory,
+    private val factory: ConfigFactory?,
     val annotation: ContainerConfig,
     private val containerized: ConfigContainerized
 ) : Runnable
@@ -152,7 +152,7 @@ class ConfigContainer(
         }
 
         kotlin.runCatching {
-            this.factory.save(annotation.value, model)
+            saveModel(model)
 
             if (crossSync && this.annotation.crossSync)
             {
@@ -181,9 +181,7 @@ class ConfigContainer(
     fun load()
     {
         kotlin.runCatching {
-            this.model = factory.fromFile(
-                annotation.value, annotation.model.java
-            )
+            this.model = modelByAnnotation()
         }.onSuccess {
             this.plugin.logger.info(
                 "[Config] Loaded config ${
@@ -201,5 +199,17 @@ class ConfigContainer(
                 Level.WARNING, "[Config] Failed to load config by name \"${annotation.value}\"!", it
             )
         }
+    }
+
+    open fun modelByAnnotation(): Any
+    {
+        return factory!!.fromFile(
+            annotation.value, annotation.model.java
+        )
+    }
+
+    open fun saveModel(model: Any?)
+    {
+        this.factory!!.save(annotation.value, model)
     }
 }

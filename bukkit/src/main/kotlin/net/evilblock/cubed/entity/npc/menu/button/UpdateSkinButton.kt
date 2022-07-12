@@ -27,7 +27,7 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update this NPC's skin by fetching a real Minecraft player's skin by their username."))
             desc.add("")
-            desc.add("${CC.GREEN}Left-Click to update skin.")
+            desc.add("${CC.YELLOW}Left-Click to update skin.")
         }
     }
 
