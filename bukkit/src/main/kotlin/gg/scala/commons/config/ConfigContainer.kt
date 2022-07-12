@@ -48,7 +48,7 @@ open class ConfigContainer(
 
         File(
             dataContainer,
-            "${this.annotation.value}.yml"
+            fileName()
         ).toPath()
     }
 
@@ -85,7 +85,7 @@ open class ConfigContainer(
                 )
 
                 Players.operators().forEach {
-                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${annotation.value}.yml${CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
+                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${fileName()}{CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
                 }
 
                 this.load()
@@ -105,12 +105,13 @@ open class ConfigContainer(
             this.containerized.aware.listen(
                 this.annotation.model.java.simpleName
             ) {
-                val content = Serializers.gson.fromJson(
-                    this.retrieve(
-                        "config", String::class
-                    ),
-                    annotation.model.java
-                )
+                val content = Serializers.gson
+                    .fromJson(
+                        this.retrieve(
+                            "config", String::class
+                        ),
+                        annotation.model.java
+                    )
 
                 model = content
                 save(crossSync = false)
@@ -212,4 +213,6 @@ open class ConfigContainer(
     {
         this.factory!!.save(annotation.value, model)
     }
+
+    open fun fileName() = "${this.annotation.value}.yml"
 }

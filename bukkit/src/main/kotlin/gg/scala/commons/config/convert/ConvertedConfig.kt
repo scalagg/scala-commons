@@ -32,10 +32,19 @@ class ConvertedConfig(
     containerized
 )
 {
+    private val fileName = model.java
+        .getAnnotation(ConfigFileName::class.java)!!.value
+
     private val file = File(
-        plugin.dataFolder,
-        model.java.getAnnotation(ConfigFileName::class.java)!!.value
+        plugin.dataFolder, fileName
     )
+
+    init
+    {
+        Serializers.create {
+            setPrettyPrinting()
+        }
+    }
 
     override fun saveModel(model: Any?)
     {
@@ -74,4 +83,6 @@ class ConvertedConfig(
                 file.readText(), model.java
             )
     }
+
+    override fun fileName() = fileName
 }
