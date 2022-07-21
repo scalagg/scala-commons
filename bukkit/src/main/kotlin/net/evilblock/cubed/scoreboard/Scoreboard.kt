@@ -60,7 +60,7 @@ class Scoreboard(
             objective = scoreboard.getObjective(DisplaySlot.SIDEBAR)
         } else
         {
-            objective = scoreboard.registerNewObjective("Cubed", "dummy")
+            objective = scoreboard.registerNewObjective("commons", "dummy")
             objective.displaySlot = DisplaySlot.SIDEBAR
         }
 
