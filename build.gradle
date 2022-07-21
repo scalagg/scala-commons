@@ -32,14 +32,14 @@ subprojects {
 
     repositories {
         maven {
-            url "${environmental("artifactory_contextUrl")}/gradle-release"
+            url "${property("artifactory_contextUrl")}/gradle-release"
 
             credentials {
                 setUsername(
-                    environmental("artifactory_user")
+                    property("artifactory_user")
                 )
                 setPassword(
-                    environmental("artifactory_password")
+                    property("artifactory_password")
                 )
             }
         }
@@ -76,11 +76,11 @@ subprojects {
         repositories {
             maven {
                 name "Scala"
-                url "${environmental("artifactory_contextUrl")}/gradle-release"
+                url "${property("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
-                    username environmental("artifactory_user")
-                    password environmental("artifactory_password")
+                    username property("artifactory_user")
+                    password property("artifactory_password")
                 }
             }
         }
@@ -93,13 +93,13 @@ subprojects {
 }
 
 artifactory {
-    this.contextUrl = environmental("artifactory_contextUrl")
+    this.contextUrl = property("artifactory_contextUrl")
 
     publish {
         repository {
-            repoKey = environmental("artifactory_release_local")
-            username = environmental("artifactory_user")
-            password = environmental("artifactory_password")
+            repoKey = property("artifactory_release_local")
+            username = property("artifactory_user")
+            password = property("artifactory_password")
             maven = true
         }
     }
