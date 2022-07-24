@@ -19,7 +19,11 @@ object UUIDAdapter : JsonDeserializer<UUID>, JsonSerializer<UUID>
         context: JsonDeserializationContext
     ): UUID?
     {
-        return if (src == null || src.asString == null || src.asString.equals("null"))
+        return if (
+            src == null ||
+            src.asString == null ||
+            src.asString.equals("null")
+        )
         {
             null
         } else

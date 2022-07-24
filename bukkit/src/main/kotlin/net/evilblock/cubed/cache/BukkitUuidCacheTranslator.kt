@@ -23,7 +23,7 @@ object BukkitUuidCacheTranslator : ScalaStoreUuidCacheTranslator
      */
     override fun configure(): CompletionStage<Void>
     {
-        return CompletableFuture()
+        return CompletableFuture.completedFuture(null)
     }
 
     /**
