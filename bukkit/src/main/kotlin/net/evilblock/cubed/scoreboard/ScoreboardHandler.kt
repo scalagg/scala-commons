@@ -15,6 +15,7 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +25,8 @@ object ScoreboardHandler
     @Inject
     lateinit var plugin: ScalaCommonsSpigot
 
-    internal val scoreboards = mutableMapOf<UUID, Scoreboard>()
+    internal val scoreboards =
+        ConcurrentHashMap<UUID, Scoreboard>()
 
     var scoreboardOverride: ScoreboardOverride? = null
     internal var scoreboardProvider: ScoreboardAdapter? = null
