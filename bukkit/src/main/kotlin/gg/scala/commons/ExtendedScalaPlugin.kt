@@ -36,7 +36,17 @@ import gg.scala.flavor.FlavorOptions
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import gg.scala.commons.command.ScalaCommandManager
+import net.evilblock.cubed.nametag.NametagHandler
+import net.evilblock.cubed.nametag.NametagProvider
+import net.evilblock.cubed.nametag.NametagProviderRegister
+import net.evilblock.cubed.scoreboard.ScoreboardAdapter
+import net.evilblock.cubed.scoreboard.ScoreboardAdapterRegister
+import net.evilblock.cubed.scoreboard.ScoreboardHandler
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.visibility.OverrideHandler
+import net.evilblock.cubed.visibility.VisibilityAdapter
+import net.evilblock.cubed.visibility.VisibilityAdapterRegister
+import net.evilblock.cubed.visibility.VisibilityHandler
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -338,6 +348,65 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     this.commandManager.registerCommand(
                         instance as BaseCommand
                     )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to register command", it)
+                }
+            }
+
+        this.packageIndexer
+            .getTypesAnnotatedWith<ScoreboardAdapterRegister>()
+            .forEach {
+                kotlin.runCatching {
+                    val instance = it.objectInstance()
+                        ?: it.newInstance()
+
+                    this.flavor.inject(instance)
+
+                    ScoreboardHandler.configure(
+                        instance as ScoreboardAdapter
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to register command", it)
+                }
+            }
+
+        this.packageIndexer
+            .getTypesAnnotatedWith<NametagProviderRegister>()
+            .forEach {
+                kotlin.runCatching {
+                    val instance = it.objectInstance()
+                        ?: it.newInstance()
+
+                    this.flavor.inject(instance)
+
+                    NametagHandler.registerProvider(
+                        instance as NametagProvider
+                    )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to register command", it)
+                }
+            }
+
+        this.packageIndexer
+            .getTypesAnnotatedWith<VisibilityAdapterRegister>()
+            .forEach {
+                kotlin.runCatching {
+                    val instance = it.objectInstance()
+                        ?: it.newInstance()
+
+                    this.flavor.inject(instance)
+
+                    if (instance is VisibilityAdapter)
+                    {
+                        VisibilityHandler.registerAdapter(
+                            it.getAnnotation(VisibilityAdapterRegister::class.java).value, instance
+                        )
+                    } else if (instance is OverrideHandler)
+                    {
+                        VisibilityHandler.registerOverride(
+                            it.getAnnotation(VisibilityAdapterRegister::class.java).value, instance
+                        )
+                    }
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)
                 }
