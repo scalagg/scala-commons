@@ -34,6 +34,15 @@ object ScoreboardHandler
 
     private var executorEnabled = false
 
+    @JvmStatic
+    fun configureScoreboard(player: Player)
+    {
+        scoreboardProvider ?: return
+
+        scoreboards[player.uniqueId] =
+            Scoreboard(player, plugin)
+    }
+
     @Configure
     fun configure()
     {
