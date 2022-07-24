@@ -52,8 +52,7 @@ object ScalaStoreUuidCache
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper
-            .fetchFromMojang(username)
+        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(username)
 
         if (mojang.isPresent)
         {
