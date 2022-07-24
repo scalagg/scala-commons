@@ -102,6 +102,11 @@ class Scoreboard(
             }
         }
 
+        if (localList.get().isEmpty())
+        {
+            return
+        }
+
         this.recentlyUpdatedScores.clear()
         this.usedBaseScores.clear()
 
