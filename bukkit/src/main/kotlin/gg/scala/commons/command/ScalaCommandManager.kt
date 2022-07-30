@@ -47,7 +47,7 @@ class ScalaCommandManager(
         }
 
         defaultExceptionHandler = ExceptionHandler { _, _, sender, _, throwable ->
-            SentryService.log(throwable) {
+            SentryService.push(throwable) {
                 var message =
                     "${plugin.qolInternal.prefix} ${CC.RED}Something went terribly wrong while trying to perform this command."
 

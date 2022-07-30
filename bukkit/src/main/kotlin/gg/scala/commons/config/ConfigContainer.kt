@@ -3,6 +3,8 @@ package gg.scala.commons.config
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.event.EventQuadState
+import gg.scala.commons.event.impl.ConfigWatchEvent
 import gg.scala.commons.util.Players
 import gg.scala.flavor.FlavorBinder
 import net.evilblock.cubed.serializers.Serializers
@@ -85,10 +87,25 @@ open class ConfigContainer(
                 )
 
                 Players.operators().forEach {
-                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${fileName()}{CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
+                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${fileName()}${CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
                 }
 
-                this.load()
+                ConfigWatchEvent(this).flow()
+                    .subscribe { state: EventQuadState ->
+                        when (state)
+                        {
+                            EventQuadState.ALLOWED -> this.load()
+                            EventQuadState.FAILED ->
+                            {
+                                Players.operators().forEach {
+                                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.RED}Failed to updated config!")
+                                }
+                            }
+                            else ->
+                            {
+                            }
+                        }
+                    }
             }
 
             this.lastModificationTimestamp = lastModified

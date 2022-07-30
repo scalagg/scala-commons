@@ -29,7 +29,10 @@ object SentryService
         this.hintProviders.add(provider)
     }
 
-    fun log(throwable: Throwable, lambda: (SentryId?) -> Unit)
+    fun push(
+        throwable: Throwable,
+        lambda: (SentryId?) -> Unit = {}
+    )
     {
         if (enabled)
         {
