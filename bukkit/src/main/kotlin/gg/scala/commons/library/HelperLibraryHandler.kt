@@ -102,7 +102,8 @@ object HelperLibraryHandler
             library.artifactId,
             library.version,
             library.artifactId,
-            library.version
+            if (library.shadedClassifier)
+                "${library.version}-shaded" else library.version
         )
         return URL(url)
     }
