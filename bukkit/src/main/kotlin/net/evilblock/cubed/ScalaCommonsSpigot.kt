@@ -99,7 +99,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         val instance by Plugins.plugin<ScalaCommonsSpigot>()
     }
 
-    val aware by lazy {
+    private val aware by lazy {
         AwareBuilder
             .of<AwareMessage>("UuidCache")
             .codec(AwareMessageCodec)
@@ -265,9 +265,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 }
             }
 
-            kotlin.runCatching {
-                aware.shutdown()
-            }
+            this.aware.shutdown()
         }.onFailure {
             logger.log(Level.WARNING, "An exception was thrown during disable process.", it)
         }
@@ -281,20 +279,27 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
      */
     private fun runSetupCheck(): Boolean
     {
-        return if ((server.onlineMode && SpigotConfig.bungee) || (!server.onlineMode && !SpigotConfig.bungee))
+        if (this.config<CommonsGeneralConfig>().ignoreServerCheck)
         {
-            logger.severe(" ")
-            logger.severe(" Failed environment check!")
-            logger.severe("  Online mode: ${server.onlineMode}")
-            logger.severe("  Proxy mode: ${SpigotConfig.bungee}")
-            logger.severe(" ")
+            return true
+        }
+
+        val onlineAndProxy = server.onlineMode && SpigotConfig.bungee
+        val offlineAndNoProxy = !server.onlineMode && !SpigotConfig.bungee
+
+        if (onlineAndProxy || offlineAndNoProxy)
+        {
+            this.logger.severe(" ")
+            this.logger.severe(" Failed environment check!")
+            this.logger.severe("  Online mode: ${server.onlineMode}")
+            this.logger.severe("  Proxy mode: ${SpigotConfig.bungee}")
+            this.logger.severe(" ")
 
             server.shutdown()
-            false
-        } else
-        {
-            true
+            return false
         }
+
+        return true
     }
 
     private fun registerPacketListeners()

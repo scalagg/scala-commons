@@ -15,6 +15,8 @@ class CommonsGeneralConfig
     val timezone = "EST"
     val backups = false
 
+    val ignoreServerCheck = false
+
     @Comment("Should we enable helper's built-in /helper information command?")
     val infoCommand = true
 }
