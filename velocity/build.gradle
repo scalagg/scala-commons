@@ -1,6 +1,12 @@
+repositories {
+    maven { url "https://repo.aikar.co/content/groups/aikar/" }
+}
+
 dependencies {
     implementation project(":serializers")
     implementation project(":store")
+
+    implementation "co.aikar:acf-velocity:0.5.1-SNAPSHOT"
 }
 
 shadowJar {
