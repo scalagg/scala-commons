@@ -54,7 +54,7 @@ object HelperLibraryHandler
             )
         )
 
-        val name = library.artifactId + "-" + library.version
+        val name = library.artifactId + "-" + library.version + if (library.shadedClassifier) "-shaded" else ""
         val saveLocation = File(getLibFolder(), "$name.jar")
 
         if (!saveLocation.exists())
