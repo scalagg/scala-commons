@@ -24,7 +24,10 @@ object LogHandler
     @Configure
     fun configure()
     {
-        CubedScheduler.trackScheduledTask<AsyncHourMarkEvent> { completeFlush() }
+        CubedScheduler
+            .trackScheduledTask<AsyncHourMarkEvent> {
+                completeFlush()
+            }
     }
 
     @Close

@@ -58,16 +58,6 @@ import gg.scala.commons.library.model.Library
     version = "3.5.0"
 )
 @Library(
-    groupId = "com.github.cryptomorin",
-    artifactId = "XSeries",
-    version = "8.8.0"
-)
-@Library(
-    groupId = "com.github.ben-manes.caffeine",
-    artifactId = "caffeine",
-    version = "3.1.1"
-)
-@Library(
     groupId = "com.viaversion",
     artifactId = "viaversion-api",
     version = "4.3.1",

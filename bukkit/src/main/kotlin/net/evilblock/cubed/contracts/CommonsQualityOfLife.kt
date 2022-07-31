@@ -9,5 +9,5 @@ import net.evilblock.cubed.util.CC
  */
 object CommonsQualityOfLife : QualityOfLife
 {
-    override fun representingColor() = CC.GOLD
+    override fun representingColor(): String = CC.GOLD
 }
