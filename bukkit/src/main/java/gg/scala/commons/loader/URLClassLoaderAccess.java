@@ -83,7 +83,7 @@ public abstract class URLClassLoaderAccess {
             }
             ADD_URL_METHOD = addUrlMethod;
         }
-
+    
         private static boolean isSupported() {
             return ADD_URL_METHOD != null;
         }

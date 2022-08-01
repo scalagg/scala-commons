@@ -8,8 +8,12 @@ dependencies {
 
     compileOnly "com.google.code.gson:gson:2.9.0"
 
-    compileOnly 'org.mongodb:mongodb-driver:3.12.11'
-    compileOnly "com.squareup.okhttp:okhttp:2.7.5"
+    compileOnly "org.mongodb:mongodb-driver:3.12.11"
+    implementation "com.squareup.okhttp:okhttp:2.7.5"
 
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.0'
+    compileOnly "com.github.ben-manes.caffeine:caffeine:3.1.1"
+}
+
+shadowJar {
+    relocate "com.squareup", "gg.scala.store.cache.okhttp"
 }

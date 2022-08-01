@@ -31,8 +31,8 @@ import org.bukkit.entity.Player
 import java.util.*
 
 @AutoRegister
-@CommandAlias("scala-commons|commons|sclib|lib")
 @CommandPermission("op")
+@CommandAlias("scala-commons|commons|sclib|lib")
 object ScalaCommonsCommand : ScalaCommand()
 {
     @Inject
