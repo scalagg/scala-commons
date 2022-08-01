@@ -28,7 +28,13 @@ object SchemedMenuTests
                 "Z0Z0Z0Z0Z",
             )
             .map('0') { _, _ ->
-                PaginatedMenu.PLACEHOLDER
+                ItemBuilder
+                    .copyOf(
+                        PaginatedMenu.PLACEHOLDER
+                            .getButtonItem(player)
+                    )
+                    .data(2)
+                    .toButton()
             }
             .map('Z') { _, _ ->
                 ItemBuilder
