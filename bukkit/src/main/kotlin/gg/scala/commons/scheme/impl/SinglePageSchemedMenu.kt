@@ -25,10 +25,7 @@ class SinglePageSchemedMenu : AbstractCompositeSchemedMenu<Menu>()
 
             override fun getButtons(player: Player): Map<Int, Button>
             {
-                val parsed = mutableMapOf<Int, Button>()
-                parsed.putAll(this.buttons)
-
-                return parsed
+                return this@SinglePageSchemedMenu.buttons
             }
 
             override fun onClose(player: Player, manualClose: Boolean)

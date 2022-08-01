@@ -27,10 +27,7 @@ class PaginatedSchemedMenu : AbstractCompositeSchemedMenu<PaginatedMenu>()
 
             override fun getAllPagesButtons(player: Player): Map<Int, Button>
             {
-                val parsed = mutableMapOf<Int, Button>()
-                parsed.putAll(this.buttons)
-
-                return parsed
+                return this@PaginatedSchemedMenu.buttons
             }
 
             override fun onClose(player: Player, manualClose: Boolean)
