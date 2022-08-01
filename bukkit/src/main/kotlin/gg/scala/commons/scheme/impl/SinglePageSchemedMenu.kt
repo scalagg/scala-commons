@@ -26,6 +26,9 @@ class SinglePageSchemedMenu : AbstractCompositeSchemedMenu<Menu>()
             override fun getButtons(player: Player): Map<Int, Button>
             {
                 return this@SinglePageSchemedMenu.buttons
+                    .mapValues {
+                        it.value.invoke(player, it.key)
+                    }
             }
 
             override fun onClose(player: Player, manualClose: Boolean)

@@ -11,14 +11,14 @@ import org.bukkit.entity.Player
 abstract class AbstractCompositeSchemedMenu<T : Menu>
 {
     protected val pattern = mutableListOf<String>()
-    private val characterMappings = mutableMapOf<Char, Button>()
+    private val characterMappings = mutableMapOf<Char, (Player, Int) -> Button>()
 
     protected var title = "Menu Scheme"
     protected var configuration: T.() -> Unit = { }
 
     protected var onClose: T.() -> Unit = { }
 
-    protected val buttons = mutableMapOf<Int, Button>()
+    protected val buttons = mutableMapOf<Int, (Player, Int) -> Button>()
 
     protected abstract fun createMenu(player: Player): T
 
@@ -63,7 +63,7 @@ abstract class AbstractCompositeSchemedMenu<T : Menu>
         return this
     }
 
-    fun map(char: Char, button: Button): AbstractCompositeSchemedMenu<T>
+    fun map(char: Char, button: (Player, Int) -> Button): AbstractCompositeSchemedMenu<T>
     {
         this.characterMappings[char] = button
         return this
@@ -99,7 +99,10 @@ abstract class AbstractCompositeSchemedMenu<T : Menu>
             }
     }
 
-    operator fun set(char: Char, button: Button)
+    operator fun set(
+        char: Char,
+        button: (Player, Int) -> Button
+    )
     {
         this.map(char, button)
     }

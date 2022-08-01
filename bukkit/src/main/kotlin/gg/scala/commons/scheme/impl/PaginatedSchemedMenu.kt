@@ -28,6 +28,9 @@ class PaginatedSchemedMenu : AbstractCompositeSchemedMenu<PaginatedMenu>()
             override fun getAllPagesButtons(player: Player): Map<Int, Button>
             {
                 return this@PaginatedSchemedMenu.buttons
+                    .mapValues {
+                        it.value.invoke(player, it.key)
+                    }
             }
 
             override fun onClose(player: Player, manualClose: Boolean)
