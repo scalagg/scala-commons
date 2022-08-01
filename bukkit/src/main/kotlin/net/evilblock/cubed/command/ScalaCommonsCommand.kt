@@ -14,6 +14,7 @@ import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.scheme.SchemedMenuTests
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
@@ -47,6 +48,12 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("test-scheme-menu-single")
+    fun onTestScheme(player: Player)
+    {
+        SchemedMenuTests.test(player)
     }
 
     @Subcommand("find-username")

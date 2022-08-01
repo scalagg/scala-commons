@@ -9,7 +9,13 @@ package net.evilblock.cubed.command
 
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
-import co.aikar.commands.annotation.*
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Description
+import co.aikar.commands.annotation.HelpCommand
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Subcommand
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.flavor.inject.Inject
@@ -46,7 +52,7 @@ object EntityCommand : ScalaCommand()
     fun onDebug(player: Player)
     {
         EntityTickThread.DEBUG = !EntityTickThread.DEBUG
-        player.sendMessage("${CC.SEC}Debug enabled: ${CC.PRI}${EntityTickThread.DEBUG.toString()}")
+        player.sendMessage("${CC.SEC}Debug enabled: ${CC.PRI}${EntityTickThread.DEBUG}")
     }
 
     @Subcommand("debug-view")
