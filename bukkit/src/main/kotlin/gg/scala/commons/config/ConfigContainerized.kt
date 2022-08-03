@@ -7,8 +7,8 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.config.convert.ConvertedConfig
 import gg.scala.commons.config.convert.annotations.ConfigConverted
-import gg.scala.commons.config.convert.annotations.ConfigLateInject
 import gg.scala.commons.model.Containerized
+import me.lucko.helper.Schedulers
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
@@ -118,6 +118,10 @@ class ConfigContainerized(
         {
             configContainer.value.postInject()
             configContainer.value.load()
+
+            Schedulers.async().run {
+                configContainer.value.updateFileContents()
+            }
         }
 
         if (

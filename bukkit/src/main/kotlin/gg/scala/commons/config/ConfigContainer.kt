@@ -219,6 +219,26 @@ open class ConfigContainer(
         }
     }
 
+    fun updateFileContents()
+    {
+        kotlin.runCatching {
+            this.configPath.toFile().delete()
+            this.save(crossSync = false)
+        }.onSuccess {
+            this.plugin.logger.info(
+                "[Config] Update contents of config ${
+                    annotation.value
+                } injected into ${
+                    annotation.model.simpleName
+                }."
+            )
+        }.onFailure {
+            this.plugin.logger.log(
+                Level.WARNING, "[Config] Failed to update contents of config by name \"${annotation.value}\"!", it
+            )
+        }
+    }
+
     open fun modelByAnnotation(): Any
     {
         return factory!!.fromFile(
