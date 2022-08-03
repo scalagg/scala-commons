@@ -17,11 +17,14 @@ object BackupHandler
     lateinit var plugin: ScalaCommonsSpigot
 
     @JvmStatic
-    private val FORMAT = SimpleDateFormat("yyyy-dd-MM_hh.mm.ss")
+    private val FORMAT =
+        SimpleDateFormat("yyyy-dd-MM_hh.mm.ss")
 
-    private val backupFolder = File(
-        plugin.dataFolder, "backups"
-    )
+    private val backupFolder by lazy {
+        File(
+            plugin.dataFolder, "backups"
+        )
+    }
 
     @Configure
     fun configure()
