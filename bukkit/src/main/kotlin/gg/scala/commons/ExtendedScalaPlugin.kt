@@ -53,6 +53,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Server
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import org.reflections.scanners.Scanners
 import java.io.File
 import java.lang.reflect.Method
 import java.util.logging.Level
@@ -551,36 +552,41 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     inline fun <reified T> config(): T
     {
+        return this.config(T::class.java)
+    }
+
+    fun <T> config(clazz: Class<T>): T
+    {
         val container = this
             .configContainerized
 
         val lateInject = container
             .waitingLateInject
             .find {
-                it.model == T::class.java
+                it.model == clazz
             }
 
         if (lateInject != null)
         {
             container.inject(lateInject)
-            container.container<T>().load()
+            container.container(clazz).load()
         } else
         {
             val lateInjectCustom = container
                 .waitingLateInjectCustom
                 .find {
-                    it.model == T::class.java
+                    it.model == clazz
                 }
 
             if (lateInjectCustom != null)
             {
                 container.customInjection(lateInjectCustom)
-                container.container<T>().load()
+                container.container(clazz).load()
             }
         }
 
         return this.configContainerized
-            .container<T>().getModelAs()
+            .container(clazz).getModelAs(clazz)
     }
 
     fun localized(identifier: String): LocalizationContainerContextual
@@ -588,16 +594,24 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         return this.localizationContainerized.container(identifier)
     }
 
-    inline fun <reified T> contract(): T?
+    fun <T> contract(clazz: Class<T>): T?
     {
         val subTypes = this
             .packageIndexer
-            .getSubTypes<T>()
+            .reflections.get(
+                Scanners.SubTypes.with(clazz)
+                    .`as`(Class::class.java)
+            )
             .firstOrNull()
             ?: return null
 
         return subTypes.objectInstance() as T
             ?: subTypes.newInstance() as T
+    }
+
+    inline fun <reified T> contract(): T?
+    {
+        return this.contract(T::class.java)
     }
 
     fun Class<*>.objectInstance(): Any?

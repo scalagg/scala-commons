@@ -15,12 +15,12 @@ import gg.scala.commons.library.model.Library
 @Library(
     groupId = "io.sentry",
     artifactId = "sentry",
-    version = "6.0.0"
+    version = "6.1.2"
 )
 @Library(
     groupId = "io.github.classgraph",
     artifactId = "classgraph",
-    version = "4.8.147"
+    version = "4.8.149"
 )
 @Library(
     groupId = "org.apache.commons",

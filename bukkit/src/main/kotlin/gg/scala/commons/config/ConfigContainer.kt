@@ -37,6 +37,11 @@ open class ConfigContainer(
         return model as T
     }
 
+    fun <T> getModelAs(clazz: Class<T>): T
+    {
+        return model as T
+    }
+
     inline fun <reified T> getModelAs(): T
     {
         return model as T

@@ -27,6 +27,11 @@ class ConfigContainerized(
     val configContainers =
         mutableMapOf<KClass<out Any>, ConfigContainer>()
 
+    fun <T> container(clazz: Class<T>): ConfigContainer
+    {
+        return this.configContainers[clazz::class.java.kotlin]!!
+    }
+
     inline fun <reified T> container(): ConfigContainer
     {
         return this.configContainers[T::class]!!
