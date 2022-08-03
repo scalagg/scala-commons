@@ -8,7 +8,6 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.config.convert.ConvertedConfig
 import gg.scala.commons.config.convert.annotations.ConfigConverted
 import gg.scala.commons.model.Containerized
-import me.lucko.helper.Schedulers
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
@@ -27,9 +26,9 @@ class ConfigContainerized(
     val configContainers =
         mutableMapOf<KClass<out Any>, ConfigContainer>()
 
-    fun <T> container(clazz: Class<T>): ConfigContainer
+    fun <T : Any> container(clazz: Class<T>): ConfigContainer
     {
-        return this.configContainers[clazz::class.java.kotlin]!!
+        return this.configContainers[clazz.kotlin]!!
     }
 
     inline fun <reified T> container(): ConfigContainer
