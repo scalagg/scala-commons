@@ -16,7 +16,7 @@ abstract class AbstractCompositeSchemedMenu<T : Menu>
     protected var title = "Menu Scheme"
     protected var configuration: T.() -> Unit = { }
 
-    protected var onClose: T.(Player) -> Unit = { }
+    protected var onClose: (T, Player) -> Unit = { _, _ -> }
 
     protected val buttons = mutableMapOf<Int, (Player, Int) -> Button>()
 
@@ -41,7 +41,7 @@ abstract class AbstractCompositeSchemedMenu<T : Menu>
     }
 
     fun manuallyClosed(
-        configuration: T.(Player) -> Unit
+        configuration: (T, Player) -> Unit
     ): AbstractCompositeSchemedMenu<T>
     {
         this.onClose = configuration
