@@ -550,12 +550,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         }
     }
 
-    inline fun <reified T> config(): T
+    inline fun <reified T : Any> config(): T
     {
         return this.config(T::class.java)
     }
 
-    fun <T> config(clazz: Class<T>): T
+    fun <T : Any> config(clazz: Class<T>): T
     {
         val container = this
             .configContainerized
