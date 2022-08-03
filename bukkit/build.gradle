@@ -27,7 +27,7 @@ dependencies {
 
     // growly
     implementation "gg.scala.aware:aware:1.0.8.3"
-    implementation "gg.scala.flavor:flavor:0.1.3.7"
+    implementation "gg.scala.flavor:flavor:0.1.3.8"
 
     compileOnly "me.lucko:scriptcontroller:1.2"
     compileOnly 'io.github.classgraph:classgraph:4.8.149'
@@ -67,7 +67,7 @@ dependencies {
     implementation "com.github.mkotb:ConfigAPI:e1c8df3f13"
 
     // scala
-    compileOnly "gg.scala.spigot:sspigot-server:1.0.8"
+    compileOnly "gg.scala.spigot:server:1.1.0"
     compileOnly "gg.scala.store:spigot:0.1.3"
 
     // reflekt
