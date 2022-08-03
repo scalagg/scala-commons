@@ -37,7 +37,7 @@ class SinglePageSchemedMenu : AbstractCompositeSchemedMenu<Menu>()
                 {
                     Tasks.delayed(1L)
                     {
-                        this@SinglePageSchemedMenu.onClose.invoke(this)
+                        this@SinglePageSchemedMenu.onClose.invoke(this, player)
                     }
                 }
             }

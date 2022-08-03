@@ -39,7 +39,7 @@ class PaginatedSchemedMenu : AbstractCompositeSchemedMenu<PaginatedMenu>()
                 {
                     Tasks.delayed(1L)
                     {
-                        this@PaginatedSchemedMenu.onClose.invoke(this)
+                        this@PaginatedSchemedMenu.onClose.invoke(this, player)
                     }
                 }
             }
