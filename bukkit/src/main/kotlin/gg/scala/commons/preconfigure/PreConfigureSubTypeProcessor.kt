@@ -49,8 +49,17 @@ object PreConfigureSubTypeProcessor
 
             for (service in services)
             {
-                processor.invoke(service.kotlin.objectInstance!!)
+                processor.invoke(
+                    service.objectInstance() ?: service.newInstance()
+                )
             }
         }
+    }
+
+    fun Class<*>.objectInstance(): Any?
+    {
+        return runCatching {
+            getDeclaredField("INSTANCE").get(null)
+        }.getOrNull()
     }
 }
