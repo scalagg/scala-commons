@@ -124,9 +124,9 @@ class ConfigContainerized(
             configContainer.value.postInject()
             configContainer.value.load()
 
-            Schedulers.async().run {
-                configContainer.value.updateFileContents()
-            }
+//            Schedulers.async().run {
+//                configContainer.value.updateFileContents()
+//            }
         }
 
         if (
