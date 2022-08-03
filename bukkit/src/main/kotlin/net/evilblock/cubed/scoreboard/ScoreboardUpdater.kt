@@ -25,15 +25,15 @@ object ScoreboardUpdater : Runnable
         val provider = ScoreboardHandler
             .scoreboardProvider
 
-        if (plugin.disabling)
-        {
-            if (!this.notedDisable)
-            {
-                this.notedDisable = true
-                this.plugin.logger.info("Pausing scoreboard updates due to shutdown.")
-            }
-            return
-        }
+//        if (plugin.disabling)
+//        {
+//            if (!this.notedDisable)
+//            {
+//                this.notedDisable = true
+//                this.plugin.logger.info("Pausing scoreboard updates due to shutdown.")
+//            }
+//            return
+//        }
 
         if (provider == null)
         {
