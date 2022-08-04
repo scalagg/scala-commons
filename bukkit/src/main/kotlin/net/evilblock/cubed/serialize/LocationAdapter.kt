@@ -12,7 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.lang.reflect.Type
 
-class LocationAdapter : JsonDeserializer<Location>, JsonSerializer<Location> {
+object LocationAdapter : JsonDeserializer<Location>, JsonSerializer<Location> {
     override fun serialize(src: Location, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return toJson(src) as JsonElement
     }

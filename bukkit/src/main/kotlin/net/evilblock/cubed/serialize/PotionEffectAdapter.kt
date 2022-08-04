@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.lang.reflect.Type
 
-class PotionEffectAdapter : JsonDeserializer<PotionEffect>, JsonSerializer<PotionEffect> {
+object PotionEffectAdapter : JsonDeserializer<PotionEffect>, JsonSerializer<PotionEffect> {
     override fun serialize(src: PotionEffect, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return toJson(src) as JsonElement
     }

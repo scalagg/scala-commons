@@ -76,7 +76,7 @@ object EntityPacketAdapter : PacketAdapter(
             // ProtocolLib on 1.7 server doesn't recognize 1.8 client INTERACT_AT action, so the action will be null
             val useAction = Reflection.getDeclaredFieldValue(event.packet.handle, "action") as Enum<*>?
             when (useAction?.name) {
-                null, INTERACT, INTERACT_AT -> {
+                null, INTERACT_AT -> {
                     val rightClickEvent = PlayerRightClickEntityEvent(event.player, entity)
                     Bukkit.getPluginManager().callEvent(rightClickEvent)
 

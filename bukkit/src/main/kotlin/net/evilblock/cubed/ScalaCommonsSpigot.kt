@@ -20,6 +20,7 @@ import gg.scala.commons.replacement.Replacements
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
 import gg.scala.commons.serializer.ComponentSerializer
+import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.Commands
@@ -53,6 +54,7 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -135,20 +137,20 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             flavor {
                 inject(ReplacementGlobalContainer)
                 inject(Replacements)
+
+                inject(PlayerCompositeTerminable)
             }
 
             TimeZone.setDefault(default)
 
             Serializers.useGsonBuilderThenRebuild { builder ->
+                GsonComponentSerializer.gson().populator().apply(builder)
+
                 builder
-                    .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
-                    .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
-                    .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
-                    .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
-                    .registerTypeAdapter(
-                        Component::class.java,
-                        ComponentSerializer
-                    )
+                    .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter)
+                    .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter)
+                    .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter)
+                    .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter)
                     .registerTypeAdapter(Entity::class.java, EntitySerializer)
                     .registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                     .registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
