@@ -1,7 +1,5 @@
 package net.evilblock.cubed
 
-import com.comphenix.packetwrapper.WrapperPlayServerMount
-import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.AwareHub
@@ -19,7 +17,6 @@ import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.replacement.Replacements
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
-import gg.scala.commons.serializer.ComponentSerializer
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
@@ -28,14 +25,12 @@ import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
-import me.lucko.helper.protocol.Protocol
 import me.lucko.helper.utils.Players
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsPostersConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.entity.Entity
-import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.menu.protocol.InventoryPacketAdapter
@@ -53,7 +48,6 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -143,18 +137,18 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
             TimeZone.setDefault(default)
 
-            Serializers.useGsonBuilderThenRebuild { builder ->
-                GsonComponentSerializer.gson().populator().apply(builder)
+            Serializers.create {
+                registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
+                registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
+                registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
+                registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
 
-                builder
-                    .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter)
-                    .registerTypeHierarchyAdapter(Location::class.java, LocationAdapter)
-                    .registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter)
-                    .registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter)
-                    .registerTypeAdapter(Entity::class.java, EntitySerializer)
-                    .registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
-                    .registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
-                    .registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
+                registerTypeAdapter(Entity::class.java, EntitySerializer)
+                registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
+                registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
+                registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
+
+                GsonComponentSerializer.gson().populator().apply(this)
             }
 
             GsonSerializer

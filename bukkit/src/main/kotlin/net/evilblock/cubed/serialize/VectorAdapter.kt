@@ -11,7 +11,7 @@ import com.google.gson.*
 import org.bukkit.util.Vector
 import java.lang.reflect.Type
 
-object VectorAdapter : JsonDeserializer<Vector>, JsonSerializer<Vector> {
+class VectorAdapter : JsonDeserializer<Vector>, JsonSerializer<Vector> {
 
     @Throws(JsonParseException::class)
     override fun deserialize(src: JsonElement, type: Type, context: JsonDeserializationContext): Vector? {

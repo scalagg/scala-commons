@@ -21,7 +21,7 @@ import org.bukkit.potion.PotionEffect
 import java.lang.reflect.Type
 import java.util.*
 
-object ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> {
+class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> {
 
     override fun serialize(item: ItemStack, type: Type, context: JsonSerializationContext): JsonElement {
         return serialize(item)
