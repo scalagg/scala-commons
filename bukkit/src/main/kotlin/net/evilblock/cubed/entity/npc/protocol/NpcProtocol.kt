@@ -108,7 +108,10 @@ object NpcProtocol
         arguments.add(
             JSON_CONVERSION_METHOD
                 .invoke(
-                    null, "{\"text\":\"[NPC] ${UUID.randomUUID().toString().substring(0, 8)}\",\"color\":\"dark_gray\"}"
+                    null,
+                    "{\"text\":\"[NPC] ${
+                        UUID.randomUUID().toString().substring(0, 8)
+                    }\",\"color\":\"dark_gray\"}"
                 )
         )
 
@@ -212,7 +215,6 @@ object NpcProtocol
         Reflection.setDeclaredFieldValue(animationPacket, "b", 0)
 
         MinecraftProtocol.send(player, playerInfoAddPacket) // send info ADD packet
-        npc.nametag.enforceSendSync(player, "NPC_${npc.id}") // add player to team
 
         Tasks.asyncDelayed(1L) {
             MinecraftProtocol.send(player, entitySpawnPacket) // spawn entity

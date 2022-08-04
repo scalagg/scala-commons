@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.entity
 
-import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
@@ -455,7 +454,7 @@ abstract class Entity(var location: Location)
 
     companion object
     {
-        private var entityId = 9000
+        private var entityId = 1337
 
         fun nextEntityId(): Int
         {

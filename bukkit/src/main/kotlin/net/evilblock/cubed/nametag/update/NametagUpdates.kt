@@ -71,10 +71,13 @@ class NametagUpdates(
         }
 
         if (scoreboard.getObjective(DisplaySlot.PLAYER_LIST) == null) {
-            try {
-                val objective = scoreboard.registerNewObjective("NametagUpdates", "dummy")
+            kotlin.runCatching {
+                val objective = scoreboard
+                    .registerNewObjective(
+                        "NametagUpdates", "dummy"
+                    )
                 objective.displaySlot = DisplaySlot.PLAYER_LIST
-            } catch (e: Exception) {}
+            }
         }
 
         if (player.scoreboard != scoreboard) {
