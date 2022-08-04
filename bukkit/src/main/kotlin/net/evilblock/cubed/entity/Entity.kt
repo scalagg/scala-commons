@@ -455,11 +455,11 @@ abstract class Entity(var location: Location)
 
     companion object
     {
-        private var entityId = 0
+        private var entityId = 9000
 
         fun nextEntityId(): Int
         {
-            return entityId--
+            return entityId++
         }
 
         fun currId(): Int
