@@ -14,6 +14,7 @@ import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -35,6 +36,8 @@ abstract class Menu
     var async: Boolean = false
     var manualClose: Boolean = true
     var closed: Boolean = false
+
+    var inventoryType = InventoryType.CHEST
 
     private var staticTitle: String
 
@@ -63,7 +66,7 @@ abstract class Menu
     {
     }
 
-    internal fun createInventory(player: Player): Inventory
+    private fun createInventory(player: Player): Inventory
     {
         var title = ChatColor.translateAlternateColorCodes('&', getTitle(player))
         if (title.length > 32)
@@ -83,7 +86,13 @@ abstract class Menu
             }
         }
 
-        val inv = Bukkit.createInventory(null, size, title)
+        val inv = if (inventoryType == InventoryType.CHEST)
+        {
+            Bukkit.createInventory(null, size, title)
+        } else
+        {
+            Bukkit.createInventory(null, inventoryType, title)
+        }
 
         for (buttonEntry in invButtons.entries)
         {
@@ -185,7 +194,11 @@ abstract class Menu
         if (openInventory != null)
         {
             // check if top inv size is the same as new menu size and if the titles match
-            if (openInventory.topInventory != null && openInventory.topInventory.size == inventory.size && openInventory.topInventory.title == inventory.title)
+            if (
+                openInventory.topInventory != null &&
+                openInventory.topInventory.size == inventory.size &&
+                openInventory.topInventory.title == inventory.title
+            )
             {
                 openInventory.topInventory.contents = inventory.contents
                 return
