@@ -199,7 +199,9 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 DistributedRedisUuidCacheTranslator(aware)
             )
 
-            inject(TablistService)
+            flavor {
+                inject(TablistService)
+            }
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
