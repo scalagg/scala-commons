@@ -18,7 +18,7 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import java.util.*
 
-object InventoryPacketAdapter : PacketAdapter(ScalaCommonsSpigot.instance, PacketType.Play.Client.CLIENT_COMMAND, PacketType.Play.Client.CLOSE_WINDOW, PacketType.Play.Server.MOUNT) {
+object InventoryPacketAdapter : PacketAdapter(ScalaCommonsSpigot.instance, PacketType.Play.Client.CLIENT_COMMAND, PacketType.Play.Client.CLOSE_WINDOW) {
 
     override fun onPacketReceiving(event: PacketEvent?) {
         val player = event!!.player
