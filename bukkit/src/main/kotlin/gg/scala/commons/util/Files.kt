@@ -13,25 +13,23 @@ import java.util.stream.Collectors
  */
 object Files
 {
-
     fun read(file: File, unit: (BufferedReader) -> Unit)
     {
         val reader = BufferedReader(FileReader(file))
         unit.invoke(reader)
     }
 
-    fun write(str: String, file: File)
+    fun write(content: String, file: File)
     {
         val writer = BufferedWriter(FileWriter(file))
-        writer.write(str)
+        writer.write(content)
         writer.close()
     }
 
     fun copy(copy: File, copyTo: File)
     {
         read(copy) {
-            write(it.lines().collect(Collectors.joining("\n")), copyTo)
+            write(it.readLines().joinToString("\n"), copyTo)
         }
     }
-
 }
