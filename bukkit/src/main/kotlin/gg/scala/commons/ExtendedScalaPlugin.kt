@@ -36,6 +36,8 @@ import gg.scala.flavor.FlavorOptions
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import gg.scala.commons.command.ScalaCommandManager
+import gg.scala.commons.tablist.TablistPopulator
+import gg.scala.commons.tablist.TablistService
 import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagProvider
 import net.evilblock.cubed.nametag.NametagProviderRegister
@@ -482,6 +484,11 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         annotation.value
                     )
                     .bindWith(this)
+            }
+
+        this.contract<TablistPopulator>()
+            ?.apply {
+                TablistService.register(this)
             }
 
         val processors =
