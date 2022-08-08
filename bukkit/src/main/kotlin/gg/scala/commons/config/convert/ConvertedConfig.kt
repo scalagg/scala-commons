@@ -7,9 +7,9 @@ import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.config.convert.annotations.ConfigCloudSync
 import gg.scala.commons.config.convert.annotations.ConfigFileName
 import gg.scala.commons.config.convert.annotations.ConfigLateInject
+import gg.scala.commons.util.Files
 import net.evilblock.cubed.serializers.Serializers
 import java.io.File
-import java.nio.file.Files
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -55,8 +55,8 @@ class ConvertedConfig(
             .gson.toJson(model)
 
         Files.write(
-            file.toPath(),
-            json.encodeToByteArray()
+            json,
+            file
         )
     }
 

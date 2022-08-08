@@ -8,8 +8,8 @@
 package net.evilblock.cubed.menu.template
 
 import com.google.common.base.Charsets
-import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
@@ -41,7 +41,7 @@ object MenuTemplateHandler
     {
         if (getDataFile().exists())
         {
-            Files.newReader(getDataFile(), Charsets.UTF_8).use { reader ->
+            Files.read(getDataFile()){ reader ->
                 val list = Serializers.gson.fromJson(reader, DATA_TYPE) as List<MenuTemplate<*>>
                 for (template in list)
                 {
@@ -54,7 +54,7 @@ object MenuTemplateHandler
     @Close
     fun close()
     {
-        Files.write(Serializers.gson.toJson(templates.values, DATA_TYPE), getDataFile(), Charsets.UTF_8)
+        Files.write(Serializers.gson.toJson(templates.values, DATA_TYPE), getDataFile())
     }
 
     @JvmStatic

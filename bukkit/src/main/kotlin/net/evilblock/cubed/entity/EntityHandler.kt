@@ -8,8 +8,8 @@
 package net.evilblock.cubed.entity
 
 import com.google.common.base.Charsets
-import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
@@ -74,7 +74,7 @@ object EntityHandler
                 Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
             }
 
-            Files.newReader(dataFile, Charsets.UTF_8).use { reader ->
+            Files.read(dataFile) { reader ->
                 val entities = Serializers.gson.fromJson(reader, object : TypeToken<List<Entity>>()
                 {}.type) as List<Entity>
                 mapExistingEntities(entities)
@@ -104,7 +104,7 @@ object EntityHandler
         try
         {
             val json = Serializers.gson.toJson(entities.filter { it.persistent }, dataType)
-            java.nio.file.Files.write(dataFile.toPath(), json.toByteArray())
+            Files.write(json, dataFile)
         } catch (e: Exception)
         {
             e.printStackTrace()

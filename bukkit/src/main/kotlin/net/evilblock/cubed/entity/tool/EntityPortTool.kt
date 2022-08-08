@@ -1,8 +1,8 @@
 package net.evilblock.cubed.entity.tool
 
-import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
 import gg.scala.commons.annotations.Listeners
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
@@ -75,14 +75,6 @@ object EntityPortTool : Listener
         return File(getImportDirectory(), fileName)
     }
 
-    fun import(file: File): Set<Entity>
-    {
-        return Files.newReader(file, Charsets.UTF_8).use { reader ->
-            Serializers.gson.fromJson(reader, object : TypeToken<Set<Entity>>()
-            {}.type) as Set<Entity>
-        }
-    }
-
     private fun getExportDirectory(): File
     {
         return File(plugin.dataFolder, "export")
@@ -91,8 +83,10 @@ object EntityPortTool : Listener
     fun export(set: Set<Entity>, file: File)
     {
         file.parentFile.mkdirs()
-        Files.write(Serializers.gson.toJson(set, object : TypeToken<Set<Entity>>()
-        {}.type), file, Charsets.UTF_8)
+        Files.write(
+            Serializers.gson.toJson(set, object : TypeToken<Set<Entity>>() {}.type),
+            file
+        )
     }
 
     @EventHandler(ignoreCancelled = true)
