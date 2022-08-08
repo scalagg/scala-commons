@@ -56,7 +56,7 @@ object TablistService : ScheduledExecutorService by Executors
             .bindWith(this.plugin)
 
         this.scheduleAtFixedRate(
-            TablistExecutor, 0L, 250L, TimeUnit.MILLISECONDS
+            TablistExecutor, 0L, 150L, TimeUnit.MILLISECONDS
         )
     }
 

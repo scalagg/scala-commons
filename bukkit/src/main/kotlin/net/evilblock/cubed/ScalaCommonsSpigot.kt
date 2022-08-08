@@ -17,6 +17,7 @@ import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.replacement.Replacements
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
+import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.store.serializer.serializers.GsonSerializer
 import gg.scala.store.spigot.ScalaDataStoreSpigot
@@ -107,8 +108,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             .build()
     }
 
-    var disabling = false
-
     @ContainerEnable
     fun containerEnable()
     {
@@ -171,11 +170,17 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 )
             }
 
-            registerPacketListeners()
+            listOf(
+                InventoryPacketAdapter,
+                MenuPacketAdapter,
+            ).forEach {
+                ProtocolLibrary.getProtocolManager()
+                    .addPacketListener(it)
+            }
 
             Bukkit.getLogger().setFilter {
-                return@setFilter !it.message.contains("Command Dispatched Async")
-                        && !it.message.contains("Please notify author of plugin")
+                !it.message.contains("Command Dispatched Async") &&
+                !it.message.contains("Please notify author of plugin")
             }
 
             val storeRedis = ScalaDataStoreSpigot
@@ -193,6 +198,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             ScalaStoreUuidCache.configure(
                 DistributedRedisUuidCacheTranslator(aware)
             )
+
+            inject(TablistService)
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
@@ -219,56 +226,50 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     {
         val config = config<CommonsGeneralConfig>()
 
-        if (!config.infoCommand)
-            return
+        if (config.infoCommand)
+        {
+            Commands.create()
+                .handler { context ->
+                    val implementationPlugins = LoaderUtils
+                        .getHelperPlugins()
 
-        Commands.create()
-            .handler { c ->
-                val implementationPlugins = LoaderUtils
-                    .getHelperPlugins()
-
-                implementationPlugins.forEach {
-                    Players.msg(
-                        c.sender(),
-                        "&7[${CC.GREEN}helper&7] &7Running ${
-                            CC.GOLD
-                        }${it.name}${
-                            CC.GRAY
-                        } version ${
-                            CC.YELLOW
-                        }${
-                            it.description.version
-                        }&7."
-                    )
+                    implementationPlugins.forEach {
+                        Players.msg(
+                            context.sender(),
+                            "&7[${CC.GREEN}helper&7] &7Running ${
+                                CC.GOLD
+                            }${it.name}${
+                                CC.GRAY
+                            } version ${
+                                CC.YELLOW
+                            }${
+                                it.description.version
+                            }&7."
+                        )
+                    }
                 }
-            }
-            .registerAndBind(
-                this, "helper"
-            )
+                .registerAndBind(
+                    this, "helper"
+                )
+        }
     }
 
     @ContainerDisable
     fun containerDisable()
     {
-        this.disabling = true
+        if (isPostersEnabled())
+        {
+            kotlin.runCatching {
+                PosterHandler.saveData()
+                PlacedPosterHandler.saveData()
 
-        kotlin.runCatching {
-            if (isPostersEnabled())
-            {
-                kotlin.runCatching {
-                    PosterHandler.saveData()
-                    PlacedPosterHandler.saveData()
-
-                    PlacedPosterHandler.onDisable()
-                }.onFailure {
-                    logger.info("[Posters] Failed to save poster data!")
-                }
+                PlacedPosterHandler.onDisable()
+            }.onFailure {
+                logger.info("[Posters] Failed to save poster data!")
             }
-
-            this.aware.shutdown()
-        }.onFailure {
-            logger.log(Level.WARNING, "An exception was thrown during disable process.", it)
         }
+
+        this.aware.shutdown()
     }
 
     /**
@@ -300,17 +301,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }
 
         return true
-    }
-
-    private fun registerPacketListeners()
-    {
-        listOf(
-            InventoryPacketAdapter,
-            MenuPacketAdapter,
-        ).forEach {
-            ProtocolLibrary.getProtocolManager()
-                .addPacketListener(it)
-        }
     }
 
     private fun isPostersEnabled(): Boolean

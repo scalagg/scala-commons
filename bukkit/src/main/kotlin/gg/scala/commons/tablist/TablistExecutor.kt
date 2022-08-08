@@ -11,9 +11,12 @@ object TablistExecutor : Runnable
 {
     override fun run()
     {
-        for (player in Players.all().filter {
-            TablistService.displaying.contains(it.uniqueId)
-        })
+        val displayingTo = Players.all()
+            .filter {
+                TablistService.displaying.contains(it.uniqueId)
+            }
+
+        for (player in displayingTo)
         {
             val element = TabElement()
             TablistService.populator?.populate(player, element)
