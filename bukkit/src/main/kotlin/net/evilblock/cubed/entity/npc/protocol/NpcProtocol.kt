@@ -260,7 +260,9 @@ object NpcProtocol
             }
         }
 
-        Tasks.asyncDelayed(10L) {
+        // Delay around 3 seconds to give the player time to
+        // cache the skin of the NPC
+        Tasks.asyncDelayed(60L) {
             MinecraftProtocol.send(player, playerInfoRemovePacket) // send info REMOVE packet
         }
     }
