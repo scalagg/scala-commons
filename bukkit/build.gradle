@@ -7,6 +7,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/central" }
 
     maven { url "https://repo.viaversion.com" }
+    maven { url "https://jitpack.io" }
 
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
@@ -23,7 +24,7 @@ dependencies {
     kapt "me.lucko:helper:5.6.10.2"
 
     // sentry
-    compileOnly 'io.sentry:sentry:6.1.2'
+    compileOnly 'io.sentry:sentry:6.3.0'
 
     // growly
     implementation "gg.scala.aware:aware:1.0.8.3"
@@ -57,10 +58,13 @@ dependencies {
     implementation "com.google.code.gson:gson:2.9.0"
 
     // other
-    implementation "com.github.cryptomorin:XSeries:8.8.0"
+    implementation 'com.github.cryptomorin:XSeries:9.0.0'
     implementation "com.github.ben-manes.caffeine:caffeine:3.1.1"
 
     compileOnly "com.viaversion:viaversion-api:4.3.1"
+
+    compileOnly "com.github.NoSequel.TabAPI:shared:c51f5f5b3f"
+    compileOnly "com.github.NoSequel.TabAPI:v1_8_R3:c51f5f5b3f"
 
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
     implementation "org.mongodb:mongodb-driver:3.12.11"
