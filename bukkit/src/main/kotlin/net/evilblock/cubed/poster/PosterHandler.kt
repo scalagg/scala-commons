@@ -8,8 +8,8 @@
 package net.evilblock.cubed.poster
 
 import com.google.common.base.Charsets
-import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
@@ -34,7 +34,7 @@ object PosterHandler {
 
     fun configure() {
         if (dataFile.exists()) {
-            Files.newReader(dataFile, Charsets.UTF_8).use { reader ->
+            Files.read(dataFile) { reader ->
                 val posters = Serializers.gson.fromJson(reader, dataType) as List<Poster>
                 for (poster in posters) {
                     try {
@@ -50,7 +50,7 @@ object PosterHandler {
     }
 
     fun saveData() {
-        Files.write(Serializers.gson.toJson(posters.values, dataType), dataFile, Charsets.UTF_8)
+        Files.write(Serializers.gson.toJson(posters.values, dataType), dataFile)
     }
 
     fun getPosters(): List<Poster> {

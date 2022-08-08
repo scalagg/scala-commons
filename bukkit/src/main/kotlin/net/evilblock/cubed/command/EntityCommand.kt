@@ -16,8 +16,10 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.HelpCommand
 import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Subcommand
+import com.google.gson.reflect.TypeToken
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
@@ -26,6 +28,7 @@ import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.entity.tool.EntityPortTool
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
+import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -129,16 +132,19 @@ object EntityCommand : ScalaCommand()
             throw ConditionFailedException("Couldn't find file: $fileName")
         }
 
-        val entities = EntityPortTool.import(file)
-        for (entity in entities)
-        {
-            entity.updateLocation(player.location)
-            EntityHandler.trackEntity(entity)
+        Files.read(file) { reader ->
+            val entities = Serializers.gson.fromJson(reader, object : TypeToken<Set<Entity>>() {}.type) as Set<Entity>
+
+            for (entity in entities)
+            {
+                entity.updateLocation(player.location)
+                EntityHandler.trackEntity(entity)
+            }
+
+            EntityHandler.close()
+
+            player.sendMessage("${CC.GREEN}Successfully imported ${entities.size} from ${file.path}!")
         }
-
-        EntityHandler.close()
-
-        player.sendMessage("${CC.GREEN}Successfully imported ${entities.size} from ${file.path}!")
     }
 
     @Subcommand("manage")

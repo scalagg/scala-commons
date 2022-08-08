@@ -1,8 +1,8 @@
 package net.evilblock.cubed.scoreboard.preview
 
 import com.google.common.base.Charsets
-import com.google.common.io.Files
 import com.google.gson.reflect.TypeToken
+import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -34,7 +34,7 @@ object ScoreboardPreviewHandler
     {
         if (dataFile.exists())
         {
-            Files.newReader(dataFile, Charsets.UTF_8).use { reader ->
+            Files.read(dataFile) { reader ->
                 try
                 {
                     lines = Serializers.gson.fromJson(reader, dataType) as MutableList<String>
@@ -51,7 +51,7 @@ object ScoreboardPreviewHandler
     {
         try
         {
-            Files.write(Serializers.gson.toJson(lines, dataType), dataFile, Charsets.UTF_8)
+            Files.write(Serializers.gson.toJson(lines, dataType), dataFile)
         } catch (e: Exception)
         {
             e.printStackTrace()
