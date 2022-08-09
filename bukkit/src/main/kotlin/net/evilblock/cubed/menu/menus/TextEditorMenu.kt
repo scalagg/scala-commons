@@ -123,25 +123,34 @@ abstract class TextEditorMenu(protected val lines: LinkedList<String>) : Paginat
                 "${CC.GRAY}Add a new line to this text",
                 "${CC.GRAY}by following our procedure.",
                 "",
-                "${CC.YELLOW}Click to add new line!"
+                "${CC.YELLOW}Left-Click to add new line!",
+                "${CC.YELLOW}Right-Click to add a blank line!"
             )
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-            getPromptBuilder(player, -1)
-                .acceptInput { input ->
-                    if (supportsColors) {
-                        lines.add(Color.translate(input))
-                    } else {
-                        lines.add(input)
+            if (clickType == ClickType.LEFT)
+            {
+                getPromptBuilder(player, -1)
+                    .acceptInput { input ->
+                        if (supportsColors) {
+                            lines.add(Color.translate(input))
+                        } else {
+                            lines.add(input)
+                        }
+
+                        changesMade = true
+
+                        openMenu(player)
                     }
-
-                    changesMade = true
-
-                    openMenu(player)
-                }
-                .build()
-                .start(player)
+                    .build()
+                    .start(player)
+            } else
+            {
+                lines.add("")
+                changesMade = true
+                openMenu(player)
+            }
         }
     }
 
