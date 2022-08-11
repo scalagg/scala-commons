@@ -8,6 +8,7 @@
 package net.evilblock.cubed.util.nms
 
 import net.evilblock.cubed.util.Reflection
+import net.minecraft.server.v1_8_R3.NBTTagCompound
 import java.lang.reflect.Method
 import java.util.*
 
