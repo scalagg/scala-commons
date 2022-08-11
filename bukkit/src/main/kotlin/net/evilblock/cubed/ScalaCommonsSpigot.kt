@@ -43,6 +43,7 @@ import net.evilblock.cubed.poster.placed.PlacedPosterHandler
 import net.evilblock.cubed.serialize.BlockVectorAdapter
 import net.evilblock.cubed.serialize.ItemStackAdapter
 import net.evilblock.cubed.serialize.LocationAdapter
+import net.evilblock.cubed.serialize.PotionEffectAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
@@ -53,6 +54,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
@@ -100,7 +102,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         val instance by Plugins.plugin<ScalaCommonsSpigot>()
     }
 
-    private val aware by lazy {
+    val aware by lazy {
         AwareBuilder
             .of<AwareMessage>("UuidCache")
             .codec(AwareMessageCodec)
@@ -140,6 +142,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
                 registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
                 registerTypeHierarchyAdapter(Vector::class.java, VectorAdapter())
+                registerTypeHierarchyAdapter(PotionEffect::class.java, PotionEffectAdapter())
                 registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
 
                 registerTypeAdapter(Entity::class.java, EntitySerializer)
