@@ -273,8 +273,15 @@ class Scoreboard(
             }
             2 ->
             {
-                score = this.separateScores[0]
-                suffix = this.separateScores[1]
+                if (this.afterV113)
+                {
+                    prefix = this.separateScores[1]
+                    score = this.separateScores[0]
+                } else
+                {
+                    score = this.separateScores[0]
+                    suffix = this.separateScores[1]
+                }
             }
             3 ->
             {
