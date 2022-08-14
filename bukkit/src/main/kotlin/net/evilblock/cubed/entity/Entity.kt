@@ -456,14 +456,7 @@ abstract class Entity(var location: Location)
     {
         private var entityId = 900_000_000
 
-        fun nextEntityId(): Int
-        {
-            return entityId++
-        }
-
-        fun currId(): Int
-        {
-            return entityId
-        }
+        fun nextEntityId() = entityId++
+        fun currId() = entityId
     }
 }
