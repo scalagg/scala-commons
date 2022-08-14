@@ -21,9 +21,6 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.collections.set
 
 class Scoreboard(
@@ -31,8 +28,6 @@ class Scoreboard(
     private val plugin: ScalaCommonsSpigot
 )
 {
-    internal val createdAt: Long = System.currentTimeMillis()
-
     private val objective: Objective
     private val displayedScores: HashMap<String, Int> = HashMap()
     private val scorePrefixes: HashMap<String, String> = HashMap()
@@ -43,6 +38,7 @@ class Scoreboard(
     private val recentlyUpdatedScores: HashSet<String> = HashSet()
     private val usedBaseScores: HashSet<String> = HashSet()
     private val prefixScoreSuffix: Array<String> = arrayOf("", "", "")
+    private val afterV113 = MinecraftProtocol.getPlayerVersion(player) >= 393
     private val localList: ThreadLocal<LinkedList<String>> = ThreadLocal.withInitial { LinkedList<String>() }
 
     init
@@ -121,11 +117,13 @@ class Scoreboard(
 
         for (s in lines)
         {
-            val line = ChatColor
+            val nextValues = ChatColor
                 .values()[nextValue]
-                .toString() + CC.WHITE + s
+                .toString()
 
-            if (line.length > 48)
+            val line = "$nextValues${CC.WHITE}$s"
+
+            if (!this.afterV113 && line.length > 48)
             {
                 throw IllegalArgumentException(
                     "Line is too long! Offending line: ${
@@ -137,11 +135,12 @@ class Scoreboard(
                 )
             }
 
-            val separated = this.separate(line, this.usedBaseScores)
+            val separated = this
+                .separate(line, this.usedBaseScores)
 
-            val prefix = separated[0]
-            val score = separated[1]
-            val suffix = separated[2]
+            var prefix =  separated[0]
+            var score = separated[1]
+            var suffix = separated[2]
 
             this.recentlyUpdatedScores.add(score)
 
@@ -252,7 +251,7 @@ class Scoreboard(
 
         for (element in line)
         {
-            if (element == '*' || this.separateScoreBuilder.length == 16 && this.separateScores.size < 3)
+            if (element == '*' || this.separateScoreBuilder.length == (if (this.afterV113) 512 else 16) && this.separateScores.size < 3)
             {
                 this.separateScores.add(this.separateScoreBuilder.toString())
                 this.separateScoreBuilder.setLength(0)
@@ -274,8 +273,8 @@ class Scoreboard(
             }
             2 ->
             {
+                prefix = this.separateScores[1]
                 score = this.separateScores[0]
-                suffix = this.separateScores[1]
             }
             3 ->
             {
@@ -291,7 +290,7 @@ class Scoreboard(
 
         if (usedBaseScores.contains(score))
         {
-            if (score.length <= 14)
+            if (score.length <= (if (this.afterV113) 514 else 14))
             {
                 for (chatColor in ChatColor.values())
                 {
@@ -305,17 +304,17 @@ class Scoreboard(
             }
         }
 
-        if (prefix.length > 16)
+        if (prefix.length > (if (this.afterV113) 512 else 16))
         {
             prefix = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
 
-        if (score.length > 16)
+        if (score.length > (if (this.afterV113) 512 else 16))
         {
             score = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
 
-        if (suffix.length > 16)
+        if (suffix.length > (if (this.afterV113) 512 else 16))
         {
             suffix = "${ChatColor.DARK_RED}${ChatColor.BOLD}>16"
         }
