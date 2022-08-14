@@ -10,6 +10,7 @@ package net.evilblock.cubed.scoreboard
 import gg.scala.commons.annotations.Listeners
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -28,8 +29,10 @@ object ScoreboardListeners : Listener
         ScoreboardHandler
             .scoreboardProvider ?: return
 
-        ScoreboardHandler.scoreboards[event.player.uniqueId] =
-            Scoreboard(event.player, plugin)
+        Tasks.delayed(1L) {
+            ScoreboardHandler.scoreboards[event.player.uniqueId] =
+                Scoreboard(event.player, plugin)
+        }
     }
 
     @EventHandler
