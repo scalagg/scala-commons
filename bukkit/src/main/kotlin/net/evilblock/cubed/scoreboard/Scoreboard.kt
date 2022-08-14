@@ -273,8 +273,8 @@ class Scoreboard(
             }
             2 ->
             {
-                prefix = this.separateScores[1]
                 score = this.separateScores[0]
+                suffix = this.separateScores[1]
             }
             3 ->
             {
