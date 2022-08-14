@@ -9,6 +9,8 @@ repositories {
     maven { url "https://repo.viaversion.com" }
     maven { url "https://jitpack.io" }
 
+    maven { url "https://repo.viaversion.com/" }
+
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
@@ -72,6 +74,8 @@ dependencies {
 
     compileOnly "com.github.NoSequel.TabAPI:shared:c51f5f5b3f"
     compileOnly "com.github.NoSequel.TabAPI:v1_8_R3:c51f5f5b3f"
+
+    compileOnly "com.viaversion:viaversion-api:4.4.1"
 
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
     implementation "org.mongodb:mongodb-driver:3.12.11"
