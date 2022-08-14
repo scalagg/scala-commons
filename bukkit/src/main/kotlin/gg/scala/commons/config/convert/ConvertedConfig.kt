@@ -48,15 +48,11 @@ class ConvertedConfig(
 
     override fun saveModel(model: Any?)
     {
-        if (!file.exists())
-            file.createNewFile()
-
         val json = Serializers
             .gson.toJson(model)
 
         Files.write(
-            json,
-            file
+            json, file
         )
     }
 
@@ -66,6 +62,8 @@ class ConvertedConfig(
 
         if (!file.exists())
         {
+            file.createNewFile()
+
             val instance = model
                 .createInstance()
 
@@ -76,6 +74,13 @@ class ConvertedConfig(
             }
 
             return instance
+        }
+
+        if (this.file.readText().isEmpty())
+        {
+            this.saveModel(
+                model.createInstance()
+            )
         }
 
         return Serializers.gson

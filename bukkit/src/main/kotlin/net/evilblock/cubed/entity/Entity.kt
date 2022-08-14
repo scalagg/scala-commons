@@ -454,7 +454,7 @@ abstract class Entity(var location: Location)
 
     companion object
     {
-        private var entityId = 1337
+        private var entityId = 900_000_000
 
         fun nextEntityId(): Int
         {
