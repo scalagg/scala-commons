@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.scoreboard
 
-import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection

@@ -12,6 +12,8 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.protocol.ProtocolVersion
+import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
 import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.replacement.Replacements
@@ -70,6 +72,7 @@ import java.util.logging.Level
         PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib"),
         PluginDependency("Vault", soft = true),
+        PluginDependency("ViaVersino", soft = true),
     ]
 )
 // configs
@@ -109,6 +112,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             .logger(logger)
             .build()
     }
+
+    var versionProvider: ProtocolVersion = ProtocolLibVersionProvider
 
     @ContainerEnable
     fun containerEnable()

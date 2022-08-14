@@ -10,6 +10,7 @@ package net.evilblock.cubed.util.nms
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.utility.MinecraftVersion
 import com.cryptomorin.xseries.ReflectionUtils
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
@@ -240,7 +241,7 @@ object MinecraftProtocol {
 
     @JvmStatic
     fun getPlayerVersion(player: Player): Int {
-        return ProtocolLibrary.getProtocolManager().getProtocolVersion(player)
+        return ScalaCommonsSpigot.instance.versionProvider.getProtocolVersion(player)
     }
 
 }
