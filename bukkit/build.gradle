@@ -19,6 +19,10 @@ dependencies {
     implementation project(":store")
 
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
+
+    implementation "org.jetbrains.kotlin:kotlin-script-runtime"
+    implementation "org.jetbrains.kotlin:kotlin-script-util"
+
     compileOnly fileTree(dir: "lib", include: "*.jar")
 
     // helper

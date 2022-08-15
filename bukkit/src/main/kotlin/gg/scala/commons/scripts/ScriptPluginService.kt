@@ -11,6 +11,7 @@ import me.lucko.scriptcontroller.ScriptController
 import me.lucko.scriptcontroller.environment.ScriptEnvironment
 import me.lucko.scriptcontroller.environment.settings.EnvironmentSettings
 import me.lucko.scriptcontroller.logging.SystemLogger
+import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
