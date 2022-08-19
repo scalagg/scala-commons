@@ -279,7 +279,7 @@ object DateUtil {
                 ++i
             }
 
-            return if (sb.length == 0) "now" else sb.toString().trim { it <= ' ' }
+            return if (sb.isEmpty()) "now" else sb.toString().trim { it <= ' ' }
         }
     }
 

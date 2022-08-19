@@ -32,7 +32,6 @@ object NametagHandler
     private var nametagRestrictBypass: String = ""
 
     var async: Boolean = false
-
     var updateInterval: Int = 2
 
     @Configure
@@ -46,6 +45,9 @@ object NametagHandler
             plugin.logger.info("Auto-updating nametags are disabled by config")
             return
         }
+
+        async = nametagConfig.asyncUpdates
+        updateInterval = nametagConfig.asyncUpdatesInterval
 
         isNametagRestrictionEnabled = nametagConfig.packetRestriction
         nametagRestrictBypass = nametagConfig.packetRestrictionPrefix
