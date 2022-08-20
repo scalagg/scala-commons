@@ -104,7 +104,8 @@ enum class DefaultFontInfo(val character: Char, val length: Int) {
 
     companion object {
         @JvmStatic
-        fun getDefaultFontInfo(c: Char): DefaultFontInfo {
+        fun getDefaultFontInfo(c: Char): DefaultFontInfo
+        {
             for (dFI in values()) {
                 if (dFI.character == c) return dFI
             }

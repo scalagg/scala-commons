@@ -17,6 +17,7 @@ repositories {
 dependencies {
     implementation project(":serializers")
     implementation project(":store")
+    implementation project(":commons")
 
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
 
