@@ -215,6 +215,7 @@ object NpcProtocol
         Reflection.setDeclaredFieldValue(animationPacket, "b", 0)
 
         MinecraftProtocol.send(player, playerInfoAddPacket) // send info ADD packet
+        npc.nametag.enforceSendSync(player, "NPC_${npc.id}") // add player to team
 
         Tasks.asyncDelayed(1L) {
             MinecraftProtocol.send(player, entitySpawnPacket) // spawn entity

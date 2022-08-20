@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.util.text
 
-import org.bukkit.ChatColor
 import java.util.regex.Pattern
 
 object TextSplitter {
@@ -25,7 +24,7 @@ object TextSplitter {
     }
 
     @JvmStatic
-    fun split(length: Int = 32, firstLineLength: Int = length, text: String, linePrefix: String = ChatColor.GRAY.toString(), wordSuffix: String = " "): List<String> {
+    fun split(length: Int = 32, firstLineLength: Int = length, text: String, linePrefix: String = "§7", wordSuffix: String = " "): List<String> {
         if (text.length <= length) {
             return arrayListOf(linePrefix + text)
         }

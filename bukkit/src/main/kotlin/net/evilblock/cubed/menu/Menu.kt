@@ -23,15 +23,18 @@ import kotlin.math.ceil
 
 abstract class Menu
 {
-
     var buttons: ConcurrentHashMap<Int, Button> = ConcurrentHashMap()
+
     var autoUpdate: Boolean = false
     var autoUpdateInterval: Long = 500L
+
     var animated: Boolean = false
     var updateAfterClick: Boolean = false
     var keepBottomMechanics: Boolean = true
+
     var placeholder: Boolean = false
     var placeholdBorders: Boolean = false
+
     var nonCancelling: Boolean = false
     var async: Boolean = false
     var manualClose: Boolean = true

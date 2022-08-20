@@ -17,8 +17,13 @@ repositories {
 dependencies {
     implementation project(":serializers")
     implementation project(":store")
+    implementation project(":commons")
 
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
+
+    implementation "org.jetbrains.kotlin:kotlin-script-runtime"
+    implementation "org.jetbrains.kotlin:kotlin-script-util"
+
     compileOnly fileTree(dir: "lib", include: "*.jar")
 
     // helper
