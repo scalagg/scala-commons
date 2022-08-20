@@ -70,13 +70,16 @@ class NametagUpdates(
             player.scoreboard
         }
 
-        if (scoreboard.getObjective(DisplaySlot.PLAYER_LIST) == null) {
-            kotlin.runCatching {
-                val objective = scoreboard
-                    .registerNewObjective(
-                        "NametagUpdates", "dummy"
-                    )
-                objective.displaySlot = DisplaySlot.PLAYER_LIST
+        if (!this.invisible)
+        {
+            if (scoreboard.getObjective(DisplaySlot.PLAYER_LIST) == null) {
+                kotlin.runCatching {
+                    val objective = scoreboard
+                        .registerNewObjective(
+                            "NametagUpdates", "dummy"
+                        )
+                    objective.displaySlot = DisplaySlot.PLAYER_LIST
+                }
             }
         }
 
@@ -114,6 +117,7 @@ class NametagUpdates(
 
         if (invisible) {
             scoreboardTeam.nameTagVisibility = NameTagVisibility.NEVER
+//            scoreboard.clearSlot(DisplaySlot.PLAYER_LIST)
         } else {
             scoreboardTeam.displayName = this.name
             scoreboardTeam.prefix = this.prefix
