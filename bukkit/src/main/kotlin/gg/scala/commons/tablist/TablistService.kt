@@ -8,6 +8,7 @@ import io.github.nosequel.tab.shared.entry.TabElement
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.UUID
@@ -38,14 +39,16 @@ object TablistService : ScheduledExecutorService by Executors
     {
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
-                this.populator
-                    ?.displayPreProcessor(it.player)
-                    ?.thenAccept { display ->
-                        if (display)
-                        {
-                            this.displaying.add(it.player.uniqueId)
+                Tasks.delayed(10L) {
+                    this.populator
+                        ?.displayPreProcessor(it.player)
+                        ?.thenAccept { display ->
+                            if (display)
+                            {
+                                this.displaying.add(it.player.uniqueId)
+                            }
                         }
-                    }
+                }
             }
             .bindWith(this.plugin)
 

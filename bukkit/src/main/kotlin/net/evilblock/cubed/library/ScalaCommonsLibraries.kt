@@ -14,12 +14,6 @@ import gg.scala.commons.library.model.Library
 )
 @Library(
     groupId = "com.github.NoSequel.TabAPI",
-    artifactId = "shared",
-    version = "c51f5f5b3f",
-    repository = "https://jitpack.io"
-)
-@Library(
-    groupId = "com.github.NoSequel.TabAPI",
     artifactId = "v1_8_R3",
     version = "c51f5f5b3f",
     repository = "https://jitpack.io"
