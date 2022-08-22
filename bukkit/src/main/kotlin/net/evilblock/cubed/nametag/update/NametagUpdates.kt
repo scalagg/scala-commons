@@ -9,6 +9,7 @@ package net.evilblock.cubed.nametag.update
 
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.bukkit.Tasks
+import net.evilblock.cubed.util.nms.MinecraftProtocol
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -70,7 +71,9 @@ class NametagUpdates(
             player.scoreboard
         }
 
-        if (!this.invisible)
+        if (
+            !this.invisible
+        )
         {
             if (scoreboard.getObjective(DisplaySlot.PLAYER_LIST) == null) {
                 kotlin.runCatching {
@@ -117,7 +120,6 @@ class NametagUpdates(
 
         if (invisible) {
             scoreboardTeam.nameTagVisibility = NameTagVisibility.NEVER
-//            scoreboard.clearSlot(DisplaySlot.PLAYER_LIST)
         } else {
             scoreboardTeam.displayName = this.name
             scoreboardTeam.prefix = this.prefix

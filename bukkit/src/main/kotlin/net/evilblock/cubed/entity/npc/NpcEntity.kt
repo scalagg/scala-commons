@@ -54,7 +54,9 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
     }
 
     open fun createHologram() {
-        hologram = HologramEntity(text = "d", location = calculateHologramLocation(), parent = this)
+        hologram = HologramEntity(
+            text = "", location = calculateHologramLocation(), parent = this
+        )
         hologram.offset = true
     }
 
@@ -109,6 +111,7 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
     }
 
     override fun sendSpawnPackets(player: Player) {
+
         NpcProtocol.sendSpawnPackets(player, this)
     }
 

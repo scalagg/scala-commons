@@ -19,6 +19,7 @@ import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.replacement.Replacements
 import gg.scala.commons.sentry.SentryConfig
 import gg.scala.commons.sentry.SentryService
+import gg.scala.commons.sign.Signs
 import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.store.serializer.serializers.GsonSerializer
@@ -137,6 +138,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             flavor {
                 inject(ReplacementGlobalContainer)
                 inject(Replacements)
+                inject(Signs)
 
                 inject(PlayerCompositeTerminable)
             }

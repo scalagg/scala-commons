@@ -7,6 +7,9 @@
 
 package net.evilblock.cubed.entity.npc.protocol
 
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
@@ -132,6 +135,7 @@ object NpcProtocol
         DataWatcherUtil.register(dataWatcher, 8, 0.toByte())
         DataWatcherUtil.register(dataWatcher, 9, 0.toByte())
         DataWatcherUtil.register(dataWatcher, 10, 127.toByte())
+//        DataWatcherUtil.register(dataWatcher, 12, (0x0))
         DataWatcherUtil.register(dataWatcher, 17, 0.0F)
         DataWatcherUtil.register(dataWatcher, 18, 1)
 
