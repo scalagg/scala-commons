@@ -34,6 +34,7 @@ import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsPostersConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
+import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
@@ -84,6 +85,10 @@ import java.util.logging.Level
 @ContainerConfig(
     value = "settings",
     model = CommonsGeneralConfig::class
+)
+@ContainerConfig(
+    value = "tablist",
+    model = CommonsTablistConfig::class
 )
 @ContainerConfig(
     value = "nametags",

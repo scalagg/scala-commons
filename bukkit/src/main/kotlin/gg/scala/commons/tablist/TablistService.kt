@@ -8,6 +8,7 @@ import io.github.nosequel.tab.shared.entry.TabElement
 import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -37,9 +38,11 @@ object TablistService : ScheduledExecutorService by Executors
     @Configure
     fun configure()
     {
+        val config = plugin.config<CommonsTablistConfig>()
+
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
-                Tasks.delayed(20L) {
+                Tasks.delayed(config.tablistInitializeTicks) {
                     this.populator
                         ?.displayPreProcessor(it.player)
                         ?.thenAccept { display ->
