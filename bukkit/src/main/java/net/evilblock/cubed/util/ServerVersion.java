@@ -20,6 +20,7 @@ public enum ServerVersion {
     v1_16(735), v1_16_R1(736), v1_16_R2(751), v1_16_R3(753), v1_16_R4(754), v1_16_R5(754),
     v1_17(755), v1_17_R1(756),
     v1_18(757), v1_18_R1(757), v1_18_R2(758),
+    v1_19(759), v1_19_R1(760), v1_19_R2(760),
     ERROR(-1);
 
     private static final String NMS_VERSION_SUFFIX = Bukkit.getServer().getClass().getPackage().getName()
