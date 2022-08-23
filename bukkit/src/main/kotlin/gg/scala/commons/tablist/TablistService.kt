@@ -73,11 +73,10 @@ object TablistService : ScheduledExecutorService by Executors
 
     fun register(populator: TablistPopulator)
     {
-        val fallbackElement = TabElement()
         this.populator = populator
 
         this.handler = TabHandler({
-            this.cachedElements[it.uniqueId] ?: fallbackElement
+            this.cachedElements[it.uniqueId]
         }, this.plugin, 5L)
     }
 }

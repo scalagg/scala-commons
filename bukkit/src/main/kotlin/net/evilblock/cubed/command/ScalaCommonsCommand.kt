@@ -55,9 +55,14 @@ object ScalaCommonsCommand : ScalaCommand()
     {
         sender.sendMessage("${CC.B_PRI}Threads:")
 
-        Thread.getAllStackTraces().keys.forEach {
-            sender.sendMessage(" ${CC.WHITE}${it.name}")
-        }
+        Thread.getAllStackTraces().keys
+            .sortedByDescending { it.name }
+            .forEach {
+                sender.sendMessage(" ${CC.WHITE}${
+                    if (it.name.contains("ClusterId")) 
+                        "mongodb-cluster-thread" else it.name
+                }")
+            }
     }
 
     @Subcommand("find-username")
