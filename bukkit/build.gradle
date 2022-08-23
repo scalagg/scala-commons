@@ -19,6 +19,9 @@ dependencies {
 
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
 
+    // todo: only api on standalone?
+    api "org.jetbrains.kotlin:kotlin-stdlib"
+
     implementation "org.jetbrains.kotlin:kotlin-script-runtime"
     implementation "org.jetbrains.kotlin:kotlin-script-util"
 
