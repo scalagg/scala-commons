@@ -9,8 +9,6 @@ repositories {
     maven { url "https://repo.viaversion.com" }
     maven { url "https://jitpack.io" }
 
-    maven { url "https://repo.viaversion.com/" }
-
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
@@ -25,6 +23,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-script-util"
 
     compileOnly fileTree(dir: "lib", include: "*.jar")
+
+    api "gg.scala.tab:shared:1.1.2-20220823.150235-1"
+    api "gg.scala.tab:v1_8_R3:1.1.2-20220823.151024-2"
 
     // helper
     implementation "me.lucko:helper:5.6.10.2"
@@ -76,11 +77,6 @@ dependencies {
     // other
     implementation "com.github.cryptomorin:XSeries:9.0.0"
     implementation "com.github.ben-manes.caffeine:caffeine:3.1.1"
-
-    compileOnly "com.viaversion:viaversion-api:4.3.1"
-
-    api "io.github.nosequel.tab:shared:1.1-20220823.041426-1"
-    compileOnly "com.github.NoSequel.TabAPI:v1_8_R3:c51f5f5b3f"
 
     compileOnly "com.viaversion:viaversion-api:4.4.1"
 

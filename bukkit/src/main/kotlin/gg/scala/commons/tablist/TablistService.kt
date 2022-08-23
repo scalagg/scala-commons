@@ -9,6 +9,7 @@ import me.lucko.helper.Events
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.util.bukkit.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -44,8 +45,18 @@ object TablistService : ScheduledExecutorService by Executors
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
-                val ticks = tabListTicksCalculator.invoke(it.player)
-                    ?: config.tablistInitializeTicks.toLong()
+                var ticks = tabListTicksCalculator.invoke(it.player)
+
+                if (
+                    config.continueInitializationIfNullInvokation &&
+                    ticks == null
+                )
+                {
+                    ticks = config.tablistInitializeTicks.toLong()
+                } else
+                {
+                    return@handler
+                }
 
                 Tasks.delayed(ticks) {
                     this.populator
