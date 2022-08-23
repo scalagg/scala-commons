@@ -17,9 +17,9 @@ import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.evilblock.cubed.util.bukkit.Tasks
+import net.evilblock.cubed.x
 import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -64,7 +64,7 @@ object EntityMoveTool : Listener {
             return false
         }
 
-        if (itemStack.type != Material.MONSTER_EGG) {
+        if (itemStack.type.x() != XMaterial.PIG_SPAWN_EGG) {
             return false
         }
 
@@ -99,40 +99,39 @@ object EntityMoveTool : Listener {
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if (event.action == Action.RIGHT_CLICK_BLOCK) {
             val itemInHand = event.player.inventory.itemInHand
-            if (itemInHand != null) {
-                if (isMoveTool(itemInHand)) {
-                    event.isCancelled = true
 
-                    val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
+            if (isMoveTool(itemInHand)) {
+                event.isCancelled = true
 
-                    val entity = EntityHandler.getEntityByUuid(uuid)
-                    if (entity != null) {
-                        // npc direction == flipped player yaw
-                        val direction = event.player.eyeLocation.direction.multiply(-1)
-                        val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
+                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
 
-                        val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
-                        updatedLocation.direction = direction
+                val entity = EntityHandler.getEntityByUuid(uuid)
+                if (entity != null && event.clickedBlock != null) {
+                    // npc direction == flipped player yaw
+                    val direction = event.player.eyeLocation.direction.multiply(-1)
+                    val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock!!.type.name, 1.0)
 
-                        val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
-                        updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
-                        updatedLocation.pitch = 0.0F
+                    val updatedLocation = event.clickedBlock!!.location.add(0.5, height, 0.5)
+                    updatedLocation.direction = direction
 
-                        // check with other entity implementations
-                        val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
-                        Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
+                    val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
+                    updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
+                    updatedLocation.pitch = 0.0F
 
-                        if (entityMovedEvent.isCancelled) {
-                            return
-                        }
+                    // check with other entity implementations
+                    val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
+                    Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
 
-                        entity.updateLocation(updatedLocation)
-                        entity.updateVisibility(false)
-
-                        event.player.inventory.itemInHand = null
-                        event.player.updateInventory()
-                        event.player.sendMessage("${CC.GREEN}Successfully updated location!")
+                    if (entityMovedEvent.isCancelled) {
+                        return
                     }
+
+                    entity.updateLocation(updatedLocation)
+                    entity.updateVisibility(false)
+
+                    event.player.inventory.setItemInMainHand(ItemStack(Material.AIR))
+                    event.player.updateInventory()
+                    event.player.sendMessage("${CC.GREEN}Successfully updated location!")
                 }
             }
         }

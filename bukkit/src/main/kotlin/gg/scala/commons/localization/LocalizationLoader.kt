@@ -27,7 +27,7 @@ enum class LocalizationLoader(
                     val value = yaml
                         .get(key)
 
-                    this[key] = value
+                    this[key] = value.toString()
                 }
             }
     }, reader@{
@@ -42,7 +42,7 @@ enum class LocalizationLoader(
                     val value = yaml
                         .get(key)
 
-                    this[key] = value
+                    this[key] = value.toString()
                 }
             }
     }, { entries, file ->

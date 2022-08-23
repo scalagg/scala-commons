@@ -5,6 +5,7 @@ import com.comphenix.packetwrapper.WrapperPlayServerBlockChange
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEditor
 import com.comphenix.protocol.wrappers.BlockPosition
 import com.comphenix.protocol.wrappers.WrappedBlockData
+import com.cryptomorin.xseries.XMaterial
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryType
@@ -47,7 +48,7 @@ class Sign(
         val packet = WrapperPlayServerBlockChange()
         packet.location = blockPosition
         packet.blockData = WrappedBlockData
-            .createData(Material.WALL_SIGN)
+            .createData(XMaterial.OAK_WALL_SIGN)
 
         val tileEntity = WrapperPlayClientUpdateSign()
         tileEntity.location = blockPosition
