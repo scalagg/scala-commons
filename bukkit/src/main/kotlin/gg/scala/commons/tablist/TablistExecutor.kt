@@ -19,7 +19,12 @@ object TablistExecutor : Runnable
         for (player in displayingTo)
         {
             val element = TabElement()
-            TablistService.populator?.populate(player, element)
+
+            kotlin.runCatching {
+                TablistService.populator?.populate(player, element)
+            }.onFailure {
+                it.printStackTrace()
+            }
 
             TablistService.cachedElements[player.uniqueId] = element
         }

@@ -39,7 +39,7 @@ object TablistService : ScheduledExecutorService by Executors
     {
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
-                Tasks.delayed(10L) {
+                Tasks.delayed(20L) {
                     this.populator
                         ?.displayPreProcessor(it.player)
                         ?.thenAccept { display ->
