@@ -1,6 +1,7 @@
 package net.evilblock.cubed.entity.menu.button
 
 import com.cryptomorin.xseries.XMaterial
+import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.tool.EntityMoveTool
 import net.evilblock.cubed.menu.Button
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 
 class MoveLocationButton(private val entity: Entity) : Button() {
 
@@ -42,6 +44,12 @@ class MoveLocationButton(private val entity: Entity) : Button() {
 
         player.closeInventory()
         player.inventory.addItem(EntityMoveTool.makeMoveTool(entity))
+
+        player.setMetadata(
+            "moving",
+            FixedMetadataValue(ScalaCommonsSpigot.instance, entity.uuid.toString())
+        )
+
         player.updateInventory()
         player.sendMessage("${CC.GREEN}Place the mob egg wherever you'd like to move the NPC.")
     }
