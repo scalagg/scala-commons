@@ -130,6 +130,11 @@ object NametagHandler
             return
         }
 
+        if (this.providers.isEmpty())
+        {
+            return
+        }
+
         var provided: NametagInfo? = null
         var providerIndex = 0
 
@@ -137,7 +142,9 @@ object NametagHandler
 
         while (provided == null)
         {
-            provided = providers[providerIndex++].fetchNametag(toRefresh, refreshFor)
+            provided = providers
+                .getOrNull(providerIndex++)
+                ?.fetchNametag(toRefresh, refreshFor)
         }
 
         if (isNametagRestrictionEnabled)

@@ -9,6 +9,7 @@ package net.evilblock.cubed.menu
 
 import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
@@ -345,10 +346,9 @@ abstract class Menu
 
         private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection
             .getDeclaredMethod(
-                MinecraftReflection
-                    .getCraftBukkitClass(
-                        "entity.CraftHumanEntity"
-                    )!!,
+                Reflection.getClassSuppressed(
+                    "org.bukkit.craftbukkit.${ServerVersion.getVersion().name}.entity.CraftHumanEntity"
+                )!!,
                 "openCustomInventory",
                 Inventory::class.java,
                 MinecraftReflection.getNMSClass(

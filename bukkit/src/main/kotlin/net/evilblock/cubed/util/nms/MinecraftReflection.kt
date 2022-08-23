@@ -108,8 +108,15 @@ object MinecraftReflection
     private val ENTITY_HUMAN_GAME_PROFILE_FIELD: Field? =
         Reflection.getDeclaredField(ENTITY_HUMAN_CLASS, "bH")
 
-    private val CRAFT_INVENTORY_CUSTOM_CLASS =
+    private val CRAFT_INVENTORY_CUSTOM_CLASS = if (!isModern())
+    {
         getCraftBukkitClass("inventory.CraftInventoryCustom")!!
+    } else
+    {
+        Reflection.getClassSuppressed("org.bukkit.craftbukkit.${
+            ServerVersion.getVersion().name
+        }.inventory.CraftInventoryCustom")!!
+    }
 
     @JvmStatic
     val ARMOR_STAND_HEAD_POSE: Vector3FWrapper = Vector3FWrapper(0.0f, 0.0f, 0.0f)
