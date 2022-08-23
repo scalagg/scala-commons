@@ -55,19 +55,7 @@ object MinecraftReflection
     private val PROPERTY_MAP_PUT_METHOD: Method =
         Reflection.getMethodSuppressed(getPropertyMapClass(), "put", Any::class.java, Any::class.java)!!
 
-    val MINECRAFT_SERVER_CLASS: Class<*> = if (!isModern())
-    {
-        getNMSClass("MinecraftServer")!!
-    } else
-    {
-        Reflection.getClassSuppressed("MinecraftServer")!!
-    }
-
-    private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field? =
-        Reflection.getDeclaredField(MINECRAFT_SERVER_CLASS, "worlds")
-
-    private val MINECRAFT_SERVER_WORLD_SERVER_MODERN: Method? =
-        Reflection.getMethodSuppressed(MINECRAFT_SERVER_CLASS, "F")
+    val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
 
     private val ENUM_PARTICLE_CLASS: Class<*>? =
         getNMSClass("EnumParticle")
@@ -190,21 +178,6 @@ object MinecraftReflection
     }
 
     @JvmStatic
-    fun getWorldServers(): List<*>
-    {
-        return if (MINECRAFT_SERVER_WORLD_SERVER_FIELD != null)
-        {
-            MINECRAFT_SERVER_WORLD_SERVER_FIELD.get(getMinecraftServer()) as List<*>
-        } else if (MINECRAFT_SERVER_WORLD_SERVER_MODERN != null)
-        {
-            MINECRAFT_SERVER_WORLD_SERVER_MODERN.invoke(getMinecraftServer()) as List<*>
-        } else
-        {
-            mutableListOf<Any>()
-        }
-    }
-
-    @JvmStatic
     fun getTPS(): Double
     {
         return (Reflection.getFieldValue(getMinecraftServer(), "recentTps") as DoubleArray)[0]
@@ -237,7 +210,7 @@ object MinecraftReflection
     @JvmStatic
     fun getNMSClass(name: String): Class<*>?
     {
-        return Reflection.getClassSuppressed(getNmsVersion() + name)
+        return Reflection.getClassSuppressed(getNmsVersion() + "." + name)
     }
 
     @JvmStatic

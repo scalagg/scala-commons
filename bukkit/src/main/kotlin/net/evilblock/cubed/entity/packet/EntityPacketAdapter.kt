@@ -154,6 +154,7 @@ object EntityPacketAdapter : PacketAdapter(
         if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
             val entityId = event.packet.integers.read(0)
             val entity = EntityHandler.getEntityById(entityId) ?: return
+
             if (entity is HologramEntity) {
                 val dataWatcher = event.packet.dataWatcherModifier.read(0)
                 dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
