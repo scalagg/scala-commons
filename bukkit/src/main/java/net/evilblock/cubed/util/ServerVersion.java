@@ -48,9 +48,11 @@ public enum ServerVersion {
         );
 
         for (final ServerVersion val : reversedValues) {
+            // v1_19_R2 -> 1_19_R2 -> 1_19.2 -> 1.19.2
             final String valName = val.name()
                     .replace("v", "")
-                    .replace("_R", ".");
+                    .replace("_R", ".")
+                    .replace("_", ".");
 
             if (Bukkit.getBukkitVersion().contains(valName)) {
                 ScalaCommonsSpigot.getInstance().getLogger().info(
