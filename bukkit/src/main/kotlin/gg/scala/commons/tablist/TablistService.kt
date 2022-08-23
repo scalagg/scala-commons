@@ -73,6 +73,7 @@ object TablistService : ScheduledExecutorService by Executors
 
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
+                this.cachedElements.remove(it.player.uniqueId)
                 this.displaying.remove(it.player.uniqueId)
             }
             .bindWith(this.plugin)
@@ -87,6 +88,11 @@ object TablistService : ScheduledExecutorService by Executors
         this.populator = populator
 
         this.handler = TabHandler({
+            if (it.uniqueId !in this.displaying)
+            {
+                return@TabHandler null
+            }
+
             this.cachedElements[it.uniqueId]
         }, this.plugin, 5L)
     }
