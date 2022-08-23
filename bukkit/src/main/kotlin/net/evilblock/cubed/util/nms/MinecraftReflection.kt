@@ -60,9 +60,7 @@ object MinecraftReflection
         getNMSClass("MinecraftServer")!!
     } else
     {
-        Reflection.getClassSuppressed(
-            "net.minecraft.server.MinecraftServer"
-        )!!
+        Reflection.getClassSuppressed("MinecraftServer")!!
     }
 
     private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field? =

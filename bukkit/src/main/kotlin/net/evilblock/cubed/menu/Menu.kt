@@ -343,25 +343,29 @@ abstract class Menu
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
-        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection.getDeclaredMethod(
-            MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openCustomInventory",
-            Inventory::class.java,
-            MinecraftReflection.getNMSClass(
-                "${
-                    if (MinecraftReflection.isModern())
-                        "level." else ""
-                }EntityPlayer"
-            )!!,
-            if (MinecraftReflection.isModern())
-            {
-                Reflection.getClassSuppressed(
-                    "net.minecraft.world.inventory.Containers"
-                )!!
-            } else
-            {
-                String::class.java
-            }
-        )
+        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection
+            .getDeclaredMethod(
+                MinecraftReflection
+                    .getCraftBukkitClass(
+                        "entity.CraftHumanEntity"
+                    )!!,
+                "openCustomInventory",
+                Inventory::class.java,
+                MinecraftReflection.getNMSClass(
+                    "${
+                        if (MinecraftReflection.isModern())
+                            "level." else ""
+                    }EntityPlayer"
+                )!!,
+                if (MinecraftReflection.isModern())
+                {
+                    Reflection.getClassSuppressed(
+                        "net.minecraft.world.inventory.Containers"
+                    )!!
+                } else
+                {
+                    String::class.java
+                }
+            )
     }
 }
