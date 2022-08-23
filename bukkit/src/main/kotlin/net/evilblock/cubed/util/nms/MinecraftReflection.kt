@@ -152,8 +152,11 @@ object MinecraftReflection
     @JvmStatic
     fun isModern(): Boolean
     {
-        return ServerVersion.getVersion()
-            .isNewerThan(ServerVersion.v1_17)
+        return ServerVersion
+            .getVersion()
+            .isNewerThan(
+                ServerVersion.v1_16
+            )
     }
 
     @JvmStatic
