@@ -6,10 +6,10 @@ import gg.scala.flavor.service.Service
 import io.github.nosequel.tab.shared.TabHandler
 import io.github.nosequel.tab.shared.entry.TabElement
 import me.lucko.helper.Events
-import me.lucko.helper.Schedulers
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.util.bukkit.Tasks
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.UUID
@@ -35,6 +35,8 @@ object TablistService : ScheduledExecutorService by Executors
     private var handler: TabHandler? = null
     var populator: TablistPopulator? = null
 
+    var tabListTicksCalculator: (Player) -> Long? = { null }
+
     @Configure
     fun configure()
     {
@@ -42,7 +44,10 @@ object TablistService : ScheduledExecutorService by Executors
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
-                Tasks.delayed(config.tablistInitializeTicks) {
+                val ticks = tabListTicksCalculator.invoke(it.player)
+                    ?: config.tablistInitializeTicks.toLong()
+
+                Tasks.delayed(ticks) {
                     this.populator
                         ?.displayPreProcessor(it.player)
                         ?.thenAccept { display ->

@@ -6,5 +6,5 @@ package net.evilblock.cubed.config
  */
 class CommonsTablistConfig
 {
-    val tablistInitializeTicks = 160L
+    val tablistInitializeTicks = 10
 }
