@@ -36,6 +36,7 @@ import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
+import net.evilblock.cubed.feature.DataStoreFeature
 import net.evilblock.cubed.menu.protocol.InventoryPacketAdapter
 import net.evilblock.cubed.menu.protocol.MenuPacketAdapter
 import net.evilblock.cubed.menu.template.MenuTemplate
@@ -142,6 +143,15 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 inject(ReplacementGlobalContainer)
                 inject(Replacements)
                 inject(Signs)
+                inject(TablistService)
+
+                if (
+                    server.pluginManager
+                        .getPlugin("store-spigot") != null
+                )
+                {
+                    inject(DataStoreFeature)
+                }
 
                 inject(PlayerCompositeTerminable)
             }
@@ -200,10 +210,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             ScalaStoreUuidCache.configure(
                 DistributedRedisUuidCacheTranslator(aware)
             )
-
-            flavor {
-                inject(TablistService)
-            }
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()

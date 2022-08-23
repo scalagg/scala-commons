@@ -16,7 +16,6 @@ import net.evilblock.cubed.serializers.Serializers
  */
 @Service
 @IgnoreAutoScan
-@SoftDependency("store-spigot")
 object DataStoreFeature
 {
     @Configure
