@@ -210,7 +210,7 @@ object MinecraftReflection
     @JvmStatic
     fun getNMSClass(name: String): Class<*>?
     {
-        return Reflection.getClassSuppressed(getNmsVersion() + "." + name)
+        return Reflection.getClassSuppressed(getNmsVersion() + name)
     }
 
     @JvmStatic

@@ -1,5 +1,6 @@
 package net.evilblock.cubed.util;
 
+import net.evilblock.cubed.ScalaCommonsSpigot;
 import org.bukkit.Bukkit;
 
 /**
@@ -42,17 +43,28 @@ public enum ServerVersion {
             reversedValues = ServerVersion.reverse();
         }
 
+        ScalaCommonsSpigot.getInstance().getLogger().info(
+            "[Versioning] Attempting to parse version based on: " + Bukkit.getBukkitVersion()
+        );
+
         for (final ServerVersion val : reversedValues) {
             final String valName = val.name()
-                    .replace("v1_", "")
+                    .replace("v", "")
                     .replace("_R", ".");
 
             if (Bukkit.getBukkitVersion().contains(valName)) {
+                ScalaCommonsSpigot.getInstance().getLogger().info(
+                    "[Versioning] Parsed version " + val.name() + "!"
+                );
                 return val;
             }
         }
 
-        return ERROR;
+        ScalaCommonsSpigot.getInstance().getLogger().info(
+            "[Versioning] Failed to parse version. We're defaulting to 1.8.8 R3."
+        );
+
+        return v1_8_R3;
     }
 
     /**
@@ -63,10 +75,11 @@ public enum ServerVersion {
      * @return Server Version. (always cached)
      */
     public static ServerVersion getVersion() {
-//        if (cachedVersion == null) {
-//            cachedVersion = getVersionNoCache();
-//        }
-        return v1_8_R3; // TODO: 4/25/2022 god
+        if (cachedVersion == null) {
+            cachedVersion = getVersionNoCache();
+        }
+
+        return cachedVersion;
     }
 
     /**
