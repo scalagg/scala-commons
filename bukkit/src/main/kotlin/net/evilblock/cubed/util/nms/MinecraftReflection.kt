@@ -171,6 +171,8 @@ object MinecraftReflection
     @JvmStatic
     fun getServerVersion(): Int
     {
+
+
         return ServerVersion.getVersion().protocolVersion
     }
 
