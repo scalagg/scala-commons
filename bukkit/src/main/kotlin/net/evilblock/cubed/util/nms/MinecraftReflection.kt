@@ -55,7 +55,15 @@ object MinecraftReflection
     private val PROPERTY_MAP_PUT_METHOD: Method =
         Reflection.getMethodSuppressed(getPropertyMapClass(), "put", Any::class.java, Any::class.java)!!
 
-    val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
+    val MINECRAFT_SERVER_CLASS: Class<*> = if (!isModern())
+    {
+        getNMSClass("MinecraftServer")!!
+    } else
+    {
+        Reflection.getClassSuppressed(
+            "net.minecraft.server.MinecraftServer"
+        )!!
+    }
 
     private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field? =
         Reflection.getDeclaredField(MINECRAFT_SERVER_CLASS, "worlds")
@@ -68,7 +76,7 @@ object MinecraftReflection
 
     private val ENUM_PARTICLE_MODERN_CLASS: Class<*>? =
         Reflection.getClassSuppressed(
-            "net.minecraft.core.particles.ParticleParam"
+            "net.minecraft.core.particles.Particles"
         )
 
     private val ENTITY_HUMAN_CLASS: Class<*> = if (!isModern())
@@ -145,7 +153,7 @@ object MinecraftReflection
     fun isModern(): Boolean
     {
         return ServerVersion.getVersion()
-            .isNewerThan(ServerVersion.v1_16)
+            .isNewerThan(ServerVersion.v1_17)
     }
 
     @JvmStatic
@@ -171,8 +179,6 @@ object MinecraftReflection
     @JvmStatic
     fun getServerVersion(): Int
     {
-
-
         return ServerVersion.getVersion().protocolVersion
     }
 

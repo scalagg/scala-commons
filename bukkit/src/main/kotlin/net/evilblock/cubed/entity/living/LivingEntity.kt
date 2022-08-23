@@ -6,6 +6,7 @@ import net.evilblock.cubed.entity.living.effect.EntityEffect
 import net.evilblock.cubed.entity.living.event.EntityDamageEvent
 import net.evilblock.cubed.entity.living.event.EntityDeathEvent
 import net.evilblock.cubed.entity.tick.TickableEntity
+import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Constants
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
@@ -139,11 +140,23 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
 
                 val particleType = if (ambientEffect)
                 {
-                    MinecraftReflection.getEnumParticle("SPELL_MOB_AMBIENT")
+                    MinecraftReflection.getEnumParticle("SPELL_MOB_AMBIENT") ?:
+                    Reflection
+                        .getClassSuppressed(
+                            "net.minecraft.core.particles.Particles"
+                        )!!
+                        .getDeclaredField("a")
+                        .get(null)!!
                 } else
                 {
-                    MinecraftReflection.getEnumParticle("SPELL_MOB")
-                }!!
+                    MinecraftReflection.getEnumParticle("SPELL_MOB") ?:
+                    Reflection
+                        .getClassSuppressed(
+                            "net.minecraft.core.particles.Particles"
+                        )!!
+                        .getDeclaredField("b")
+                        .get(null)!!
+                }
 
                 val x = location.z + (ThreadLocalRandom.current().nextDouble() - 0.5) * this.width
                 val y = location.y + ThreadLocalRandom.current().nextDouble() * this.length
