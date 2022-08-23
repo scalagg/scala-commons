@@ -5,6 +5,7 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.scheme.SchemedMenuTests
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.menus.ConfirmMenu
 import net.evilblock.cubed.menu.menus.RangeEditorMenu
@@ -25,13 +26,19 @@ import org.bukkit.entity.Player
 @AutoRegister
 @CommandAlias("scala-commons-demo")
 @CommandPermission("commons.command.demo")
-object ScalaCommonsMenuCommand : ScalaCommand()
+object ScalaCommonsDemoCommand : ScalaCommand()
 {
     @Default
     @HelpCommand
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("test-scheme-menu-single")
+    fun onTestScheme(player: Player)
+    {
+        SchemedMenuTests.test(player)
     }
 
     @Subcommand("progress-bar")

@@ -50,10 +50,14 @@ object ScalaCommonsCommand : ScalaCommand()
         help.showHelp()
     }
 
-    @Subcommand("test-scheme-menu-single")
-    fun onTestScheme(player: Player)
+    @Subcommand("thread-dump")
+    fun onThreadDump(sender: CommandSender)
     {
-        SchemedMenuTests.test(player)
+        sender.sendMessage("${CC.B_PRI}Threads:")
+
+        Thread.getAllStackTraces().keys.forEach {
+            sender.sendMessage(" ${CC.WHITE}${it.name}")
+        }
     }
 
     @Subcommand("find-username")
