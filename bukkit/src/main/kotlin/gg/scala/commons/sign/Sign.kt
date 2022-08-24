@@ -48,7 +48,9 @@ class Sign(
         val packet = WrapperPlayServerBlockChange()
         packet.location = blockPosition
         packet.blockData = WrappedBlockData
-            .createData(XMaterial.OAK_WALL_SIGN)
+            .createData(
+                XMaterial.OAK_WALL_SIGN.parseMaterial()
+            )
 
         val tileEntity = WrapperPlayClientUpdateSign()
         tileEntity.location = blockPosition
