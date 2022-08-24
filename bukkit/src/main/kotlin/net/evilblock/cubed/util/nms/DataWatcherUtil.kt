@@ -8,6 +8,7 @@
 package net.evilblock.cubed.util.nms
 
 import net.evilblock.cubed.util.Reflection
+import net.minecraft.network.syncher.DataWatcher
 import org.apache.commons.lang3.ObjectUtils
 import java.lang.reflect.Field
 import java.lang.reflect.Method
