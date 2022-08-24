@@ -27,10 +27,7 @@ class UpdateTextButton(private val hologram: HologramEntity) : Button() {
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial
-            .matchXMaterial(
-                Material.SIGN
-            )
+        return XMaterial.OAK_SIGN
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {

@@ -12,10 +12,8 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.distribution.MenuRowDistribution
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import kotlin.math.ceil
-import kotlin.math.min
 
 abstract class PaginatedMenu : Menu()
 {

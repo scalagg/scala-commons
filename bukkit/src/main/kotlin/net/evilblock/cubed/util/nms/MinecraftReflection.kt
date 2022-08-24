@@ -57,18 +57,12 @@ object MinecraftReflection
 
     val MINECRAFT_SERVER_CLASS: Class<*> = getNMSClass("MinecraftServer")!!
 
-    private val MINECRAFT_SERVER_WORLD_SERVER_FIELD: Field? =
-        Reflection.getDeclaredField(MINECRAFT_SERVER_CLASS, "worlds")
-
-    private val MINECRAFT_SERVER_WORLD_SERVER_MODERN: Method? =
-        Reflection.getMethodSuppressed(MINECRAFT_SERVER_CLASS, "F")
-
     private val ENUM_PARTICLE_CLASS: Class<*>? =
         getNMSClass("EnumParticle")
 
     private val ENUM_PARTICLE_MODERN_CLASS: Class<*>? =
         Reflection.getClassSuppressed(
-            "net.minecraft.core.particles.ParticleParam"
+            "net.minecraft.core.particles.Particles"
         )
 
     private val ENTITY_HUMAN_CLASS: Class<*> = if (!isModern())
@@ -114,8 +108,8 @@ object MinecraftReflection
     private val ENTITY_HUMAN_GAME_PROFILE_FIELD: Field? =
         Reflection.getDeclaredField(ENTITY_HUMAN_CLASS, "bH")
 
-    private val CRAFT_INVENTORY_CUSTOM_CLASS =
-        getCraftBukkitClass("inventory.CraftInventoryCustom")!!
+    private val CRAFT_INVENTORY_CUSTOM_CLASS = this
+        .getCraftBukkitClass("inventory.CraftInventoryCustom")!!
 
     @JvmStatic
     val ARMOR_STAND_HEAD_POSE: Vector3FWrapper = Vector3FWrapper(0.0f, 0.0f, 0.0f)
@@ -144,8 +138,11 @@ object MinecraftReflection
     @JvmStatic
     fun isModern(): Boolean
     {
-        return ServerVersion.getVersion()
-            .isNewerThan(ServerVersion.v1_16)
+        return ServerVersion
+            .getVersion()
+            .isNewerThan(
+                ServerVersion.v1_16
+            )
     }
 
     @JvmStatic
@@ -178,21 +175,6 @@ object MinecraftReflection
     fun getMinecraftServer(): Any
     {
         return Reflection.callMethod(Bukkit.getServer(), "getServer")!!
-    }
-
-    @JvmStatic
-    fun getWorldServers(): List<*>
-    {
-        return if (MINECRAFT_SERVER_WORLD_SERVER_FIELD != null)
-        {
-            MINECRAFT_SERVER_WORLD_SERVER_FIELD.get(getMinecraftServer()) as List<*>
-        } else if (MINECRAFT_SERVER_WORLD_SERVER_MODERN != null)
-        {
-            MINECRAFT_SERVER_WORLD_SERVER_MODERN.invoke(getMinecraftServer()) as List<*>
-        } else
-        {
-            mutableListOf<Any>()
-        }
     }
 
     @JvmStatic
@@ -235,7 +217,7 @@ object MinecraftReflection
     fun getCraftBukkitClass(name: String): Class<*>?
     {
         return Reflection.getClassSuppressed(
-            "${getCraftBukkitVersion()}$name"
+            "${ServerVersion.getOBCDirectory()}.$name"
         )
     }
 

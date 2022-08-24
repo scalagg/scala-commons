@@ -30,10 +30,7 @@ class UpdateMessagesButton(private val npc: NpcEntity) : Button()
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial
-            .matchXMaterial(
-                Material.BOOK_AND_QUILL
-            )
+        return XMaterial.WRITABLE_BOOK
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)

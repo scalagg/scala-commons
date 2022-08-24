@@ -12,11 +12,13 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.PlayerInfoData
 import org.bukkit.entity.Player
 import java.lang.reflect.Method
 import java.util.*
@@ -77,6 +79,19 @@ object NpcProtocol
             this.add(Int::class.java)
             this.add(ENUM_GAME_MODE_CLASS)
             this.add(I_CHAT_BASE_COMPONENT_CLASS)
+
+            if (
+                ServerVersion.getVersion()
+                    .isNewerThanOrEquals(ServerVersion.v1_19)
+            )
+            {
+                val pubKeyClass = Reflection
+                    .getClassSuppressed(
+                        "net.minecraft.world.entity.player.ProfilePublicKey\$a"
+                    )!!
+
+                this.add(pubKeyClass)
+            }
         }
         .toTypedArray()
 
@@ -98,7 +113,7 @@ object NpcProtocol
         gameProfile: Any
     ): Any
     {
-        val arguments = mutableListOf<Any>()
+        val arguments = mutableListOf<Any?>()
 
         if (!MinecraftReflection.isModern())
         {
@@ -117,6 +132,14 @@ object NpcProtocol
                     }\",\"color\":\"dark_gray\"}"
                 )
         )
+
+        if (
+            ServerVersion.getVersion()
+                .isNewerThanOrEquals(ServerVersion.v1_19)
+        )
+        {
+            arguments.add(null)
+        }
 
         return PLAYER_INFO_DATA_CONSTRUCTOR
             .newInstance(

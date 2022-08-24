@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.entity.npc
 
+import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
@@ -22,6 +23,7 @@ import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.entity.npc.texture.NpcTexture
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.x
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -149,7 +151,10 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Enti
     }
 
     fun calculateHologramLocation(): Location {
-        val helmetOffset = if (helmet != null && helmet!!.type == Material.SKULL_ITEM) {
+        val helmetOffset = if (
+            helmet != null &&
+            helmet!!.type.x() == XMaterial.SKELETON_SKULL
+        ) {
             0.1
         } else {
             0.0

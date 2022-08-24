@@ -23,6 +23,7 @@ import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.tool.EntityPortTool
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -34,8 +35,19 @@ import java.util.concurrent.ConcurrentHashMap
 @Service
 object EntityPacketAdapter : PacketAdapter(
     ScalaCommonsSpigot.instance,
-    PacketType.Play.Client.USE_ENTITY,
-    PacketType.Play.Server.SPAWN_ENTITY_LIVING
+    *(if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
+    {
+        arrayOf(
+            PacketType.Play.Client.USE_ENTITY,
+            PacketType.Play.Server.SPAWN_ENTITY,
+        )
+    } else
+    {
+        arrayOf(
+            PacketType.Play.Client.USE_ENTITY,
+            PacketType.Play.Server.SPAWN_ENTITY_LIVING
+        )
+    })
 )
 {
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
@@ -142,6 +154,7 @@ object EntityPacketAdapter : PacketAdapter(
         if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
             val entityId = event.packet.integers.read(0)
             val entity = EntityHandler.getEntityById(entityId) ?: return
+
             if (entity is HologramEntity) {
                 val dataWatcher = event.packet.dataWatcherModifier.read(0)
                 dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))

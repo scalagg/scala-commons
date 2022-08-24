@@ -26,69 +26,74 @@ object MenuAutoUpdater : Runnable, Listener
 
     override fun run()
     {
-        for ((uuid, openMenu) in Menu.currentlyOpenedMenus.entries)
-        {
-            try
+        kotlin.runCatching scoped@{
+            for ((uuid, openMenu) in Menu.currentlyOpenedMenus.entries)
             {
-                val player = Bukkit.getPlayer(uuid)
-                if (player == null || !player.isOnline)
-                {
-                    Menu.currentlyOpenedMenus.remove(uuid)
-                    continue
-                }
-
-                if (openMenu.closed)
-                {
-                    continue
-                }
-
-                if (openMenu.autoUpdate)
-                {
-                    updateTimestamps.putIfAbsent(player.uniqueId, System.currentTimeMillis())
-
-                    if (System.currentTimeMillis() - updateTimestamps[player.uniqueId]!! >= openMenu.getAutoUpdateTicks())
+                kotlin.runCatching {
+                    val player = Bukkit.getPlayer(uuid)
+                    if (player == null || !player.isOnline)
                     {
-                        openMenu.preAutoUpdate()
-                        updateTimestamps[player.uniqueId] = System.currentTimeMillis()
-                        openMenu.openMenu(player)
-                    }
-                } else if (openMenu.animated)
-                {
-                    val openInventory = player.openInventory?.topInventory ?: continue
-
-                    if (!MinecraftReflection.isCustomInventory(openInventory))
-                    {
-                        continue
+                        Menu.currentlyOpenedMenus.remove(uuid)
+                        return@runCatching
                     }
 
-                    var updateInventory = false
-                    for ((slot, button) in openMenu.buttons)
+                    if (openMenu.closed)
                     {
-                        if (slot >= openInventory.size - 1)
+                        return@runCatching
+                    }
+
+                    if (openMenu.autoUpdate)
+                    {
+                        updateTimestamps.putIfAbsent(player.uniqueId, System.currentTimeMillis())
+
+                        if (System.currentTimeMillis() - updateTimestamps[player.uniqueId]!! >= openMenu.getAutoUpdateTicks())
                         {
-                            continue
+                            openMenu.preAutoUpdate()
+                            updateTimestamps[player.uniqueId] = System.currentTimeMillis()
+                            openMenu.openMenu(player)
+                        }
+                    } else if (openMenu.animated)
+                    {
+                        val openInventory = player.openInventory?.topInventory ?: return@runCatching
+
+                        if (!MinecraftReflection.isCustomInventory(openInventory))
+                        {
+                            return@runCatching
                         }
 
-                        if (button.isAnimated())
+                        var updateInventory = false
+                        for ((slot, button) in openMenu.buttons)
                         {
-                            if (System.currentTimeMillis() - button.lastAnimation >= button.getAnimationInterval())
+                            if (slot >= openInventory.size - 1)
                             {
-                                updateInventory = true
-                                button.preAnimationUpdate()
-                                button.lastAnimation = System.currentTimeMillis()
-                                openInventory.setItem(slot, button.getButtonItem(player))
+                                continue
+                            }
+
+                            if (button.isAnimated())
+                            {
+                                if (System.currentTimeMillis() - button.lastAnimation >= button.getAnimationInterval())
+                                {
+                                    updateInventory = true
+                                    button.preAnimationUpdate()
+                                    button.lastAnimation = System.currentTimeMillis()
+                                    openInventory.setItem(slot, button.getButtonItem(player))
+                                }
                             }
                         }
-                    }
 
-                    if (updateInventory)
-                    {
-                        player.updateInventory()
+                        if (updateInventory)
+                        {
+                            player.updateInventory()
+                        }
                     }
+                }.onFailure {
+                    it.printStackTrace()
                 }
-            } catch (e: Exception)
+            }
+        }.onFailure {
+            if (it !is NoClassDefFoundError)
             {
-                e.printStackTrace()
+                it.printStackTrace()
             }
         }
     }

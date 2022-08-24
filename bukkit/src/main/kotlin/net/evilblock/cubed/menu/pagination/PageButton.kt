@@ -13,6 +13,8 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
+import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -24,7 +26,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         when {
-            clickType == ClickType.MIDDLE && hasNext(player) && !menu.verticalView -> {
+            clickType == ClickType.SHIFT_LEFT && hasNext(player) && !menu.verticalView -> {
                 ViewAllPagesMenu(menu).openMenu(player)
                 playNeutral(player)
             }
@@ -52,8 +54,8 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
     override fun getDescription(player: Player): List<String> {
         return if (hasNext(player) && !menu.verticalView)
             listOf(
-                CC.GRAY + "Middle click to view all",
-                "${CC.GRAY}available pages."
+                "${CC.WHITE}Shift-click to view all",
+                "${CC.WHITE}available pages."
             ) else ArrayList()
     }
 
@@ -62,10 +64,20 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
     }
 
     override fun getMaterial(player: Player): XMaterial {
+        if (MinecraftReflection.isModern())
+        {
+            return if (hasNext(player)) XMaterial.GLISTERING_MELON_SLICE else XMaterial.BLACK_STAINED_GLASS_PANE
+        }
+
         return if (hasNext(player)) XMaterial.SKELETON_SKULL else XMaterial.BLACK_STAINED_GLASS_PANE
     }
 
     override fun getButtonItem(player: Player): ItemStack {
+        if (MinecraftReflection.isModern())
+        {
+            return super.getButtonItem(player)
+        }
+
         if (!hasNext(player)) {
             return super.getButtonItem(player)
         }

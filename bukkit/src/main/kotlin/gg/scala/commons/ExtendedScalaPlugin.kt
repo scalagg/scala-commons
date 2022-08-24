@@ -274,8 +274,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         this.commandManager = ScalaCommandManager(
             this,
-            primary = ChatColor.getByChar(CC.PRI[1]),
-            secondary = ChatColor.getByChar(CC.SEC[1])
+            primary = ChatColor.getByChar(CC.PRI[1])!!,
+            secondary = ChatColor.getByChar(CC.SEC[1])!!
         )
 
         flavor {

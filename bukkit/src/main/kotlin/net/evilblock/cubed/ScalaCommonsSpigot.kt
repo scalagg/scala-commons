@@ -5,7 +5,6 @@ import gg.scala.aware.AwareBuilder
 import gg.scala.aware.AwareHub
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
-import gg.scala.aware.uri.WrappedAwareUri
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
@@ -22,14 +21,13 @@ import gg.scala.commons.sentry.SentryService
 import gg.scala.commons.sign.Signs
 import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
-import gg.scala.store.serializer.serializers.GsonSerializer
-import gg.scala.store.spigot.ScalaDataStoreSpigot
 import me.lucko.helper.Commands
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import me.lucko.helper.utils.Players
+import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsPostersConfig
@@ -38,6 +36,7 @@ import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
+import net.evilblock.cubed.feature.DataStoreFeature
 import net.evilblock.cubed.menu.protocol.InventoryPacketAdapter
 import net.evilblock.cubed.menu.protocol.MenuPacketAdapter
 import net.evilblock.cubed.menu.template.MenuTemplate
@@ -67,14 +66,14 @@ import java.util.logging.Level
 // plugin meta
 @Plugin(
     name = "scala-commons",
-    apiVersion = "1.18",
+    apiVersion = "1.19",
     authors = ["GrowlyX", "joeleoli"],
     description = "Core utilities for Scala spigot plugins.",
     depends = [
-        PluginDependency("store-spigot"),
         PluginDependency("ProtocolLib"),
+        PluginDependency("store-spigot", soft = true),
         PluginDependency("Vault", soft = true),
-        PluginDependency("ViaVersino", soft = true),
+        PluginDependency("ViaVersion", soft = true),
     ]
 )
 // configs
@@ -144,6 +143,15 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 inject(ReplacementGlobalContainer)
                 inject(Replacements)
                 inject(Signs)
+                inject(TablistService)
+
+                if (
+                    server.pluginManager
+                        .getPlugin("store-spigot") != null
+                )
+                {
+                    inject(DataStoreFeature)
+                }
 
                 inject(PlayerCompositeTerminable)
             }
@@ -164,11 +172,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
                 GsonComponentSerializer.gson().populator().apply(this)
             }
-
-            GsonSerializer
-                .provideCustomGson {
-                    Serializers.gson
-                }
 
             if (isPostersEnabled())
             {
@@ -198,14 +201,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 !it.message.contains("Please notify author of plugin")
             }
 
-            val storeRedis = ScalaDataStoreSpigot
-                .INSTANCE.redis
-
             AwareHub.configure(
-                WrappedAwareUri(
-                    storeRedis.hostname, storeRedis.port,
-                    storeRedis.password, 0
-                )
+                AwareCloud.uri
             ) {
                 Serializers.gson
             }
@@ -213,10 +210,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             ScalaStoreUuidCache.configure(
                 DistributedRedisUuidCacheTranslator(aware)
             )
-
-            flavor {
-                inject(TablistService)
-            }
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()

@@ -1,5 +1,6 @@
 package net.evilblock.cubed.util;
 
+import net.evilblock.cubed.ScalaCommonsSpigot;
 import org.bukkit.Bukkit;
 
 /**
@@ -20,6 +21,7 @@ public enum ServerVersion {
     v1_16(735), v1_16_R1(736), v1_16_R2(751), v1_16_R3(753), v1_16_R4(754), v1_16_R5(754),
     v1_17(755), v1_17_R1(756),
     v1_18(757), v1_18_R1(757), v1_18_R2(758),
+    v1_19(759), v1_19_R1(760), v1_19_R2(760),
     ERROR(-1);
 
     private static final String NMS_VERSION_SUFFIX = Bukkit.getServer().getClass().getPackage().getName()
@@ -41,17 +43,30 @@ public enum ServerVersion {
             reversedValues = ServerVersion.reverse();
         }
 
+        ScalaCommonsSpigot.getInstance().getLogger().info(
+            "[Versioning] Attempting to parse version based on: " + Bukkit.getBukkitVersion()
+        );
+
         for (final ServerVersion val : reversedValues) {
+            // v1_19_R2 -> 1_19_R2 -> 1_19.2 -> 1.19.2
             final String valName = val.name()
-                    .replace("v1_", "")
-                    .replace("_R", ".");
+                    .replace("v", "")
+                    .replace("_R", ".")
+                    .replace("_", ".");
 
             if (Bukkit.getBukkitVersion().contains(valName)) {
+                ScalaCommonsSpigot.getInstance().getLogger().info(
+                    "[Versioning] Parsed version " + val.name() + "!"
+                );
                 return val;
             }
         }
 
-        return ERROR;
+        ScalaCommonsSpigot.getInstance().getLogger().info(
+            "[Versioning] Failed to parse version. We're defaulting to 1.8.8 R3."
+        );
+
+        return v1_8_R3;
     }
 
     /**
@@ -62,10 +77,11 @@ public enum ServerVersion {
      * @return Server Version. (always cached)
      */
     public static ServerVersion getVersion() {
-//        if (cachedVersion == null) {
-//            cachedVersion = getVersionNoCache();
-//        }
-        return v1_8_R3; // TODO: 4/25/2022 god
+        if (cachedVersion == null) {
+            cachedVersion = getVersionNoCache();
+        }
+
+        return cachedVersion;
     }
 
     /**

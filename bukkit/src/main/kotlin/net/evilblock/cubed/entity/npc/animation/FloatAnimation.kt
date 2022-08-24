@@ -23,11 +23,12 @@ class FloatAnimation(entity: NpcEntity, private val color: Color) : EntityAnimat
     {
         val REDSTONE = MinecraftReflection
             .getEnumParticle("REDSTONE")
-            ?: Reflection.getClassSuppressed(
-                "net.minecraft.core.particles.Particles"
-            )!!.getDeclaredField(
-                "o"
-            ).get(null)!!
+            ?: Reflection
+                .getClassSuppressed(
+                    "net.minecraft.core.particles.Particles"
+                )!!
+                .getDeclaredField("o")
+                .get(null)!!
     }
 
     override fun tick()

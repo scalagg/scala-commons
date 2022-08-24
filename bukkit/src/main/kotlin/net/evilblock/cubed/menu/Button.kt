@@ -8,6 +8,7 @@
 package net.evilblock.cubed.menu
 
 import com.cryptomorin.xseries.XMaterial
+import com.cryptomorin.xseries.XSound
 import com.google.common.base.Joiner
 import net.evilblock.cubed.util.Color
 import org.apache.commons.lang.StringUtils
@@ -180,17 +181,29 @@ abstract class Button {
 
         @JvmStatic
         fun playFail(player: Player) {
-            player.playSound(player.location, Sound.DIG_GRASS, 20.0F, 0.1F)
+            player.playSound(
+                player.location,
+                XSound.BLOCK_DISPENSER_FAIL.parseSound(),
+                20.0F, 0.1F
+            )
         }
 
         @JvmStatic
         fun playSuccess(player: Player) {
-            player.playSound(player.location, Sound.NOTE_PIANO, 20.0F, 15.0F)
+            player.playSound(
+                player.location,
+                XSound.BLOCK_NOTE_BLOCK_CHIME.parseSound(),
+                20.0F, 15.0F
+            )
         }
 
         @JvmStatic
         fun playNeutral(player: Player) {
-            player.playSound(player.location, Sound.CLICK, 20.0F, 1.0F)
+            player.playSound(
+                player.location,
+                XSound.UI_BUTTON_CLICK.parseSound(),
+                20.0F, 1.0F
+            )
         }
 
         @JvmStatic

@@ -199,10 +199,16 @@ abstract class Menu
             // check if top inv size is the same as new menu size and if the titles match
             if (
                 openInventory.topInventory != null &&
-                openInventory.topInventory.size == inventory.size &&
-                openInventory.topInventory.title == inventory.title
+                openInventory.topInventory.size == inventory.size
             )
             {
+                if (
+                    !MinecraftReflection.isModern() &&
+                    openInventory.topInventory.title != inventory.title)
+                {
+                    return
+                }
+
                 openInventory.topInventory.contents = inventory.contents
                 return
             }
@@ -240,10 +246,11 @@ abstract class Menu
         }
     }
 
-    private val characters = ('a'..'g').toList()
+    private val characters = ('a'..'f').toList()
 
-    val reflection = MinecraftReflection
-        .getNMSClass("inventory.Containers")
+    val reflection = Reflection.getClassSuppressed(
+        "net.minecraft.world.inventory.Containers"
+    )
 
     private val containerMappings =
         mutableMapOf<Char, Any>().apply {
@@ -265,16 +272,15 @@ abstract class Menu
 
     private fun getWindowType(size: Int): Any
     {
-        return if (!MinecraftReflection.isModern())
+        if (!MinecraftReflection.isModern())
         {
-            "minecraft:chest"
-        } else
-        {
-            val sizeRow = (size / 9) - 1
-            val mapping = characters[sizeRow]
-
-            containerMappings[mapping]!!
+            return "minecraft:chest"
         }
+
+        val sizeRow = (size / 9) - 1
+        val mapping = characters[sizeRow]
+
+        return containerMappings[mapping]!!
     }
 
     fun update(player: Player)
@@ -343,25 +349,26 @@ abstract class Menu
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
-        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection.getDeclaredMethod(
-            MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-            "openCustomInventory",
-            Inventory::class.java,
-            MinecraftReflection.getNMSClass(
-                "${
-                    if (MinecraftReflection.isModern())
-                        "level." else ""
-                }EntityPlayer"
-            )!!,
-            if (MinecraftReflection.isModern())
-            {
-                Reflection.getClassSuppressed(
-                    "net.minecraft.world.inventory.Containers"
-                )!!
-            } else
-            {
-                String::class.java
-            }
-        )
+        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection
+            .getDeclaredMethod(
+                MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
+                "openCustomInventory",
+                Inventory::class.java,
+                MinecraftReflection.getNMSClass(
+                    "${
+                        if (MinecraftReflection.isModern())
+                            "level." else ""
+                    }EntityPlayer"
+                )!!,
+                if (MinecraftReflection.isModern())
+                {
+                    Reflection.getClassSuppressed(
+                        "net.minecraft.world.inventory.Containers"
+                    )!!
+                } else
+                {
+                    String::class.java
+                }
+            )
     }
 }

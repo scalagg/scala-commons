@@ -78,10 +78,7 @@ open class ConfirmMenu(
 
         override fun getMaterial(player: Player): XMaterial
         {
-            return XMaterial
-                .matchXMaterial(
-                    Material.SIGN
-                )
+            return XMaterial.OAK_SIGN
         }
     }
 }

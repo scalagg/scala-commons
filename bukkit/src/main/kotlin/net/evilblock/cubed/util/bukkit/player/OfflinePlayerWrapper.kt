@@ -5,6 +5,7 @@ import gg.scala.cache.uuid.ScalaStoreUuidCache
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.minecraft.server.v1_8_R3.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
@@ -52,7 +53,7 @@ class OfflinePlayerWrapper(val source: String)
             return null
 
         val server = MinecraftReflection.getMinecraftServer()
-        val worldServer = MinecraftReflection.getWorldServers()[0]
+        val worldServer = MinecraftServer.getServer().worlds[0]
         val gameProfile = MinecraftReflection.newGameProfile(uniqueId!!, name!!)
 
         val entityPlayer =
@@ -80,8 +81,7 @@ class OfflinePlayerWrapper(val source: String)
 
     companion object
     {
-        private val MINECRAFT_SERVER_CLASS =
-            MinecraftReflection.MINECRAFT_SERVER_CLASS
+        private val MINECRAFT_SERVER_CLASS = MinecraftReflection.MINECRAFT_SERVER_CLASS
 
         private val WORLD_CLASS =
             MinecraftReflection.getNMSClass("World")

@@ -18,7 +18,7 @@ object DataWatcherUtil
     private val ENTITY_CLASS =
         MinecraftReflection.getNMSClass("Entity")
             ?: Reflection.getClassSuppressed(
-                "net.minecraft.world.Entity"
+                "net.minecraft.world.entity.Entity"
             )!!
 
     private val DATA_WATCHER_CLASS =
@@ -27,29 +27,51 @@ object DataWatcherUtil
                 "net.minecraft.network.syncher.DataWatcher"
             )!!
 
+    private val DATA_WATCHER_OBJECT_MODERN_CLASS =
+        Reflection.getClassSuppressed(
+            "net.minecraft.network.syncher.DataWatcherObject"
+        )
+
     private val DATA_WATCHER_CONSTRUCTOR =
         Reflection.getConstructor(DATA_WATCHER_CLASS, ENTITY_CLASS)!!
 
     private val DATA_WATCHER_REGISTER_METHOD: Method =
-        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "a", Int::class.java, Any::class.java)!!
+        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "a", Int::class.java, Any::class.java)
+            ?: Reflection.getDeclaredMethod(
+                DATA_WATCHER_CLASS, "a", DATA_WATCHER_OBJECT_MODERN_CLASS!!, Any::class.java
+            )!!
 
     private val DATA_WATCHER_GET_WATCHED_OBJECT: Method =
-        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "j", Int::class.java)!!
+        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "j", Int::class.java)
+            ?: Reflection.getDeclaredMethod(
+                DATA_WATCHER_CLASS, "b", DATA_WATCHER_OBJECT_MODERN_CLASS!!
+            )!!
 
     private var DATA_WATCHER_GET_WATCHED_OBJECTS_METHOD: Method =
-        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "c")!!
+        Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "c")
+            ?: Reflection.getDeclaredMethod(DATA_WATCHER_CLASS, "b")!!
 
-    private var DATA_WATCHER_DIRTY_FIELD: Field = Reflection.getDeclaredField(DATA_WATCHER_CLASS, "e")!!
+    private var DATA_WATCHER_DIRTY_FIELD: Field = Reflection
+        .getDeclaredField(DATA_WATCHER_CLASS, "e")
+        ?: Reflection
+            .getDeclaredField(DATA_WATCHER_CLASS, "h")!!
 
-    private val DATA_WATCHER_OBJECT_CLASS: Class<*> = MinecraftReflection.getNMSClass("DataWatcher\$WatchableObject")!!
+    private val DATA_WATCHER_OBJECT_CLASS: Class<*> = MinecraftReflection
+        .getNMSClass("DataWatcher\$WatchableObject")
+        ?: DATA_WATCHER_OBJECT_MODERN_CLASS!!
 
     private val DATA_WATCHER_OBJECT_SET_VALUE: Method =
-        Reflection.getDeclaredMethod(DATA_WATCHER_OBJECT_CLASS, "a", Any::class.java)!!
+        Reflection.getDeclaredMethod(
+            DATA_WATCHER_OBJECT_CLASS, "a", Any::class.java
+        )!!
 
-    private val DATA_WATCHER_OBJECT_GET_VALUE: Method = Reflection.getDeclaredMethod(DATA_WATCHER_OBJECT_CLASS, "b")!!
+    private val DATA_WATCHER_OBJECT_GET_VALUE: Method = Reflection
+        .getDeclaredMethod(DATA_WATCHER_OBJECT_CLASS, "b")!!
 
     private val DATA_WATCHER_OBJECT_MARK_DIRTY: Method =
-        Reflection.getDeclaredMethod(DATA_WATCHER_OBJECT_CLASS, "a", Boolean::class.java)!!
+        Reflection.getDeclaredMethod(
+            DATA_WATCHER_OBJECT_CLASS, "a", Boolean::class.java
+        )!!
 
     @JvmStatic
     fun new(): Any
@@ -70,6 +92,44 @@ object DataWatcherUtil
     }
 
     @JvmStatic
+    fun getWatchedObjectValue(watchedObject: Any): Any
+    {
+        return DATA_WATCHER_OBJECT_GET_VALUE.invoke(watchedObject)
+    }
+
+    @JvmStatic
+    fun setWatchedObjectValue(watchedObject: Any, value: Any)
+    {
+        DATA_WATCHER_OBJECT_SET_VALUE.invoke(watchedObject, value)
+    }
+
+    @JvmStatic
+    fun markWatchedObjectDirty(watchedObject: Any, dirty: Boolean)
+    {
+        DATA_WATCHER_OBJECT_MARK_DIRTY.invoke(watchedObject, dirty)
+    }
+
+    @JvmStatic
+    fun register(dataWatcher: Any, key: Int, value: Any)
+    {
+        if (MinecraftReflection.isModern())
+        {
+//            DATA_WATCHER_REGISTER_METHOD.invoke(
+//                dataWatcher, DataWatcherObject<Any>(key, null /** idk what to do for serializer, will look later. */), value
+//            )
+            return
+        }
+
+        DATA_WATCHER_REGISTER_METHOD.invoke(dataWatcher, key, value)
+    }
+
+    @JvmStatic
+    fun markDirty(dataWatcher: Any)
+    {
+        DATA_WATCHER_DIRTY_FIELD.set(dataWatcher, true)
+    }
+
+    @JvmStatic
     fun <T> set(dataWatcher: Any, key: Int, value: T)
     {
         val dataWatcherItem = get(dataWatcher, key)
@@ -81,18 +141,6 @@ object DataWatcherUtil
             markWatchedObjectDirty(dataWatcherItem, true)
             markDirty(dataWatcher)
         }
-    }
-
-    @JvmStatic
-    fun register(dataWatcher: Any, key: Int, value: Any)
-    {
-        DATA_WATCHER_REGISTER_METHOD.invoke(dataWatcher, key, value)
-    }
-
-    @JvmStatic
-    fun markDirty(dataWatcher: Any)
-    {
-        DATA_WATCHER_DIRTY_FIELD.set(dataWatcher, true)
     }
 
     @JvmStatic
@@ -140,23 +188,6 @@ object DataWatcherUtil
         }
     }
 
-    @JvmStatic
-    fun getWatchedObjectValue(watchedObject: Any): Any
-    {
-        return DATA_WATCHER_OBJECT_GET_VALUE.invoke(watchedObject)
-    }
-
-    @JvmStatic
-    fun setWatchedObjectValue(watchedObject: Any, value: Any)
-    {
-        DATA_WATCHER_OBJECT_SET_VALUE.invoke(watchedObject, value)
-    }
-
-    @JvmStatic
-    fun markWatchedObjectDirty(watchedObject: Any, dirty: Boolean)
-    {
-        DATA_WATCHER_OBJECT_MARK_DIRTY.invoke(watchedObject, dirty)
-    }
 
     @JvmStatic
     fun isWatchedObjectDirty(watchedObject: Any): Boolean
