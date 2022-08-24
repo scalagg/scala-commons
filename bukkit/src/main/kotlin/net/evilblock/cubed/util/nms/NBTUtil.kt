@@ -112,11 +112,15 @@ object NBTUtil
     private val ITEM_STACK_CLASS: Class<*> = MinecraftReflection.getNMSClass("ItemStack")
         ?: Reflection.getClassSuppressed("net.minecraft.world.item.ItemStack")!!
 
-    private val HAS_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "hasTag")!!
-    private val GET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "getTag")!!
+    private val HAS_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "hasTag")
+        ?: Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "t")!!
+
+    private val GET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "getTag")
+        ?: Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "v")!!
 
     private val SET_TAG_METHOD: Method =
-        Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "setTag", NBT_TAG_COMPOUND_CLASS)!!
+        Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "setTag", NBT_TAG_COMPOUND_CLASS)
+            ?: Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "b", NBT_TAG_COMPOUND_CLASS)!!
 
     private val NBT_TAG_LIST_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagList")
         ?: nbtClass("NBTTagList")!! // 1.17+ class

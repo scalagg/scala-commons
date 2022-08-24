@@ -81,8 +81,7 @@ class OfflinePlayerWrapper(val source: String)
 
     companion object
     {
-        private val MINECRAFT_SERVER_CLASS =
-            MinecraftReflection.MINECRAFT_SERVER_CLASS!!
+        private val MINECRAFT_SERVER_CLASS = MinecraftReflection.MINECRAFT_SERVER_CLASS
 
         private val WORLD_CLASS =
             MinecraftReflection.getNMSClass("World")
