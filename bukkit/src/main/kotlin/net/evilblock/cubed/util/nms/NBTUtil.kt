@@ -34,19 +34,13 @@ object NBTUtil
     private val NBT_FLOAT_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagFloat")
         ?: nbtClass("NBTTagFloat")!! // 1.17+ class
 
-    private val NBT_TAG_LIST_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagList")
-        ?: nbtClass("NBTTagList")!! // 1.17+ class
-
-    private val NBT_TAG_LIST_ADD_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_LIST_CLASS, "add", NBT_BASE_CLASS)!!
-
     private val NBT_TAG_STRING_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagString")
         ?: nbtClass("NBTTagString")!! // 1.17+ class
 
     private val NBT_TAG_STRING_READ_METHOD: Method =
         Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "a_")
-            ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_")
-            ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "asString")!!
+            ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_") // 1.12 class
+            ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "asString")!! // 1.17+ class
 
     private val NBT_TAG_COMPOUND_CLASS: Class<*> = MinecraftReflection
         .getNMSClass("NBTTagCompound") ?: nbtClass("NBTTagCompound")!! // 1.17+ class
@@ -90,6 +84,12 @@ object NBTUtil
     private val GET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "getTag")!!
 
     private val SET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "setTag", NBT_TAG_COMPOUND_CLASS)!!
+
+    private val NBT_TAG_LIST_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagList")
+        ?: nbtClass("NBTTagList")!! // 1.17+ class
+
+    private val NBT_TAG_LIST_ADD_METHOD: Method =
+        Reflection.getDeclaredMethod(NBT_TAG_LIST_CLASS, "add", NBT_BASE_CLASS)!!
 
     @JvmStatic
     fun newTag(): Any

@@ -201,10 +201,16 @@ abstract class Menu
             // check if top inv size is the same as new menu size and if the titles match
             if (
                 openInventory.topInventory != null &&
-                openInventory.topInventory.size == inventory.size &&
-                openInventory.topInventory.title == inventory.title
+                openInventory.topInventory.size == inventory.size
             )
             {
+                if (
+                    !MinecraftReflection.isModern() &&
+                    openInventory.topInventory.title != inventory.title)
+                {
+                    return
+                }
+
                 openInventory.topInventory.contents = inventory.contents
                 return
             }
