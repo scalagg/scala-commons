@@ -12,6 +12,7 @@ import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.minecraft.world.inventory.Containers
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -241,10 +242,11 @@ abstract class Menu
         }
     }
 
-    private val characters = ('a'..'g').toList()
+    private val characters = ('a'..'f').toList()
 
-    val reflection = MinecraftReflection
-        .getNMSClass("inventory.Containers")
+    val reflection = Reflection.getClassSuppressed(
+        "net.minecraft.world.inventory.Containers"
+    )
 
     private val containerMappings =
         mutableMapOf<Char, Any>().apply {
@@ -266,16 +268,15 @@ abstract class Menu
 
     private fun getWindowType(size: Int): Any
     {
-        return if (!MinecraftReflection.isModern())
+        if (!MinecraftReflection.isModern())
         {
-            "minecraft:chest"
-        } else
-        {
-            val sizeRow = (size / 9) - 1
-            val mapping = characters[sizeRow]
-
-            containerMappings[mapping]!!
+            return "minecraft:chest"
         }
+
+        val sizeRow = (size / 9) - 1
+        val mapping = characters[sizeRow]
+
+        return containerMappings[mapping]!!
     }
 
     fun update(player: Player)
@@ -346,9 +347,7 @@ abstract class Menu
 
         private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection
             .getDeclaredMethod(
-                Reflection.getClassSuppressed(
-                    "org.bukkit.craftbukkit.${ServerVersion.getVersion().name}.entity.CraftHumanEntity"
-                )!!,
+                MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
                 "openCustomInventory",
                 Inventory::class.java,
                 MinecraftReflection.getNMSClass(
