@@ -9,10 +9,8 @@ package net.evilblock.cubed.menu
 
 import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.minecraft.world.inventory.Containers
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player

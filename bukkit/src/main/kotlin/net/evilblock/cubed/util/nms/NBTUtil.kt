@@ -8,6 +8,7 @@
 package net.evilblock.cubed.util.nms
 
 import net.evilblock.cubed.util.Reflection
+import net.minecraft.nbt.NBTTagString
 import java.lang.reflect.Method
 
 object NBTUtil
@@ -37,10 +38,16 @@ object NBTUtil
     private val NBT_TAG_STRING_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagString")
         ?: nbtClass("NBTTagString")!! // 1.17+ class
 
-    private val NBT_TAG_STRING_READ_METHOD: Method =
+    private val NBT_TAG_STRING_READ_METHOD: Method? =
         Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "a_")
             ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_") // 1.12 class
-            ?: Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "asString")!! // 1.17+ class
+
+    private val NBT_TAG_STRING_VALUE_MODERN = Reflection
+        .getDeclaredField(
+            NBT_TAG_STRING_CLASS, "A"
+        )?.apply {
+            this.isAccessible = true
+        } // 1.17+ class
 
     private val NBT_TAG_COMPOUND_CLASS: Class<*> = MinecraftReflection
         .getNMSClass("NBTTagCompound") ?: nbtClass("NBTTagCompound")!! // 1.17+ class
@@ -178,7 +185,12 @@ object NBTUtil
     @JvmStatic
     fun convertString(nbtString: Any): String
     {
-        return NBT_TAG_STRING_READ_METHOD.invoke(nbtString) as String
+        if (MinecraftReflection.isModern())
+        {
+            return NBT_TAG_STRING_VALUE_MODERN!!.get(nbtString) as String
+        }
+
+        return NBT_TAG_STRING_READ_METHOD!!.invoke(nbtString) as String
     }
 
 //    @JvmStatic
