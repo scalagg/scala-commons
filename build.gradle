@@ -76,7 +76,7 @@ subprojects {
         repositories {
             maven {
                 name "Scala"
-                url "${property("artifactory_contextUrl")}/gradle-dev"
+                url "${property("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
                     username property("artifactory_user")
