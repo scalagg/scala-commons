@@ -126,7 +126,7 @@ object NBTUtil
         ?: nbtClass("NBTTagList")!! // 1.17+ class
 
     private val NBT_TAG_LIST_ADD_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_LIST_CLASS, "add", NBT_BASE_CLASS)!!
+        Reflection.getMethodSuppressed(NBT_TAG_LIST_CLASS, "add", Collection::class.java)!!
 
     @JvmStatic
     fun newTag(): Any
