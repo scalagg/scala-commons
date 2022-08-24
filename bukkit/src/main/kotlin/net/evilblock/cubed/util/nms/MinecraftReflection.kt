@@ -148,15 +148,12 @@ object MinecraftReflection
     @JvmStatic
     fun getNmsVersion(): String
     {
-        return "net.minecraft.server${
-            if (isModern())
-            {
-                ""
-            } else
-            {
-                ".${ServerVersion.getVersion().name}"
-            }
-        }."
+        if (!isModern())
+        {
+            return "${ServerVersion.getNMSDirectory()}."
+        }
+
+        return "net.minecraft.server."
     }
 
     @JvmStatic
