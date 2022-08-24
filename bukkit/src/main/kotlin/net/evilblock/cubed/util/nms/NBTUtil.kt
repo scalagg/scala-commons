@@ -8,6 +8,7 @@
 package net.evilblock.cubed.util.nms
 
 import net.evilblock.cubed.util.Reflection
+import net.minecraft.nbt.NBTTagList
 import java.lang.reflect.Method
 
 object NBTUtil
@@ -125,8 +126,8 @@ object NBTUtil
     private val NBT_TAG_LIST_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagList")
         ?: nbtClass("NBTTagList")!! // 1.17+ class
 
-    private val NBT_TAG_LIST_ADD_METHOD: Method =
-        Reflection.getMethodSuppressed(NBT_TAG_LIST_CLASS, "add", Collection::class.java)!!
+    private val NBT_TAG_LIST_ADD_METHOD: Method? =
+        Reflection.getMethodSuppressed(NBT_TAG_LIST_CLASS, "add", NBT_BASE_CLASS::class.java)
 
     @JvmStatic
     fun newTag(): Any
@@ -143,7 +144,7 @@ object NBTUtil
     @JvmStatic
     fun addToList(list: Any, base: Any)
     {
-        NBT_TAG_LIST_ADD_METHOD.invoke(list, base)
+        NBT_TAG_LIST_ADD_METHOD?.invoke(list, base)
     }
 
     @JvmStatic
