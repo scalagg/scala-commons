@@ -8,7 +8,6 @@
 package net.evilblock.cubed.util.nms
 
 import net.evilblock.cubed.util.Reflection
-import net.minecraft.nbt.NBTTagString
 import java.lang.reflect.Method
 
 object NBTUtil
@@ -53,36 +52,62 @@ object NBTUtil
         .getNMSClass("NBTTagCompound") ?: nbtClass("NBTTagCompound")!! // 1.17+ class
 
     private val HAS_KEY_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "hasKey", String::class.java)!!
+        Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "hasKey", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "b", String::class.java)!!
 
-    private val GET_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "get", String::class.java)!!
+    private val GET_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "get", String::class.java)
+        ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "c", String::class.java)!!
+
     private val SET_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "set", String::class.java, NBT_BASE_CLASS)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "set", String::class.java, NBT_BASE_CLASS)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, NBT_BASE_CLASS)!!
+
     private val GET_STRING_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getString", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getString", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "l", String::class.java)!!
+
     private val SET_STRING_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setString", String::class.java, String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setString", String::class.java, String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, String::class.java)!!
 
     private val GET_INT_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getInt", String::class.java)!!
-    private val SET_INT_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setInt", String::class.java, Int::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getInt", String::class.java)
+            ?: Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "h", String::class.java)!!
+
+    private val SET_INT_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setInt", String::class.java, Int::class.java)
+        ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, Int::class.java)!!
+
     private val GET_DOUBLE_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getDouble", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getDouble", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "k", String::class.java)!!
+
     private val SET_DOUBLE_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setDouble", String::class.java, Double::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setDouble", String::class.java, Double::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, Double::class.java)!!
+
     private val GET_LONG_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getLong", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getLong", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "i", String::class.java)!!
+
     private val SET_LONG_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setLong", String::class.java, Long::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setLong", String::class.java, Long::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, Long::class.java)!!
+
     private val GET_FLOAT_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getFloat", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getFloat", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "j", String::class.java)!!
+
     private val SET_FLOAT_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setFloat", String::class.java, Float::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setFloat", String::class.java, Float::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "a", String::class.java, Float::class.java)!!
+
     private val GET_COMPOUND_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getCompound", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getCompound", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "p", String::class.java)!!
+
     private val REMOVE_METHOD: Method =
-        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "remove", String::class.java)!!
+        Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "remove", String::class.java)
+            ?: Reflection.getMethodSuppressed(NBT_TAG_COMPOUND_CLASS, "r", String::class.java)!!
 
     private val ITEM_STACK_CLASS: Class<*> = MinecraftReflection.getNMSClass("ItemStack")
         ?: Reflection.getClassSuppressed("net.minecraft.world.item.ItemStack")!!
@@ -90,7 +115,8 @@ object NBTUtil
     private val HAS_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "hasTag")!!
     private val GET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "getTag")!!
 
-    private val SET_TAG_METHOD: Method = Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "setTag", NBT_TAG_COMPOUND_CLASS)!!
+    private val SET_TAG_METHOD: Method =
+        Reflection.getDeclaredMethod(ITEM_STACK_CLASS, "setTag", NBT_TAG_COMPOUND_CLASS)!!
 
     private val NBT_TAG_LIST_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagList")
         ?: nbtClass("NBTTagList")!! // 1.17+ class
