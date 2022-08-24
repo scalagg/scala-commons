@@ -17,8 +17,9 @@ import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.x
+import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -38,13 +39,11 @@ import java.util.*
  * Handles bukkit events for Move Tool functionality and UX.
  */
 @Listeners
-object EntityMoveTool : Listener
-{
+object EntityMoveTool : Listener {
 
     @JvmStatic
-    fun makeMoveTool(entity: Entity): ItemStack
-    {
-        val item = ItemBuilder.of(XMaterial.VILLAGER_SPAWN_EGG)
+    fun makeMoveTool(entity: Entity): ItemStack {
+        val item = ItemBuilder.of(XMaterial.PIG_SPAWN_EGG)
             .data(120)
             .name("${CC.GREEN}Move ${entity.getTypeName()}")
             .setLore(arrayListOf<String>().also { desc ->
@@ -53,27 +52,23 @@ object EntityMoveTool : Listener
             })
             .build()
 
-        return ItemUtils.setMonsterEggType(item, EntityType.VILLAGER)
+        return ItemUtils.addToItemTag(ItemUtils.setMonsterEggType(item, EntityType.VILLAGER), "EntityMoveTool", entity.uuid.toString())
     }
 
     /**
      * If the given [itemStack] is a move tool.
      */
     @JvmStatic
-    fun isMoveTool(itemStack: ItemStack?, player: Player): Boolean
-    {
-        if (itemStack == null)
-        {
+    fun isMoveTool(itemStack: ItemStack?): Boolean {
+        if (itemStack == null) {
             return false
         }
 
-        if (itemStack.type.x() != XMaterial.VILLAGER_SPAWN_EGG)
-        {
+        if (itemStack.type != Material.MONSTER_EGG) {
             return false
         }
 
-        if (player.hasMetadata("moving"))
-        {
+        if (ItemUtils.itemTagHasKey(itemStack, "EntityMoveTool")) {
             return true
         }
 
@@ -81,25 +76,13 @@ object EntityMoveTool : Listener
     }
 
     @JvmStatic
-    fun clearInventoryOfTool(player: Player)
-    {
-        for (i in 0 until 36)
-        {
+    fun clearInventoryOfTool(player: Player) {
+        for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
+            if (isMoveTool(itemStack)) {
+                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
 
-            if (isMoveTool(itemStack, player))
-            {
-                val uuid = player
-                    .getMetadata("moving")
-                    .firstOrNull()
-                    ?: return
-
-                EntityHandler
-                    .getEntityByUuid(
-                        UUID.fromString(
-                            uuid.asString()
-                        )
-                    )
+                EntityHandler.getEntityByUuid(uuid)
                     ?.updateVisibility(false)
 
                 player.inventory.contents[i] = null
@@ -113,56 +96,43 @@ object EntityMoveTool : Listener
      * Handles move tool functionality.
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun onPlayerInteractEvent(event: PlayerInteractEvent)
-    {
-        if (event.action == Action.RIGHT_CLICK_BLOCK)
-        {
+    fun onPlayerInteractEvent(event: PlayerInteractEvent) {
+        if (event.action == Action.RIGHT_CLICK_BLOCK) {
             val itemInHand = event.player.inventory.itemInHand
+            if (itemInHand != null) {
+                if (isMoveTool(itemInHand)) {
+                    event.isCancelled = true
 
-            if (isMoveTool(itemInHand, event.player))
-            {
-                event.isCancelled = true
+                    val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
 
-                val uuid = event.player
-                    .getMetadata("moving")
-                    .firstOrNull()
-                    ?: return
+                    val entity = EntityHandler.getEntityByUuid(uuid)
+                    if (entity != null) {
+                        // npc direction == flipped player yaw
+                        val direction = event.player.eyeLocation.direction.multiply(-1)
+                        val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
 
-                val entity = EntityHandler
-                    .getEntityByUuid(
-                        UUID.fromString(
-                            uuid.asString()
-                        )
-                    )
+                        val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
+                        updatedLocation.direction = direction
 
-                if (entity != null && event.clickedBlock != null)
-                {
-                    // npc direction == flipped player yaw
-                    val direction = event.player.eyeLocation.direction.multiply(-1)
-                    val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock!!.type.name, 1.0)
+                        val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
+                        updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
+                        updatedLocation.pitch = 0.0F
 
-                    val updatedLocation = event.clickedBlock!!.location.add(0.5, height, 0.5)
-                    updatedLocation.direction = direction
+                        // check with other entity implementations
+                        val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
+                        Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
 
-                    val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
-                    updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
-                    updatedLocation.pitch = 0.0F
+                        if (entityMovedEvent.isCancelled) {
+                            return
+                        }
 
-                    // check with other entity implementations
-                    val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
-                    Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
+                        entity.updateLocation(updatedLocation)
+                        entity.updateVisibility(false)
 
-                    if (entityMovedEvent.isCancelled)
-                    {
-                        return
+                        event.player.inventory.itemInHand = null
+                        event.player.updateInventory()
+                        event.player.sendMessage("${CC.GREEN}Successfully updated location!")
                     }
-
-                    entity.updateLocation(updatedLocation)
-                    entity.updateVisibility(false)
-
-                    event.player.inventory.itemInHand = ItemStack(Material.AIR)
-                    event.player.updateInventory()
-                    event.player.sendMessage("${CC.GREEN}Successfully updated location!")
                 }
             }
         }
@@ -172,13 +142,8 @@ object EntityMoveTool : Listener
      * Prevents any move tools from being inserted into a container via clicks.
      */
     @EventHandler
-    fun onInventoryClickEvent(event: InventoryClickEvent)
-    {
-        if (
-            event.action.name.contains("DROP") &&
-            isMoveTool(event.currentItem, event.viewers.first() as Player)
-        )
-        {
+    fun onInventoryClickEvent(event: InventoryClickEvent) {
+        if (event.action.name.contains("DROP") && isMoveTool(event.currentItem)) {
             event.isCancelled = true
         }
     }
@@ -187,10 +152,8 @@ object EntityMoveTool : Listener
      * Prevents any move tools from being inserted into a container via drag.
      */
     @EventHandler
-    fun onInventoryDragEvent(event: InventoryDragEvent)
-    {
-        if (event.cursor != null && isMoveTool(event.cursor, event.viewers.first() as Player))
-        {
+    fun onInventoryDragEvent(event: InventoryDragEvent) {
+        if (event.cursor != null && isMoveTool(event.cursor)) {
             event.isCancelled = true
             return
         }
@@ -200,15 +163,11 @@ object EntityMoveTool : Listener
      * Prevents any move tools from being dropped due to a player death.
      */
     @EventHandler
-    fun onPlayerDeathEvent(event: PlayerDeathEvent)
-    {
+    fun onPlayerDeathEvent(event: PlayerDeathEvent) {
         val dropIterator = event.drops.iterator()
-        while (dropIterator.hasNext())
-        {
+        while (dropIterator.hasNext()) {
             val drop = dropIterator.next()
-
-            if (isMoveTool(drop, event.entity))
-            {
+            if (isMoveTool(drop)) {
                 dropIterator.remove()
             }
         }
@@ -218,10 +177,8 @@ object EntityMoveTool : Listener
      * Prevents any move tools from being dropped.
      */
     @EventHandler
-    fun onPlayerDropItemEvent(event: PlayerDropItemEvent)
-    {
-        if (isMoveTool(event.itemDrop.itemStack, event.player))
-        {
+    fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
+        if (isMoveTool(event.itemDrop.itemStack)) {
             event.isCancelled = true
 
             Tasks.delayed(1L) {
@@ -238,33 +195,26 @@ object EntityMoveTool : Listener
      * from becoming "lost".
      */
     @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent)
-    {
+    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         clearInventoryOfTool(event.player)
     }
 
-    class EntityMovedEvent(val player: Player, val entity: Entity, val location: Location) : Event(), Cancellable
-    {
+    class EntityMovedEvent(val player: Player, val entity: Entity, val location: Location) : Event(), Cancellable {
         private var cancelled: Boolean = false
 
-        override fun isCancelled(): Boolean
-        {
+        override fun isCancelled(): Boolean {
             return cancelled
         }
 
-        override fun setCancelled(cancel: Boolean)
-        {
+        override fun setCancelled(cancel: Boolean) {
             this.cancelled = cancel
         }
 
-        companion object
-        {
-            @JvmStatic
-            val handlerList = HandlerList()
+        companion object {
+            @JvmStatic val handlerList = HandlerList()
         }
 
-        override fun getHandlers(): HandlerList
-        {
+        override fun getHandlers(): HandlerList {
             return handlerList
         }
     }
