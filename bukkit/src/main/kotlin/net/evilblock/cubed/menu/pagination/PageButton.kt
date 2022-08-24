@@ -48,7 +48,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
             return " "
         }
 
-        return (if (mod > 0) CC.GREEN + (if (menu.verticalView) "Scroll down" else "Next page") else CC.RED + (if (menu.verticalView) "Scroll up" else "Previous page")) + ChatColor.DARK_GRAY + " (${menu.page + mod}/${menu.getPages(player)})"
+        return (if (mod > 0) CC.GREEN + (if (menu.verticalView) "Scroll down" else "Next page") else CC.RED + (if (menu.verticalView) "Scroll up" else "Previous page")) + ChatColor.GRAY + " (${menu.page + mod}/${menu.getPages(player)})"
     }
 
     override fun getDescription(player: Player): List<String> {
