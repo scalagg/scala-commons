@@ -18,7 +18,7 @@ object DataWatcherUtil
     private val ENTITY_CLASS =
         MinecraftReflection.getNMSClass("Entity")
             ?: Reflection.getClassSuppressed(
-                "net.minecraft.world.Entity"
+                "net.minecraft.world.entity.Entity"
             )!!
 
     private val DATA_WATCHER_CLASS =
