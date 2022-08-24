@@ -7,9 +7,8 @@
 
 package net.evilblock.cubed.entity.npc.protocol
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata
-import com.comphenix.packetwrapper.WrapperPlayServerNamedEntitySpawn
-import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.Reflection
@@ -19,8 +18,8 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.PlayerInfoData
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 import java.lang.reflect.Method
 import java.util.*
 
@@ -150,33 +149,18 @@ object NpcProtocol
 
     fun createDataWatcher(npc: NpcEntity): Any
     {
-        val dataWatcher: Any
+        val dataWatcher = DataWatcherUtil.new()
 
-        if (MinecraftReflection.isModern())
-        {
-            dataWatcher = WrappedDataWatcher()
-            dataWatcher.setObject(0, 0.toByte())
-            dataWatcher.setObject(2, npc.nametag.name)
-            dataWatcher.setObject(6, 20.0F)
-            dataWatcher.setObject(7, 0)
-            dataWatcher.setObject(8, 0.toByte())
-            dataWatcher.setObject(9, 0.toByte())
-            dataWatcher.setObject(10, 127.toByte())
-            dataWatcher.setObject(17, 0.0F)
-            dataWatcher.setObject(18, 1)
-        } else
-        {
-            dataWatcher = DataWatcherUtil.new()
-            DataWatcherUtil.register(dataWatcher, 0, 0.toByte())
-            DataWatcherUtil.register(dataWatcher, 2, npc.nametag.name)
-            DataWatcherUtil.register(dataWatcher, 6, 20.0F)
-            DataWatcherUtil.register(dataWatcher, 7, 0)
-            DataWatcherUtil.register(dataWatcher, 8, 0.toByte())
-            DataWatcherUtil.register(dataWatcher, 9, 0.toByte())
-            DataWatcherUtil.register(dataWatcher, 10, 127.toByte())
-            DataWatcherUtil.register(dataWatcher, 17, 0.0F)
-            DataWatcherUtil.register(dataWatcher, 18, 1)
-        }
+        DataWatcherUtil.register(dataWatcher, 0, 0.toByte())
+        DataWatcherUtil.register(dataWatcher, 2, npc.nametag.name)
+        DataWatcherUtil.register(dataWatcher, 6, 20.0F)
+        DataWatcherUtil.register(dataWatcher, 7, 0)
+        DataWatcherUtil.register(dataWatcher, 8, 0.toByte())
+        DataWatcherUtil.register(dataWatcher, 9, 0.toByte())
+        DataWatcherUtil.register(dataWatcher, 10, 127.toByte())
+//        DataWatcherUtil.register(dataWatcher, 12, (0x0))
+        DataWatcherUtil.register(dataWatcher, 17, 0.0F)
+        DataWatcherUtil.register(dataWatcher, 18, 1)
 
         return dataWatcher
     }
@@ -213,37 +197,18 @@ object NpcProtocol
             arrayListOf(createPlayerInfoData(playerInfoRemovePacket, npc.profile))
         )
 
-        val entitySpawnPacket: Any
+        val entitySpawnPacket = MinecraftProtocol
+            .newPacket("PacketPlayOutNamedEntitySpawn")
 
-        if (npc.metadata is WrappedDataWatcher)
-        {
-            val packet = WrapperPlayServerNamedEntitySpawn()
-            packet.entityID = npc.id
-            packet.metadata = npc.metadata as WrappedDataWatcher
-            packet.x = MinecraftReflection.mathFloor(npc.location.x * 32.0).toDouble()
-            packet.y = MinecraftReflection.mathFloor(npc.location.y * 32.0).toDouble()
-            packet.z = MinecraftReflection.mathFloor(npc.location.z * 32.0).toDouble()
-            packet.yaw = AngleUtils.yawToBytes(npc.location.yaw).toFloat()
-            packet.pitch = AngleUtils.yawToBytes(npc.location.pitch).toFloat()
-            packet.playerUUID = npc.uuid
-            packet.position = Vector()
-            packet.sendPacket(player)
-
-            entitySpawnPacket = packet
-        } else
-        {
-            entitySpawnPacket = MinecraftProtocol.newPacket("PacketPlayOutNamedEntitySpawn")
-
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "a", npc.id)
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "b", npc.uuid)
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "c", MinecraftReflection.mathFloor(npc.location.x * 32.0))
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "d", MinecraftReflection.mathFloor(npc.location.y * 32.0))
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "e", MinecraftReflection.mathFloor(npc.location.z * 32.0))
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "f", AngleUtils.yawToBytes(npc.location.yaw))
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "g", AngleUtils.yawToBytes(npc.location.pitch))
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "h", 0)
-            Reflection.setDeclaredFieldValue(entitySpawnPacket, "i", npc.metadata)
-        }
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "a", npc.id)
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "b", npc.uuid)
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "c", MinecraftReflection.mathFloor(npc.location.x * 32.0))
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "d", MinecraftReflection.mathFloor(npc.location.y * 32.0))
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "e", MinecraftReflection.mathFloor(npc.location.z * 32.0))
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "f", AngleUtils.yawToBytes(npc.location.yaw))
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "g", AngleUtils.yawToBytes(npc.location.pitch))
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "h", 0)
+        Reflection.setDeclaredFieldValue(entitySpawnPacket, "i", npc.metadata)
 
         val entityLookPacket = MinecraftProtocol.buildEntityLookPacket(npc.id, npc.location.yaw, npc.location.pitch)
 
@@ -280,13 +245,7 @@ object NpcProtocol
         npc.nametag.enforceSendSync(player, "NPC_${npc.id}") // add player to team
 
         Tasks.asyncDelayed(1L) {
-            if (entitySpawnPacket is WrapperPlayServerSpawnEntityLiving)
-            {
-                entitySpawnPacket.sendPacket(player)
-            } else
-            {
-                MinecraftProtocol.send(player, entitySpawnPacket) // spawn entity
-            }
+            MinecraftProtocol.send(player, entitySpawnPacket) // spawn entity
 
             // send equipment updates
             if (npc.itemInHand != null)
@@ -338,15 +297,6 @@ object NpcProtocol
 
     fun sendUpdatePackets(player: Player, npc: NpcEntity)
     {
-        if (npc.metadata is WrappedDataWatcher)
-        {
-            val metadata = WrapperPlayServerEntityMetadata()
-            metadata.metadata = (npc.metadata as WrappedDataWatcher).watchableObjects
-            metadata.entityID = npc.id
-            metadata.sendPacket(player)
-            return
-        }
-
         val entityMetadataPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityMetadata")
         Reflection.setDeclaredFieldValue(entityMetadataPacket, "a", npc.id)
         Reflection.setDeclaredFieldValue(entityMetadataPacket, "b", DataWatcherUtil.getWatchedObjects(npc.metadata))
