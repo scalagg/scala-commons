@@ -157,7 +157,7 @@ open class HologramEntity(private var text: String, location: Location, @Transie
 
     override fun spawn(player: Player)
     {
-        if (!text.equals("{empty}", true) || ChatColor.stripColor(text).isNotEmpty())
+        if (ChatColor.stripColor(text).isNotEmpty())
         {
             super.spawn(player)
         }
@@ -165,7 +165,7 @@ open class HologramEntity(private var text: String, location: Location, @Transie
 
     override fun destroy(player: Player)
     {
-        if (!text.equals("{empty}", true) || ChatColor.stripColor(text).isNotEmpty())
+        if (ChatColor.stripColor(text).isNotEmpty())
         {
             super.destroy(player)
         }
