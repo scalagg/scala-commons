@@ -25,16 +25,22 @@ import org.bukkit.inventory.ItemStack
 class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button() {
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-        when {
-            clickType == ClickType.SHIFT_LEFT && hasNext(player) && !menu.verticalView -> {
-                ViewAllPagesMenu(menu).openMenu(player)
-                playNeutral(player)
-            }
-            hasNext(player) -> {
-                menu.modPage(player, mod)
-                playNeutral(player)
-            }
-            else -> playFail(player)
+        val hasNext = hasNext(player)
+
+        if (
+            clickType.name.contains("SHIFT") &&
+            hasNext && !menu.verticalView
+        )
+        {
+            ViewAllPagesMenu(menu).openMenu(player)
+            playNeutral(player)
+            return
+        }
+
+        if (hasNext)
+        {
+            menu.modPage(player, mod)
+            playNeutral(player)
         }
     }
 

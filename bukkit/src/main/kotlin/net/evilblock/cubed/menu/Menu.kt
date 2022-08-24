@@ -200,7 +200,7 @@ abstract class Menu
             if (
                 openInventory.topInventory != null &&
                 openInventory.topInventory.size == inventory.size &&
-                openInventory.topInventory.title != inventory.title
+                openInventory.topInventory.title == inventory.title
             )
             {
                 openInventory.topInventory.contents = inventory.contents
