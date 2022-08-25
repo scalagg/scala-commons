@@ -30,7 +30,7 @@ object Signs
                     ?: return@handler
 
                 kotlin.runCatching {
-                    sign.action(event.lines.toList())
+                    sign.action(event.lines)
                 }.onFailure { throwable ->
                     throwable.printStackTrace()
                 }

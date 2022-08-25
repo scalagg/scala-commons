@@ -17,8 +17,8 @@ import java.util.*
  */
 class Sign(
     val uniqueId: UUID,
-    val lines: List<String>,
-    val action: (List<String>) -> Unit
+    val lines: Array<String>,
+    val action: (Array<String>) -> Unit
 )
 {
     fun close()
@@ -52,9 +52,11 @@ class Sign(
                 XMaterial.OAK_WALL_SIGN.parseMaterial()
             )
 
+        println(lines + " <- Lines")
+
         val tileEntity = WrapperPlayClientUpdateSign()
         tileEntity.location = blockPosition
-        tileEntity.lines = lines.toTypedArray()
+        tileEntity.lines = lines
 
         val editor = WrapperPlayServerOpenSignEditor()
         editor.location = blockPosition

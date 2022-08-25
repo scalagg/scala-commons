@@ -6,10 +6,12 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.recorder.Recorder
 import gg.scala.commons.rassist.replay.ReplayReviewer
+import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.zip.DeflaterOutputStream
@@ -25,6 +27,9 @@ object ScalaReplayAssistCommand : ScalaCommand()
     private var recording: Recorder? = null
     private var replay: Replay? = null
     private var reviewer: ReplayReviewer? = null
+
+    @Inject
+    lateinit var plugin: ScalaReplayAssistPlugin
 
     @CommandAlias("stop-replay")
     fun onStop(player: Player)
@@ -125,6 +130,15 @@ object ScalaReplayAssistCommand : ScalaCommand()
                     }mb in size"
                 )
 
+                this.plugin.dataFolder.apply {
+                    if (!this.exists())
+                        mkdirs()
+                }
+
+                File(this.plugin.dataFolder, "${UUID.randomUUID()}-replay.cpr")
+                    .apply {
+                        this.appendBytes(output)
+                    }
 
                 val outputStreamInfl = ByteArrayOutputStream()
                 val inflator = InflaterOutputStream(outputStreamInfl)

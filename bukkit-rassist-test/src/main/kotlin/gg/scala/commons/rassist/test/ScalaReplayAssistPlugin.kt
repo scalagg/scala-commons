@@ -17,10 +17,3 @@ import me.lucko.helper.plugin.ap.PluginDependency
     ]
 )
 class ScalaReplayAssistPlugin : ExtendedScalaPlugin()
-{
-    @ContainerEnable
-    fun containerEnable()
-    {
-
-    }
-}

@@ -11,6 +11,7 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
+import net.evilblock.cubed.metrics.UnifiedMetricsFeature
 import gg.scala.commons.protocol.ProtocolVersion
 import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
@@ -74,6 +75,7 @@ import java.util.logging.Level
         PluginDependency("store-spigot", soft = true),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
+        PluginDependency("UnifiedMetrics", soft = true)
     ]
 )
 // configs
