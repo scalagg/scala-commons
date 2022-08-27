@@ -99,7 +99,7 @@ open class ConfigContainer(
                     .subscribe { state: EventQuadState ->
                         when (state)
                         {
-                            EventQuadState.ALLOWED -> this.load()
+                            EventQuadState.ALLOWED, EventQuadState.NOT_SET -> this.load()
                             EventQuadState.FAILED ->
                             {
                                 Players.operators().forEach {
