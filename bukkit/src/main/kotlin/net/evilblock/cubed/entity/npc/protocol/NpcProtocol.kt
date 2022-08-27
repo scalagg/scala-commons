@@ -7,9 +7,6 @@
 
 package net.evilblock.cubed.entity.npc.protocol
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
@@ -18,7 +15,6 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.DataWatcherUtil
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.PlayerInfoData
 import org.bukkit.entity.Player
 import java.lang.reflect.Method
 import java.util.*
