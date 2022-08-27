@@ -59,6 +59,7 @@ open class ConfigContainer(
         ).toPath()
     }
 
+    private var recentlyModified = false
     private var lastModificationTimestamp = 0L
 
     override fun run()
@@ -76,6 +77,15 @@ open class ConfigContainer(
                     .toMillis()
 
             if (this.lastModificationTimestamp == 0L)
+            {
+                this.lastModificationTimestamp = lastModified
+                return
+            }
+
+            if (
+                this.recentlyModified &&
+                this.lastModificationTimestamp != lastModified
+            )
             {
                 this.lastModificationTimestamp = lastModified
                 return
@@ -99,7 +109,20 @@ open class ConfigContainer(
                     .subscribe { state: EventQuadState ->
                         when (state)
                         {
-                            EventQuadState.ALLOWED, EventQuadState.NOT_SET -> this.load()
+                            EventQuadState.ALLOWED, EventQuadState.NOT_SET ->
+                            {
+                                this.load()
+
+                                if (this.annotation.crossSync)
+                                {
+                                    AwareMessage.of(
+                                        this.annotation.model.java.simpleName,
+                                        this.containerized.aware,
+                                        "config" to Serializers
+                                            .gson.toJson(this.model!!)
+                                    ).publish()
+                                }
+                            }
                             EventQuadState.FAILED ->
                             {
                                 Players.operators().forEach {
@@ -185,6 +208,9 @@ open class ConfigContainer(
                     "config" to Serializers
                         .gson.toJson(this.model!!)
                 ).publish()
+            } else
+            {
+                this.recentlyModified = true
             }
         }.onFailure {
             this.plugin.logger.log(
