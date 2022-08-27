@@ -87,6 +87,7 @@ open class ConfigContainer(
                 this.lastModificationTimestamp != lastModified
             )
             {
+                this.recentlyModified = false
                 this.lastModificationTimestamp = lastModified
                 return
             }
