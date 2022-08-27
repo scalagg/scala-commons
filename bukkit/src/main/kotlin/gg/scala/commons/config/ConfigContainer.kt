@@ -223,6 +223,8 @@ open class ConfigContainer(
                     annotation.value
                 } injected into ${
                     annotation.model.simpleName
+                }${
+                    if (crossSync) " with crossync request" else ""
                 }."
             )
         }
