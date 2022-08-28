@@ -27,8 +27,8 @@ dependencies {
 
     compileOnly fileTree(dir: "lib", include: "*.jar")
 
-    api "gg.scala.tab:shared:1.1.2-20220826.203108-3"
-    api "gg.scala.tab:v1_8_R3:1.1.2-20220823.151024-2"
+    api "gg.scala.tab:shared:1.1.2-20220828.013643-6"
+    api "gg.scala.tab:v1_8_R3:1.1.2-20220828.013651-6"
 
     // helper
     implementation "me.lucko:helper:5.6.10.2"

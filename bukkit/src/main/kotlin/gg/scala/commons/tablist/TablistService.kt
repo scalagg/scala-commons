@@ -43,6 +43,12 @@ object TablistService : ScheduledExecutorService by Executors
     {
         val config = plugin.config<CommonsTablistConfig>()
 
+        if (!config.enabled)
+        {
+            plugin.logger.info("Skipping tablist initialization!")
+            return
+        }
+
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
                 var ticks = tabListTicksCalculator.invoke(it.player)

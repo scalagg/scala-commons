@@ -8,6 +8,8 @@ import xyz.mkotb.configapi.comment.Comment
  */
 class CommonsTablistConfig
 {
+    val enabled = false
+
     @Comment("Should be true.")
     val continueInitializationIfNullInvokation = false
     val tablistInitializeTicks = 10
