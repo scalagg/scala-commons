@@ -1,0 +1,8 @@
+dependencies {
+    compileOnly project(":serializers")
+    compileOnly "gg.scala.aware:aware:1.0.8.3"
+
+    compileOnly "io.lettuce:lettuce-core:6.2.0.RELEASE"
+
+    api "net.kyori:adventure-key:4.11.0"
+}
