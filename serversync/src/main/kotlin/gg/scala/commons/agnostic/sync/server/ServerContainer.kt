@@ -31,7 +31,7 @@ object ServerContainer : Runnable
         this.servers.filterIsInstance<T>()
 
     fun getServer(id: String) = this.servers
-        .filter {
+        .find {
             it.id.equals(id, true)
         }
 
@@ -43,8 +43,8 @@ object ServerContainer : Runnable
             group in it.groups
         }
 
-    inline fun <reified T> getServersInGroup(group: String) =
-        this.getServersInGroup(group) as T
+    inline fun <reified T> getServersInGroupCasted(group: String) =
+        this.getServersInGroup(group).filterIsInstance<T>()
 
     fun configure()
     {
