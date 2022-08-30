@@ -1,14 +1,13 @@
 package net.evilblock.cubed.statistic.impl
 
 import gg.scala.commons.annotations.plugin.SoftDependency
-import net.evilblock.cubed.statistic.ServerStatisticProvider
-import net.evilblock.cubed.statistic.ServerStatisticProviders
-import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import me.lucko.spark.api.SparkProvider
 import me.lucko.spark.api.statistic.StatisticWindow
+import net.evilblock.cubed.statistic.ServerStatisticProvider
+import net.evilblock.cubed.statistic.ServerStatisticProviders
 import java.lang.management.ManagementFactory
 
 /**

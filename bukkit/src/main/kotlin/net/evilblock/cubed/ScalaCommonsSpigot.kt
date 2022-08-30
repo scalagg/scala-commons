@@ -267,9 +267,14 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             GameServer(config.serverId, config.serverGroups, Region.valueOf(config.region))
         ) {
             // server metadata
-            // TODO: implement proper system; we have new stuff in ScalaSpigot so we must use spark
-            setMetadata("server", "tps", ServerStatisticProviders.provider().ticksPerSecond())
-            setMetadata("server", "cpu", ServerStatisticProviders.provider().cpuUsage())
+            kotlin.runCatching {
+                setMetadata("server", "tps", ServerStatisticProviders.provider().ticksPerSecond())
+                setMetadata("server", "cpu", ServerStatisticProviders.provider().cpuUsage())
+            }.onFailure {
+                setMetadata("server", "tps", 20.0)
+                setMetadata("server", "cpu", 1.0)
+            }
+
             setMetadata("server", "software", server.version)
 
             // online player metadata
