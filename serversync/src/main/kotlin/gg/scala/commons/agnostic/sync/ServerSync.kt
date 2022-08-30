@@ -17,11 +17,7 @@ import java.util.concurrent.ScheduledExecutorService
 object ServerSync : ScheduledExecutorService by Executors
     .newSingleThreadScheduledExecutor()
 {
-    @Suppress("UNCHECKED_CAST")
-    fun <T : AbstractServer> configure(
-        server: T,
-        update: T.() -> Unit
-    ): CompletionStage<Void>
+    fun configureIndependent()
     {
         Serializers.create {
             this.registerTypeAdapter(
@@ -36,6 +32,15 @@ object ServerSync : ScheduledExecutorService by Executors
         }
 
         ServerContainer.configure()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : AbstractServer> configure(
+        server: T,
+        update: T.() -> Unit
+    ): CompletionStage<Void>
+    {
+        this.configureIndependent()
 
         return SelfServerService(server) {
             update.invoke(it as T)
