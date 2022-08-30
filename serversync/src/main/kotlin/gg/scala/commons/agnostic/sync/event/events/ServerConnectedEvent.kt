@@ -1,6 +1,6 @@
 package gg.scala.commons.agnostic.sync.event.events
 
-import gg.scala.commons.agnostic.sync.event.ServerEvent
+import gg.scala.commons.agnostic.sync.server.event.ServerEvent
 
 /**
  * @author GrowlyX

@@ -2,6 +2,7 @@ package gg.scala.commons.agnostic.sync.event
 
 import gg.scala.aware.annotation.Subscribe
 import gg.scala.aware.message.AwareMessage
+import gg.scala.commons.agnostic.sync.server.event.ServerEvent
 
 /**
  * @author GrowlyX

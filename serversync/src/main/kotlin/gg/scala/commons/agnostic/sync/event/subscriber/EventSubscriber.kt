@@ -1,4 +1,4 @@
-package gg.scala.commons.agnostic.sync.event
+package gg.scala.commons.agnostic.sync.event.subscriber
 
 /**
  * @author GrowlyX

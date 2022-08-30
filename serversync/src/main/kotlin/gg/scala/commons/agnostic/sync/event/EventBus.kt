@@ -1,5 +1,7 @@
 package gg.scala.commons.agnostic.sync.event
 
+import gg.scala.commons.agnostic.sync.event.subscriber.EventSubscriber
+import gg.scala.commons.agnostic.sync.server.event.ServerEvent
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 

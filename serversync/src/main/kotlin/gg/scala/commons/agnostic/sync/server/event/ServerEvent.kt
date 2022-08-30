@@ -1,8 +1,9 @@
-package gg.scala.commons.agnostic.sync.event
+package gg.scala.commons.agnostic.sync.server.event
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
+import gg.scala.commons.agnostic.sync.event.EventBusPipeline
 
 /**
  * @author GrowlyX
