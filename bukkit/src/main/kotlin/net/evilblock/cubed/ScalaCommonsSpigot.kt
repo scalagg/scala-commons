@@ -14,11 +14,9 @@ import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
 import gg.scala.commons.agnostic.sync.server.SelfServerService
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
-import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
-import net.evilblock.cubed.metrics.UnifiedMetricsFeature
 import gg.scala.commons.protocol.ProtocolVersion
 import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
@@ -34,7 +32,7 @@ import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
-import me.lucko.helper.utils.Players
+import gg.scala.commons.util.Players
 import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
@@ -286,14 +284,14 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         // configuring this for the platform itself, not our plugin.
         EventBus.subscribe<ServerConnectedEvent>()
             .listen {
-                Players.all().forEach { player ->
+                Players.operators().forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
                 }
             }
 
         EventBus.subscribe<ServerDisconnectEvent>()
             .listen {
-                Players.all().forEach { player ->
+                Players.operators().forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
                 }
             }
@@ -311,19 +309,11 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 .handler { context ->
                     val implementationPlugins = LoaderUtils
                         .getHelperPlugins()
+                        .sortedBy { it.name }
 
                     implementationPlugins.forEach {
-                        Players.msg(
-                            context.sender(),
-                            "&7[${CC.GREEN}helper&7] &7Running ${
-                                CC.GOLD
-                            }${it.name}${
-                                CC.GRAY
-                            } version ${
-                                CC.YELLOW
-                            }${
-                                it.description.version
-                            }&7."
+                        context.sender().sendMessage(
+                            "&a[helper] &7Running &b${it.name}&7 version &e${it.description.version}"
                         )
                     }
                 }
