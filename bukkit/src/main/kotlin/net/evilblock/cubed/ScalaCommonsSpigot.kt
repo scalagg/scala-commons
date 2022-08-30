@@ -142,9 +142,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     {
         kotlin.runCatching {
             val config = config<CommonsGeneralConfig>()
-
-            Reflection.DEBUG =
-                config.debug
+            Reflection.DEBUG = config.debug
 
             createInfoCommand()
 
@@ -247,7 +245,9 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     {
         AwareHub.configure(
             AwareCloud.uri
-        ) { Serializers.gson }
+        ) {
+            Serializers.gson
+        }
 
         ScalaStoreUuidCache
             .configure(
@@ -258,41 +258,46 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
         if (config.enabled)
         {
-            this.serverSync = ServerSync.configure(
-                GameServer(config.serverId, config.serverGroups, config.region)
-            ) {
-                // server metadata
-                setMetadata("minecraft", "tps", MinecraftReflection.getTPS())
-                setMetadata("minecraft", "software", server.version)
+            this.configureServerSync(config)
+        }
+    }
 
-                // online player metadata
-                setMetadata("minecraft", "online", server.onlinePlayers.size)
-                setMetadata("minecraft", "online-list", server.onlinePlayers.map { it.uniqueId })
-                setMetadata("minecraft", "online-max", server.maxPlayers)
+    private fun configureServerSync(config: ServerSyncConfig)
+    {
+        this.serverSync = ServerSync.configure(
+            GameServer(config.serverId, config.serverGroups, config.region)
+        ) {
+            // server metadata
+            setMetadata("minecraft", "tps", MinecraftReflection.getTPS())
+            setMetadata("minecraft", "software", server.version)
 
-                // whitelist
-                setMetadata("minecraft", "whitelisted", server.hasWhitelist())
-                setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
+            // online player metadata
+            setMetadata("minecraft", "online", server.onlinePlayers.size)
+            setMetadata("minecraft", "online-list", server.onlinePlayers.map { it.uniqueId })
+            setMetadata("minecraft", "online-max", server.maxPlayers)
+
+            // whitelist
+            setMetadata("minecraft", "whitelisted", server.hasWhitelist())
+            setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
+        }
+
+        // There is no need to bind these to a local CompositeTerminable as we're
+        // configuring this for the platform itself, not our plugin.
+        EventBus.subscribe<ServerConnectedEvent>()
+            .listen {
+                Players.all().forEach { player ->
+                    player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
+                }
             }
 
-            // There is no need to bind these to a local CompositeTerminable as we're
-            // configuring this for the platform itself, not our plugin.
-            EventBus.subscribe<ServerConnectedEvent>()
-                .listen {
-                    Players.all().forEach { player ->
-                        player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
-                    }
+        EventBus.subscribe<ServerDisconnectEvent>()
+            .listen {
+                Players.all().forEach { player ->
+                    player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
                 }
+            }
 
-            EventBus.subscribe<ServerDisconnectEvent>()
-                .listen {
-                    Players.all().forEach { player ->
-                        player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
-                    }
-                }
-
-            this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
-        }
+        this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
     }
 
     private fun createInfoCommand()

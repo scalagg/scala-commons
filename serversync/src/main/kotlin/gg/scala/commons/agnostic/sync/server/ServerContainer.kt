@@ -2,9 +2,13 @@ package gg.scala.commons.agnostic.sync.server
 
 import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
+import gg.scala.commons.agnostic.sync.event.EventBus
+import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
 import io.lettuce.core.cluster.PipelinedRedisFuture
 import io.lettuce.core.pubsub.RedisPubSubListener
+import io.netty.util.internal.ConcurrentSet
 import net.evilblock.cubed.serializers.Serializers
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
@@ -20,6 +24,9 @@ object ServerContainer : Runnable
         }!!
 
     val servers = CopyOnWriteArrayList<AbstractServer>()
+
+    private var previousServerList = setOf<Pair<String, String>>()
+    private var accountedFor = ConcurrentHashMap.newKeySet<String>()
 
     fun allServers() = this.servers
 
@@ -47,20 +54,61 @@ object ServerContainer : Runnable
         ServerSync.scheduleAtFixedRate(
             this, 0L, 500L, TimeUnit.MILLISECONDS
         )
+
+        EventBus.subscribe<ServerDisconnectEvent>()
+            .listen {
+                this.accountedFor.add(it.id)
+            }
     }
 
     override fun run()
     {
+        val newServerList = this.container.sync()
+            .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
+            .mapNotNull {
+                this.container.sync().get(it)
+            }
+            .map {
+                Serializers.gson.fromJson(it, AbstractServer::class.java)
+            }
+
+        this.previousServerList = this.servers
+            .map {
+                it.id to it::class.simpleName!!
+            }
+            .toSet()
+
+        val newServerListIds = newServerList.map { it.id }
+
+        val removedServers = this.previousServerList
+            .filter {
+                it.first !in newServerListIds
+            }
+
+        for (removedServer in removedServers)
+        {
+            // Assuming this server has received some sort of disconnection
+            // heartbeat and that it has been removed MANUALLY, not expired.
+            if (removedServer.first in this.accountedFor)
+            {
+                this.accountedFor.remove(removedServer.first)
+                continue
+            }
+
+            // Assume that this server has timed out, and its latest
+            // heartbeat (<5s) has expired.
+
+            // We'll publish a local disconnect event for our event handlers
+            // to handle the logic for (as this process is run on each individual
+            // server being listening on these channels).
+            val disconnection = ServerDisconnectEvent(
+                removedServer.first, removedServer.second, "timed out"
+            )
+
+            disconnection.push(local = true)
+        }
+
         this.servers.clear()
-        this.servers.addAll(
-            this.container.sync()
-                .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
-                .mapNotNull {
-                    this.container.sync().get(it)
-                }
-                .map {
-                    Serializers.gson.fromJson(it, AbstractServer::class.java)
-                }
-        )
+        this.servers.addAll(newServerList)
     }
 }
