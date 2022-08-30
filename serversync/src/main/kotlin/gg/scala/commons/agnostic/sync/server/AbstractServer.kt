@@ -16,7 +16,7 @@ abstract class AbstractServer : AbstractTypeSerializable
     abstract val groups: List<String>
     abstract val region: Region
 
-    private val metadata = mutableMapOf<Key, KeyedValue<MetadataValue>>()
+    private val metadata = mutableListOf<KeyedValue<MetadataValue>>()
 
     var lastHeartbeat = System.currentTimeMillis()
     var initialHeartbeat = System.currentTimeMillis()
@@ -25,7 +25,11 @@ abstract class AbstractServer : AbstractTypeSerializable
         this.getMetadata(namespace, key)?.cast<T>()
 
     fun getMetadata(namespace: String, key: String) =
-        this.metadata[Key.key(namespace, key)]?.value()
+        this.metadata
+            .find {
+                it.key().asString() == "$namespace:$key"
+            }
+            ?.value()
 
     fun setMetadata(namespace: String, key: String, value: Any) =
         this.setMetadata(Key.key(namespace, key), value)
@@ -35,6 +39,8 @@ abstract class AbstractServer : AbstractTypeSerializable
 
     fun setMetadata(key: Key, value: MetadataValue)
     {
-        this.metadata[key] = KeyedValue.keyedValue(key, value)
+        this.metadata.add(
+            KeyedValue.keyedValue(key, value)
+        )
     }
 }
