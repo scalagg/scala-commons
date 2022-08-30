@@ -8,7 +8,6 @@ import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.agnostic.sync.server.impl.ProxyServer
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
-import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
@@ -19,7 +18,7 @@ import java.util.concurrent.ScheduledExecutorService
 object ServerSync : ScheduledExecutorService by Executors
     .newSingleThreadScheduledExecutor()
 {
-    private lateinit var local: AbstractServer
+    lateinit var local: AbstractServer
 
     // default casts
     fun getLocalGameServer() = this.local as GameServer
@@ -42,16 +41,20 @@ object ServerSync : ScheduledExecutorService by Executors
         ServerContainer.configure()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : AbstractServer> configure(
-        server: T, update: T.() -> Unit
+    inline fun <reified T : AbstractServer> configure(
+        server: T, noinline update: T.() -> Unit
     ): SelfServerService<T>
     {
         this.configureIndependent()
         this.local = server
 
-        return SelfServerService(server) {
-            update.invoke(it as T)
+        return SelfServerService(server, update) {
+            """
+                {
+                   "type": "${T::class.java.name}",
+                   "properties": ${Serializers.gson.toJson(it)}
+                }
+            """.trimIndent()
         }.apply {
             configure()
         }

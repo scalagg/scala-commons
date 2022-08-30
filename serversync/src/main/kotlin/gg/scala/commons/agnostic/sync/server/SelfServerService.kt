@@ -4,7 +4,6 @@ import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
-import net.evilblock.cubed.serializers.Serializers
 import java.time.Duration
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
@@ -17,24 +16,24 @@ import java.util.logging.Logger
  */
 class SelfServerService<T : AbstractServer>(
     private val server: T,
-    private val updateMeta: (AbstractServer) -> Unit
+    private val updateMeta: (T) -> Unit,
+    private val serializer: (T) -> String
 )
 {
+    private val keyspace = "${ServerSyncPipeline.NAMESPACE}:servers:${this.server.id}"
+
     fun configure(): CompletionStage<Void>
     {
-        val keyspace = "${ServerSyncPipeline.NAMESPACE}:servers:${this.server.id}"
         this.updateMeta.invoke(this.server)
 
         return ServerContainer.container.async()
-            .set(
-                keyspace, Serializers.gson.toJson(this.server)
-            )
+            .set(keyspace, this.serializer(this.server))
             .exceptionally {
                 it.printStackTrace()
                 return@exceptionally null
             }
             .thenRunAsync {
-                this.scheduleNamespaceExpiration(keyspace)
+                this.scheduleNamespaceExpiration()
 
                 val event = ServerConnectedEvent(
                     this.server.id, this.server.javaClass.typeName
@@ -48,15 +47,15 @@ class SelfServerService<T : AbstractServer>(
 
                     ServerContainer.container.sync()
                         .set(
-                            keyspace, Serializers.gson.toJson(this.server)
+                            keyspace, this.serializer(this.server)
                         )
 
-                    this.scheduleNamespaceExpiration(keyspace)
+                    this.scheduleNamespaceExpiration()
                 }, 0L, 500L, TimeUnit.MILLISECONDS)
             }
     }
 
-    private fun scheduleNamespaceExpiration(keyspace: String)
+    private fun scheduleNamespaceExpiration()
     {
         kotlin.runCatching {
             // manually set expiration in-case server
@@ -74,9 +73,7 @@ class SelfServerService<T : AbstractServer>(
     fun disconnect(reason: String = "unknown"): CompletionStage<Void>
     {
         return ServerContainer.container.async()
-            .hdel(
-                ServerSyncPipeline.NAMESPACE, this.server.id
-            )
+            .del(this.keyspace)
             .exceptionally {
                 it.printStackTrace()
                 return@exceptionally null
