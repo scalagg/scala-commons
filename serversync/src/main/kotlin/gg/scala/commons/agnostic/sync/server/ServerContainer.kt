@@ -4,9 +4,6 @@ import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import gg.scala.commons.agnostic.sync.event.EventBus
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
-import io.lettuce.core.cluster.PipelinedRedisFuture
-import io.lettuce.core.pubsub.RedisPubSubListener
-import io.netty.util.internal.ConcurrentSet
 import net.evilblock.cubed.serializers.Serializers
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -57,7 +54,10 @@ object ServerContainer : Runnable
 
         EventBus.subscribe<ServerDisconnectEvent>()
             .listen {
-                this.accountedFor.add(it.id)
+                if (it.reason != "timed out")
+                {
+                    this.accountedFor.add(it.id)
+                }
             }
     }
 
