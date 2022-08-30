@@ -3,7 +3,7 @@ package gg.scala.commons.agnostic.sync.server.event
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
-import gg.scala.commons.agnostic.sync.event.EventBusPipeline
+import gg.scala.commons.agnostic.sync.event.EventBusSubscriber
 import net.evilblock.cubed.serializers.Serializers
 
 /**
@@ -26,7 +26,7 @@ interface ServerEvent
 
         if (local)
         {
-            EventBusPipeline.onEventBus(message)
+            EventBusSubscriber.onEventBus(message)
             return
         }
 

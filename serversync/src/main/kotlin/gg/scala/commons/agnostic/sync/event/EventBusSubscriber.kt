@@ -2,14 +2,13 @@ package gg.scala.commons.agnostic.sync.event
 
 import gg.scala.aware.annotation.Subscribe
 import gg.scala.aware.message.AwareMessage
-import gg.scala.commons.agnostic.sync.server.event.ServerEvent
 import net.evilblock.cubed.serializers.Serializers
 
 /**
  * @author GrowlyX
  * @since 8/29/2022
  */
-object EventBusPipeline
+object EventBusSubscriber
 {
     @Subscribe("event-bus")
     fun onEventBus(message: AwareMessage)

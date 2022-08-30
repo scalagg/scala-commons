@@ -1,6 +1,6 @@
 package gg.scala.commons.agnostic.sync
 
-import gg.scala.commons.agnostic.sync.event.EventBusPipeline
+import gg.scala.commons.agnostic.sync.event.EventBusSubscriber
 import gg.scala.commons.agnostic.sync.server.AbstractServer
 import gg.scala.commons.agnostic.sync.server.SelfServerService
 import gg.scala.commons.agnostic.sync.server.ServerContainer
@@ -34,7 +34,7 @@ object ServerSync : ScheduledExecutorService by Executors
         }
 
         ServerSyncPipeline.usePipeline {
-            this.listen(EventBusPipeline)
+            this.listen(EventBusSubscriber)
             this.connect().toCompletableFuture().join()
         }
 
