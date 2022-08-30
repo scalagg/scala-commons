@@ -268,7 +268,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             GameServer(config.serverId, config.serverGroups, config.region)
         ) {
             // server metadata
-            setMetadata("minecraft", "tps", MinecraftReflection.getTPS())
+            // TODO: implement proper system; we have new stuff in ScalaSpigot so we must use spark
+            setMetadata("minecraft", "tps", /*MinecraftReflection.getTPS()*/0.0)
             setMetadata("minecraft", "software", server.version)
 
             // online player metadata
