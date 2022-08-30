@@ -18,36 +18,41 @@ class GameServer(
 
     fun getTPS() = this
         .getMetadataValue<Double>(
-            "minecraft", "tps"
+            "server", "tps"
+        )
+
+    fun getCpuUsage() = this
+        .getMetadataValue<Double>(
+            "server", "cpu"
         )
 
     fun getPlayersCount() = this
         .getMetadataValue<Int>(
-            "minecraft", "online"
+            "server", "online"
         )
 
     fun getPlayers() = this
         .getMetadataValue<List<UUID>>(
-            "minecraft", "online-list"
+            "server", "online-list"
         )
 
     fun getMaxPlayers() = this
         .getMetadataValue<Int>(
-            "minecraft", "online-max"
+            "server", "online-max"
         )
 
     fun getSoftware() = this
         .getMetadataValue<String>(
-            "minecraft", "software"
+            "server", "software"
         )
 
     fun getWhitelisted() = this
         .getMetadataValue<Boolean>(
-            "minecraft", "whitelisted"
+            "server", "whitelisted"
         )
 
     fun getWhitelistedPlayers() = this
         .getMetadataValue<List<UUID>>(
-            "minecraft", "whitelisted-players"
+            "server", "whitelisted-players"
         )
 }

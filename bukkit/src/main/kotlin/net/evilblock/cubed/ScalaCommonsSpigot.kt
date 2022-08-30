@@ -58,6 +58,7 @@ import net.evilblock.cubed.serialize.PotionEffectAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.evilblock.cubed.statistic.ServerStatisticProviders
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
@@ -84,6 +85,7 @@ import java.util.logging.Level
         PluginDependency("store-spigot", soft = true),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
+        PluginDependency("spark", soft = true),
         PluginDependency("UnifiedMetrics", soft = true)
     ]
 )
@@ -268,17 +270,18 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         ) {
             // server metadata
             // TODO: implement proper system; we have new stuff in ScalaSpigot so we must use spark
-            setMetadata("minecraft", "tps", /*MinecraftReflection.getTPS()*/0.0)
-            setMetadata("minecraft", "software", server.version)
+            setMetadata("server", "tps", ServerStatisticProviders.provider().ticksPerSecond())
+            setMetadata("server", "cpu", ServerStatisticProviders.provider().cpuUsage())
+            setMetadata("server", "software", server.version)
 
             // online player metadata
-            setMetadata("minecraft", "online", server.onlinePlayers.size)
-            setMetadata("minecraft", "online-list", server.onlinePlayers.map { it.uniqueId })
-            setMetadata("minecraft", "online-max", server.maxPlayers)
+            setMetadata("server", "online", server.onlinePlayers.size)
+            setMetadata("server", "online-list", server.onlinePlayers.map { it.uniqueId })
+            setMetadata("server", "online-max", server.maxPlayers)
 
             // whitelist
-            setMetadata("minecraft", "whitelisted", server.hasWhitelist())
-            setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
+            setMetadata("server", "whitelisted", server.hasWhitelist())
+            setMetadata("server", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
         }
 
         // There is no need to bind these to a local CompositeTerminable as we're
