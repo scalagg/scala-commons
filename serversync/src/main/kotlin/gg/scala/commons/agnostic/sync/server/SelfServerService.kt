@@ -47,10 +47,11 @@ class SelfServerService(
                     this.updateMeta.invoke(this.server)
 
                     ServerContainer.container.sync()
-                        .hset(
-                            ServerSyncPipeline.NAMESPACE, this.server.id,
-                            Serializers.gson.toJson(this.server)
+                        .set(
+                            keyspace, Serializers.gson.toJson(this.server)
                         )
+
+                    this.scheduleNamespaceExpiration(keyspace)
                 }, 0L, 500L, TimeUnit.MILLISECONDS)
             }
     }
