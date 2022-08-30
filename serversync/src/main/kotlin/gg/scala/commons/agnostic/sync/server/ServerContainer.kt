@@ -49,7 +49,14 @@ object ServerContainer : Runnable
     fun configure()
     {
         ServerSync.scheduleAtFixedRate(
-            this, 0L, 500L, TimeUnit.MILLISECONDS
+            {
+                kotlin.runCatching {
+                    this.run()
+                }.onFailure {
+                    it.printStackTrace()
+                }
+            },
+            0L, 500L, TimeUnit.MILLISECONDS
         )
 
         EventBus.subscribe<ServerDisconnectEvent>()

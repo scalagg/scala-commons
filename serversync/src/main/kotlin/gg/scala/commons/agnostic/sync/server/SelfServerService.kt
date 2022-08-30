@@ -15,8 +15,8 @@ import java.util.logging.Logger
  * @author GrowlyX
  * @since 8/29/2022
  */
-class SelfServerService(
-    private val server: AbstractServer,
+class SelfServerService<T : AbstractServer>(
+    private val server: T,
     private val updateMeta: (AbstractServer) -> Unit
 )
 {

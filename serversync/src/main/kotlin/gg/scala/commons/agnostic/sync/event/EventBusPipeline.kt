@@ -3,6 +3,7 @@ package gg.scala.commons.agnostic.sync.event
 import gg.scala.aware.annotation.Subscribe
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.agnostic.sync.server.event.ServerEvent
+import net.evilblock.cubed.serializers.Serializers
 
 /**
  * @author GrowlyX
@@ -18,10 +19,9 @@ object EventBusPipeline
                 message.retrieve("type")
             )
 
-        val event = message
-            .retrieve(
-                "event", clazz.kotlin
-            ) as ServerEvent
+        val event = Serializers.gson.fromJson(
+            message.retrieve<String>("event"), clazz
+        )
 
         EventBus.subscribers[clazz.name]
             ?.apply {

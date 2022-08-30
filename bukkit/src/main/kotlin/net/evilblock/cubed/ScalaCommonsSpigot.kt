@@ -238,7 +238,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }
     }
 
-    private var serverSync: SelfServerService? = null
+    private var serverSync: SelfServerService<GameServer>? = null
 
     private fun configureRedisServices()
     {

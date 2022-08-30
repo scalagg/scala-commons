@@ -4,6 +4,7 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import gg.scala.commons.agnostic.sync.event.EventBusPipeline
+import net.evilblock.cubed.serializers.Serializers
 
 /**
  * @author GrowlyX
@@ -19,7 +20,7 @@ interface ServerEvent
         val message = AwareMessage.of(
             "event-bus",
             ServerSyncPipeline.usePipeline { this },
-            "event" to this,
+            "event" to Serializers.gson.toJson(this),
             "type" to this::class.java.name
         )
 

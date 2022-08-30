@@ -27,8 +27,8 @@ object ServerSync : ScheduledExecutorService by Executors
 
     fun configureIndependent()
     {
-        Serializers.create {
-            this.registerTypeAdapter(
+        Serializers.useGsonBuilderThenRebuild {
+            it.registerTypeAdapter(
                 AbstractServer::class.java,
                 AbstractTypeSerializer<AbstractServer>()
             )
@@ -45,7 +45,7 @@ object ServerSync : ScheduledExecutorService by Executors
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractServer> configure(
         server: T, update: T.() -> Unit
-    ): SelfServerService
+    ): SelfServerService<T>
     {
         this.configureIndependent()
         this.local = server
