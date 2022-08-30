@@ -11,8 +11,12 @@ include(
 include(
     "store",
     "commons",
-    "serializers",
-    "serversync"
+    "serializers"
+)
+
+// serversync
+include(
+    "serversync",
 )
 
 // velocity

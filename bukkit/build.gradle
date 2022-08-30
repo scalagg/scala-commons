@@ -17,6 +17,7 @@ dependencies {
     implementation project(":serializers")
     implementation project(":store")
     implementation project(":commons")
+    implementation project(":serversync")
 
     // todo: only api on standalone?
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"

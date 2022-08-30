@@ -14,13 +14,13 @@ import java.util.concurrent.ScheduledExecutorService
  * @author GrowlyX
  * @since 8/29/2022
  */
-object ScalaServerSync : ScheduledExecutorService by Executors
+object ServerSync : ScheduledExecutorService by Executors
     .newSingleThreadScheduledExecutor()
 {
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractServer> configure(
         server: T,
-        update: (T) -> Unit
+        update: T.() -> Unit
     ): CompletionStage<Void>
     {
         Serializers.create {

@@ -1,6 +1,6 @@
 package gg.scala.commons.agnostic.sync.server
 
-import gg.scala.commons.agnostic.sync.ScalaServerSync
+import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import net.evilblock.cubed.serializers.Serializers
 import java.util.concurrent.CopyOnWriteArrayList
@@ -42,7 +42,7 @@ object ServerContainer : Runnable
 
     fun configure()
     {
-        ScalaServerSync.scheduleAtFixedRate(
+        ServerSync.scheduleAtFixedRate(
             this, 0L, 500L, TimeUnit.MILLISECONDS
         )
     }

@@ -16,7 +16,7 @@ class ProxyServer(
 {
     override fun getAbstractType() = ProxyServer::class.java
 
-    fun getPlayers() = this
+    fun getPlayersCount() = this
         .getMetadataValue<Int>(
             "minecraft", "online"
         )

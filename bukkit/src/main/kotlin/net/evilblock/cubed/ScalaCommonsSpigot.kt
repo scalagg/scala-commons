@@ -8,6 +8,9 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.agnostic.sync.ServerSync
+import gg.scala.commons.agnostic.sync.server.impl.GameServer
+import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
@@ -34,6 +37,7 @@ import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsPostersConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.config.CommonsTablistConfig
+import net.evilblock.cubed.config.serversync.ServerSyncConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
@@ -54,6 +58,8 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -102,6 +108,11 @@ import java.util.logging.Level
 @ContainerConfig(
     value = "scoreboard",
     model = CommonsScoreboardConfig::class
+)
+// serversync
+@ContainerConfig(
+    value = "serversync",
+    model = ServerSyncConfig::class
 )
 @HelperImplementationPlugin
 class ScalaCommonsSpigot : ExtendedScalaPlugin()
@@ -203,15 +214,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 !it.message.contains("Please notify author of plugin")
             }
 
-            AwareHub.configure(
-                AwareCloud.uri
-            ) {
-                Serializers.gson
-            }
-
-            ScalaStoreUuidCache.configure(
-                DistributedRedisUuidCacheTranslator(aware)
-            )
+            this.configureRedisServices()
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
@@ -231,6 +234,42 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 it
             )
             server.shutdown()
+        }
+    }
+
+    private fun configureRedisServices()
+    {
+        AwareHub.configure(
+            AwareCloud.uri
+        ) { Serializers.gson }
+
+        ScalaStoreUuidCache
+            .configure(
+                DistributedRedisUuidCacheTranslator(aware)
+            )
+
+        val config = this.config<ServerSyncConfig>()
+
+        if (config.enabled)
+        {
+            ServerSync.configure(
+                GameServer(config.serverId, config.serverGroups, config.region)
+            ) {
+                // server metadata
+                setMetadata("minecraft", "tps", MinecraftReflection.getTPS())
+                setMetadata("minecraft", "software", server.version)
+
+                // online player metadata
+                setMetadata("minecraft", "online", server.onlinePlayers.size)
+                setMetadata("minecraft", "online-list", server.onlinePlayers.map { it.uniqueId })
+                setMetadata("minecraft", "online-max", server.maxPlayers)
+
+                // whitelist
+                setMetadata("minecraft", "whitelisted", server.hasWhitelist())
+                setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
+            }
+
+            this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
         }
     }
 

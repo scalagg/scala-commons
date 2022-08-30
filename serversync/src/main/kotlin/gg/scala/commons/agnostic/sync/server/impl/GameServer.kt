@@ -2,6 +2,7 @@ package gg.scala.commons.agnostic.sync.server.impl
 
 import gg.scala.commons.agnostic.sync.server.AbstractServer
 import gg.scala.commons.agnostic.sync.server.region.Region
+import java.util.UUID
 
 /**
  * @author GrowlyX
@@ -20,14 +21,14 @@ class GameServer(
             "minecraft", "tps"
         )
 
-    fun getPlayers() = this
+    fun getPlayersCount() = this
         .getMetadataValue<Int>(
             "minecraft", "online"
         )
 
-    fun getPlayersSeen() = this
-        .getMetadataValue<Int>(
-            "minecraft", "online-highest"
+    fun getPlayers() = this
+        .getMetadataValue<List<UUID>>(
+            "minecraft", "online-list"
         )
 
     fun getMaxPlayers() = this
@@ -46,7 +47,7 @@ class GameServer(
         )
 
     fun getWhitelistedPlayers() = this
-        .getMetadataValue<Boolean>(
+        .getMetadataValue<List<UUID>>(
             "minecraft", "whitelisted-players"
         )
 }

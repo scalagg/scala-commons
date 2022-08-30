@@ -1,6 +1,6 @@
 package gg.scala.commons.agnostic.sync.server
 
-import gg.scala.commons.agnostic.sync.ScalaServerSync
+import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
@@ -33,7 +33,7 @@ class SelfServerService(
 
                 event.push()
 
-                ScalaServerSync.scheduleAtFixedRate({
+                ServerSync.scheduleAtFixedRate({
                     this.server.lastHeartbeat = System.currentTimeMillis()
                     this.updateMeta.invoke(this.server)
 
