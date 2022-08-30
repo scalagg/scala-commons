@@ -17,6 +17,7 @@ dependencies {
     implementation project(":serializers")
     implementation project(":store")
     implementation project(":commons")
+    implementation project(":serversync")
 
     // todo: only api on standalone?
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
@@ -44,11 +45,11 @@ dependencies {
     implementation "org.scala-lang:scala-library:2.13.8"
 
     // hoplite
-    implementation "com.sksamuel.hoplite:hoplite-core:2.5.2"
-    implementation "com.sksamuel.hoplite:hoplite-yaml:2.5.2"
-    implementation "com.sksamuel.hoplite:hoplite-toml:2.5.2"
-    implementation "com.sksamuel.hoplite:hoplite-hocon:2.5.2"
-    implementation "com.sksamuel.hoplite:hoplite-json:2.5.2"
+    implementation "com.sksamuel.hoplite:hoplite-core:2.6.2"
+    implementation "com.sksamuel.hoplite:hoplite-yaml:2.6.2"
+    implementation "com.sksamuel.hoplite:hoplite-toml:2.6.2"
+    implementation "com.sksamuel.hoplite:hoplite-hocon:2.6.2"
+    implementation "com.sksamuel.hoplite:hoplite-json:2.6.2"
 
     compileOnly "me.lucko:scriptcontroller:1.2"
     compileOnly "io.github.classgraph:classgraph:4.8.149"

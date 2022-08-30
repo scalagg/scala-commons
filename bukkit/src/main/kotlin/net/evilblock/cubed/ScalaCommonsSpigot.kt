@@ -8,10 +8,16 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.agnostic.sync.ServerSync
+import gg.scala.commons.agnostic.sync.event.EventBus
+import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
+import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
+import gg.scala.commons.agnostic.sync.server.SelfServerService
+import gg.scala.commons.agnostic.sync.server.impl.GameServer
+import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
-import net.evilblock.cubed.metrics.UnifiedMetricsFeature
 import gg.scala.commons.protocol.ProtocolVersion
 import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
@@ -27,13 +33,14 @@ import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
-import me.lucko.helper.utils.Players
+import gg.scala.commons.util.Players
 import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsPostersConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.config.CommonsTablistConfig
+import net.evilblock.cubed.config.serversync.ServerSyncConfig
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntitySerializer
 import net.evilblock.cubed.entity.animation.EntityAnimation
@@ -54,6 +61,8 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -103,6 +112,11 @@ import java.util.logging.Level
     value = "scoreboard",
     model = CommonsScoreboardConfig::class
 )
+// serversync
+@ContainerConfig(
+    value = "serversync",
+    model = ServerSyncConfig::class
+)
 @HelperImplementationPlugin
 class ScalaCommonsSpigot : ExtendedScalaPlugin()
 {
@@ -127,9 +141,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     {
         kotlin.runCatching {
             val config = config<CommonsGeneralConfig>()
-
-            Reflection.DEBUG =
-                config.debug
+            Reflection.DEBUG = config.debug
 
             createInfoCommand()
 
@@ -203,15 +215,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 !it.message.contains("Please notify author of plugin")
             }
 
-            AwareHub.configure(
-                AwareCloud.uri
-            ) {
-                Serializers.gson
-            }
-
-            ScalaStoreUuidCache.configure(
-                DistributedRedisUuidCacheTranslator(aware)
-            )
+            this.configureRedisServices()
 
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
@@ -234,6 +238,68 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }
     }
 
+    private var serverSync: SelfServerService? = null
+
+    private fun configureRedisServices()
+    {
+        AwareHub.configure(
+            AwareCloud.uri
+        ) {
+            Serializers.gson
+        }
+
+        ScalaStoreUuidCache
+            .configure(
+                DistributedRedisUuidCacheTranslator(aware)
+            )
+
+        val config = this.config<ServerSyncConfig>()
+
+        if (config.enabled)
+        {
+            this.configureServerSync(config)
+        }
+    }
+
+    private fun configureServerSync(config: ServerSyncConfig)
+    {
+        this.serverSync = ServerSync.configure(
+            GameServer(config.serverId, config.serverGroups, Region.valueOf(config.region))
+        ) {
+            // server metadata
+            // TODO: implement proper system; we have new stuff in ScalaSpigot so we must use spark
+            setMetadata("minecraft", "tps", /*MinecraftReflection.getTPS()*/0.0)
+            setMetadata("minecraft", "software", server.version)
+
+            // online player metadata
+            setMetadata("minecraft", "online", server.onlinePlayers.size)
+            setMetadata("minecraft", "online-list", server.onlinePlayers.map { it.uniqueId })
+            setMetadata("minecraft", "online-max", server.maxPlayers)
+
+            // whitelist
+            setMetadata("minecraft", "whitelisted", server.hasWhitelist())
+            setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
+        }
+
+        // There is no need to bind these to a local CompositeTerminable as we're
+        // configuring this for the platform itself, not our plugin.
+        EventBus.subscribe<ServerConnectedEvent>()
+            .listen {
+                Players.operators().forEach { player ->
+                    player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
+                }
+            }
+
+        EventBus.subscribe<ServerDisconnectEvent>()
+            .listen {
+                Players.operators().forEach { player ->
+                    player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
+                }
+            }
+
+        this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
+    }
+
     private fun createInfoCommand()
     {
         val config = config<CommonsGeneralConfig>()
@@ -244,19 +310,11 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 .handler { context ->
                     val implementationPlugins = LoaderUtils
                         .getHelperPlugins()
+                        .sortedBy { it.name }
 
                     implementationPlugins.forEach {
-                        Players.msg(
-                            context.sender(),
-                            "&7[${CC.GREEN}helper&7] &7Running ${
-                                CC.GOLD
-                            }${it.name}${
-                                CC.GRAY
-                            } version ${
-                                CC.YELLOW
-                            }${
-                                it.description.version
-                            }&7."
+                        context.sender().sendMessage(
+                            "&a[helper] &7Running &b${it.name}&7 version &e${it.description.version}"
                         )
                     }
                 }
@@ -280,6 +338,13 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 logger.info("[Posters] Failed to save poster data!")
             }
         }
+
+        this.serverSync
+            ?.disconnect(
+                reason = "manually stopped"
+            )
+            ?.toCompletableFuture()
+            ?.join()
 
         this.aware.shutdown()
     }
