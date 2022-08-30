@@ -18,11 +18,11 @@ class ProxyServer(
 
     fun getPlayersCount() = this
         .getMetadataValue<Int>(
-            "minecraft", "online"
+            "velocity", "online"
         )
 
     fun getSoftware() = this
         .getMetadataValue<String>(
-            "minecraft", "software"
+            "velocity", "software"
         )
 }
