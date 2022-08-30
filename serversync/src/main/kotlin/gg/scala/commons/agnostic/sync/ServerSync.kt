@@ -1,5 +1,6 @@
 package gg.scala.commons.agnostic.sync
 
+import com.google.gson.InstanceCreator
 import gg.scala.commons.agnostic.sync.event.EventBusSubscriber
 import gg.scala.commons.agnostic.sync.server.AbstractServer
 import gg.scala.commons.agnostic.sync.server.SelfServerService
@@ -8,6 +9,9 @@ import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.agnostic.sync.server.impl.ProxyServer
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import java.lang.reflect.Type
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
@@ -24,13 +28,18 @@ object ServerSync : ScheduledExecutorService by Executors
     fun getLocalGameServer() = this.local as GameServer
     fun getLocalProxyServer() = this.local as ProxyServer
 
-    fun configureIndependent()
+    fun configureIndependent(platform: Boolean = false)
     {
         Serializers.useGsonBuilderThenRebuild {
             it.registerTypeAdapter(
                 AbstractServer::class.java,
                 AbstractTypeSerializer<AbstractServer>()
             )
+
+            if (!platform)
+            {
+                GsonComponentSerializer.gson().populator().apply(it)
+            }
         }
 
         ServerSyncPipeline.usePipeline {
@@ -45,7 +54,7 @@ object ServerSync : ScheduledExecutorService by Executors
         server: T, noinline update: T.() -> Unit
     ): SelfServerService<T>
     {
-        this.configureIndependent()
+        this.configureIndependent(platform = true)
         this.local = server
 
         return SelfServerService(server, update) {

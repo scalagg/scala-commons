@@ -17,7 +17,7 @@ import java.lang.management.ManagementFactory
 @Service
 @IgnoreAutoScan
 @SoftDependency("spark")
-class SparkServerStatisticProvider : ServerStatisticProvider
+object SparkServerStatisticProvider : ServerStatisticProvider
 {
     @Configure
     fun configure()
