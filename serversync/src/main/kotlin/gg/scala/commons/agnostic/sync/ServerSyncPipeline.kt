@@ -17,7 +17,7 @@ object ServerSyncPipeline
 
     val pipeline by lazy {
         AwareBuilder
-            .of<AwareMessage>("serversync")
+            .of<AwareMessage>(NAMESPACE)
             .codec(AwareMessageCodec)
             .logger(
                 Logger.getLogger("ServerSyncPipeline")

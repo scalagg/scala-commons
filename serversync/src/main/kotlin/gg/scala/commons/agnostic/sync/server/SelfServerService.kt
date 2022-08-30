@@ -5,8 +5,11 @@ import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
 import net.evilblock.cubed.serializers.Serializers
+import java.time.Duration
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * @author GrowlyX
@@ -19,14 +22,20 @@ class SelfServerService(
 {
     fun configure(): CompletionStage<Void>
     {
+        val keyspace = "${ServerSyncPipeline.NAMESPACE}:servers:${this.server.id}"
         this.updateMeta.invoke(this.server)
 
         return ServerContainer.container.async()
-            .hset(
-                ServerSyncPipeline.NAMESPACE, this.server.id,
-                Serializers.gson.toJson(this.server)
+            .set(
+                keyspace, Serializers.gson.toJson(this.server)
             )
-            .thenRun {
+            .exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
+            }
+            .thenRunAsync {
+                this.scheduleNamespaceExpiration(keyspace)
+
                 val event = ServerConnectedEvent(
                     this.server.id, this.server.javaClass.typeName
                 )
@@ -46,13 +55,32 @@ class SelfServerService(
             }
     }
 
+    private fun scheduleNamespaceExpiration(keyspace: String)
+    {
+        kotlin.runCatching {
+            // manually set expiration in-case server
+            // times out in the future
+            ServerContainer.container.sync().expire(
+                keyspace, Duration.ofSeconds(5L)
+            )
+        }.onFailure {
+            Logger.getLogger("ServerSyncPipeline").log(
+                Level.SEVERE, "Failed to update expiration for self server service", it
+            )
+        }
+    }
+
     fun disconnect(reason: String = "unknown"): CompletionStage<Void>
     {
         return ServerContainer.container.async()
             .hdel(
                 ServerSyncPipeline.NAMESPACE, this.server.id
             )
-            .thenRun {
+            .exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
+            }
+            .thenRunAsync {
                 val event = ServerDisconnectEvent(
                     this.server.id, this.server.javaClass.typeName, reason
                 )

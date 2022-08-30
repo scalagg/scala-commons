@@ -13,14 +13,22 @@ interface ServerEvent
     val id: String
     val type: String
 
-    fun push()
+    fun push(local: Boolean = false)
     {
-        AwareMessage.of(
+        val message = AwareMessage.of(
             "event-bus",
             ServerSyncPipeline.usePipeline { this },
             "event" to this,
             "type" to this::class.simpleName
-        ).publish(
+        )
+
+        if (local)
+        {
+            EventBusPipeline.onEventBus(message)
+            return
+        }
+
+        message.publish(
             context = AwareThreadContext.SYNC
         )
     }

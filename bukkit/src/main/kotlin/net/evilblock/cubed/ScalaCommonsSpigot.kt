@@ -9,6 +9,10 @@ import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.agnostic.sync.ServerSync
+import gg.scala.commons.agnostic.sync.event.EventBus
+import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
+import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
+import gg.scala.commons.agnostic.sync.server.SelfServerService
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.annotations.container.ContainerDisable
@@ -237,6 +241,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }
     }
 
+    private var serverSync: SelfServerService? = null
+
     private fun configureRedisServices()
     {
         AwareHub.configure(
@@ -252,7 +258,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
         if (config.enabled)
         {
-            ServerSync.configure(
+            this.serverSync = ServerSync.configure(
                 GameServer(config.serverId, config.serverGroups, config.region)
             ) {
                 // server metadata
@@ -268,6 +274,22 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 setMetadata("minecraft", "whitelisted", server.hasWhitelist())
                 setMetadata("minecraft", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
             }
+
+            // There is no need to bind these to a local CompositeTerminable as we're
+            // configuring this for the platform itself, not our plugin.
+            EventBus.subscribe<ServerConnectedEvent>()
+                .listen {
+                    Players.all().forEach { player ->
+                        player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
+                    }
+                }
+
+            EventBus.subscribe<ServerDisconnectEvent>()
+                .listen {
+                    Players.all().forEach { player ->
+                        player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
+                    }
+                }
 
             this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
         }
@@ -319,6 +341,13 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 logger.info("[Posters] Failed to save poster data!")
             }
         }
+
+        this.serverSync
+            ?.disconnect(
+                reason = "manually stopped"
+            )
+            ?.toCompletableFuture()
+            ?.join()
 
         this.aware.shutdown()
     }

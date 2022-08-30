@@ -36,14 +36,15 @@ object ServerSync : ScheduledExecutorService by Executors
 
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractServer> configure(
-        server: T,
-        update: T.() -> Unit
-    ): CompletionStage<Void>
+        server: T, update: T.() -> Unit
+    ): SelfServerService
     {
         this.configureIndependent()
 
         return SelfServerService(server) {
             update.invoke(it as T)
-        }.configure()
+        }.apply {
+            configure()
+        }
     }
 }

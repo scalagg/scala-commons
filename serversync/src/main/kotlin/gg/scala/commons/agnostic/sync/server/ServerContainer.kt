@@ -2,6 +2,8 @@ package gg.scala.commons.agnostic.sync.server
 
 import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
+import io.lettuce.core.cluster.PipelinedRedisFuture
+import io.lettuce.core.pubsub.RedisPubSubListener
 import net.evilblock.cubed.serializers.Serializers
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
@@ -52,9 +54,12 @@ object ServerContainer : Runnable
         this.servers.clear()
         this.servers.addAll(
             this.container.sync()
-                .hgetall(ServerSyncPipeline.NAMESPACE)
+                .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
+                .mapNotNull {
+                    this.container.sync().get(it)
+                }
                 .map {
-                    Serializers.gson.fromJson(it.value, AbstractServer::class.java)
+                    Serializers.gson.fromJson(it, AbstractServer::class.java)
                 }
         )
     }
