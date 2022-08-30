@@ -13,30 +13,33 @@ object EventBusPipeline
     @Subscribe("event-bus")
     fun onEventBus(message: AwareMessage)
     {
-        val kClass = Class
+        val clazz = Class
             .forName(
                 message.retrieve("type")
             )
-            .kotlin
 
-        val event = message.retrieve("event", kClass) as ServerEvent
+        val event = message
+            .retrieve(
+                "event", clazz.kotlin
+            ) as ServerEvent
 
-        EventBus.subscribers[kClass.simpleName]?.apply {
-            for (eventSubscriber in this)
-            {
-                val continueOrNot = eventSubscriber.filters
-                    .none {
-                        !it.invoke(event)
-                    }
-
-                if (continueOrNot)
+        EventBus.subscribers[clazz.name]
+            ?.apply {
+                for (eventSubscriber in this)
                 {
-                    for (subscriber in eventSubscriber.subscribers)
+                    val continueOrNot = eventSubscriber.filters
+                        .none {
+                            !it.invoke(event)
+                        }
+
+                    if (continueOrNot)
                     {
-                        subscriber.invoke(event)
+                        for (subscriber in eventSubscriber.subscribers)
+                        {
+                            subscriber.invoke(event)
+                        }
                     }
                 }
             }
-        }
     }
 }

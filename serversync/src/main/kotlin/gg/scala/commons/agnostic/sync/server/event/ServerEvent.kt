@@ -20,7 +20,7 @@ interface ServerEvent
             "event-bus",
             ServerSyncPipeline.usePipeline { this },
             "event" to this,
-            "type" to this::class.simpleName
+            "type" to this::class.java.name
         )
 
         if (local)

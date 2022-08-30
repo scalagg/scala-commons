@@ -31,5 +31,5 @@ class ServerSyncConfig
         "This is the region this server is located in.",
         "Options: NA, EU, SA, AS, AU, AF, ME."
     )
-    val region = Region.NA
+    val region = "NA"
 }

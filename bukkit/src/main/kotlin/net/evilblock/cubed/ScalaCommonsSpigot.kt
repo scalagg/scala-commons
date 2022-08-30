@@ -14,6 +14,7 @@ import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
 import gg.scala.commons.agnostic.sync.server.SelfServerService
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
+import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
@@ -263,7 +264,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     private fun configureServerSync(config: ServerSyncConfig)
     {
         this.serverSync = ServerSync.configure(
-            GameServer(config.serverId, config.serverGroups, config.region)
+            GameServer(config.serverId, config.serverGroups, Region.valueOf(config.region))
         ) {
             // server metadata
             // TODO: implement proper system; we have new stuff in ScalaSpigot so we must use spark

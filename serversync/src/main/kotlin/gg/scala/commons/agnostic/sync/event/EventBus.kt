@@ -41,8 +41,8 @@ object EventBus
                         }
                 )
 
-                subscribers.putIfAbsent(kClass.simpleName!!, mutableListOf())
-                subscribers[kClass.simpleName]!!.add(subscriber)
+                subscribers.putIfAbsent(kClass.java.name!!, mutableListOf())
+                subscribers[kClass.java.name]!!.add(subscriber)
                 return@let
             }
     }
