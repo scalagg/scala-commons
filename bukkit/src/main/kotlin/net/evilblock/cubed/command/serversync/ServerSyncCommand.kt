@@ -1,6 +1,8 @@
 package net.evilblock.cubed.command.serversync
 
+import co.aikar.commands.BukkitCommandIssuer
 import co.aikar.commands.CommandHelp
+import co.aikar.commands.CommandIssuer
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
@@ -32,14 +34,12 @@ object ServerSyncCommand : ScalaCommand()
     @Subcommand("view")
     fun onView(player: Player)
     {
-        player.sendMessage("${CC.AQUA}ServerSync servers:")
-
-
+        player.sendMessage("${CC.GREEN}[ServerSync servers:]")
 
         ServerContainer
             .allServers<GameServer>()
             .forEach {
-                player.sendMessage(" ${CC.GRAY}- ${CC.GREEN}${it.id} ${CC.GRAY}(${it.getPlayersCount()}/${it.getMaxPlayers()})")
+                player.sendMessage(" ${CC.GRAY}- ${CC.WHITE}${it.id} ${CC.GRAY}(${it.getPlayersCount()}/${it.getMaxPlayers()})")
             }
     }
 }
