@@ -39,11 +39,11 @@ dependencies {
     kapt "me.lucko:helper:5.6.10.2"
 
     // sentry
-    compileOnly "io.sentry:sentry:6.4.0"
+    compileOnly 'io.sentry:sentry:6.4.1'
 
     // growly
     implementation "gg.scala.aware:aware:1.0.8.3"
-    implementation "gg.scala.flavor:flavor:0.1.3.8"
+    implementation "gg.scala.flavor:flavor:0.1.5"
 
     implementation "org.scala-lang:scala-library:2.13.8"
 

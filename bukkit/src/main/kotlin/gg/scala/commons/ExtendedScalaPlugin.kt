@@ -1,8 +1,6 @@
 package gg.scala.commons
 
 import co.aikar.commands.BaseCommand
-import co.aikar.commands.BukkitCommandManager
-import co.aikar.commands.PaperCommandManager
 import gg.scala.commons.annotations.LibraryLoader
 import gg.scala.commons.annotations.Listeners
 import gg.scala.commons.annotations.commands.AutoRegister
@@ -19,6 +17,7 @@ import gg.scala.commons.annotations.inject.IgnoreProvidedFlavor
 import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.commons.annotations.runnables.Repeating
 import gg.scala.commons.annotations.scripts.RequiresScripts
+import gg.scala.commons.command.ScalaCommandManager
 import gg.scala.commons.config.ConfigContainerized
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.library.HelperLibraryHandler
@@ -30,14 +29,13 @@ import gg.scala.commons.quality.PluginQolInternal
 import gg.scala.commons.scripts.ScriptPluginService
 import gg.scala.commons.scripts.binding.Scripts
 import gg.scala.commons.scripts.config.ScriptConfig
+import gg.scala.commons.tablist.TablistPopulator
+import gg.scala.commons.tablist.TablistService
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
-import gg.scala.commons.command.ScalaCommandManager
-import gg.scala.commons.tablist.TablistPopulator
-import gg.scala.commons.tablist.TablistService
 import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagProvider
 import net.evilblock.cubed.nametag.NametagProviderRegister
@@ -52,14 +50,11 @@ import net.evilblock.cubed.visibility.VisibilityHandler
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Server
 import org.bukkit.event.Listener
-import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.scanners.Scanners
 import java.io.File
 import java.lang.reflect.Method
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * An extension of [ExtendedJavaPlugin] with
@@ -76,7 +71,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     }
 
     private lateinit var flavor: Flavor
-    private lateinit var commandManager: ScalaCommandManager
+    lateinit var commandManager: ScalaCommandManager
 
     val configContainerized by lazy {
         ConfigContainerized(this)
@@ -148,19 +143,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
-        flavor().binders.add(
-            FlavorBinder(
-                this@ExtendedScalaPlugin::class
-            ) to this@ExtendedScalaPlugin
-        )
-
-        this.flavor {
-            bind<ExtendedScalaPlugin>() to this@ExtendedScalaPlugin
-            bind<JavaPlugin>() to this@ExtendedScalaPlugin
-
-            bind<Server>() to server
-            bind<Logger>() to logger
-        }
+        this.flavor().inherit(DefaultPluginBinder(this))
 
         this.packageIndexer
             .getTypesAnnotatedWith<LibraryLoader>()
@@ -277,12 +260,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             primary = ChatColor.getByChar(CC.PRI[1])!!,
             secondary = ChatColor.getByChar(CC.SEC[1])!!
         )
-
-        flavor {
-            bind<ScalaCommandManager>() to commandManager
-            bind<BukkitCommandManager>() to commandManager
-            bind<PaperCommandManager>() to commandManager
-        }
 
         val customized = mutableListOf<Method>()
 

@@ -15,7 +15,7 @@ import gg.scala.commons.library.model.Library
 @Library(
     groupId = "io.sentry",
     artifactId = "sentry",
-    version = "6.3.0"
+    version = "6.4.1"
 )
 @Library(
     groupId = "io.github.classgraph",
