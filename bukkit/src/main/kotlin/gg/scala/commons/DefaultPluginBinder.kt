@@ -33,12 +33,6 @@ class DefaultPluginBinder(
             .to<Plugin>()
             .bind()
 
-        bind(plugin.commandManager)
-            .to<ScalaCommandManager>()
-            .to<PaperCommandManager>()
-            .to<BukkitCommandManager>()
-            .bind()
-
         for (entry in PluginBridge.cache.asMap())
         {
             bind(entry.value)
@@ -51,17 +45,6 @@ class DefaultPluginBinder(
                 .to<ExtendedScalaPlugin>()
                 .to<JavaPlugin>()
                 .to<Plugin>()
-                .bind()
-
-            bind(entry.value.commandManager)
-                .to<ScalaCommandManager>()
-                .to<PaperCommandManager>()
-                .to<BukkitCommandManager>()
-                .populate {
-                    this.annotated<Named> {
-                        it.value == entry.value.name
-                    }
-                }
                 .bind()
         }
 

@@ -43,7 +43,7 @@ dependencies {
 
     // growly
     implementation "gg.scala.aware:aware:1.0.8.3"
-    implementation "gg.scala.flavor:flavor:0.1.5"
+    implementation "gg.scala.flavor:flavor:0.1.6"
 
     implementation "org.scala-lang:scala-library:2.13.8"
 

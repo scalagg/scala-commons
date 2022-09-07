@@ -261,6 +261,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             secondary = ChatColor.getByChar(CC.SEC[1])!!
         )
 
+        this.flavor().inherit(CommandPluginBinder(this))
+
         val customized = mutableListOf<Method>()
 
         for (customizer in CommandManagerCustomizers.customizers)
