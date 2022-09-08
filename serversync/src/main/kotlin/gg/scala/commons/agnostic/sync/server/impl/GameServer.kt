@@ -26,20 +26,22 @@ class GameServer(
             "server", "cpu"
         )
 
-    fun getPlayersCount() = this
-        .getMetadataValue<Int>(
-            "server", "online"
-        )
-
     fun getPlayers() = this
         .getMetadataValue<List<UUID>>(
             "server", "online-list"
         )
 
+    fun getPlayersCount() = this
+        .getMetadataValue<Double>(
+            "server", "online"
+        )
+        ?.toInt()
+
     fun getMaxPlayers() = this
-        .getMetadataValue<Int>(
+        .getMetadataValue<Double>(
             "server", "online-max"
         )
+        ?.toInt()
 
     fun getSoftware() = this
         .getMetadataValue<String>(

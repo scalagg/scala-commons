@@ -24,7 +24,7 @@ object NametagHandler
     internal val teamMap = ConcurrentHashMap<UUID, HashMap<UUID, NametagInfo>>()
 
     private val registeredTeams = Collections.synchronizedList(ArrayList<NametagInfo>())
-    private var teamCreateIndex = 1
+    private var teamCreateIndex = 0
 
     private var providers = CopyOnWriteArrayList<NametagProvider>()
 
@@ -175,7 +175,10 @@ object NametagHandler
         }
     }
 
-    internal fun getOrCreate(prefix: String, suffix: String): NametagInfo
+    internal fun getOrCreate(
+        prefix: String, suffix: String,
+        name: String = teamCreateIndex++.toString()
+    ): NametagInfo
     {
         for (teamInfo in registeredTeams)
         {
@@ -185,7 +188,7 @@ object NametagHandler
             }
         }
 
-        val newTeam = NametagInfo(teamCreateIndex++.toString(), prefix, suffix)
+        val newTeam = NametagInfo(name, prefix, suffix)
         registeredTeams.add(newTeam)
 
         val addPacket = newTeam.teamAddPacket
