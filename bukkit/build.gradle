@@ -39,7 +39,7 @@ dependencies {
     kapt "me.lucko:helper:5.6.10.2"
 
     // sentry
-    compileOnly 'io.sentry:sentry:6.4.1'
+    compileOnly "io.sentry:sentry:6.4.1"
 
     // growly
     implementation "gg.scala.aware:aware:1.0.8.3"
@@ -102,6 +102,14 @@ dependencies {
 
     // lettuce
     implementation "io.lettuce:lettuce-core:6.2.2.STABLE"
+
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 shadowJar {

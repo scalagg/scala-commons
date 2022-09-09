@@ -13,7 +13,6 @@ object Serializers
     private val gsonBuilder = GsonBuilder()
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
-        .serializeNulls()
 
     fun builder() = this.gsonBuilder
 
