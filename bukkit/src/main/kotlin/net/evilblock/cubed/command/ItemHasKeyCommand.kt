@@ -21,8 +21,7 @@ object ItemHasKeyCommand : ScalaCommand()
 {
     @Default
     fun execute(
-        @Flags("itemheld") player: Player,
-        @Name("key") key: String
+        @Flags("itemheld") player: Player, key: String
     )
     {
         val itemInHand = player.inventory.itemInHand

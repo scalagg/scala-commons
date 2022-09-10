@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.issuer.ScalaPlayer
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.poster.Poster
@@ -27,7 +28,7 @@ object PosterPlaceCommand : ScalaCommand()
     @CommandAlias("place-poster|create-poster")
     @Description("Place a poster")
     @CommandPermission("commons.posters.place")
-    fun execute(player: Player, @Name("fileName") fileName: String)
+    fun execute(player: ScalaPlayer, fileName: String)
     {
         val posterFile = File(
             File(plugin.dataFolder, "posters"), fileName
@@ -38,7 +39,7 @@ object PosterPlaceCommand : ScalaCommand()
             throw ConditionFailedException("Couldn't find `/plugins/scala-commons/posters/$fileName`!")
         }
 
-        PlacedPosterHandler.placeInteractionHandler.attachHandler(player) { event ->
+        PlacedPosterHandler.placeInteractionHandler.attachHandler(player.bukkit()) { event ->
             if (event.rightClicked !is ItemFrame)
             {
                 return@attachHandler
@@ -60,7 +61,7 @@ object PosterPlaceCommand : ScalaCommand()
             PlacedPosterHandler.trackPlacedPoster(placedPoster)
             PlacedPosterHandler.saveData()
 
-            PlacedPosterHandler.placeInteractionHandler.removeHandler(player)
+            PlacedPosterHandler.placeInteractionHandler.removeHandler(player.bukkit())
 
             player.sendMessage("${CC.GREEN}The poster has been placed!")
         }

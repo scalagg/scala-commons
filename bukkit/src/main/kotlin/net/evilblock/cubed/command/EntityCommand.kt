@@ -19,6 +19,7 @@ import co.aikar.commands.annotation.Subcommand
 import com.google.gson.reflect.TypeToken
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.issuer.ScalaPlayer
 import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
@@ -52,16 +53,16 @@ object EntityCommand : ScalaCommand()
     }
 
     @Subcommand("debug")
-    fun onDebug(player: Player)
+    fun onDebug(player: ScalaPlayer)
     {
         EntityTickThread.DEBUG = !EntityTickThread.DEBUG
         player.sendMessage("${CC.SEC}Debug enabled: ${CC.PRI}${EntityTickThread.DEBUG}")
     }
 
     @Subcommand("debug-view")
-    fun onDebugView(player: Player)
+    fun onDebugView(player: ScalaPlayer)
     {
-        if (EntityHandler.toggleDebugView(player))
+        if (EntityHandler.toggleDebugView(player.bukkit()))
         {
             player.sendMessage("${CC.GREEN}Debug view enabled!")
         } else
@@ -73,15 +74,15 @@ object EntityCommand : ScalaCommand()
     @Subcommand("export")
     @Description("Export a selection of entities")
     @CommandPermission("commons.entities.export")
-    fun onExport(player: Player)
+    fun onExport(player: ScalaPlayer)
     {
-        if (EntityPortTool.isTracking(player))
+        if (EntityPortTool.isTracking(player.bukkit()))
         {
-            EntityPortTool.stopTracking(player)
+            EntityPortTool.stopTracking(player.bukkit())
             player.sendMessage("${CC.RED}Stopped exporting entities.")
         } else
         {
-            EntityPortTool.startTracking(player)
+            EntityPortTool.startTracking(player.bukkit())
             player.sendMessage("${CC.GREEN}Starting export selection... Right-click any hologram/NPC to mark for export!")
             player.sendMessage("${CC.GREEN}Shift left-click while sneaking to finish export!")
         }
@@ -90,15 +91,15 @@ object EntityCommand : ScalaCommand()
     @Subcommand("fast-edit|fe")
     @Description("Toggles fast edit for entities")
     @CommandPermission("commons.entities.manage")
-    fun onFastEdit(player: Player)
+    fun onFastEdit(player: ScalaPlayer)
     {
-        if (player.hasMetadata("EntityFastEdit"))
+        if (player.bukkit().hasMetadata("EntityFastEdit"))
         {
-            player.removeMetadata("EntityFastEdit", plugin)
+            player.bukkit().removeMetadata("EntityFastEdit", plugin)
             player.sendMessage("${CC.RED}Fast edit is now disabled!")
         } else
         {
-            player.setMetadata("EntityFastEdit", FixedMetadataValue(plugin, true))
+            player.bukkit().setMetadata("EntityFastEdit", FixedMetadataValue(plugin, true))
             player.sendMessage("${CC.GREEN}Fast edit is now enabled!")
         }
     }
@@ -106,27 +107,31 @@ object EntityCommand : ScalaCommand()
     @Subcommand("fix-null-worlds")
     @Description("Deletes entities with null worlds (debugging)")
     @CommandPermission("op")
-    fun onFixNullWorlds(player: Player)
+    fun onFixNullWorlds(player: ScalaPlayer)
     {
         var deleted = 0
+
         for (entity in EntityHandler.getEntities())
         {
             if (entity.location.world == null)
             {
                 deleted++
+
                 EntityHandler.forgetEntity(entity)
                 entity.destroyForCurrentWatchers()
             }
         }
+
         player.sendMessage("${CC.GREEN}Fixed $deleted entities with null worlds!")
     }
 
     @Subcommand("import")
     @Description("Import entities from a file")
     @CommandPermission("commons.entities.import")
-    fun onImport(player: Player, @Name("fileName") fileName: String)
+    fun onImport(player: ScalaPlayer, fileName: String)
     {
         val file = EntityPortTool.findImportDataFile(fileName)
+
         if (!file.exists())
         {
             throw ConditionFailedException("Couldn't find file: $fileName")
@@ -137,7 +142,7 @@ object EntityCommand : ScalaCommand()
 
             for (entity in entities)
             {
-                entity.updateLocation(player.location)
+                entity.updateLocation(player.bukkit().location)
                 EntityHandler.trackEntity(entity)
             }
 
@@ -150,22 +155,26 @@ object EntityCommand : ScalaCommand()
     @Subcommand("manage")
     @Description("Opens the untyped entity manager menu")
     @CommandPermission("commons.entities.manage")
-    fun onManage(player: Player)
+    fun onManage(player: ScalaPlayer)
     {
         player.sendMessage("${CC.GREEN}Select (right-click) an NPC to manage...")
 
-        EntitySelectionTool.attachSelectionHandler(player) { entity ->
-            EditEntityMenu(entity).openMenu(player)
+        EntitySelectionTool.attachSelectionHandler(player.bukkit()) { entity ->
+            EditEntityMenu(entity).openMenu(player.bukkit())
         }
     }
 
     @Subcommand("nearby")
     @Description("Lists nearby entities")
     @CommandPermission("op")
-    fun onNearby(player: Player, @Name("radius") @Default("64.0") radius: Double)
+    fun onNearby(player: ScalaPlayer, @Default("64.0") radius: Double)
     {
         val nearby = EntityHandler.getEntities()
-            .filter { it.location.world == player.location.world && it.location.distanceSquared(player.location) < radius }
+            .filter {
+                it.location.world == player.bukkit().location.world &&
+                        it.location.distanceSquared(player.bukkit().location) < radius
+            }
+
         if (nearby.isEmpty())
         {
             player.sendMessage("${CC.RED}There are no nearby entities!")
@@ -190,7 +199,7 @@ object EntityCommand : ScalaCommand()
     @Subcommand("stats")
     @Description("Shows entity stats")
     @CommandPermission("commons.entities.stats")
-    fun onStats(player: Player)
+    fun onStats(player: ScalaPlayer)
     {
         player.sendMessage("")
         player.sendMessage("${ChatColor.GREEN}Printing stats for entities...")
@@ -207,7 +216,7 @@ object EntityCommand : ScalaCommand()
     @Subcommand("tp|teleport")
     @Description("Teleport to a Hologram by supplying the Hologram's ID")
     @CommandPermission("commons.entities.manage")
-    fun onTeleport(player: Player, @Name("id") entity: Entity)
+    fun onTeleport(player: ScalaPlayer, entity: Entity)
     {
         player.teleport(entity.location)
     }

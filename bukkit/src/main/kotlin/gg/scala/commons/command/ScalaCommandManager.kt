@@ -2,11 +2,14 @@ package gg.scala.commons.command
 
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.ExceptionHandler
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.MessageKeys
 import co.aikar.commands.MessageType
 import co.aikar.commands.PaperCommandManager
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.adventure.ScalaMiniMessage
+import gg.scala.commons.issuer.ScalaPlayer
 import gg.scala.commons.sentry.SentryService
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
@@ -16,9 +19,11 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
 import java.util.*
 
 /**
@@ -63,6 +68,21 @@ class ScalaCommandManager(
             }
 
             return@ExceptionHandler true
+        }
+
+        val audiences = BukkitAudiences.create(plugin)
+
+        commandContexts.registerIssuerAwareContext(
+            ScalaPlayer::class.java
+        ) { context ->
+            if (context.sender !is Player)
+            {
+                throw InvalidCommandArgument(
+                    MessageKeys.NOT_ALLOWED_ON_CONSOLE, false
+                )
+            }
+
+            ScalaPlayer(context.sender as Player, audiences, plugin)
         }
 
         commandContexts

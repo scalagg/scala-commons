@@ -1,8 +1,6 @@
 package net.evilblock.cubed.command.serversync
 
-import co.aikar.commands.BukkitCommandIssuer
 import co.aikar.commands.CommandHelp
-import co.aikar.commands.CommandIssuer
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
@@ -12,8 +10,8 @@ import gg.scala.commons.agnostic.sync.server.ServerContainer
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.issuer.ScalaPlayer
 import net.evilblock.cubed.util.CC
-import org.bukkit.entity.Player
 
 /**
  * @author GrowlyX
@@ -32,7 +30,7 @@ object ServerSyncCommand : ScalaCommand()
     }
 
     @Subcommand("view")
-    fun onView(player: Player)
+    fun onView(player: ScalaPlayer)
     {
         player.sendMessage("${CC.GREEN}[ServerSync servers:]")
 

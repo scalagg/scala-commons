@@ -14,6 +14,7 @@ import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.commons.issuer.ScalaPlayer
 import gg.scala.commons.scheme.SchemedMenuTests
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
@@ -98,17 +99,17 @@ object ScalaCommonsCommand : ScalaCommand()
 
     @Subcommand("menu-template-editor")
     @Description("Opens the Menu Template Editor")
-    fun onMenuTemplateEditor(player: Player)
+    fun onMenuTemplateEditor(player: ScalaPlayer)
     {
-        TemplateEditorMenu().openMenu(player)
+        TemplateEditorMenu().openMenu(player.bukkit())
     }
 
     @Subcommand("menu-template-view")
     @Description("Opens the static view of a menu template")
     @CommandCompletion("@menutemplates")
-    fun onMenuTemplateView(player: Player, @Name("template") template: MenuTemplate<*>)
+    fun onMenuTemplateView(player: ScalaPlayer, template: MenuTemplate<*>)
     {
-        TemplatePreviewMenu(template).openMenu(player)
+        TemplatePreviewMenu(template).openMenu(player.bukkit())
     }
 
     @Subcommand("nametag-debug")
@@ -183,7 +184,7 @@ object ScalaCommonsCommand : ScalaCommand()
 
     @Subcommand("scoreboard-preview")
     @Description("Toggle preview mode")
-    fun onScoreboardPreview(player: Player, @Name("global") @Optional global: Boolean?)
+    fun onScoreboardPreview(player: ScalaPlayer, @Optional global: Boolean?)
     {
         if (global != null && global)
         {
@@ -204,17 +205,17 @@ object ScalaCommonsCommand : ScalaCommand()
 
     @Subcommand("scoreboard-editor")
     @Description("Open the scoreboard preview editor")
-    fun onScoreboardEditor(player: Player)
+    fun onScoreboardEditor(player: ScalaPlayer)
     {
-        ScoreboardTextEditor().openMenu(player)
+        ScoreboardTextEditor().openMenu(player.bukkit())
     }
 
     @Subcommand("glow|item-glow")
-    fun onItemGlow(@Flags("itemheld") player: Player)
+    fun onItemGlow(@Flags("itemheld") player: ScalaPlayer)
     {
-        val itemInHand = player.inventory.itemInHand
+        val itemInHand = player.bukkit().inventory.itemInHand
 
-        player.inventory.itemInHand = ItemBuilder.copyOf(itemInHand).glow().build()
-        player.updateInventory()
+        player.bukkit().inventory.itemInHand = ItemBuilder.copyOf(itemInHand).glow().build()
+        player.bukkit().updateInventory()
     }
 }
