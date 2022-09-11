@@ -72,7 +72,7 @@ class ScalaCommandManager(
 
         val audiences = BukkitAudiences.create(plugin)
 
-        commandContexts.registerIssuerAwareContext(
+        commandContexts.registerIssuerOnlyContext(
             ScalaPlayer::class.java
         ) { context ->
             if (context.sender !is Player)
