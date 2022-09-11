@@ -101,7 +101,7 @@ dependencies {
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
     // lettuce
-    implementation "io.lettuce:lettuce-core:6.2.2.STABLE"
+    implementation "io.lettuce:lettuce-core:6.2.0.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
