@@ -12,6 +12,7 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
+import gg.scala.cache.uuid.resolver.ResolverType
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.issuer.ScalaPlayer
@@ -49,6 +50,33 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("resolver-type")
+    @Description("Update or view the current player data resolver type.")
+    fun onResolverType(
+        sender: CommandSender,
+        @Optional type: ResolverType?
+    )
+    {
+        val config = this.plugin.config<CommonsGeneralConfig>()
+
+        if (type == null)
+        {
+            sender.sendMessage(
+                "${CC.GREEN}Current: ${CC.WHITE}${config.uuidCacheResolverType}"
+            )
+            return
+        }
+
+        config.uuidCacheResolverType = type.name
+        ScalaStoreUuidCache.resolver = ScalaStoreUuidCache.resolve(type)
+
+        this.plugin.configContainerized
+            .container<CommonsGeneralConfig>()
+            .save(crossSync = false)
+
+        sender.sendMessage("${CC.GREEN}Set resolver to ${type.name}")
     }
 
     @Subcommand("thread-dump")

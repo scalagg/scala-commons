@@ -1,6 +1,10 @@
 package gg.scala.cache.uuid
 
 import gg.scala.cache.uuid.impl.LocalUuidCacheTranslator
+import gg.scala.cache.uuid.resolver.DataResolver
+import gg.scala.cache.uuid.resolver.ResolverType
+import gg.scala.cache.uuid.resolver.impl.AshconDataResolver
+import gg.scala.cache.uuid.resolver.impl.MojangDataResolver
 import java.util.*
 import java.util.logging.Logger
 
@@ -10,15 +14,27 @@ import java.util.logging.Logger
  */
 object ScalaStoreUuidCache
 {
-    private lateinit var translator: ScalaStoreUuidCacheTranslator
+    private var translator: ScalaStoreUuidCacheTranslator =
+        LocalUuidCacheTranslator
+
+    lateinit var resolver: DataResolver
+
+    private val registry = mutableMapOf(
+        ResolverType.Mojang to MojangDataResolver,
+        ResolverType.Ashcon to AshconDataResolver
+    )
+
+    fun resolve(resolverType: ResolverType) = this.registry[resolverType]!!
 
     fun configure(
-        translator: ScalaStoreUuidCacheTranslator
+        translator: ScalaStoreUuidCacheTranslator,
+        resolver: DataResolver
     )
     {
         this.translator = translator
+        this.resolver = resolver
 
-        Logger.getGlobal().info("Loading UUIDCache with ${translator.javaClass.simpleName}...")
+        Logger.getGlobal().info("Loading UUIDCache with ${translator.javaClass.simpleName} and ${resolver.javaClass.simpleName}.")
 
         translator.configure()
             .thenRun {
@@ -44,25 +60,21 @@ object ScalaStoreUuidCache
      */
     fun uniqueId(username: String): UUID?
     {
-        validateTranslator()
-
         val translated = translator
             .uniqueId(username)
 
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(username)
+        val response = this.resolver
+            .usernameToUniqueId(username)
+            ?: return null
 
-        if (mojang.isPresent)
-        {
-            val pair = mojang.get()
-            translator.update(pair, commit = true)
+        translator.update(
+            response, commit = true
+        )
 
-            return pair.first
-        }
-
-        return null
+        return response.first
     }
 
     /**
@@ -76,36 +88,20 @@ object ScalaStoreUuidCache
      */
     fun username(uniqueId: UUID): String?
     {
-        validateTranslator()
-
         val translated = translator
             .username(uniqueId)
 
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(uniqueId)
+        val response = this.resolver
+            .uniqueIdToUsername(uniqueId)
+            ?: return null
 
-        if (mojang.isPresent)
-        {
-            val pair = mojang.get()
-            translator.update(pair, commit = true)
+        translator.update(
+            response, commit = true
+        )
 
-            return pair.second
-        }
-
-        return null
+        return response.second
     }
-
-    private fun validateTranslator()
-    {
-        try
-        {
-            translator
-        } catch (ignored: Exception)
-        {
-            translator = LocalUuidCacheTranslator
-        }
-    }
-
 }

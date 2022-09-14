@@ -19,4 +19,7 @@ class CommonsGeneralConfig
 
     @Comment("Should we enable helper's built-in /helper information command?")
     val infoCommand = true
+
+    @Comment("Mojang, Ashcon")
+    var uuidCacheResolverType = "Mojang"
 }

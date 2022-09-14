@@ -7,6 +7,7 @@ import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.impl.distribution.DistributedRedisUuidCacheTranslator
+import gg.scala.cache.uuid.resolver.ResolverType
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.event.EventBus
@@ -250,7 +251,13 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
         ScalaStoreUuidCache
             .configure(
-                DistributedRedisUuidCacheTranslator(aware)
+                DistributedRedisUuidCacheTranslator(aware),
+                ScalaStoreUuidCache.resolve(
+                    ResolverType.valueOf(
+                        config<CommonsGeneralConfig>()
+                            .uuidCacheResolverType
+                    )
+                )
             )
 
         val config = this.config<ServerSyncConfig>()

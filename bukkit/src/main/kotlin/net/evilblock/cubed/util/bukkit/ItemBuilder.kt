@@ -62,6 +62,20 @@ class ItemBuilder(private val item: ItemStack) {
         return this
     }
 
+    fun clearLore() = this.apply {
+        this.setLore(listOf())
+    }
+
+    fun clearEnchants() = this.apply {
+        this.item.enchantments.clear()
+    }
+
+    fun clearFlags() = this.apply {
+        val meta = item.itemMeta
+        meta.itemFlags.clear()
+        item.itemMeta = meta
+    }
+
     fun addToLore(vararg parts: String): ItemBuilder {
         var meta = item.itemMeta
         if (meta == null) {
@@ -159,14 +173,6 @@ class ItemBuilder(private val item: ItemStack) {
             }
         }
     }
-
-//    fun toUpdatingButton(consumer: BiConsumer<Player?, ClickType?>): Button {
-//        return object : Button() {
-//            override fun getButtonItem(player: Player): ItemStack {
-//                return this@ItemBuilder.build()
-//            }
-//        }
-//    }
 
     companion object {
         @JvmStatic

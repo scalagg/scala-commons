@@ -1,19 +1,20 @@
-package gg.scala.cache.uuid
+package gg.scala.cache.uuid.resolver.impl
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.gson.JsonParser
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
+import gg.scala.cache.uuid.resolver.DataResolver
+import gg.scala.cache.uuid.resolver.ResolverType
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
 /**
  * @author GrowlyX
- * @since 2/1/2022
+ * @since 9/13/2022
  */
-@Suppress("DEPRECATION")
-object ScalaStoreUuidCacheHelper
+object MojangDataResolver : DataResolver
 {
     private val parser = JsonParser()
     private val client = OkHttpClient()
@@ -23,21 +24,22 @@ object ScalaStoreUuidCacheHelper
         .expireAfterWrite(1L, TimeUnit.MINUTES)
         .build<String, String>()
 
+    override fun assignedTo() = ResolverType.Mojang
+
     /**
      * Fetches a UUID and Username pair from the Mojang API.
      * Should not be called very often as the server could be rate-limited which will cause more issues.
      */
     @JvmStatic
     @Suppress("DEPRECATION")
-    fun fetchFromMojang(username: String): Optional<Pair<UUID, String>>
+    fun fetchFromMojang(username: String): Pair<UUID, String>?
     {
-        val invalid = this.invalidCache
+        val invalid = invalidCache
             .getIfPresent(username.lowercase())
 
         if (invalid != null)
         {
-            return Optional
-                .ofNullable(null)
+            return null
         }
 
         try
@@ -57,7 +59,7 @@ object ScalaStoreUuidCacheHelper
                 )
                 val name = json.get("name").asString
 
-                return Optional.of(Pair(uuid, name))
+                return uuid to name
             }
         } catch (e: Exception)
         {
@@ -67,11 +69,11 @@ object ScalaStoreUuidCacheHelper
             Logger.getGlobal().info("This username will be considered \"invalid\" for the next minute.")
         }
 
-        return Optional.ofNullable(null)
+        return null
     }
 
     @JvmStatic
-    fun fetchFromMojang(uuid: UUID): Optional<Pair<UUID, String>>
+    fun fetchFromMojang(uuid: UUID): Pair<UUID, String>?
     {
         try
         {
@@ -84,20 +86,26 @@ object ScalaStoreUuidCacheHelper
                 val names = parser.parse(response.body().string()).asJsonArray.map { it.asJsonObject }
                 if (names.size == 1)
                 {
-                    return Optional.of(uuid to names.first().get("name").asString)
+                    return uuid to names.first().get("name").asString
                 }
 
                 val name = names
                     .filter { it.has("changedToAt") }
                     .maxByOrNull { it.get("changedToAt").asLong }!!.get("name").asString
 
-                return Optional.of(Pair(uuid, name))
+                return uuid to name
             }
         } catch (e: Exception)
         {
             Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $uuid")
         }
 
-        return Optional.ofNullable(null)
+        return null
     }
+
+    override fun uniqueIdToUsername(uniqueId: UUID) =
+        fetchFromMojang(uniqueId)
+
+    override fun usernameToUniqueId(username: String) =
+        fetchFromMojang(username)
 }
