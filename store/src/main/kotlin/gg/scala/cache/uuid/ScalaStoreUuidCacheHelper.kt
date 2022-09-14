@@ -32,15 +32,13 @@ object ScalaStoreUuidCacheHelper
             return null
         }
 
-        val url = URL(
-            "https://api.ashcon.app/mojang/v2/user/$uriPart"
-        )
-
         return kotlin
             .runCatching {
                 val response = Serializers
                     .gson.fromJson(
-                        url.readText(),
+                        String(
+                            URL("https://api.ashcon.app/mojang/v2/user/$uriPart").readBytes()
+                        ),
                         AshconResponse::class.java
                     )
 
