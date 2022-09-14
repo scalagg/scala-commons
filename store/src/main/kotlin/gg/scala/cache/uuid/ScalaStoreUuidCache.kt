@@ -10,7 +10,8 @@ import java.util.logging.Logger
  */
 object ScalaStoreUuidCache
 {
-    private lateinit var translator: ScalaStoreUuidCacheTranslator
+    private var translator: ScalaStoreUuidCacheTranslator =
+        LocalUuidCacheTranslator
 
     fun configure(
         translator: ScalaStoreUuidCacheTranslator
@@ -44,25 +45,22 @@ object ScalaStoreUuidCache
      */
     fun uniqueId(username: String): UUID?
     {
-        validateTranslator()
-
         val translated = translator
             .uniqueId(username)
 
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(username)
+        val response = ScalaStoreUuidCacheHelper
+            .find(username)
+            ?: return null
 
-        if (mojang.isPresent)
-        {
-            val pair = mojang.get()
-            translator.update(pair, commit = true)
+        translator.update(
+            response.uuid to response.username,
+            commit = true
+        )
 
-            return pair.first
-        }
-
-        return null
+        return response.uuid
     }
 
     /**
@@ -76,36 +74,21 @@ object ScalaStoreUuidCache
      */
     fun username(uniqueId: UUID): String?
     {
-        validateTranslator()
-
         val translated = translator
             .username(uniqueId)
 
         if (translated != null)
             return translated
 
-        val mojang = ScalaStoreUuidCacheHelper.fetchFromMojang(uniqueId)
+        val response = ScalaStoreUuidCacheHelper
+            .find(uniqueId.toString())
+            ?: return null
 
-        if (mojang.isPresent)
-        {
-            val pair = mojang.get()
-            translator.update(pair, commit = true)
+        translator.update(
+            response.uuid to response.username,
+            commit = true
+        )
 
-            return pair.second
-        }
-
-        return null
+        return response.username
     }
-
-    private fun validateTranslator()
-    {
-        try
-        {
-            translator
-        } catch (ignored: Exception)
-        {
-            translator = LocalUuidCacheTranslator
-        }
-    }
-
 }

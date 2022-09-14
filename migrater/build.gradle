@@ -1,0 +1,3 @@
+dependencies {
+    compileOnly "org.mongodb:mongodb-driver:3.12.11"
+}

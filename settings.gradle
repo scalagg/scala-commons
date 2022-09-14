@@ -11,7 +11,8 @@ include(
 include(
     "store",
     "commons",
-    "serializers"
+    "serializers",
+    "migrater"
 )
 
 // serversync
