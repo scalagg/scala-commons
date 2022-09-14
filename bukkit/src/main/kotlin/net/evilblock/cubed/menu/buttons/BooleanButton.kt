@@ -65,10 +65,10 @@ class BooleanButton(
     {
         return if (this.value)
         {
-            XMaterial.LIME_CARPET
+            XMaterial.LIME_STAINED_GLASS_PANE
         } else
         {
-            XMaterial.RED_CARPET
+            XMaterial.RED_STAINED_GLASS_PANE
         }
     }
 
