@@ -2,7 +2,6 @@ package gg.scala.commons.scheme.impl
 
 import gg.scala.commons.scheme.AbstractCompositeSchemedMenu
 import net.evilblock.cubed.menu.Button
-import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.entity.Player

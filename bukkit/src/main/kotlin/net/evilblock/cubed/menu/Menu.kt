@@ -91,10 +91,10 @@ abstract class Menu
 
         val inv = if (inventoryType == InventoryType.CHEST)
         {
-            Bukkit.createInventory(null, size, title)
+            Bukkit.createInventory(player, size, title)
         } else
         {
-            Bukkit.createInventory(null, inventoryType, title)
+            Bukkit.createInventory(player, inventoryType, title)
         }
 
         for (buttonEntry in invButtons.entries)
