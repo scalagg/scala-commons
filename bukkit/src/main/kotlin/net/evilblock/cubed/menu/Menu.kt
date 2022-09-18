@@ -91,10 +91,10 @@ abstract class Menu
 
         val inv = if (inventoryType == InventoryType.CHEST)
         {
-            Bukkit.createInventory(player, size, title)
+            Bukkit.createInventory(null, size, title)
         } else
         {
-            Bukkit.createInventory(player, inventoryType, title)
+            Bukkit.createInventory(null, inventoryType, title)
         }
 
         for (buttonEntry in invButtons.entries)
@@ -210,11 +210,16 @@ abstract class Menu
             manualClose = false
         }
 
-        if (Bukkit.isPrimaryThread())
-        {
-            OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
-                player, inventory, entityPlayer, getWindowType(inventory.size)
-            )
+        val inventoryOpener = {
+            if (System.getenv("gg.scala.commons.menu.NoCustomInventories") != null)
+            {
+                player.openInventory(inventory)
+            } else
+            {
+                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
+                    player, inventory, entityPlayer, getWindowType(inventory.size)
+                )
+            }
 
             update(player)
 
@@ -222,20 +227,15 @@ abstract class Menu
             {
                 player.updateInventory()
             }
+        }
+
+        if (Bukkit.isPrimaryThread())
+        {
+            inventoryOpener()
         } else
         {
-            Tasks.delayed(1L)
-            {
-                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
-                    player, inventory, entityPlayer, getWindowType(inventory.size)
-                )
-
-                update(player)
-
-                if (player.openInventory != null)
-                {
-                    player.updateInventory()
-                }
+            Tasks.sync {
+                inventoryOpener()
             }
         }
     }
