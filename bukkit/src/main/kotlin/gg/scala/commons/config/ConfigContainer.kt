@@ -106,24 +106,22 @@ open class ConfigContainer(
                     it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.YELLOW}Detected changes to ${CC.D_AQUA}${fileName()}${CC.YELLOW} bound to plugin ${CC.GOLD}${plugin.name}${CC.YELLOW}.")
                 }
 
+                this.load()
+
+                if (this.annotation.crossSync)
+                {
+                    AwareMessage.of(
+                        this.annotation.model.java.simpleName,
+                        this.containerized.aware,
+                        "config" to Serializers
+                            .gson.toJson(this.model!!)
+                    ).publish()
+                }
+
                 ConfigWatchEvent(this).flow()
                     .subscribe { state: EventQuadState ->
                         when (state)
                         {
-                            EventQuadState.ALLOWED, EventQuadState.NOT_SET ->
-                            {
-                                this.load()
-
-                                if (this.annotation.crossSync)
-                                {
-                                    AwareMessage.of(
-                                        this.annotation.model.java.simpleName,
-                                        this.containerized.aware,
-                                        "config" to Serializers
-                                            .gson.toJson(this.model!!)
-                                    ).publish()
-                                }
-                            }
                             EventQuadState.FAILED ->
                             {
                                 Players.operators().forEach {
