@@ -47,6 +47,8 @@ import net.evilblock.cubed.visibility.OverrideHandler
 import net.evilblock.cubed.visibility.VisibilityAdapter
 import net.evilblock.cubed.visibility.VisibilityAdapterRegister
 import net.evilblock.cubed.visibility.VisibilityHandler
+import net.kyori.adventure.platform.AudienceProvider
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -85,6 +87,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         mutableListOf(
             configContainerized, localizationContainerized
         )
+    }
+
+    private val audiences by lazy {
+        BukkitAudiences.create(this)
     }
 
     lateinit var qolInternal: PluginQolInternal
@@ -243,7 +249,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.qolInternal = PluginQolInternal(this)
         this.qolInternal.load()
 
-        flavor().bind<PluginQolInternal>() to this.qolInternal
+        flavor {
+            bind<PluginQolInternal>() to qolInternal
+
+            bind<BukkitAudiences>() to audiences
+            bind<AudienceProvider>() to audiences
+        }
 
         this.packageIndexer
             .getMethodsAnnotatedWith<ContainerEnable>()
@@ -529,6 +540,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .unregisterCommands()
 
         this.flavor.close()
+        this.audiences.close()
 
         if (this.configContainerized.initialLoaded)
         {
