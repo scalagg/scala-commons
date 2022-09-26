@@ -1,10 +1,6 @@
-package gg.scala.commons
+package gg.scala.commons.binder
 
-import co.aikar.commands.BukkitCommandManager
-import co.aikar.commands.CommandManager
-import co.aikar.commands.PaperCommandManager
-import gg.scala.commons.command.ScalaCommandManager
-import gg.scala.commons.plugin.PluginBridge
+import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.flavor.binder.FlavorBinderContainer
 import gg.scala.flavor.inject.condition.Named
 import net.minecraft.server.v1_8_R3.MinecraftServer
@@ -33,16 +29,25 @@ class DefaultPluginBinder(
             .to<Plugin>()
             .bind()
 
-        for (entry in PluginBridge.cache.asMap())
+        val pluginsLoaded = Bukkit
+            .getPluginManager().plugins
+            .filter {
+                it.isEnabled
+            }
+
+        for (entry in pluginsLoaded)
         {
-            bind(entry.value)
+            bind(entry)
                 .populate {
                     this.annotated<Named> {
-                        it.value == entry.value.name
+                        it.value == entry.name
                     }
                 }
-                .to(entry.value::class)
-                .to<ExtendedScalaPlugin>()
+                .to(entry::class)
+                .apply {
+                    if (entry is ExtendedScalaPlugin)
+                        to<ExtendedScalaPlugin>()
+                }
                 .to<JavaPlugin>()
                 .to<Plugin>()
                 .bind()
