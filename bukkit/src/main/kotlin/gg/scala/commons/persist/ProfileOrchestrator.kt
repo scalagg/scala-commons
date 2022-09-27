@@ -27,6 +27,16 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
 
     fun subscribe()
     {
+        try
+        {
+            // we don't want to reinitialize the controller
+            controller
+            return
+        } catch (exception: Exception)
+        {
+
+        }
+
         controller = DataStoreObjectControllerCache
             .create(type())
 
@@ -46,6 +56,10 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             controller.localCache().remove(it.player.uniqueId)
                 ?.let { cached ->
                     this.controller.save(cached, DataStoreStorageType.MONGO)
+                        .exceptionally { throwable ->
+                            throwable.printStackTrace()
+                            return@exceptionally null
+                        }
                 }
         }
     }
