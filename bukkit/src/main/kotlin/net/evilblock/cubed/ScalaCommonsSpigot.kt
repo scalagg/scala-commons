@@ -77,8 +77,6 @@ import java.util.logging.Level
 @Plugin(
     name = "scala-commons",
     apiVersion = "1.19",
-    authors = ["GrowlyX", "joeleoli"],
-    description = "Core utilities for Scala spigot plugins.",
     depends = [
         PluginDependency("ProtocolLib"),
         PluginDependency("store-spigot", soft = true),
