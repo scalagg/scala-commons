@@ -67,6 +67,11 @@ class DistributedRedisUuidCacheTranslator(
         }
     }
 
+    override fun close()
+    {
+        this.aware.shutdown()
+    }
+
     /**
      * Pre-loads the cache through whatever
      * service the implementation is using.

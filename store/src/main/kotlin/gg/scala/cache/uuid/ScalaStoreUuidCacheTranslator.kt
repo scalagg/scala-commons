@@ -1,5 +1,6 @@
 package gg.scala.cache.uuid
 
+import java.io.Closeable
 import java.util.*
 import java.util.concurrent.CompletionStage
 
@@ -7,10 +8,15 @@ import java.util.concurrent.CompletionStage
  * @author GrowlyX
  * @since 2/1/2022
  */
-interface ScalaStoreUuidCacheTranslator
+interface ScalaStoreUuidCacheTranslator : Closeable
 {
     val uniqueIdCache: MutableMap<UUID, String>
     val usernameCache: MutableMap<String, UUID>
+
+    override fun close()
+    {
+
+    }
 
     /**
      * An initial startup method for this translator.

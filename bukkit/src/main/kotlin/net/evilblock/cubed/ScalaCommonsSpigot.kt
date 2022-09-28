@@ -211,7 +211,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
             Bukkit.getLogger().setFilter {
                 !it.message.contains("Command Dispatched Async") &&
-                !it.message.contains("Please notify author of plugin")
+                        !it.message.contains("Please notify author of plugin")
             }
 
             this.configureRedisServices()
@@ -358,6 +358,11 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             ?.join()
 
         this.aware.shutdown()
+
+        ScalaStoreUuidCache
+            .useTranslator {
+                this.close()
+            }
     }
 
     /**
