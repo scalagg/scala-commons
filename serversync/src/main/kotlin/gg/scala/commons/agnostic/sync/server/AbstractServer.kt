@@ -2,6 +2,7 @@ package gg.scala.commons.agnostic.sync.server
 
 import gg.scala.commons.agnostic.sync.server.metadata.MetadataValue
 import gg.scala.commons.agnostic.sync.server.region.Region
+import gg.scala.commons.agnostic.sync.server.state.ServerState
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializable
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.key.KeyedValue
@@ -16,6 +17,8 @@ abstract class AbstractServer : AbstractTypeSerializable
     abstract val id: String
     abstract val groups: List<String>
     abstract val region: Region
+
+    var state = ServerState.Connected
 
     private val metadata = CopyOnWriteArrayList<Pair<Key, MetadataValue>>()
 

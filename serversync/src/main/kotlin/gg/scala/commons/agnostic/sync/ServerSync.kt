@@ -66,6 +66,10 @@ object ServerSync : ScheduledExecutorService by Executors
             """.trimIndent()
         }.apply {
             configure()
+                .exceptionally {
+                    it.printStackTrace()
+                    return@exceptionally null
+                }
         }
     }
 }

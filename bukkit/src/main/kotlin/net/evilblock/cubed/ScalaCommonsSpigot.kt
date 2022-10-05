@@ -13,9 +13,12 @@ import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.event.EventBus
 import gg.scala.commons.agnostic.sync.event.events.ServerConnectedEvent
 import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
+import gg.scala.commons.agnostic.sync.event.events.ServerLoadedEvent
 import gg.scala.commons.agnostic.sync.server.SelfServerService
+import gg.scala.commons.agnostic.sync.server.ServerContainer
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.agnostic.sync.server.region.Region
+import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
@@ -35,6 +38,7 @@ import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import gg.scala.commons.util.Players
+import me.lucko.helper.Schedulers
 import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
@@ -63,9 +67,11 @@ import net.evilblock.cubed.statistic.ServerStatisticProviders
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.evilblock.cubed.util.math.Numbers
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.event.server.ServerLoadEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.BlockVector
@@ -301,12 +307,38 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 }
             }
 
+        EventBus.subscribe<ServerLoadedEvent>()
+            .listen {
+                val server = ServerContainer.getServer(it.id)
+                    ?: return@listen
+
+                val formatted = Numbers.format(
+                    System.currentTimeMillis() - server.initialHeartbeat
+                )
+
+                Players.operators().forEach { player ->
+                    player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} loaded ${CC.D_GRAY}(${formatted}ms)${CC.GRAY}.")
+                }
+            }
+
         EventBus.subscribe<ServerDisconnectEvent>()
             .listen {
                 Players.operators().forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
                 }
             }
+
+        Schedulers.sync().run {
+            // configure this once the server's started up completely
+            ServerSync.local.state = ServerState.Loaded
+
+            val event = ServerLoadedEvent(
+                ServerSync.local.id,
+                ServerSync.local.javaClass.typeName
+            )
+
+            event.push()
+        }
 
         this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
     }
