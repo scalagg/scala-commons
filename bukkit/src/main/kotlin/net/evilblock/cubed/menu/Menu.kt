@@ -170,19 +170,29 @@ abstract class Menu
                 } catch (e: Exception)
                 {
                     e.printStackTrace()
-                    player.sendMessage("${ChatColor.RED}Couldn't load menu...")
+                    player.sendMessage("${ChatColor.RED}I'm sorry, but we weren't able to open this GUI for you.")
                 }
             }
         } else
         {
-            val inv = createInventory(player)
+            val opener = {
+                kotlin.runCatching {
+                    openCustomInventory(
+                        player, createInventory(player)
+                    )
+                }.onFailure {
+                    it.printStackTrace()
+                }
 
-            try
+                Unit
+            }
+
+            if (MinecraftReflection.isModern())
             {
-                openCustomInventory(player, inv)
-            } catch (ex: Exception)
+                Tasks.sync(opener)
+            } else
             {
-                ex.printStackTrace()
+                opener()
             }
         }
     }
