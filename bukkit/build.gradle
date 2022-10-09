@@ -102,7 +102,8 @@ dependencies {
     // reflekt
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
-    // lettuce
+    // redis
+    implementation "gg.scala.aware:aware:1.1.0"
     implementation "io.lettuce:lettuce-core:6.2.0.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"

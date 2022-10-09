@@ -81,7 +81,7 @@ import java.util.logging.Level
 // plugin meta
 @Plugin(
     name = "scala-commons",
-    apiVersion = "1.19",
+    apiVersion = "1.18",
     depends = [
         PluginDependency("ProtocolLib"),
         PluginDependency("store-spigot", soft = true),
@@ -388,12 +388,12 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             ?.toCompletableFuture()
             ?.join()
 
-        this.aware.shutdown()
-
         ScalaStoreUuidCache
             .useTranslator {
                 this.close()
             }
+
+        AwareHub.close()
     }
 
     /**

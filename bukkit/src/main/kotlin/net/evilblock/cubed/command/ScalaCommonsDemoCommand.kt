@@ -13,11 +13,14 @@ import net.evilblock.cubed.menu.menus.SelectColorMenu
 import net.evilblock.cubed.menu.menus.SelectItemStackMenu
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.render.GraphicalTable
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.text.ProgressBarBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 /**
  * @author GrowlyX
@@ -102,9 +105,37 @@ object ScalaCommonsDemoCommand : ScalaCommand()
     @Description("A demo of Cubed's color selection menu.")
     fun onColorSelectionMenu(player: Player)
     {
-        SelectColorMenu {
-            player.sendMessage("${CC.SEC}You selected: ${CC.PRI}$it")
-        }.openMenu(player)
+        kotlin.runCatching {
+            Reflection
+                .getDeclaredMethod(
+                    MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
+                    "openCustomInventory",
+                    Inventory::class.java,
+                    MinecraftReflection.getNMSClass(
+                        "${
+                            if (MinecraftReflection.isModern())
+                                "level." else ""
+                        }EntityPlayer"
+                    )!!,
+                    if (MinecraftReflection.isModern())
+                    {
+                        Reflection.getClassSuppressed(
+                            "net.minecraft.world.inventory.Containers"
+                        )!!
+                    } else
+                    {
+                        String::class.java
+                    }
+                )
+        }.onFailure { it.printStackTrace() }
+
+        kotlin.runCatching {
+            SelectColorMenu {
+                player.sendMessage("${CC.SEC}You selected: ${CC.PRI}$it")
+            }.openMenu(player)
+        }.onFailure {
+            it.printStackTrace()
+        }
     }
 
     @Subcommand("item-stack")

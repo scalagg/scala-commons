@@ -6,6 +6,7 @@ import gg.scala.cache.uuid.resolver.ResolverType
 import gg.scala.cache.uuid.resolver.impl.AshconDataResolver
 import gg.scala.cache.uuid.resolver.impl.MojangDataResolver
 import java.util.*
+import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -40,7 +41,15 @@ object ScalaStoreUuidCache
             .thenRun {
                 ScalaStoreUuidCache.translator.preLoadCache(async = false)
 
-                Logger.getGlobal().info("Loaded UUIDCache with ${translator.javaClass.simpleName}!")
+                Logger.getGlobal().info(
+                    "Loaded UUIDCache with ${translator.javaClass.simpleName}!"
+                )
+            }
+            .exceptionally {
+                Logger.getGlobal().log(
+                    Level.SEVERE, "Could not pre-load cache", it
+                )
+                return@exceptionally null
             }
     }
 

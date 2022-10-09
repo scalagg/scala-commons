@@ -49,22 +49,22 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun configure(): CompletionStage<Void>
     {
-        return CompletableFuture.runAsync {
-            aware.listen(AWARE_LISTENER_PACKET) {
-                val pair =
-                    retrieve<Pair<UUID, String>>("data")
+        aware.listen(AWARE_LISTENER_PACKET) {
+            val pair =
+                retrieve<Pair<UUID, String>>("data")
 
-                update(pair, commit = false)
-            }
-        }.thenCompose {
-            this.aware.connect()
-        }.thenRun {
-            connection = aware
-                .internal().connect()
-        }.exceptionally {
-            it.printStackTrace()
-            return@exceptionally null
+            update(pair, commit = false)
         }
+
+        return this.aware.connect()
+            .thenRun {
+                connection = aware
+                    .internal().connect()
+            }
+            .exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
+            }
     }
 
     override fun close()
@@ -123,7 +123,7 @@ class DistributedRedisUuidCacheTranslator(
     {
         val updateRequired =
             usernameCache[pair.second.lowercase()] == null ||
-            uniqueIdCache[pair.first] == null
+                    uniqueIdCache[pair.first] == null
 
         usernameCache[pair.second.lowercase()] = pair.first
         uniqueIdCache[pair.first] = pair.second
