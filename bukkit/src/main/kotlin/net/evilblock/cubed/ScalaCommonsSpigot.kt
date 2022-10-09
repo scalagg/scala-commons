@@ -174,6 +174,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 inject(PlayerCompositeTerminable)
             }
 
+            this.configureRedisServices()
+
             TimeZone.setDefault(default)
 
             Serializers.create {
@@ -219,8 +221,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                         !it.message.contains("Please notify author of plugin")
             }
 
-            this.configureRedisServices()
-
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
             }.onFailure {
@@ -235,7 +235,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }.onFailure {
             logger.log(
                 Level.WARNING,
-                "An exception was thrown during the startup process of Cubed, we're now shutting down.",
+                "An exception was thrown during the startup process of Scala Commons, we're now shutting down.",
                 it
             )
             server.shutdown()
