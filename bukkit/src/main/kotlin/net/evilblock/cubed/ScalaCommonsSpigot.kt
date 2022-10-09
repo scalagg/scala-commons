@@ -174,8 +174,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 inject(PlayerCompositeTerminable)
             }
 
-            this.configureRedisServices()
-
             TimeZone.setDefault(default)
 
             Serializers.create {
@@ -192,6 +190,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
                 GsonComponentSerializer.gson().populator().apply(this)
             }
+
+            this.configureRedisServices()
 
             if (isPostersEnabled())
             {
