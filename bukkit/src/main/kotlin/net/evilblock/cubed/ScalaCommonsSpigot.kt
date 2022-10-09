@@ -224,6 +224,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             kotlin.runCatching {
                 GlowEnchantment.registerEnchant()
             }.onFailure {
+                GlowEnchantment.ableToApplyGlowEnchant = false
                 logger.info("We were unable to register our GlowEnchantment due to compatability issues.")
             }
 

@@ -40,32 +40,34 @@ class GlowEnchantment(id: Int) : EnchantmentWrapper(id) {
 
     companion object {
 
-        private var glow: Enchantment? = null
+        var ableToApplyGlowEnchant = false
+        private var enchantment: Enchantment? = null
 
         fun registerEnchant() {
-            try {
-                val f = Enchantment::class.java.getDeclaredField("acceptingNew")
-                f.isAccessible = true
-                f.set(null, true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val accepting = Enchantment::class.java
+                .getDeclaredField("acceptingNew")
 
-            glow = GlowEnchantment(255)
+            accepting.isAccessible = true
+            accepting.set(null, true)
+
+            enchantment = GlowEnchantment(255)
 
             if (Enchantment.getByName("Glow") == null) {
-                Enchantment.registerEnchantment(glow!!)
+                Enchantment.registerEnchantment(enchantment!!)
             }
+
+            ableToApplyGlowEnchant = true
         }
 
         fun addGlow(item: ItemStack) {
-            if (item.enchantments.isEmpty()) {
-                item.addEnchantment(glow, 1)
-            } else {
+            if (!ableToApplyGlowEnchant)
+            {
                 return
             }
+
+            if (item.enchantments.isEmpty()) {
+                item.addEnchantment(enchantment, 1)
+            }
         }
-
     }
-
 }

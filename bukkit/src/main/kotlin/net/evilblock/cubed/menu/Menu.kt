@@ -214,7 +214,7 @@ abstract class Menu
                 if (
                     !MinecraftReflection.isModern() &&
                     openInventory.topInventory.title == inventory.title
-                    )
+                )
                 {
                     openInventory.topInventory.contents = inventory.contents
                     return
