@@ -213,8 +213,30 @@ abstract class Menu
                 openInventory.topInventory.title == inventory.title
             )
             {
+
+
                 openInventory.topInventory.contents = inventory.contents
                 return
+            }
+
+            if (
+                openInventory.topInventory != null &&
+                openInventory.topInventory.size == inventory.size
+            )
+            {
+                if (
+                    MinecraftReflection.isModern()
+                )
+                {
+                    openInventory.topInventory.contents = inventory.contents
+                    return
+                }
+
+                if (openInventory.topInventory.title == inventory.title)
+                {
+                    openInventory.topInventory.contents = inventory.contents
+                    return
+                }
             }
 
             manualClose = false
