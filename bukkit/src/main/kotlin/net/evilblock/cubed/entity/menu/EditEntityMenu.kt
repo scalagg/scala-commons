@@ -28,7 +28,7 @@ class EditEntityMenu(private val entity: Entity) : PaginatedMenu() {
     )
 
     override fun getPrePaginatedTitle(player: Player) =
-        "Edit ${entity.getTypeName()} #${entity.id}"
+        "Edit ${entity.getTypeName()} #${entity.id - Entity.initialId}"
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button> {
         val buttons = mutableMapOf<Int, Button>()

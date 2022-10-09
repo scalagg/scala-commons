@@ -127,6 +127,11 @@ object EntityHandler
         return entities
     }
 
+    inline fun <reified T : Entity> getEntitiesOfType(): List<T>
+    {
+        return getEntities().filterIsInstance<T>().toList()
+    }
+
     fun <T : Entity> getEntitiesByType(type: Class<out T>): List<T>
     {
         return entities.filterIsInstance(type).toList()

@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.util.text
 
+import gg.scala.commons.replacement.Replacements
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.lang.StringBuilder
@@ -96,7 +97,10 @@ object TextUtil {
             return
         }
 
-        var message = ChatColor.translateAlternateColorCodes('&', message)
+        var message = Replacements.apply(
+            ChatColor.translateAlternateColorCodes('&', message), player
+        )
+
         var messagePxSize = 0
         var previousCode = false
         var isBold = false
@@ -132,7 +136,7 @@ object TextUtil {
             compensated += spaceLength
         }
 
-        player.sendMessage(sb.toString() + message.replace("%PLAYER%", player.displayName))
+        player.sendMessage(sb.toString() + message)
     }
 
     @JvmStatic

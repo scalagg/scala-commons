@@ -12,16 +12,20 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
 import net.evilblock.cubed.menu.menus.ConfirmMenu
+import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.Color
+import net.evilblock.cubed.util.bukkit.FancyMessage
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.math.Numbers
+import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
-import java.lang.Math.floor
 
 @AutoRegister
 @CommandAlias("npc")
@@ -38,7 +42,7 @@ object NpcCommand : ScalaCommand()
     @Subcommand("create")
     @Description("Spawn an NPC")
     @CommandPermission("commons.npcs.create")
-    fun onCreate(player: Player, @Name("text") @Single text: String)
+    fun onCreate(player: Player, @Single text: String)
     {
         if (text.length > 48)
         {
@@ -46,10 +50,13 @@ object NpcCommand : ScalaCommand()
         }
 
         val loc = player.location
-        loc.x = floor(loc.x) + 0.5
-        loc.z = floor(loc.z) + 0.5
+        loc.x = kotlin.math.floor(loc.x) + 0.5
+        loc.z = kotlin.math.floor(loc.z) + 0.5
 
-        val npc = NpcEntity(listOf(ChatColor.translateAlternateColorCodes('&', text)), loc)
+        val npc = NpcEntity(
+            listOf(Color.translate(text)), loc
+        )
+
         npc.initializeData()
         npc.spawn(player)
 
@@ -62,7 +69,7 @@ object NpcCommand : ScalaCommand()
     @Subcommand("delete-near")
     @Description("Deletes NPCs within a radius of blocks")
     @CommandPermission("commons.npcs.delete")
-    fun onDeleteNear(player: Player, @Name("radius") @Default("5") radius: Int)
+    fun onDeleteNear(player: Player, @Default("5") radius: Int)
     {
         val inRadius = arrayListOf<NpcEntity>()
 
@@ -93,6 +100,49 @@ object NpcCommand : ScalaCommand()
                 player.sendMessage("${ChatColor.GREEN}Successfully deleted ${Numbers.format(inRadius.size)} NPCs!")
             }
         }.openMenu(player)
+    }
+
+    @Subcommand("teleport")
+    @CommandPermission("commons.npcs.teleport")
+    @Description("Teleport to an NPC.")
+    fun onTeleport(player: Player, npcEntity: NpcEntity)
+    {
+        player.teleport(npcEntity.location)
+        player.sendMessage(
+            "${CC.SEC}You've been teleported to NPC ${CC.PRI}#${npcEntity.id - Entity.initialId}${CC.SEC}."
+        )
+    }
+
+    @Subcommand("list")
+    @CommandPermission("commons.npcs.list")
+    @Description("View all NPC entities.")
+    fun onEntityList(player: Player)
+    {
+        val entities = EntityHandler
+            .getEntitiesOfType<NpcEntity>()
+
+        if (entities.isEmpty())
+        {
+            throw ConditionFailedException("No NPCs exist on this server.")
+        }
+
+        player.sendMessage("${CC.UB_PRI}NPC Entities:")
+
+        for (entity in entities)
+        {
+            FancyMessage()
+                .withMessage(" - #${entity.id - Entity.initialId} ")
+                .withMessage("${CC.GRAY}(click to teleport)")
+                .andCommandOf(
+                    ClickEvent.Action.RUN_COMMAND,
+                    "/entity teleport ${entity.id}"
+                )
+                .sendToPlayer(player)
+        }
+
+        player.sendMessage(
+            "${CC.PRI}=== ${CC.WHITE}${entities.size} total NPC entities ${CC.PRI}==="
+        )
     }
 
     @Subcommand("manage")

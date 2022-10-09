@@ -364,7 +364,7 @@ abstract class Entity(var location: Location)
     fun canDisplayDebug(): Boolean
     {
         val multiPart = isMultiPartEntity()
-        return !multiPart || (multiPart && isRootOfMultiPartEntity())
+        return !multiPart || isRootOfMultiPartEntity()
     }
 
     open fun renderDebugInformation(): List<String>
@@ -454,7 +454,8 @@ abstract class Entity(var location: Location)
 
     companion object
     {
-        private var entityId = 900_000_000
+        const val initialId = 900_000_000
+        private var entityId = initialId
 
         fun nextEntityId() = entityId++
         fun currId() = entityId
