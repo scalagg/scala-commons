@@ -38,6 +38,11 @@ import gg.scala.commons.library.model.Library
     version = "4.11.0"
 )
 @Library(
+    groupId = "net.kyori",
+    artifactId = "adventure-platform-bukkit",
+    version = "4.1.2"
+)
+@Library(
     groupId = "com.squareup.retrofit2",
     artifactId = "retrofit",
     version = "2.9.0"
