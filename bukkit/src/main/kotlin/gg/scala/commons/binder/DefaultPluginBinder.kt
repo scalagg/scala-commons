@@ -3,7 +3,6 @@ package gg.scala.commons.binder
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.flavor.binder.FlavorBinderContainer
 import gg.scala.flavor.inject.condition.Named
-import net.minecraft.server.v1_8_R3.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.plugin.Plugin
@@ -55,7 +54,6 @@ class DefaultPluginBinder(
 
         bind(Bukkit.getServer())
             .to<Server>()
-            .to<MinecraftServer>()
             .bind()
 
         bind(Bukkit.getPluginManager())
