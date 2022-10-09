@@ -12,9 +12,11 @@ import co.aikar.commands.annotation.*
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.entity.EntityHandler
+import net.evilblock.cubed.entity.command.EntityCommandHelper
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.hologram.updating.FormatUpdatingHologramEntity
 import net.evilblock.cubed.entity.menu.EditEntityMenu
+import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.text.TextUtil
@@ -31,6 +33,22 @@ object HologramCommand : ScalaCommand()
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("teleport")
+    @CommandPermission("commons.npcs.teleport")
+    @Description("Teleport to a hologram.")
+    fun onTeleport(player: Player, hologram: HologramEntity)
+    {
+        EntityCommandHelper.teleportToAnEntity(player, hologram)
+    }
+
+    @Subcommand("list")
+    @CommandPermission("commons.npcs.list")
+    @Description("View all hologram entities.")
+    fun onEntityList(player: Player)
+    {
+        EntityCommandHelper.listEntities<HologramEntity>(player)
     }
 
     @Subcommand("create")

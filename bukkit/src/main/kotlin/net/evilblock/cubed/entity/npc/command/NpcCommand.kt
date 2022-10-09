@@ -14,6 +14,7 @@ import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
+import net.evilblock.cubed.entity.command.EntityCommandHelper
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.entity.tool.EntitySelectionTool
@@ -105,12 +106,9 @@ object NpcCommand : ScalaCommand()
     @Subcommand("teleport")
     @CommandPermission("commons.npcs.teleport")
     @Description("Teleport to an NPC.")
-    fun onTeleport(player: Player, npcEntity: NpcEntity)
+    fun onTeleport(player: Player, npc: NpcEntity)
     {
-        player.teleport(npcEntity.location)
-        player.sendMessage(
-            "${CC.SEC}You've been teleported to NPC ${CC.PRI}#${npcEntity.id - Entity.initialId}${CC.SEC}."
-        )
+        EntityCommandHelper.teleportToAnEntity(player, npc)
     }
 
     @Subcommand("list")
@@ -118,31 +116,7 @@ object NpcCommand : ScalaCommand()
     @Description("View all NPC entities.")
     fun onEntityList(player: Player)
     {
-        val entities = EntityHandler
-            .getEntitiesOfType<NpcEntity>()
-
-        if (entities.isEmpty())
-        {
-            throw ConditionFailedException("No NPCs exist on this server.")
-        }
-
-        player.sendMessage("${CC.UB_PRI}NPC Entities:")
-
-        for (entity in entities)
-        {
-            FancyMessage()
-                .withMessage(" - #${entity.id - Entity.initialId} ")
-                .withMessage("${CC.GRAY}(click to teleport)")
-                .andCommandOf(
-                    ClickEvent.Action.RUN_COMMAND,
-                    "/entity teleport ${entity.id}"
-                )
-                .sendToPlayer(player)
-        }
-
-        player.sendMessage(
-            "${CC.PRI}=== ${CC.WHITE}${entities.size} total NPC entities ${CC.PRI}==="
-        )
+        EntityCommandHelper.listEntities<NpcEntity>(player)
     }
 
     @Subcommand("manage")
