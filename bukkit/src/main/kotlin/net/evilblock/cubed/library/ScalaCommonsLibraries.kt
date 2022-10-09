@@ -34,6 +34,11 @@ import gg.scala.commons.library.model.Library
 )
 @Library(
     groupId = "net.kyori",
+    artifactId = "adventure-platform-api",
+    version = "4.1.2"
+)
+@Library(
+    groupId = "net.kyori",
     artifactId = "adventure-text-serializer-gson",
     version = "4.11.0"
 )
