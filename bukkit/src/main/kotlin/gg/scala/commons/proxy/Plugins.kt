@@ -1,7 +1,7 @@
 package gg.scala.commons.proxy
 
 import gg.scala.commons.ExtendedScalaPlugin
-import kotlin.properties.ReadWriteProperty
+import kotlin.properties.ReadOnlyProperty
 
 /**
  * @author GrowlyX
@@ -9,8 +9,8 @@ import kotlin.properties.ReadWriteProperty
  */
 object Plugins
 {
-    inline fun <reified T : ExtendedScalaPlugin> plugin(): ReadWriteProperty<Any, T>
+    inline fun <reified T : ExtendedScalaPlugin> plugin(): ReadOnlyProperty<Any, T>
     {
-        return PluginsReadWriteProperty(T::class)
+        return PluginDelegatedProperty(T::class)
     }
 }

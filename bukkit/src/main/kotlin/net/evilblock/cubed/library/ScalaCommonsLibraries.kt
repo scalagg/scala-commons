@@ -28,31 +28,6 @@ import gg.scala.commons.library.model.Library
     version = "3.12.0"
 )
 @Library(
-    groupId = "net.kyori",
-    artifactId = "adventure-api",
-    version = "4.11.0"
-)
-@Library(
-    groupId = "net.kyori",
-    artifactId = "adventure-platform-api",
-    version = "4.1.2"
-)
-@Library(
-    groupId = "net.kyori",
-    artifactId = "adventure-text-serializer-gson",
-    version = "4.11.0"
-)
-@Library(
-    groupId = "net.kyori",
-    artifactId = "adventure-text-minimessage",
-    version = "4.11.0"
-)
-@Library(
-    groupId = "net.kyori",
-    artifactId = "adventure-platform-bukkit",
-    version = "4.1.2"
-)
-@Library(
     groupId = "com.squareup.retrofit2",
     artifactId = "retrofit",
     version = "2.9.0"

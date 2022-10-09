@@ -3,6 +3,7 @@ package net.evilblock.cubed.protocol
 import com.viaversion.viaversion.api.Via
 import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.commons.protocol.ProtocolVersion
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
@@ -18,10 +19,13 @@ import org.bukkit.entity.Player
 @SoftDependency("ViaVersion")
 object ViaVersionVersionProvider : ProtocolVersion
 {
+    @Inject
+    lateinit var plugin: ScalaCommonsSpigot
+
     @Configure
     fun configure()
     {
-        ScalaCommonsSpigot.instance.versionProvider = this
+        plugin.versionProvider = this
     }
 
     override fun getProtocolVersion(player: Player) =
