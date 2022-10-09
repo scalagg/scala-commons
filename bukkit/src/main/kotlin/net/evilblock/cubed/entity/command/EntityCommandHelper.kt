@@ -25,9 +25,11 @@ object EntityCommandHelper
 
     inline fun <reified T : Entity> listEntities(player: Player)
     {
-        val entities = EntityHandler.getEntitiesOfType<T>()
+        val entities = EntityHandler
+            .getEntitiesOfType<T>()
+            .sortedBy { it.id }
 
-        val entityType = T::class.java.name
+        val entityType = T::class.java.simpleName
             .replace("Entity", "")
 
         if (entities.isEmpty())
@@ -36,6 +38,7 @@ object EntityCommandHelper
         }
 
         player.sendMessage("${CC.UB_PRI}$entityType Entities:")
+        player.sendMessage("")
 
         for (entity in entities)
         {
