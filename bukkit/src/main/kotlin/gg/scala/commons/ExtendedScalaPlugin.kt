@@ -451,10 +451,16 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 it.objectInstance() ?: it.newInstance()
             }
             .forEach {
-                this.flavor.inject(it)
+                kotlin.runCatching {
+                    this.flavor.inject(it)
 
-                this.server.pluginManager
-                    .registerEvents(it as Listener, this)
+                    this.server.pluginManager
+                        .registerEvents(
+                            it as Listener, this
+                        )
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to enable @Listeners service", it)
+                }
             }
 
         this.packageIndexer
@@ -464,18 +470,22 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
             .filterIsInstance<Runnable>()
             .forEach {
-                this.flavor.inject(it)
+                kotlin.runCatching {
+                    this.flavor.inject(it)
 
-                val annotation = it.javaClass
-                    .getAnnotation(Repeating::class.java)!!
+                    val annotation = it.javaClass
+                        .getAnnotation(Repeating::class.java)!!
 
-                Schedulers.get(annotation.context)
-                    .runRepeating(
-                        it,
-                        annotation.delay,
-                        annotation.value
-                    )
-                    .bindWith(this)
+                    Schedulers.get(annotation.context)
+                        .runRepeating(
+                            it,
+                            annotation.delay,
+                            annotation.value
+                        )
+                        .bindWith(this)
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to enable scheduled @Repeating service", it)
+                }
             }
 
         this.contract<TablistPopulator>()

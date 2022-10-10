@@ -53,7 +53,10 @@ object ServerContainer : Runnable
                 kotlin.runCatching {
                     this.run()
                 }.onFailure {
-                    it.printStackTrace()
+                    if (it.message?.contains("Connection is closed") == false)
+                    {
+                        it.printStackTrace()
+                    }
                 }
             },
             0L, 500L, TimeUnit.MILLISECONDS

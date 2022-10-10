@@ -176,6 +176,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
             TimeZone.setDefault(default)
 
+            this.configureRedisServices()
+
             Serializers.create {
                 registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
                 registerTypeHierarchyAdapter(Location::class.java, LocationAdapter())
@@ -187,11 +189,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                 registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
                 registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
-
-                GsonComponentSerializer.gson().populator().apply(this)
             }
-
-            this.configureRedisServices()
 
             if (isPostersEnabled())
             {
@@ -274,6 +272,10 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
     private fun configureServerSync(config: ServerSyncConfig)
     {
+        Serializers.create {
+            GsonComponentSerializer.gson().populator().apply(this)
+        }
+
         this.serverSync = ServerSync.configure(
             GameServer(config.serverId, config.serverGroups, Region.valueOf(config.region))
         ) {
