@@ -10,6 +10,6 @@ object CommandManagerCustomizers
 
     inline fun <reified T> default()
     {
-        this.customizers.add(T::class.java)
+        customizers.add(T::class.java)
     }
 }

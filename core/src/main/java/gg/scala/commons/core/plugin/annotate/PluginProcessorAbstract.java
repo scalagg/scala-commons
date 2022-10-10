@@ -25,6 +25,8 @@ import org.yaml.snakeyaml.Yaml;
 
 public abstract class PluginProcessorAbstract extends AbstractProcessor {
 
+    private static final String REPLACEMENT_EXEC = "execute_";
+
     private final PluginSerializerMap serializers;
     private final String propertiesFileName;
 
@@ -129,7 +131,7 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
                 continue;
             }
             for (Map.Entry<String, String> replacementEntry : replacements.entrySet()) {
-                if (replacementEntry.getKey().startsWith("exec:")) {
+                if (replacementEntry.getKey().startsWith(REPLACEMENT_EXEC)) {
                     try {
                         final Process process = Runtime.getRuntime()
                             .exec(replacementEntry.getValue());
@@ -139,7 +141,12 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
                         );
 
                         final String output = stdInput.readLine();
-                        value = stringValue.replace(replacementEntry.getKey().replace("exec:", ""), output);
+
+                        value = stringValue.replace(
+                            replacementEntry.getKey()
+                                .replace(REPLACEMENT_EXEC, ""),
+                            output
+                        );
                     } catch (Throwable ignored) {
 
                     }

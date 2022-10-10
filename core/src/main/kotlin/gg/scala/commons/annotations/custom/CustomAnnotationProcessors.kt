@@ -15,6 +15,6 @@ object CustomAnnotationProcessors
         noinline lambda: (Any) -> Unit
     )
     {
-        this.processors[T::class] = lambda
+        processors[T::class] = lambda
     }
 }

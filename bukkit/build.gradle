@@ -122,6 +122,7 @@ shadowJar {
     relocate "co.aikar.locales", "gg.scala.commons.locales"
 
     relocate "org.reflections", "gg.scala.commons.reflections"
+    mergeServiceFiles()
 
     exclude "**/kotlin/**"
     exclude "**/META-INF/**"
