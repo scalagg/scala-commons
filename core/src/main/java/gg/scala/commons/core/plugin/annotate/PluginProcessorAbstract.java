@@ -97,7 +97,7 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
         Properties properties = new Properties();
         try {
             final FileObject fileObject = this.processingEnv.getFiler()
-                .getResource(StandardLocation.SOURCE_PATH, "", this.propertiesFileName);
+                .getResource(StandardLocation.CLASS_PATH, "", this.propertiesFileName);
             try (InputStream inputStream = fileObject.openInputStream()) {
                 properties.load(inputStream);
             }
