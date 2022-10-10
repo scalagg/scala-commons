@@ -50,14 +50,7 @@ object ServerContainer : Runnable
     {
         ServerSync.scheduleAtFixedRate(
             {
-                kotlin.runCatching {
-                    this.run()
-                }.onFailure {
-                    if (it.message?.contains("Connection is closed") == false)
-                    {
-                        it.printStackTrace()
-                    }
-                }
+                this.run()
             },
             0L, 500L, TimeUnit.MILLISECONDS
         )

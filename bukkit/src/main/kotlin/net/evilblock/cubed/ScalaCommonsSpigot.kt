@@ -396,6 +396,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 this.close()
             }
 
+        ServerSync.shutdownNow()
         AwareHub.close()
     }
 
