@@ -125,5 +125,4 @@ shadowJar {
     mergeServiceFiles()
 
     exclude "**/kotlin/**"
-    exclude "**/META-INF/**"
 }

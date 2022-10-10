@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group "gg.scala.commons"
-    version "2.1.9"
+    version "3.0.0"
 
     repositories {
         mavenCentral()
@@ -74,7 +74,7 @@ subprojects {
         repositories {
             maven {
                 name "Scala"
-                url "${property("artifactory_contextUrl")}/gradle-dev"
+                url "${property("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
                     username property("artifactory_user")
