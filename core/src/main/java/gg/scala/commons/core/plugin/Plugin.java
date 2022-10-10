@@ -20,7 +20,10 @@ public @interface Plugin {
             return (annotation, data) -> {
                 data.set(Plugin.Serializer.NAME_KEY, annotation.name());
                 data.set(Plugin.Serializer.VERSION_KEY, annotation.version());
-                data.set(Plugin.Serializer.DESCRIPTION_KEY, annotation.description());
+
+                if (!annotation.description().isEmpty()) {
+                    data.set(Plugin.Serializer.DESCRIPTION_KEY, annotation.description());
+                }
             };
         }
 
@@ -30,6 +33,6 @@ public @interface Plugin {
 
     String version();
 
-    String description();
+    String description() default "";
 
 }

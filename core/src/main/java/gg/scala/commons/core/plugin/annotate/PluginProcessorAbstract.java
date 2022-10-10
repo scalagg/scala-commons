@@ -26,13 +26,10 @@ import org.yaml.snakeyaml.Yaml;
 public abstract class PluginProcessorAbstract extends AbstractProcessor {
 
     private static final String REPLACEMENT_EXEC = "execute_";
+    private static final String REPLACEMENT_EXEC_ENCAPSULATED = "%" + REPLACEMENT_EXEC;
 
     private final PluginSerializerMap serializers;
     private final String propertiesFileName;
-
-    protected PluginProcessorAbstract(PluginSerializerMap serializers) {
-        this(serializers, null);
-    }
 
     protected PluginProcessorAbstract(PluginSerializerMap serializers, @Nullable String propertiesFileName) {
         Preconditions.checkNotNull(serializers, "serializers");
@@ -100,15 +97,21 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
         Properties properties = new Properties();
         try {
             final FileObject fileObject = this.processingEnv.getFiler()
-                .getResource(StandardLocation.CLASS_OUTPUT, "", this.propertiesFileName);
+                .getResource(StandardLocation.SOURCE_PATH, "", this.propertiesFileName);
             try (InputStream inputStream = fileObject.openInputStream()) {
                 properties.load(inputStream);
             }
-        } catch (FileNotFoundException exception) {
-            // They don't have a file, that's fine.
-        } catch (IOException exception) {
-            this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Failed to read " + this.propertiesFileName);
+        } catch (Exception exception) {
+            this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Failed to load " + propertiesFileName + ". " + exception.getMessage());
+        } finally {
+            properties.put("execute_remote", "git remote");
+            properties.put("execute_branch", "git rev-parse --short HEAD");
+            properties.put("execute_id", "git rev-parse --abbrev-ref HEAD");
+
+            properties.put("author", "Scala Studios");
+            properties.put("website", "https://scala.gg");
         }
+
         return properties;
     }
 
@@ -127,14 +130,16 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
 
         for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
             Object value = valueEntry.getValue();
-            if (!(value instanceof final String stringValue)) {
+            if (!(value instanceof String stringValue)) {
                 continue;
             }
+
             for (Map.Entry<String, String> replacementEntry : replacements.entrySet()) {
-                if (replacementEntry.getKey().startsWith(REPLACEMENT_EXEC)) {
+                if (replacementEntry.getKey().startsWith(REPLACEMENT_EXEC_ENCAPSULATED)) {
                     try {
                         final Process process = Runtime.getRuntime()
                             .exec(replacementEntry.getValue());
+                        process.waitFor();
 
                         final BufferedReader stdInput = new BufferedReader(
                             new InputStreamReader(process.getInputStream())
@@ -142,19 +147,22 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
 
                         final String output = stdInput.readLine();
 
-                        value = stringValue.replace(
+                        stringValue = stringValue.replace(
                             replacementEntry.getKey()
                                 .replace(REPLACEMENT_EXEC, ""),
                             output
                         );
-                    } catch (Throwable ignored) {
-
+                    } catch (Throwable exception) {
+                        this.processingEnv.getMessager().printMessage(
+                            Diagnostic.Kind.WARNING, exception.getMessage()
+                        );
                     }
                 } else {
-                    value = stringValue.replace(replacementEntry.getKey(), replacementEntry.getValue());
+                    stringValue = stringValue.replace(replacementEntry.getKey(), replacementEntry.getValue());
                 }
             }
-            valueEntry.setValue(value);
+
+            valueEntry.setValue(stringValue);
         }
     }
 
