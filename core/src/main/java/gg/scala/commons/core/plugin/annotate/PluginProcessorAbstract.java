@@ -3,11 +3,8 @@ package gg.scala.commons.core.plugin.annotate;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
+
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Properties;
@@ -128,12 +125,27 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
 
         for (Map.Entry<String, Object> valueEntry : values.entrySet()) {
             Object value = valueEntry.getValue();
-            if (!(value instanceof String)) {
+            if (!(value instanceof final String stringValue)) {
                 continue;
             }
-            final String stringValue = (String) value;
             for (Map.Entry<String, String> replacementEntry : replacements.entrySet()) {
-                value = stringValue.replace(replacementEntry.getKey(), replacementEntry.getValue());
+                if (replacementEntry.getKey().startsWith("exec:")) {
+                    try {
+                        final Process process = Runtime.getRuntime()
+                            .exec(replacementEntry.getValue());
+
+                        final BufferedReader stdInput = new BufferedReader(
+                            new InputStreamReader(process.getInputStream())
+                        );
+
+                        final String output = stdInput.readLine();
+                        value = stringValue.replace(replacementEntry.getKey().replace("exec:", ""), output);
+                    } catch (Throwable ignored) {
+
+                    }
+                } else {
+                    value = stringValue.replace(replacementEntry.getKey(), replacementEntry.getValue());
+                }
             }
             valueEntry.setValue(value);
         }
