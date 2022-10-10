@@ -1,6 +1,6 @@
 repositories {
-    maven { url "https://maven.enginehub.org/repo/" }
     maven { url "https://repo.aikar.co/content/groups/aikar/" }
+    maven { url "https://maven.enginehub.org/repo/" }
     maven { url "https://repo.dmulloy2.net/nexus/repository/public" }
 
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -18,6 +18,8 @@ dependencies {
     implementation project(":store")
     implementation project(":commons")
     implementation project(":serversync")
+
+    implementation project(":core")
 
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
 
@@ -122,5 +124,4 @@ shadowJar {
     relocate "org.reflections", "gg.scala.commons.reflections"
 
     exclude "**/kotlin/**"
-    exclude "**/META-INF/**"
 }
