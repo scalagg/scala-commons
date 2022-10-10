@@ -1,8 +1,12 @@
 package gg.scala.commons
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.RegisteredCommand
+import co.aikar.commands.annotation.CommandPermission
+import com.google.common.collect.SetMultimap
 import gg.scala.commons.annotations.LibraryLoader
 import gg.scala.commons.annotations.Listeners
+import gg.scala.commons.annotations.commands.AssignPermission
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.annotations.commands.ManualRegister
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
@@ -55,6 +59,8 @@ import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.Listener
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.reflections.scanners.Scanners
 import java.io.File
 import java.lang.reflect.Method
@@ -70,6 +76,15 @@ import java.util.logging.Level
  */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
+    companion object
+    {
+        val subCommands = BaseCommand::class.java
+            .getField("subCommands")
+
+        val method = RegisteredCommand::class.java
+            .getField("method")
+    }
+
     val packageIndexer by lazy {
         this.flavor.reflections
     }
@@ -343,6 +358,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     this.commandManager.registerCommand(
                         instance as BaseCommand
                     )
+
+                    kotlin.runCatching scoped@{
+                        assignDynamicSubcommandPermissions(instance)
+                    }.onFailure {
+                        logger.info("Failed to assign permissions")
+                    }
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)
                 }
@@ -420,12 +441,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.packageIndexer
             .getTypesAnnotatedWith<SoftDependency>()
             .filter {
-                this.server.pluginManager
-                    .isPluginEnabled(
-                        it.getAnnotation(
-                            SoftDependency::class.java
-                        ).value
-                    )
+                it.getAnnotationsByType(SoftDependency::class.java)
+                    .all { dep ->
+                        this.server.pluginManager.isPluginEnabled(dep.value)
+                    }
             }
             .forEach { clazz ->
                 kotlin.runCatching {
@@ -436,8 +455,12 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     logger.info(
                         "[Feature] Enabled feature ${
                             clazz.simpleName
-                        } depending on plugin ${
-                            clazz.getAnnotation(SoftDependency::class.java).value
+                        } depending on plugin(s) ${
+                            clazz
+                                .getAnnotationsByType(SoftDependency::class.java)
+                                .joinToString(", ") {
+                                    it.value
+                                }
                         }!"
                     )
                 }.onFailure {
@@ -529,6 +552,35 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         }
 
         PluginBridge.install(this)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun assignDynamicSubcommandPermissions(instance: BaseCommand)
+    {
+        val permission = instance.javaClass
+            .getAnnotation(CommandPermission::class.java)
+
+        if (permission != null)
+        {
+            val subCommandValues = subCommands
+                .get(instance) as SetMultimap<String, RegisteredCommand<*>>?
+                ?: return
+
+            for (registeredCommand in subCommandValues.values())
+            {
+                val methodSub = method.get(registeredCommand) as Method
+
+                if (methodSub.isAnnotationPresent(AssignPermission::class.java))
+                {
+                    registeredCommand.requiredPermissions
+                        .add(
+                            "${permission.value}.subcommand.${registeredCommand.command}"
+                        )
+
+                    logger.info("DEBUG: Assigned permission ${"${permission.value}.subcommand.${registeredCommand.command}"}")
+                }
+            }
+        }
     }
 
     override fun disable()
