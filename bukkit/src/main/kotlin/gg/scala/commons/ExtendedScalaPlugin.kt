@@ -63,6 +63,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.reflections.scanners.Scanners
 import java.io.File
+import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.logging.Level
 
@@ -78,11 +79,21 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     companion object
     {
-        val subCommands = BaseCommand::class.java
-            .getField("subCommands")
+        val subCommands: Field by lazy {
+            BaseCommand::class.java
+                .getDeclaredField("subCommands")
+                .apply {
+                    isAccessible = true
+                }
+        }
 
-        val method = RegisteredCommand::class.java
-            .getField("method")
+        val method: Field by lazy {
+            RegisteredCommand::class.java
+                .getDeclaredField("method")
+                .apply {
+                    isAccessible = true
+                }
+        }
     }
 
     val packageIndexer by lazy {
@@ -572,12 +583,16 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
                 if (methodSub.isAnnotationPresent(AssignPermission::class.java))
                 {
+                    val commandNoWhitespace = registeredCommand
+                        .command.split(" ")
+                        .toMutableList()
+                        .apply { removeFirst() }
+                        .joinToString(".")
+
                     registeredCommand.requiredPermissions
                         .add(
-                            "${permission.value}.subcommand.${registeredCommand.command}"
+                            "${permission.value}.subcommand.$commandNoWhitespace"
                         )
-
-                    logger.info("DEBUG: Assigned permission ${"${permission.value}.subcommand.${registeredCommand.command}"}")
                 }
             }
         }
