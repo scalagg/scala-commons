@@ -19,6 +19,8 @@ dependencies {
     implementation project(":commons")
     implementation project(":serversync")
 
+    implementation project(":core")
+
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
 
     // todo: only api on standalone?

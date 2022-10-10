@@ -9,6 +9,7 @@ include(
 
 // cross-platform
 include(
+    "core",
     "store",
     "commons",
     "serializers",

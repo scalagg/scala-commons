@@ -61,8 +61,6 @@ subprojects {
         exclude "**/*.kotlin_metadata"
         exclude "**/*.kotlin_module"
 
-        exclude "META-INF/"
-
         archiveFileName = "sccommons-${project.name}.jar"
     }
 
@@ -76,7 +74,7 @@ subprojects {
         repositories {
             maven {
                 name "Scala"
-                url "${property("artifactory_contextUrl")}/gradle-release"
+                url "${property("artifactory_contextUrl")}/gradle-dev"
 
                 credentials {
                     username property("artifactory_user")
