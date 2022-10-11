@@ -2,13 +2,14 @@ package gg.scala.cache.uuid.resolver.impl
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.gson.JsonParser
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
 import gg.scala.cache.uuid.resolver.DataResolver
 import gg.scala.cache.uuid.resolver.ResolverType
+import java.lang.IllegalStateException
+import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
+
 
 /**
  * @author GrowlyX
@@ -16,9 +17,6 @@ import java.util.logging.Logger
  */
 object MojangDataResolver : DataResolver
 {
-    private val parser = JsonParser()
-    private val client = OkHttpClient()
-
     private val invalidCache = Caffeine.newBuilder()
         .maximumSize(10_000)
         .expireAfterWrite(1L, TimeUnit.MINUTES)
@@ -44,24 +42,27 @@ object MojangDataResolver : DataResolver
 
         try
         {
-            val request = Request.Builder().url("https://api.mojang.com/users/profiles/minecraft/$username").build()
+            val url = URL(
+                "https://api.mojang.com/users/profiles/minecraft/$username"
+            )
 
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful)
-            {
-                val json = parser.parse(response.body().string()).asJsonObject
+            val text = url.readText(charset = Charsets.UTF_8)
 
-                val uuid = UUID.fromString(
-                    json.get("id").asString.replaceFirst(
+            val parsed = JsonParser.parseString(text)
+                ?: throw IllegalStateException("Invalid JSON text returned for username- $username")
+
+            val jsonObject = parsed.asJsonObject
+
+            val uniqueId = UUID.fromString(
+                jsonObject.get("id").asString
+                    .replaceFirst(
                         "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(),
                         "$1-$2-$3-$4-$5"
                     )
-                )
-                val name = json.get("name").asString
+            )
 
-                return uuid to name
-            }
-        } catch (e: Exception)
+            return uniqueId to jsonObject.get("name").asString
+        } catch (exception: Exception)
         {
             invalidCache.put(username.lowercase(), username)
 
@@ -77,25 +78,18 @@ object MojangDataResolver : DataResolver
     {
         try
         {
-            val request = Request.Builder()
-                .url("https://api.mojang.com/user/profiles/${uuid.toString().replace("-", "")}/names").build()
+            val url = URL(
+                "https://sessionserver.mojang.com/session/minecraft/profile/$uuid"
+            )
 
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful)
-            {
-                val names = parser.parse(response.body().string()).asJsonArray.map { it.asJsonObject }
-                if (names.size == 1)
-                {
-                    return uuid to names.first().get("name").asString
-                }
+            val text = url.readText(charset = Charsets.UTF_8)
 
-                val name = names
-                    .filter { it.has("changedToAt") }
-                    .maxByOrNull { it.get("changedToAt").asLong }!!.get("name").asString
+            val parsed = JsonParser.parseString(text)
+                ?: throw IllegalStateException("Invalid JSON text returned for UUID- $uuid")
 
-                return uuid to name
-            }
-        } catch (e: Exception)
+            val jsonObject = parsed.asJsonObject
+            return uuid to jsonObject.get("name").asString
+        } catch (exception: Exception)
         {
             Logger.getGlobal().info("Failed to retrieve user info from Mojang API: $uuid")
         }
