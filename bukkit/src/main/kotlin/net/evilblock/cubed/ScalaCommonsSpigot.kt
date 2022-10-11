@@ -22,10 +22,6 @@ import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
-import gg.scala.commons.core.plugin.Plugin
-import gg.scala.commons.core.plugin.PluginAuthor
-import gg.scala.commons.core.plugin.PluginDependency
-import gg.scala.commons.core.plugin.PluginWebsite
 import gg.scala.commons.protocol.ProtocolVersion
 import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
@@ -41,6 +37,8 @@ import me.lucko.helper.Commands
 import me.lucko.helper.Schedulers
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
+import me.lucko.helper.plugin.ap.Plugin
+import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
@@ -81,30 +79,50 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
-// Plugin metadata
+// plugin meta
 @Plugin(
     name = "scala-commons",
-    version = "%remote%/%branch%/%id%"
+    apiVersion = "1.18",
+    depends = [
+        PluginDependency("ProtocolLib"),
+        PluginDependency("store-spigot", soft = true),
+        PluginDependency("Vault", soft = true),
+        PluginDependency("ViaVersion", soft = true),
+        PluginDependency("spark", soft = true),
+        PluginDependency("UnifiedMetrics", soft = true)
+    ]
 )
-@PluginAuthor("Scala")
-@PluginWebsite("https://scala.gg")
-// Plugin dependencies
-@PluginDependency("ProtocolLib")
-@PluginDependency("store-spigot", soft = true)
-@PluginDependency("Vault", soft = true)
-@PluginDependency("ViaVersion", soft = true)
-@PluginDependency("spark", soft = true)
-@PluginDependency("UnifiedMetrics", soft = true)
-// Helper stuff
+// configs
+@ContainerConfig(
+    value = "sentry",
+    model = SentryConfig::class
+)
+@ContainerConfig(
+    value = "settings",
+    model = CommonsGeneralConfig::class
+)
+@ContainerConfig(
+    value = "tablist",
+    model = CommonsTablistConfig::class
+)
+@ContainerConfig(
+    value = "nametags",
+    model = CommonsNametagConfig::class
+)
+@ContainerConfig(
+    value = "posters",
+    model = CommonsPostersConfig::class
+)
+@ContainerConfig(
+    value = "scoreboard",
+    model = CommonsScoreboardConfig::class
+)
+// serversync
+@ContainerConfig(
+    value = "serversync",
+    model = ServerSyncConfig::class
+)
 @HelperImplementationPlugin
-// Config models
-@ContainerConfig("sentry", SentryConfig::class)
-@ContainerConfig("serversync", ServerSyncConfig::class)
-@ContainerConfig("settings", CommonsGeneralConfig::class)
-@ContainerConfig("tablist", CommonsTablistConfig::class)
-@ContainerConfig("nametags", CommonsNametagConfig::class)
-@ContainerConfig("posters", CommonsPostersConfig::class)
-@ContainerConfig("scoreboard", CommonsScoreboardConfig::class)
 class ScalaCommonsSpigot : ExtendedScalaPlugin()
 {
     companion object

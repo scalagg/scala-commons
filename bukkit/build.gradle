@@ -37,10 +37,8 @@ dependencies {
     api "gg.scala.tab:v1_8_R3:1.1.2-20220828.013651-6"
 
     // helper
-    implementation "me.lucko:helper:5.6.13"
-
-    // we want to use the plugin processor stuff
-    kapt "gg.scala.commons:bukkit:3.0.1"
+    implementation "me.lucko:helper:5.6.10.2"
+    kapt "me.lucko:helper:5.6.10.2"
 
     // sentry
     compileOnly "io.sentry:sentry:6.4.1"
