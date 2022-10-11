@@ -1,4 +1,4 @@
-package gg.scala.commons.core.pairs
+package gg.scala.commons.core.mutable
 
 /**
  * @author GrowlyX
