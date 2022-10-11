@@ -2,9 +2,7 @@ package gg.scala.commons.core.tryto;
 
 import java.util.function.*;
 
-public enum Try {
-
-    ;
+public class Try {
 
     public static Runnable to(CheckedRunnable runnable) {
         return () -> {
