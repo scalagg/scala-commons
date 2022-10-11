@@ -1,14 +1,19 @@
 package net.evilblock.cubed.util;
 
+import co.aikar.commands.MessageType;
+import com.google.common.collect.Lists;
+import gg.scala.commons.ExtendedScalaPlugin;
+import gg.scala.commons.command.ScalaCommandManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author puugz, GrowlyX
  * @since 08/07/2021 17:49
  */
-public class CC
-{
+public class CC {
     public static void setup(
         @NotNull String primary,
         @NotNull String secondary
@@ -21,6 +26,35 @@ public class CC
 
         UB_PRI = primary + BOLD + UNDERLINE;
         UB_SEC = secondary + BOLD + UNDERLINE;
+
+        // TODO: 10/10/2022 use liftgate lease system
+        try {
+            for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (plugin instanceof ExtendedScalaPlugin) {
+                    try {
+                        final ScalaCommandManager manager = ((ExtendedScalaPlugin) plugin).getCommandManager();
+
+                        final ChatColor primaryCC = ChatColor.getByChar(CC.PRI.charAt(1));
+                        final ChatColor secondaryCC = ChatColor.getByChar(CC.SEC.charAt(1));
+
+
+                        Lists.newArrayList(
+                            MessageType.HELP,
+                            MessageType.INFO,
+                            MessageType.SYNTAX
+                        ).forEach(type -> {
+                            manager.getFormat(type).setColor(3, ChatColor.GRAY);
+                            manager.getFormat(type).setColor(2, secondaryCC);
+                            manager.getFormat(type).setColor(1, primaryCC);
+                        });
+                    } catch (Exception ignored) {
+
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
     }
 
     public static String PRI;
