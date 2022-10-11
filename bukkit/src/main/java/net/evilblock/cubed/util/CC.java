@@ -37,7 +37,6 @@ public class CC {
                         final ChatColor primaryCC = ChatColor.getByChar(CC.PRI.charAt(1));
                         final ChatColor secondaryCC = ChatColor.getByChar(CC.SEC.charAt(1));
 
-
                         Lists.newArrayList(
                             MessageType.HELP,
                             MessageType.INFO,

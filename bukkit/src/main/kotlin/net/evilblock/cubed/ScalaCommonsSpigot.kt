@@ -76,6 +76,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 // plugin meta
@@ -396,7 +397,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 this.close()
             }
 
-        ServerSync.shutdownNow()
+        ServerSync.awaitTermination(1L, TimeUnit.SECONDS)
         AwareHub.close()
     }
 
