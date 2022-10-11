@@ -86,8 +86,8 @@ import java.util.logging.Level
     name = "scala-commons",
     version = "%remote%/%branch%/%id%"
 )
-@PluginAuthor("%author%")
-@PluginWebsite("%website%")
+@PluginAuthor("Scala")
+@PluginWebsite("https://scala.gg")
 // Plugin dependencies
 @PluginDependency("ProtocolLib")
 @PluginDependency("store-spigot", soft = true)

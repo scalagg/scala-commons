@@ -40,7 +40,7 @@ dependencies {
     implementation "me.lucko:helper:5.6.13"
 
     // we want to use the plugin processor stuff
-    kapt "gg.scala.commons:bukkit:3.0.2"
+    kapt "gg.scala.commons:bukkit:3.0.1"
 
     // sentry
     compileOnly "io.sentry:sentry:6.4.1"

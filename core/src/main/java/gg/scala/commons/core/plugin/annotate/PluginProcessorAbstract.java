@@ -108,7 +108,7 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
             properties.put("execute_branch", "git rev-parse --short HEAD");
             properties.put("execute_id", "git rev-parse --abbrev-ref HEAD");
 
-            properties.put("author", "Scala");
+            properties.put("author", "Scala Studios");
             properties.put("website", "https://scala.gg");
         }
 
