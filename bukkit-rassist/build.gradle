@@ -3,7 +3,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "gg.scala.commons:bukkit:2.0.0"
+    compileOnly "gg.scala.commons:bukkit:3.0.0"
     compileOnly "gg.scala.spigot:sspigot-server:1.0.8"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"
 

@@ -3,7 +3,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "gg.scala.commons:bukkit:2.0.0"
+    compileOnly "gg.scala.commons:bukkit:3.0.0"
     implementation project(":bukkit-rassist")
 
     compileOnly "gg.scala.spigot:sspigot-server:1.0.8"
