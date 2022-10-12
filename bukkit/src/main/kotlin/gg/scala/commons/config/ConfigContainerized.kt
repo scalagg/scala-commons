@@ -4,10 +4,12 @@ import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.config.annotations.Config
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.config.convert.ConvertedConfig
 import gg.scala.commons.config.convert.annotations.ConfigConverted
 import gg.scala.commons.model.Containerized
+import gg.scala.flavor.FlavorBinder
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
@@ -59,6 +61,13 @@ class ConfigContainerized(
                 !it.lateInject
             }
 
+        val additional = this.plugin.packageIndexer
+            .getTypesAnnotatedWith<Config>()
+            .map { it to it.getAnnotation(Config::class.java) }
+            .filter {
+                !it.second.lateInject
+            }
+
         for (config in configs)
         {
             if (config.lateInject)
@@ -68,6 +77,22 @@ class ConfigContainerized(
             }
 
             inject(config)
+        }
+
+        for (config in additional)
+        {
+            val container = ContainerConfig(
+                config.second.value, config.first.kotlin,
+                config.second.lateInject, config.second.crossSync
+            )
+
+            if (config.second.lateInject)
+            {
+                waitingLateInject.add(container)
+                continue
+            }
+
+            inject(container)
         }
 
         this.plugin.flavor().reflections
@@ -123,9 +148,12 @@ class ConfigContainerized(
             configContainer.value.postInject()
             configContainer.value.load()
 
-//            Schedulers.async().run {
-//                configContainer.value.updateFileContents()
-//            }
+            configContainer.value.model
+                ?.apply {
+                    plugin.flavor().binders.add(
+                        FlavorBinder(configContainer.key) to this
+                    )
+                }
         }
 
         if (
@@ -143,5 +171,7 @@ class ConfigContainerized(
 
             this.initialLoaded = true
         }
+
+        plugin.flavor().inject(plugin)
     }
 }

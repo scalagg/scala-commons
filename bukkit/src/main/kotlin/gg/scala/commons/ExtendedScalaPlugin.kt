@@ -40,8 +40,10 @@ import gg.scala.commons.tablist.TablistService
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
+import gg.scala.flavor.service.Service
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
+import me.lucko.helper.terminable.module.TerminableModule
 import net.evilblock.cubed.nametag.NametagHandler
 import net.evilblock.cubed.nametag.NametagProvider
 import net.evilblock.cubed.nametag.NametagProviderRegister
@@ -562,7 +564,27 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             this.flavor.startup()
         }
 
+        this.getLocalServicesInstanceOf<TerminableModule>()
+            .forEach { module ->
+                kotlin.runCatching {
+                    // already injected
+                    bindModule(module)
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to register TerminableModule ${module.javaClass.name}", it)
+                }
+            }
+
         PluginBridge.install(this)
+    }
+
+    inline fun <reified T> getLocalServicesInstanceOf(): List<T>
+    {
+        return this.packageIndexer
+            .getTypesAnnotatedWith<Service>()
+            .mapNotNull {
+                it.objectInstance() ?: it.newInstance()
+            }
+            .filterIsInstance<T>()
     }
 
     @Suppress("UNCHECKED_CAST")
