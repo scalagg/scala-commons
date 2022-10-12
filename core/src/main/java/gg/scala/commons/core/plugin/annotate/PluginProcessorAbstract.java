@@ -105,8 +105,8 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
             this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Failed to load " + propertiesFileName + ". " + exception.getMessage());
         } finally {
             properties.put("execute_remote", "git remote");
-            properties.put("execute_branch", "git rev-parse --short HEAD");
-            properties.put("execute_id", "git rev-parse --abbrev-ref HEAD");
+            properties.put("execute_id", "git rev-parse --short HEAD");
+            properties.put("execute_branch", "git rev-parse --abbrev-ref HEAD");
 
             properties.put("author", "Scala Studios");
             properties.put("website", "https://scala.gg");
