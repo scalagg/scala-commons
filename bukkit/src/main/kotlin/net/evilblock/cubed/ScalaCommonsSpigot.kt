@@ -34,6 +34,7 @@ import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.commons.util.Players
 import me.lucko.helper.Commands
+import me.lucko.helper.Events
 import me.lucko.helper.Schedulers
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
@@ -66,6 +67,7 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.statistic.ServerStatisticProviders
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.evilblock.cubed.util.math.Numbers
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -73,6 +75,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.BlockVector
 import org.spigotmc.SpigotConfig
 import java.util.*
@@ -312,8 +315,12 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
         EventBus.subscribe<ServerLoadedEvent>()
             .listen {
+                ServerContainer.run()
+
                 val server = ServerContainer.getServer(it.id)
-                    ?: return@listen
+                    ?: return@listen kotlin.run {
+                        logger.info("Server got loaded event but does not exist")
+                    }
 
                 val formatted = Numbers.format(
                     System.currentTimeMillis() - server.initialHeartbeat
@@ -331,17 +338,21 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 }
             }
 
-        Schedulers.sync().run {
-            // configure this once the server's started up completely
-            ServerSync.local.state = ServerState.Loaded
+        // configures this once the server's started up completely
+        server.scheduler
+            .runTask(this, object : BukkitRunnable() {
+                override fun run()
+                {
+                    ServerSync.local.state = ServerState.Loaded
 
-            val event = ServerLoadedEvent(
-                ServerSync.local.id,
-                ServerSync.local.javaClass.typeName
-            )
+                    val event = ServerLoadedEvent(
+                        ServerSync.local.id,
+                        ServerSync.local.javaClass.typeName
+                    )
 
-            event.push()
-        }
+                    event.push()
+                }
+            })
 
         this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
     }
