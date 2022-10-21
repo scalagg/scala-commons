@@ -49,7 +49,7 @@ dependencies {
     compileOnly "gg.scala.aware:aware:1.1.0"
     implementation "gg.scala.flavor:flavor:0.1.6"
 
-    implementation "org.scala-lang:scala-library:2.13.8"
+    implementation "org.scala-lang:scala-library:2.13.10"
 
     compileOnly "me.lucko:scriptcontroller:1.2"
     compileOnly "io.github.classgraph:classgraph:4.8.149"
