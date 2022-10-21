@@ -85,7 +85,7 @@ dependencies {
     implementation "com.github.cryptomorin:XSeries:9.0.0"
     implementation "com.github.ben-manes.caffeine:caffeine:3.1.1"
 
-    compileOnly "com.viaversion:viaversion-api:4.4.1"
+    compileOnly "com.viaversion:viaversion-api:4.4.2"
 
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
     implementation "org.mongodb:mongodb-driver:3.12.11"
