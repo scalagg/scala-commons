@@ -27,7 +27,7 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
 
-    implementation "org.yaml:snakeyaml:1.21"
+    implementation "org.yaml:snakeyaml:1.33"
 
     implementation "org.jetbrains.kotlin:kotlin-script-runtime"
     implementation "org.jetbrains.kotlin:kotlin-main-kts"
