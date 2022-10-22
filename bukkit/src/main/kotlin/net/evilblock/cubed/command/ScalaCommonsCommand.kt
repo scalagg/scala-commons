@@ -13,6 +13,7 @@ import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.resolver.ResolverType
+import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.issuer.ScalaPlayer
@@ -50,6 +51,19 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("extendedscalaplugin-enabled-plugin-list")
+    fun onList(player: ScalaPlayer)
+    {
+        player.sendMessage("${CC.B_YELLOW}ExtendedScalaPlugin List:")
+
+        Bukkit.getPluginManager().plugins
+            .filterIsInstance<ExtendedScalaPlugin>()
+            .sortedBy { it.name }
+            .forEach {
+                player.sendMessage(" ${CC.GOLD}${it.name}${CC.YELLOW} version ${CC.GOLD}${it.description.version}")
+            }
     }
 
     @Subcommand("resolver-type")
