@@ -64,7 +64,7 @@ object EntityMoveTool : Listener {
             return false
         }
 
-        if (itemStack.type != Material.MONSTER_EGG) {
+        if (itemStack.type != XMaterial.PIG_SPAWN_EGG.parseMaterial()) {
             return false
         }
 
