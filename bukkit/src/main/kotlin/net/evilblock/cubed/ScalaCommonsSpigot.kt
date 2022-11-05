@@ -167,14 +167,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 inject(Signs)
                 inject(TablistService)
 
-                if (
-                    server.pluginManager
-                        .getPlugin("store-spigot") != null
-                )
-                {
-                    inject(DataStoreFeature)
-                }
-
                 inject(PlayerCompositeTerminable)
             }
 
@@ -249,6 +241,14 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
     private fun configureRedisServices()
     {
+        if (
+            server.pluginManager
+                .getPlugin("store-spigot") != null
+        )
+        {
+            flavor().inject(DataStoreFeature)
+        }
+
         AwareHub.configure(
             AwareCloud.uri
         ) {

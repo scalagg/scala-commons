@@ -99,7 +99,6 @@ dependencies {
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
     // redis
-    implementation "gg.scala.aware:aware:1.1.0"
     implementation "io.lettuce:lettuce-core:6.2.1.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
