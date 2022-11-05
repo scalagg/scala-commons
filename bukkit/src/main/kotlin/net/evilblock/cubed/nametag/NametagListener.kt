@@ -3,6 +3,7 @@ package net.evilblock.cubed.nametag
 import gg.scala.commons.annotations.Listeners
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.config.CommonsNametagConfig
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
@@ -19,14 +20,17 @@ object NametagListener : Listener
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent)
     {
-        event.player.setMetadata(
-            "Nametag-Applied",
-            FixedMetadataValue(this.plugin, true) as MetadataValue
-        )
+        if (plugin.config<CommonsNametagConfig>().enabled)
+        {
+            event.player.setMetadata(
+                "Nametag-Applied",
+                FixedMetadataValue(this.plugin, true) as MetadataValue
+            )
 
-        NametagHandler.initiatePlayer(event.player)
-        NametagHandler.reloadPlayer(event.player)
-        NametagHandler.reloadOthersFor(event.player)
+            NametagHandler.initiatePlayer(event.player)
+            NametagHandler.reloadPlayer(event.player)
+            NametagHandler.reloadOthersFor(event.player)
+        }
     }
 
     @EventHandler
