@@ -339,20 +339,19 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }
 
         // configures this once the server's started up completely
-        server.scheduler
-            .runTask(this, object : BukkitRunnable() {
-                override fun run()
-                {
-                    ServerSync.local.state = ServerState.Loaded
+        object : BukkitRunnable() {
+            override fun run()
+            {
+                ServerSync.local.state = ServerState.Loaded
 
-                    val event = ServerLoadedEvent(
-                        ServerSync.local.id,
-                        ServerSync.local.javaClass.typeName
-                    )
+                val event = ServerLoadedEvent(
+                    ServerSync.local.id,
+                    ServerSync.local.javaClass.typeName
+                )
 
-                    event.push()
-                }
-            })
+                event.push()
+            }
+        }.runTask(this)
 
         this.logger.info("[ServerSync] Configured server sync with identifier: ${config.serverId}.")
     }
