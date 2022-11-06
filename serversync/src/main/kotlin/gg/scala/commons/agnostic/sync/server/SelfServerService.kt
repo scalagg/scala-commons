@@ -64,7 +64,7 @@ class SelfServerService<T : AbstractServer>(
                 keyspace, Duration.ofSeconds(5L)
             )
         }.onFailure {
-            Logger.getLogger("ServerSyncPipeline").log(
+            Logger.getGlobal().log(
                 Level.SEVERE, "Failed to update expiration for self server service", it
             )
         }
@@ -75,7 +75,9 @@ class SelfServerService<T : AbstractServer>(
         return ServerContainer.container.async()
             .del(this.keyspace)
             .exceptionally {
-                it.printStackTrace()
+                Logger.getGlobal().log(
+                    Level.SEVERE, "Failed to update server through SelfServerService", it
+                )
                 return@exceptionally null
             }
             .thenRunAsync {

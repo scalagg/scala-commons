@@ -20,7 +20,10 @@ abstract class PaginatedMenu : Menu()
     companion object
     {
         @JvmStatic
-        val PLACEHOLDER = ItemBuilder(XMaterial.BLACK_STAINED_GLASS_PANE).data(15.toShort()).name(" ").toButton()
+        val PLACEHOLDER = ItemBuilder(XMaterial.BLACK_STAINED_GLASS_PANE)
+            .data(15.toShort())
+            .name(" ")
+            .toButton()
     }
 
     var page = 1

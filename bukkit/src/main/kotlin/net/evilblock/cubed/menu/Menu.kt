@@ -19,6 +19,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.math.ceil
 
 abstract class Menu
@@ -230,9 +232,11 @@ abstract class Menu
                 player.openInventory(inventory)
             } else
             {
-                OPEN_CUSTOM_INVENTORY_METHOD!!.invoke(
-                    player, inventory, entityPlayer, getWindowType(inventory.size)
-                )
+                OPEN_CUSTOM_INVENTORY_METHOD
+                    ?.invoke(
+                        player, inventory, entityPlayer, getWindowType(inventory.size)
+                    )
+                    ?: player.openInventory(inventory)
             }
 
             update(player)
@@ -357,26 +361,35 @@ abstract class Menu
         @JvmStatic
         var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
 
-        private val OPEN_CUSTOM_INVENTORY_METHOD = Reflection
-            .getDeclaredMethod(
-                MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
-                "openCustomInventory",
-                Inventory::class.java,
-                MinecraftReflection.getNMSClass(
-                    "${
+        private val OPEN_CUSTOM_INVENTORY_METHOD = kotlin
+            .runCatching {
+                Reflection
+                    .getDeclaredMethod(
+                        MinecraftReflection.getCraftBukkitClass("entity.CraftHumanEntity")!!,
+                        "openCustomInventory",
+                        Inventory::class.java,
+                        MinecraftReflection.getNMSClass(
+                            "${
+                                if (MinecraftReflection.isModern())
+                                    "level." else ""
+                            }EntityPlayer"
+                        )!!,
                         if (MinecraftReflection.isModern())
-                            "level." else ""
-                    }EntityPlayer"
-                )!!,
-                if (MinecraftReflection.isModern())
-                {
-                    Reflection.getClassSuppressed(
-                        "net.minecraft.world.inventory.Containers"
-                    )!!
-                } else
-                {
-                    String::class.java
-                }
-            )
+                        {
+                            Reflection.getClassSuppressed(
+                                "net.minecraft.world.inventory.Containers"
+                            )!!
+                        } else
+                        {
+                            String::class.java
+                        }
+                    )
+            }
+            .onFailure {
+                Logger.getGlobal().log(
+                    Level.SEVERE, "Failed to create custom inventory services", it
+                )
+            }
+            .getOrNull()
     }
 }

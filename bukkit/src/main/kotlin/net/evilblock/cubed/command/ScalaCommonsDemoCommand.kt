@@ -21,6 +21,8 @@ import net.evilblock.cubed.util.text.ProgressBarBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * @author GrowlyX
@@ -127,14 +129,20 @@ object ScalaCommonsDemoCommand : ScalaCommand()
                         String::class.java
                     }
                 )
-        }.onFailure { it.printStackTrace() }
+        }.onFailure {
+            Logger.getGlobal().log(
+                Level.SEVERE, "Failed to instantiate inventory logic", it
+            )
+        }
 
         kotlin.runCatching {
             SelectColorMenu {
                 player.sendMessage("${CC.SEC}You selected: ${CC.PRI}$it")
             }.openMenu(player)
         }.onFailure {
-            it.printStackTrace()
+            Logger.getGlobal().log(
+                Level.SEVERE, "Failed to open color menu", it
+            )
         }
     }
 
