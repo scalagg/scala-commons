@@ -27,13 +27,14 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
 
-    implementation "org.yaml:snakeyaml:1.21"
+    implementation "org.yaml:snakeyaml:1.32"
 
     implementation "org.jetbrains.kotlin:kotlin-script-runtime"
     implementation "org.jetbrains.kotlin:kotlin-main-kts"
     implementation "org.jetbrains.kotlin:kotlin-scripting-jsr223"
 
     compileOnly fileTree(dir: "lib", include: "*.jar")
+    implementation fileTree("wrapper")
 
     api "gg.scala.tab:shared:1.1.2-20220828.013643-6"
     api "gg.scala.tab:v1_8_R3:1.1.2-20220828.013651-6"
@@ -99,7 +100,7 @@ dependencies {
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
     // redis
-    implementation "io.lettuce:lettuce-core:6.2.1.RELEASE"
+    compileOnly "io.lettuce:lettuce-core:6.2.1.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.1"
