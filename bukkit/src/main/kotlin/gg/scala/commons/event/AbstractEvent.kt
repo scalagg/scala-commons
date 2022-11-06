@@ -8,9 +8,12 @@
 package gg.scala.commons.event
 
 import io.reactivex.rxjava3.core.Flowable
+import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 abstract class AbstractEvent<T : Any> : Event()
 {
@@ -29,7 +32,20 @@ abstract class AbstractEvent<T : Any> : Event()
     {
         kotlin
             .runCatching {
-                Bukkit.getPluginManager().callEvent(this)
+                if (!isAsynchronous)
+                {
+                    val latch = CountDownLatch(1)
+
+                    Tasks.sync {
+                        Bukkit.getPluginManager().callEvent(this)
+                        latch.countDown()
+                    }
+
+                    latch.await(1L, TimeUnit.SECONDS)
+                } else
+                {
+                    Bukkit.getPluginManager().callEvent(this)
+                }
             }
             .onFailure {
                 return this.postPushFailure(it)
