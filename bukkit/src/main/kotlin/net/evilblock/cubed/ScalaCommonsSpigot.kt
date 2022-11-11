@@ -288,9 +288,12 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 setMetadata("server", "tps", ServerStatisticProviders.provider().ticksPerSecond())
                 setMetadata("server", "cpu", ServerStatisticProviders.provider().cpuUsage())
             }.onFailure {
-                setMetadata("server", "tps", 20.0)
-                setMetadata("server", "cpu", 1.0)
+                setMetadata("server", "tps", 20.00)
+                setMetadata("server", "cpu", 0.00)
             }
+
+            setMetadata("server", "host", Bukkit.getIp())
+            setMetadata("server", "port", Bukkit.getPort())
 
             setMetadata("server", "software", server.version)
 

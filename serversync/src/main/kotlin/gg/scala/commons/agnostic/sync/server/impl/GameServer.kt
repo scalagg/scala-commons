@@ -16,6 +16,16 @@ class GameServer(
 {
     override fun getAbstractType() = GameServer::class.java
 
+    fun getHost() = this
+        .getMetadataValue<String>(
+            "server", "host"
+        )
+
+    fun getPort() = this
+        .getMetadataValue<Int>(
+            "server", "port"
+        )
+
     fun getTPS() = this
         .getMetadataValue<Double>(
             "server", "tps"
