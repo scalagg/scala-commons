@@ -23,6 +23,7 @@ public class SpigotPluginProcessor extends PluginProcessorAbstract {
         .put(PluginDependency.class,
             PluginDependency.Serializer.create(SpigotPluginProcessor.DEPEND_KEY, SpigotPluginProcessor.SOFT_DEPEND_KEY))
         .put(PluginAuthor.class, PluginAuthor.Serializer.create())
+        .put(PluginApiVersion.class, PluginApiVersion.Serializer.create())
         .put(PluginAuthorComposite.class, PluginAuthorComposite.Serializer.create())
         .put(PluginLoadState.class, PluginLoadState.Serializer.create())
         .put(PluginWebsite.class, PluginWebsite.Serializer.create())

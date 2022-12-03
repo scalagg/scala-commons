@@ -60,6 +60,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -127,6 +128,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
     private val ignoreInjector = this::class.java
         .getAnnotation(IgnoreProvidedFlavor::class.java) != null
+
+    private val autoScannnedListeners = mutableListOf<Listener>()
 
     fun flavor() = flavor
 
@@ -494,6 +497,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         .registerEvents(
                             it as Listener, this
                         )
+
+                    this.autoScannnedListeners += it
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to enable @Listeners service", it)
                 }
