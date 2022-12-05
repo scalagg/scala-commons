@@ -38,9 +38,9 @@ import gg.scala.commons.library.model.Library
     version = "2.9.0"
 )
 @Library(
-    groupId = "com.squareup.okhttp3",
+    groupId = "com.squareup.okhttp",
     artifactId = "okhttp",
-    version = "4.9.0"
+    version = "2.7.5"
 )
 @Library(
     groupId = "com.google.zxing",
