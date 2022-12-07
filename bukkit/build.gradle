@@ -47,7 +47,7 @@ dependencies {
     compileOnly "io.sentry:sentry:6.5.0"
 
     // growly
-    compileOnly "gg.scala.aware:aware:1.1.0"
+    implementation "gg.scala.aware:aware:1.1.0"
     implementation "gg.scala.flavor:flavor:0.1.6"
 
     implementation "org.scala-lang:scala-library:2.13.10"
@@ -100,7 +100,7 @@ dependencies {
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
     // redis
-    compileOnly "io.lettuce:lettuce-core:6.2.1.RELEASE"
+    implementation "io.lettuce:lettuce-core:6.2.1.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.1"
