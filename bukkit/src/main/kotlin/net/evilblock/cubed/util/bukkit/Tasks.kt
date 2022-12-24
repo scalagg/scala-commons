@@ -7,23 +7,17 @@
 
 package net.evilblock.cubed.util.bukkit
 
-import gg.scala.flavor.inject.Inject
-import gg.scala.flavor.service.Service
-import net.evilblock.cubed.ScalaCommonsSpigot
+import me.lucko.helper.Helper
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
-@Service
 object Tasks
 {
-    @Inject
-    lateinit var plugin: ScalaCommonsSpigot
-
     @JvmStatic
     fun sync(lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTask(plugin) {
+        return Helper.hostPlugin().server.scheduler
+            .runTask(Helper.hostPlugin()) {
                 lambda.invoke()
             }
     }
@@ -31,8 +25,8 @@ object Tasks
     @JvmStatic
     fun delayed(delay: Long, lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskLater(plugin, {
+        return Helper.hostPlugin().server.scheduler
+            .runTaskLater(Helper.hostPlugin(), {
                 lambda.invoke()
             }, delay)
     }
@@ -40,21 +34,21 @@ object Tasks
     @JvmStatic
     fun delayed(delay: Long, runnable: Runnable): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskLater(plugin, runnable, delay)
+        return Helper.hostPlugin().server.scheduler
+            .runTaskLater(Helper.hostPlugin(), runnable, delay)
     }
 
     @JvmStatic
     fun delayed(delay: Long, runnable: BukkitRunnable): BukkitTask
     {
-        return runnable.runTaskLater(plugin, delay)
+        return runnable.runTaskLater(Helper.hostPlugin(), delay)
     }
 
     @JvmStatic
     fun timer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskTimer(plugin, {
+        return Helper.hostPlugin().server.scheduler
+            .runTaskTimer(Helper.hostPlugin(), {
                 lambda.invoke()
             }, delay, interval)
     }
@@ -62,9 +56,9 @@ object Tasks
     @JvmStatic
     fun timer(delay: Long, interval: Long, runnable: Runnable): BukkitTask
     {
-        return plugin.server.scheduler
+        return Helper.hostPlugin().server.scheduler
             .runTaskTimer(
-                plugin, runnable,
+                Helper.hostPlugin(), runnable,
                 delay, interval
             )
     }
@@ -72,14 +66,14 @@ object Tasks
     @JvmStatic
     fun timer(delay: Long, interval: Long, runnable: BukkitRunnable): BukkitTask
     {
-        return runnable.runTaskTimer(plugin, delay, interval)
+        return runnable.runTaskTimer(Helper.hostPlugin(), delay, interval)
     }
 
     @JvmStatic
     fun async(lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskAsynchronously(plugin) {
+        return Helper.hostPlugin().server.scheduler
+            .runTaskAsynchronously(Helper.hostPlugin()) {
                 lambda.invoke()
             }
     }
@@ -87,8 +81,8 @@ object Tasks
     @JvmStatic
     fun asyncDelayed(delay: Long, lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskLaterAsynchronously(plugin, {
+        return Helper.hostPlugin().server.scheduler
+            .runTaskLaterAsynchronously(Helper.hostPlugin(), {
                 lambda.invoke()
             }, delay)
     }
@@ -96,23 +90,23 @@ object Tasks
     @JvmStatic
     fun asyncDelayed(runnable: Runnable, delay: Long): BukkitTask
     {
-        return plugin.server.scheduler
+        return Helper.hostPlugin().server.scheduler
             .runTaskLaterAsynchronously(
-                plugin, runnable, delay
+                Helper.hostPlugin(), runnable, delay
             )
     }
 
     @JvmStatic
     fun asyncDelayed(runnable: BukkitRunnable, delay: Long): BukkitTask
     {
-        return runnable.runTaskLaterAsynchronously(plugin, delay)
+        return runnable.runTaskLaterAsynchronously(Helper.hostPlugin(), delay)
     }
 
     @JvmStatic
     fun asyncTimer(delay: Long, interval: Long, lambda: () -> Unit): BukkitTask
     {
-        return plugin.server.scheduler
-            .runTaskTimerAsynchronously(plugin, {
+        return Helper.hostPlugin().server.scheduler
+            .runTaskTimerAsynchronously(Helper.hostPlugin(), {
                 lambda.invoke()
             }, delay, interval)
     }
@@ -120,9 +114,9 @@ object Tasks
     @JvmStatic
     fun asyncTimer(runnable: Runnable, delay: Long, interval: Long): BukkitTask
     {
-        return plugin.server.scheduler
+        return Helper.hostPlugin().server.scheduler
             .runTaskTimerAsynchronously(
-                plugin, runnable,
+                Helper.hostPlugin(), runnable,
                 delay, interval
             )
     }
@@ -130,6 +124,6 @@ object Tasks
     @JvmStatic
     fun asyncTimer(runnable: BukkitRunnable, delay: Long, interval: Long): BukkitTask
     {
-        return runnable.runTaskTimerAsynchronously(plugin, delay, interval)
+        return runnable.runTaskTimerAsynchronously(Helper.hostPlugin(), delay, interval)
     }
 }
