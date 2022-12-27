@@ -34,8 +34,6 @@ import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.commons.util.Players
 import me.lucko.helper.Commands
-import me.lucko.helper.Events
-import me.lucko.helper.Schedulers
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
@@ -43,7 +41,6 @@ import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
-import net.evilblock.cubed.config.CommonsPostersConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.config.serversync.ServerSyncConfig
@@ -55,8 +52,6 @@ import net.evilblock.cubed.menu.protocol.InventoryPacketAdapter
 import net.evilblock.cubed.menu.protocol.MenuPacketAdapter
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateButton
-import net.evilblock.cubed.poster.PosterHandler
-import net.evilblock.cubed.poster.placed.PlacedPosterHandler
 import net.evilblock.cubed.serialize.BlockVectorAdapter
 import net.evilblock.cubed.serialize.ItemStackAdapter
 import net.evilblock.cubed.serialize.LocationAdapter
@@ -67,7 +62,6 @@ import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
 import net.evilblock.cubed.statistic.ServerStatisticProviders
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.evilblock.cubed.util.math.Numbers
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -111,10 +105,6 @@ import java.util.logging.Level
 @ContainerConfig(
     value = "nametags",
     model = CommonsNametagConfig::class
-)
-@ContainerConfig(
-    value = "posters",
-    model = CommonsPostersConfig::class
 )
 @ContainerConfig(
     value = "scoreboard",
@@ -185,21 +175,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                 registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
                 registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
-            }
-
-            if (isPostersEnabled())
-            {
-                flavor {
-                    inject(PosterHandler)
-                    inject(PlacedPosterHandler)
-                }
-
-                PosterHandler.configure()
-                PlacedPosterHandler.configure()
-
-                logger.info(
-                    "[Posters] Configured poster functionality!"
-                )
             }
 
             listOf(
@@ -386,18 +361,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     @ContainerDisable
     fun containerDisable()
     {
-        if (isPostersEnabled())
-        {
-            kotlin.runCatching {
-                PosterHandler.saveData()
-                PlacedPosterHandler.saveData()
-
-                PlacedPosterHandler.onDisable()
-            }.onFailure {
-                logger.info("[Posters] Failed to save poster data!")
-            }
-        }
-
         this.serverSync
             ?.disconnect(
                 reason = "manually stopped"
@@ -443,11 +406,5 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         }
 
         return true
-    }
-
-    private fun isPostersEnabled(): Boolean
-    {
-        return config<CommonsPostersConfig>()
-            .enabled
     }
 }
