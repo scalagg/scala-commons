@@ -59,5 +59,11 @@ import gg.scala.commons.library.model.Library
     version = "1.0",
     repository = "https://repo.lucko.me"
 )
+@Library(
+    groupId = "de.tr7zw",
+    artifactId = "item-nbt-api",
+    version = "2.11.1",
+    repository = "https://repo.codemc.org/repository/maven-public/"
+)
 @LibraryLoader
 object ScalaCommonsLibraries

@@ -22,6 +22,7 @@ dependencies {
     implementation project(":core")
 
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
+    compileOnly "de.tr7zw:item-nbt-api:2.11.1"
 
     // todo: only api on standalone?
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
