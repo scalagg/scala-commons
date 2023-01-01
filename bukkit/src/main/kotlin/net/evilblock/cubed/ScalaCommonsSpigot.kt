@@ -197,6 +197,10 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 logger.info("We were unable to register our GlowEnchantment due to compatability issues.")
             }
 
+            server.worlds.forEach {
+                it.time = 1000
+            }
+
             kotlin.runCatching {
                 SentryService.initialize(this)
             }.onFailure {
