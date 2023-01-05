@@ -1,9 +1,8 @@
 package net.evilblock.cubed.entity.npc.texture
 
 import com.google.gson.JsonParser
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
 import gg.scala.cache.uuid.ScalaStoreUuidCache
+import java.net.URL
 import java.util.*
 
 data class NpcTexture(val textureValue: String, val textureSignature: String) {
@@ -19,7 +18,6 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
     }
 
     companion object {
-        private val client = OkHttpClient()
         private val parser = JsonParser()
 
         /**
@@ -31,20 +29,17 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
             val uuid: UUID = ScalaStoreUuidCache.uniqueId(username) ?: return Optional.empty()
 
             return try {
-                val request = Request.Builder().url("http://api.mineskin.org/generate/user/$uuid").build()
+                val response = runCatching {
+                    URL("https://api.mineskin.org/generate/user/$uuid").readText()
+                }.getOrNull()
 
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val json = parser.parse(response.body().string()).asJsonObject
+                if (response != null) {
+                    val json = parser.parse(response).asJsonObject
                     val data = json.get("data").asJsonObject
                     val texture = data.get("texture").asJsonObject
 
-                    response.body().close()
-
                     Optional.of(NpcTexture(texture.get("value").asString, texture.get("signature").asString))
                 } else {
-                    response.body().close()
-
                     Optional.empty()
                 }
             } catch (e: Exception) {

@@ -28,21 +28,6 @@ import gg.scala.commons.library.model.Library
     version = "3.12.0"
 )
 @Library(
-    groupId = "com.squareup.retrofit2",
-    artifactId = "retrofit",
-    version = "2.9.0"
-)
-@Library(
-    groupId = "com.squareup.retrofit2",
-    artifactId = "converter-gson",
-    version = "2.9.0"
-)
-@Library(
-    groupId = "com.squareup.okhttp",
-    artifactId = "okhttp",
-    version = "2.7.5"
-)
-@Library(
     groupId = "com.google.zxing",
     artifactId = "core",
     version = "3.5.0"
