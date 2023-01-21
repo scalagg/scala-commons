@@ -21,6 +21,7 @@ import gg.scala.commons.scheme.SchemedMenuTests
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
+import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
 import net.evilblock.cubed.menu.template.menu.TemplatePreviewMenu
@@ -30,6 +31,7 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
@@ -51,6 +53,24 @@ object ScalaCommonsCommand : ScalaCommand()
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
+    }
+
+    @Subcommand("server-colors")
+    @Description("Set server colors.")
+    fun onServerColors(
+        player: ScalaPlayer, primary: ChatColor, secondary: ChatColor
+    )
+    {
+        CC.setup(
+            primary.toString(),
+            secondary.toString()
+        )
+
+        player.sendMessage(
+            "${CC.YELLOW}Set server colors to:",
+            "${CC.WHITE}Primary: ${primary}this",
+            "${CC.WHITE}Secondary: ${secondary}this",
+        )
     }
 
     @Subcommand("extendedscalaplugin-enabled-plugin-list")
