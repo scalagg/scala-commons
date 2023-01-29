@@ -71,4 +71,36 @@ object ParticleUtil {
         }
     }
 
+    fun sendsParticleToAllRespectingVisibility(world: World, sender: Player, vararg particleMetas: ParticleMeta) {
+        val packets = arrayListOf<Pair<Location, Any>>()
+
+        for (meta in particleMetas) {
+            packets.add(meta.location to MinecraftProtocol.newPacket("PacketPlayOutWorldParticles").also { packet ->
+                Reflection.setDeclaredFieldValue(packet, "a", meta.particle)
+                Reflection.setDeclaredFieldValue(packet, "b", meta.location.x.toFloat())
+                Reflection.setDeclaredFieldValue(packet, "c", meta.location.y.toFloat())
+                Reflection.setDeclaredFieldValue(packet, "d", meta.location.z.toFloat())
+                Reflection.setDeclaredFieldValue(packet, "e", meta.offsetX)
+                Reflection.setDeclaredFieldValue(packet, "f", meta.offsetY)
+                Reflection.setDeclaredFieldValue(packet, "g", meta.offsetZ)
+                Reflection.setDeclaredFieldValue(packet, "h", meta.speed)
+                Reflection.setDeclaredFieldValue(packet, "i", meta.amount)
+                Reflection.setDeclaredFieldValue(packet, "j", true)
+            })
+        }
+
+        for (player in world.players) {
+            for (packet in packets) {
+                if (player.location.distance(packet.first) > 32.0) {
+                    continue
+                }
+
+                if (player.canSee(sender))
+                {
+                    MinecraftProtocol.send(player, packet.second)
+                }
+            }
+        }
+    }
+
 }
