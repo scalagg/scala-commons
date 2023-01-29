@@ -352,7 +352,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
                     implementationPlugins.forEach {
                         context.sender().sendMessage(
-                            "&a[helper] &7Running &b${it.name}&7 version &e${it.description.version}"
+                            net.evilblock.cubed.util.Color.translate("&7[&6helper&7] &7Running &6${it.name} ${it.description.version}&7.")
                         )
                     }
                 }
