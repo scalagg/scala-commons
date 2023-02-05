@@ -19,6 +19,7 @@ import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -236,7 +237,7 @@ abstract class Entity(var location: Location)
     {
         if (command != null)
         {
-            player.chat("/command")
+            player.chat("/$command")
         }
     }
 
@@ -245,8 +246,21 @@ abstract class Entity(var location: Location)
         return false
     }
 
+    private val runningScalaSpigot = Reflection
+        .getClassSuppressed(
+            "gg.scala.spigot.ScalaSpigotService"
+        ) != null
+
     open fun spawn(player: Player)
     {
+        if (
+            !runningScalaSpigot &&
+            MinecraftProtocol.getPlayerVersion(player) == 5
+        )
+        {
+            return
+        }
+
         if (currentWatchers.contains(player.uniqueId))
         {
             return
