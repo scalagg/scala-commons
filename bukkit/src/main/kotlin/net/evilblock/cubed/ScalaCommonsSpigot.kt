@@ -79,7 +79,7 @@ import java.util.logging.Level
 // plugin meta
 @Plugin(
     name = "scala-commons",
-    apiVersion = "1.18",
+    apiVersion = "1.12",
     depends = [
         PluginDependency("ProtocolLib"),
         PluginDependency("store-spigot", soft = true),
