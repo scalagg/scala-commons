@@ -33,6 +33,11 @@ import gg.scala.commons.library.model.Library
     version = "3.5.0"
 )
 @Library(
+    groupId = "io.netty",
+    artifactId = "netty-all",
+    version = "4.1.87.Final"
+)
+@Library(
     groupId = "com.viaversion",
     artifactId = "viaversion-api",
     version = "4.3.1",

@@ -25,15 +25,17 @@ object SparkServerStatisticProvider : ServerStatisticProvider
         ServerStatisticProviders.current = this
     }
 
-    private val spark = SparkProvider.get()
+    override fun ticksPerSecond(): Double =
+        SparkProvider.get()
+            .tps()!!.poll(
+                StatisticWindow.TicksPerSecond.SECONDS_5
+            )
 
-    override fun ticksPerSecond(): Double = spark.tps()!!.poll(
-        StatisticWindow.TicksPerSecond.SECONDS_5
-    )
-
-    override fun cpuUsage(): Double = spark.cpuProcess().poll(
-        StatisticWindow.CpuUsage.SECONDS_10
-    )
+    override fun cpuUsage(): Double =
+        SparkProvider.get()
+            .cpuProcess().poll(
+                StatisticWindow.CpuUsage.SECONDS_10
+            )
 
     override fun memoryUsage(): Long
     {
