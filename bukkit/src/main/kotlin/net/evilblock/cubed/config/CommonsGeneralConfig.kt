@@ -14,6 +14,7 @@ class CommonsGeneralConfig
     val debug = false
     val timezone = "EST"
     val backups = false
+    val enable1Dot7Entities = true
 
     val ignoreServerCheck = false
 
