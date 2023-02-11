@@ -15,7 +15,7 @@ class CommonsGeneralConfig
     val timezone = "EST"
     val backups = false
     val enable1Dot7Entities = true
-
+    val enableUnifiedMetrics = false
     val ignoreServerCheck = false
 
     @Comment("Should we enable helper's built-in /helper information command?")
