@@ -22,6 +22,8 @@ import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
+import gg.scala.commons.persist.datasync.DataSyncService
+import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.protocol.ProtocolVersion
 import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
 import gg.scala.commons.proxy.Plugins
@@ -244,6 +246,11 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                     )
                 )
             )
+
+        PreConfigureSubTypeProcessor
+            .register<DataSyncService<*>> {
+                it.load()
+            }
 
         val config = this.config<ServerSyncConfig>()
 

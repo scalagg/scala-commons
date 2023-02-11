@@ -1,6 +1,7 @@
 package gg.scala.commons.preconfigure
 
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.commons.annotations.EagerInjection
 import gg.scala.commons.persist.ProfileOrchestrator
 import gg.scala.flavor.service.Service
 import org.reflections.scanners.Scanners
@@ -49,9 +50,17 @@ object PreConfigureSubTypeProcessor
 
             for (service in services)
             {
-                processor.invoke(
-                    service.objectInstance() ?: service.newInstance()
-                )
+                val instance = service.objectInstance()
+                    ?: service
+                        .getDeclaredConstructor()
+                        .newInstance()
+
+                if (instance.javaClass.isAnnotationPresent(EagerInjection::class.java))
+                {
+                    plugin.flavor().inject(instance)
+                }
+
+                processor.invoke(instance)
             }
         }
     }
