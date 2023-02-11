@@ -16,6 +16,8 @@ import net.evilblock.cubed.entity.menu.button.MoveLocationButton
 import net.evilblock.cubed.entity.menu.button.UpdateCommandButton
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.nms.MinecraftProtocol
@@ -246,15 +248,10 @@ abstract class Entity(var location: Location)
         return false
     }
 
-    private val runningScalaSpigot = Reflection
-        .getClassSuppressed(
-            "gg.scala.spigot.ScalaSpigotService"
-        ) != null
-
     open fun spawn(player: Player)
     {
         if (
-            !runningScalaSpigot &&
+            !ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().enable1Dot7Entities &&
             MinecraftProtocol.getPlayerVersion(player) == 5
         )
         {
