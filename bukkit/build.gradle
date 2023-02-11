@@ -47,7 +47,7 @@ dependencies {
     compileOnly "io.sentry:sentry:6.5.0"
 
     // growly
-    implementation "gg.scala.aware:aware:1.1.0"
+    implementation "gg.scala.aware:aware:1.1.3"
     implementation "gg.scala.flavor:flavor:0.1.6"
 
     implementation "org.scala-lang:scala-library:2.13.10"
