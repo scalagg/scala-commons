@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import com.google.common.collect.SetMultimap
 import gg.scala.commons.annotations.LibraryLoader
 import gg.scala.commons.annotations.Listeners
+import gg.scala.commons.annotations.Model
 import gg.scala.commons.annotations.commands.AssignPermission
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.annotations.commands.ManualRegister
@@ -41,6 +42,8 @@ import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorBinder
 import gg.scala.flavor.FlavorOptions
 import gg.scala.flavor.service.Service
+import gg.scala.store.controller.DataStoreObjectControllerCache
+import gg.scala.store.storage.storable.IDataStoreObject
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.terminable.module.TerminableModule
@@ -60,15 +63,13 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.apache.commons.lang.SystemUtils
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import org.reflections.scanners.Scanners
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.logging.Level
+import kotlin.reflect.KClass
 
 /**
  * An extension of [ExtendedJavaPlugin] with
@@ -384,6 +385,26 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     logger.log(Level.WARNING, "Failed to register command", it)
                 }
             }
+
+        if (server.pluginManager.isPluginEnabled("store-spigot"))
+        {
+            this.packageIndexer
+                .getTypesAnnotatedWith<Model>()
+                .filter {
+                    it.isAssignableFrom(IDataStoreObject::class.java)
+                }
+                .forEach { type ->
+                    kotlin.runCatching {
+                        DataStoreObjectControllerCache.create(
+                            type.kotlin as KClass<out IDataStoreObject>
+                        )
+
+                        logger.info("[datastore] Created service for model ${type.name}.")
+                    }.onFailure {
+                        logger.log(Level.WARNING, "Failed to create DataStore service for ${type.name}", it)
+                    }
+                }
+        }
 
         this.packageIndexer
             .getTypesAnnotatedWith<ScoreboardAdapterRegister>()
