@@ -258,6 +258,20 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 }
             }
 
+        this.packageIndexer
+            .getTypesAnnotatedWith<Model>()
+            .forEach { type ->
+                kotlin.runCatching {
+                    DataStoreObjectControllerCache.create(
+                        type.kotlin as KClass<out IDataStoreObject>
+                    )
+
+                    logger.info("[datastore] Created service for model ${type.name}.")
+                }.onFailure {
+                    logger.log(Level.WARNING, "Failed to create DataStore service for ${type.name}", it)
+                }
+            }
+
         for (containerized in this.containerized)
         {
             containerized.loadAll()
@@ -385,26 +399,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     logger.log(Level.WARNING, "Failed to register command", it)
                 }
             }
-
-        if (server.pluginManager.isPluginEnabled("store-spigot"))
-        {
-            this.packageIndexer
-                .getTypesAnnotatedWith<Model>()
-                .filter {
-                    it.isAssignableFrom(IDataStoreObject::class.java)
-                }
-                .forEach { type ->
-                    kotlin.runCatching {
-                        DataStoreObjectControllerCache.create(
-                            type.kotlin as KClass<out IDataStoreObject>
-                        )
-
-                        logger.info("[datastore] Created service for model ${type.name}.")
-                    }.onFailure {
-                        logger.log(Level.WARNING, "Failed to create DataStore service for ${type.name}", it)
-                    }
-                }
-        }
 
         this.packageIndexer
             .getTypesAnnotatedWith<ScoreboardAdapterRegister>()
