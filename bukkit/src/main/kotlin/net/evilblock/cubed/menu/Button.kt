@@ -123,29 +123,7 @@ abstract class Button {
         @JvmStatic
         fun placeholder(item: ItemStack): Button {
             return object : Button() {
-                override fun getName(player: Player): String {
-                    return if (item.hasItemMeta() && item.itemMeta.hasDisplayName()) {
-                        item.itemMeta.displayName
-                    } else {
-                        ""
-                    }
-                }
-
-                override fun getDescription(player: Player): List<String> {
-                    return if (item.hasItemMeta() && item.itemMeta.hasLore()) {
-                        item.itemMeta.lore
-                    } else {
-                        emptyList()
-                    }
-                }
-
-                override fun getMaterial(player: Player): XMaterial {
-                    return XMaterial.matchXMaterial(item.type)
-                }
-
-                override fun getDamageValue(player: Player): Byte {
-                    return item.durability.toByte()
-                }
+                override fun getButtonItem(player: Player) = item
             }
         }
 
