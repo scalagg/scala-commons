@@ -18,6 +18,7 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
+import net.evilblock.cubed.entity.hooks.EntityHooks
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.nms.MinecraftProtocol
@@ -195,7 +196,7 @@ abstract class Entity(var location: Location)
      */
     open fun isVisibleToPlayer(player: Player): Boolean
     {
-        return !hidden && location.world == player.world && location.distance(player.location) <= 32.0
+        return !hidden && location.world == player.world && location.distance(player.location) <= EntityHooks.entityVisibilityDistance(player)
     }
 
     /**
