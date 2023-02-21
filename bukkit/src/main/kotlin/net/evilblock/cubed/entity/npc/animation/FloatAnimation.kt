@@ -37,15 +37,18 @@ class FloatAnimation(entity: NpcEntity, private val color: Color) : EntityAnimat
         val randomY = Random.nextDouble(entity.location.y - 0.2, entity.location.y + 0.2)
         val randomZ = Random.nextDouble(entity.location.z - 0.4, entity.location.z + 0.4)
 
-        ParticleUtil.sendsParticleToAll(
-            entity.location.world, ParticleMeta(
-                Location(entity.location.world, randomX, randomY, randomZ),
-                REDSTONE,
-                color,
-                1F,
-                1
+        ParticleUtil
+            .sendsParticleToAllRespectingFilter(
+                entity.location.world,
+                { entity.isVisibleToPlayer(it) },
+                ParticleMeta(
+                    Location(entity.location.world, randomX, randomY, randomZ),
+                    REDSTONE,
+                    color,
+                    1F,
+                    1
+                )
             )
-        )
     }
 
     override fun getInterval(): Long

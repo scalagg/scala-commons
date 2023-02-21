@@ -69,7 +69,12 @@ class RingsAnimation(entity: NpcEntity, private val color: Color) : EntityAnimat
             )
         )
 
-        ParticleUtil.sendsParticleToAll(entity.location.world, *particles.toTypedArray())
+        ParticleUtil
+            .sendsParticleToAllRespectingFilter(
+                entity.location.world,
+                { entity.isVisibleToPlayer(it) },
+                *particles.toTypedArray()
+            )
 
         if (ticks >= 80) {
             ticks = 0

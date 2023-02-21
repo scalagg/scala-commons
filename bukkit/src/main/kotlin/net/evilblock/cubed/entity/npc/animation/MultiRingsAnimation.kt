@@ -68,7 +68,12 @@ class MultiRingsAnimation(entity: NpcEntity, private val color: Color) : EntityA
             )
         )
 
-        ParticleUtil.sendsParticleToAll(entity.location.world, *particles.toTypedArray())
+        ParticleUtil
+            .sendsParticleToAllRespectingFilter(
+                entity.location.world,
+                { entity.isVisibleToPlayer(it) },
+                *particles.toTypedArray()
+            )
 
         if (ticks >= 80) {
             ticks = 0
