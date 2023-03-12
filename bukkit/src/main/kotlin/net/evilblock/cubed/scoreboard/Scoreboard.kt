@@ -38,7 +38,7 @@ class Scoreboard(
     private val recentlyUpdatedScores: HashSet<String> = HashSet()
     private val usedBaseScores: HashSet<String> = HashSet()
     private val prefixScoreSuffix: Array<String> = arrayOf("", "", "")
-    private val afterV113 = MinecraftProtocol.getPlayerVersion(player) >= 393
+    private val afterV113 = MinecraftProtocol.getPlayerVersion(player) >= 757
     private val localList: ThreadLocal<LinkedList<String>> = ThreadLocal.withInitial { LinkedList<String>() }
 
     init
