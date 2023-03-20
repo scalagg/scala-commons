@@ -32,7 +32,7 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             // we don't want to reinitialize the controller
             controller
             return
-        } catch (exception: Exception)
+        } catch (_: Exception)
         {
 
         }
