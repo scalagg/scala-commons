@@ -63,6 +63,7 @@ import net.evilblock.cubed.serialize.PotionEffectAdapter
 import net.evilblock.cubed.serialize.VectorAdapter
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.serializers.impl.AbstractTypeSerializer
+import net.evilblock.cubed.serversync.ServerSyncUtilities
 import net.evilblock.cubed.statistic.ServerStatisticProviders
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
@@ -308,7 +309,9 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         // configuring this for the platform itself, not our plugin.
         EventBus.subscribe<ServerConnectedEvent>()
             .listen {
-                Players.operators().forEach { player ->
+                Players.operators().filter { operator ->
+                    ServerSyncUtilities.filterPlayerCanReceiveNotifications.invoke(operator)
+                }.forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} connected.")
                 }
             }
@@ -326,14 +329,18 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                     System.currentTimeMillis() - server.initialHeartbeat
                 )
 
-                Players.operators().forEach { player ->
+                Players.operators().filter { operator ->
+                    ServerSyncUtilities.filterPlayerCanReceiveNotifications.invoke(operator)
+                }.forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.WHITE}${it.id}${CC.GRAY} loaded ${CC.D_GRAY}(${formatted}ms)${CC.GRAY}.")
                 }
             }
 
         EventBus.subscribe<ServerDisconnectEvent>()
             .listen {
-                Players.operators().forEach { player ->
+                Players.operators().filter { operator ->
+                    ServerSyncUtilities.filterPlayerCanReceiveNotifications.invoke(operator)
+                }.forEach { player ->
                     player.sendMessage("${CC.GREEN}[ServerSync] ${CC.RED}${it.id}${CC.GRAY} disconnected. ${CC.D_GRAY}(${it.reason})")
                 }
             }
