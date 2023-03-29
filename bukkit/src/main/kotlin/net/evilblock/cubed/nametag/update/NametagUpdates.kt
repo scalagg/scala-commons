@@ -111,7 +111,8 @@ class NametagUpdates(
         val priority = if (this.priority < 10) {
             "0${this.priority}"
         } else {
-            this.priority.toString()
+            if (this.priority == -1)
+                "z" else this.priority.toString()
         }
 
         val teamName = getTeamName(priority + team)
@@ -144,7 +145,8 @@ class NametagUpdates(
             val priority = if (this.priority < 10) {
                 "0${this.priority}"
             } else {
-                this.priority.toString()
+                if (this.priority == -1)
+                    "z" else this.priority.toString()
             }
 
             val teamName = getTeamName(priority + team)
