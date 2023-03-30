@@ -103,19 +103,19 @@ class NametagUpdates(
         }
     }
 
+    fun priorityAsStr() = if (this.priority < 10 && this.priority != -1) {
+        "0${this.priority}"
+    } else {
+        if (this.priority == -1)
+            "§0§3§1§9" else this.priority.toString()
+    }
+
     fun send(player: Player, team: String) {
         if (!hasScoreboard(player)) {
             createScoreboard(player)
         }
 
-        val priority = if (this.priority < 10 && this.priority != -1) {
-            "0${this.priority}"
-        } else {
-            if (this.priority == -1)
-                "z" else this.priority.toString()
-        }
-
-        val teamName = getTeamName(priority + team)
+        val teamName = getTeamName(priorityAsStr() + team)
         val scoreboard = player.scoreboard
         val scoreboardTeam = scoreboard.getTeam(teamName) ?: scoreboard.registerNewTeam(teamName)
 
@@ -142,14 +142,7 @@ class NametagUpdates(
 
     fun clear(player: Player, team: String) {
         if (hasScoreboard(player)) {
-            val priority = if (this.priority < 10 && this.priority != -1) {
-                "0${this.priority}"
-            } else {
-                if (this.priority == -1)
-                    "z" else this.priority.toString()
-            }
-
-            val teamName = getTeamName(priority + team)
+            val teamName = getTeamName(priorityAsStr() + team)
 
             val scoreboardTeam = player.scoreboard.getTeam(teamName)
             if (scoreboardTeam != null) {
