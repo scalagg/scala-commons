@@ -108,7 +108,7 @@ class NametagUpdates(
             createScoreboard(player)
         }
 
-        val priority = if (this.priority < 10) {
+        val priority = if (this.priority < 10 && this.priority != -1) {
             "0${this.priority}"
         } else {
             if (this.priority == -1)
@@ -142,7 +142,7 @@ class NametagUpdates(
 
     fun clear(player: Player, team: String) {
         if (hasScoreboard(player)) {
-            val priority = if (this.priority < 10) {
+            val priority = if (this.priority < 10 && this.priority != -1) {
                 "0${this.priority}"
             } else {
                 if (this.priority == -1)
