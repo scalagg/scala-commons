@@ -20,7 +20,7 @@ object ServerContainer : Runnable
             this.internal().connect()
         }!!
 
-    val servers = CopyOnWriteArrayList<AbstractServer>()
+    var servers = CopyOnWriteArrayList<AbstractServer>()
 
     private var previousServerList = setOf<Pair<String, String>>()
     private var accountedFor = ConcurrentHashMap.newKeySet<String>()
@@ -111,7 +111,6 @@ object ServerContainer : Runnable
             disconnection.push(local = true)
         }
 
-        this.servers.clear()
-        this.servers.addAll(newServerList)
+        this.servers = CopyOnWriteArrayList(newServerList)
     }
 }
