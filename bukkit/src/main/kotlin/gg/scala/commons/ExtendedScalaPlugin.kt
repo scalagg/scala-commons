@@ -555,22 +555,26 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
         for (processor in processors)
         {
-            this.packageIndexer.reflections
-                .getTypesAnnotatedWith(processor.key.java)
-                .map {
-                    it.objectInstance() ?: it.newInstance()
-                }
-                .forEach {
-                    this.logger.info(
-                        "[Processor] Processing ${
-                            it.javaClass.simpleName
-                        } annotated with ${
-                            processor.key.java.simpleName
-                        }."
-                    )
+            kotlin.runCatching {
+                this.packageIndexer.reflections
+                    .getTypesAnnotatedWith(processor.key.java)
+                    .map {
+                        it.objectInstance() ?: it.newInstance()
+                    }
+                    .forEach {
+                        this.logger.info(
+                            "[Processor] Processing ${
+                                it.javaClass.simpleName
+                            } annotated with ${
+                                processor.key.java.simpleName
+                            }."
+                        )
 
-                    processor.value.invoke(it)
-                }
+                        processor.value.invoke(it)
+                    }
+            }.onFailure {
+                logger.log(Level.WARNING, "Failed to process ${processor.javaClass.name}", it)
+            }
         }
 
         PreConfigureSubTypeProcessor
@@ -736,7 +740,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     fun Class<*>.objectInstance(): Any?
     {
         return runCatching {
-            getDeclaredField("INSTANCE").get(null)
+            this.kotlin.objectInstance ?: getDeclaredField("INSTANCE").get(null)
         }.getOrNull()
     }
 }
