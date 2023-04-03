@@ -4,6 +4,7 @@ import gg.scala.aware.Aware
 import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCacheTranslator
 import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.internal.AbstractInvocationHandler
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
