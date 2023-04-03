@@ -36,8 +36,8 @@ dependencies {
     compileOnly fileTree(dir: "lib", include: "*.jar")
     implementation fileTree("wrapper")
 
-    api "gg.scala.tab:shared:1.1.2-20220828.013643-6"
-    api "gg.scala.tab:v1_8_R3:1.1.2-20230324.010940-8"
+    api "gg.scala.tab:shared:1.1.2-20230403.000608-9"
+    api "gg.scala.tab:v1_8_R3:1.1.2-20230403.000615-9"
 
     // helper
     implementation "me.lucko:helper:5.6.13"

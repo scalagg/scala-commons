@@ -558,8 +558,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             kotlin.runCatching {
                 this.packageIndexer.reflections
                     .getTypesAnnotatedWith(processor.key.java)
-                    .map {
-                        it.objectInstance() ?: it.newInstance()
+                    .mapNotNull {
+                        it.objectInstance()
                     }
                     .forEach {
                         this.logger.info(
@@ -573,7 +573,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         processor.value.invoke(it)
                     }
             }.onFailure {
-                logger.log(Level.WARNING, "Failed to process ${processor.javaClass.name}", it)
+                logger.log(Level.WARNING, "Failed to process ${processor.key.simpleName}", it)
             }
         }
 
@@ -740,7 +740,9 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     fun Class<*>.objectInstance(): Any?
     {
         return runCatching {
-            this.kotlin.objectInstance ?: getDeclaredField("INSTANCE").get(null)
+            this.kotlin.objectInstance
+                ?: getDeclaredField("INSTANCE")
+                    .get(null)
         }.getOrNull()
     }
 }
