@@ -9,14 +9,12 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ForkJoinPool
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Commits the UUID, String [Pair]
  * to our redis cache.
- *
- * This [Pair] is then distributed
- * across all online instances,
- * updating it without committing.
  *
  * Usernames as [String] form in pairs
  * are scanned as their lowercase form
@@ -35,8 +33,6 @@ class DistributedRedisUuidCacheTranslator(
     {
         const val USERNAME_REDIS_LOC = "DataStore:UuidCache:Username"
         const val UNIQUE_ID_REDIS_LOC = "DataStore:UuidCache:UUID"
-
-        const val AWARE_LISTENER_PACKET = "UuidCache-Update"
     }
 
     override val uniqueIdCache = mutableMapOf<UUID, String>()
@@ -50,13 +46,6 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun configure(): CompletionStage<Void>
     {
-        aware.listen(AWARE_LISTENER_PACKET) {
-            val pair =
-                retrieve<Pair<UUID, String>>("data")
-
-            update(pair, commit = false)
-        }
-
         return this.aware.connect()
             .thenRun {
                 connection = aware
@@ -79,37 +68,7 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun preLoadCache(async: Boolean)
     {
-        val loadFunction = {
-            useAndReturn {
-                val usernameEntries =
-                    sync().hgetall(USERNAME_REDIS_LOC)
 
-                for (entry in usernameEntries)
-                {
-                    usernameCache[entry.key] =
-                        UUID.fromString(entry.value)
-                }
-
-                val uniqueIdEntries =
-                    sync().hgetall(UNIQUE_ID_REDIS_LOC)
-
-                for (entry in uniqueIdEntries)
-                {
-                    uniqueIdCache[UUID.fromString(entry.key)!!] = entry.value
-                }
-            }
-        }
-
-        if (async)
-        {
-            ForkJoinPool.commonPool()
-                .execute {
-                    loadFunction.invoke()
-                }
-        } else
-        {
-            loadFunction.invoke()
-        }
     }
 
     /**
@@ -122,26 +81,17 @@ class DistributedRedisUuidCacheTranslator(
         pair: Pair<UUID, String>, commit: Boolean
     )
     {
-        val updateRequired =
-            usernameCache[pair.second.lowercase()] == null ||
-                    uniqueIdCache[pair.first] == null
-
-        usernameCache[pair.second.lowercase()] = pair.first
-        uniqueIdCache[pair.first] = pair.second
-
-        if (commit && updateRequired)
+        if (commit)
         {
-            useAndReturn {
-                this.async().apply {
-                    hset(USERNAME_REDIS_LOC, pair.second.lowercase(), pair.first.toString())
-                    hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second)
+            CompletableFuture
+                .runAsync {
+                    useAndReturn {
+                        sync().apply {
+                            hset(USERNAME_REDIS_LOC, pair.second.lowercase(), pair.first.toString())
+                            hset(UNIQUE_ID_REDIS_LOC, pair.first.toString(), pair.second)
+                        }
+                    }
                 }
-            }
-
-            AwareMessage.of(
-                AWARE_LISTENER_PACKET, aware,
-                "data" to pair
-            ).publish()
         }
     }
 
@@ -154,10 +104,13 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun uniqueId(username: String): UUID?
     {
-        return kotlin.runCatching {
-            usernameCache[username.lowercase()]
-                ?: internalUniqueId(username)
-        }.getOrNull()
+        return useAndReturn {
+            val nullable = this.sync()
+                .hget(USERNAME_REDIS_LOC, username.lowercase())
+                ?: return@useAndReturn null
+
+            UUID.fromString(nullable)
+        }
     }
 
     /**
@@ -169,24 +122,8 @@ class DistributedRedisUuidCacheTranslator(
      */
     override fun username(uniqueId: UUID): String?
     {
-        return uniqueIdCache[uniqueId] ?: internalUsername(uniqueId)
-    }
-
-    private fun internalUsername(uniqueId: UUID): String?
-    {
         return useAndReturn {
             sync().hget(UNIQUE_ID_REDIS_LOC, uniqueId.toString())
-        }
-    }
-
-    private fun internalUniqueId(username: String): UUID?
-    {
-        return useAndReturn {
-            val nullable = this.sync()
-                .hget(USERNAME_REDIS_LOC, username.lowercase())
-                ?: return@useAndReturn null
-
-            UUID.fromString(nullable)
         }
     }
 
@@ -199,7 +136,7 @@ class DistributedRedisUuidCacheTranslator(
             lambda.invoke(connection)
         } catch (exception: Throwable)
         {
-            exception.printStackTrace()
+            Logger.getGlobal().log(Level.SEVERE, "something's going on bud", exception.printStackTrace())
             null
         }
     }

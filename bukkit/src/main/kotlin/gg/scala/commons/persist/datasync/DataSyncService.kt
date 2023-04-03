@@ -13,9 +13,7 @@ import net.evilblock.cubed.serializers.Serializers
 abstract class DataSyncService<T>
 {
     private var cached: T? = null
-    private val cache by lazy {
-        sync().internal().connect()
-    }
+    private val cache = ScalaCommonsSpigot.instance.kvConnection
 
     abstract fun keys(): DataSyncKeys
     abstract fun type(): Class<T>

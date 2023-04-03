@@ -70,12 +70,14 @@ import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import net.evilblock.cubed.util.math.Numbers
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import org.apache.logging.log4j.spi.LoggerContext
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.BlockVector
+import org.slf4j.LoggerFactory
 import org.spigotmc.SpigotConfig
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -117,6 +119,10 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             .codec(AwareMessageCodec)
             .logger(logger)
             .build()
+    }
+
+    val kvConnection by lazy {
+        aware.internal().connect()
     }
 
     var versionProvider: ProtocolVersion = ProtocolLibVersionProvider
