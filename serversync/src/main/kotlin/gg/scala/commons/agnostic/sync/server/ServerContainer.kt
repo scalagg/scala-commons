@@ -49,10 +49,7 @@ object ServerContainer : Runnable
     fun configure()
     {
         ServerSync.scheduleAtFixedRate(
-            {
-                this.run()
-            },
-            0L, 500L, TimeUnit.MILLISECONDS
+            ::run, 0L, 500L, TimeUnit.MILLISECONDS
         )
 
         EventBus.subscribe<ServerDisconnectEvent>()
@@ -69,6 +66,9 @@ object ServerContainer : Runnable
         val newServerList = this.container.sync()
             .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
             .let {
+                if (it.isEmpty())
+                    return@let emptyList()
+
                 container.sync()
                     .mget(*it.toTypedArray())
                     .map { pair ->
