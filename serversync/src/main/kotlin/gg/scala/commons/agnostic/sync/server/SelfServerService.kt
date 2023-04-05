@@ -30,15 +30,16 @@ class SelfServerService<T : AbstractServer>(
         return CompletableFuture
             .supplyAsync {
                 ServerContainer.container.sync()
-                    .set(keyspace, this.serializer(this.server))
+                    .setex(
+                        keyspace, 5L,
+                        this.serializer(this.server)
+                    )
             }
             .exceptionally {
                 it.printStackTrace()
                 return@exceptionally null
             }
             .thenRunAsync {
-                this.scheduleNamespaceExpiration()
-
                 val event = ServerConnectedEvent(
                     this.server.id, this.server.javaClass.typeName
                 )
@@ -50,28 +51,11 @@ class SelfServerService<T : AbstractServer>(
                     this.updateMeta.invoke(this.server)
 
                     ServerContainer.container.sync()
-                        .set(
-                            keyspace, this.serializer(this.server)
+                        .setex(
+                            keyspace, 5L, this.serializer(this.server)
                         )
-
-                    this.scheduleNamespaceExpiration()
                 }, 0L, 500L, TimeUnit.MILLISECONDS)
             }
-    }
-
-    private fun scheduleNamespaceExpiration()
-    {
-        kotlin.runCatching {
-            // manually set expiration in-case server
-            // times out in the future
-            ServerContainer.container.sync().expire(
-                keyspace, Duration.ofSeconds(5L)
-            )
-        }.onFailure {
-            Logger.getGlobal().log(
-                Level.SEVERE, "Failed to update expiration for self server service", it
-            )
-        }
     }
 
     fun disconnect(reason: String = "unknown"): CompletionStage<Void>
