@@ -22,9 +22,6 @@ object ServerContainer : Runnable
 
     var servers = CopyOnWriteArrayList<AbstractServer>()
 
-    private var previousServerList = setOf<Pair<String, String>>()
-    private var accountedFor = ConcurrentHashMap.newKeySet<String>()
-
     fun allServers() = this.servers
 
     inline fun <reified T> allServers() =
@@ -52,14 +49,6 @@ object ServerContainer : Runnable
             ::run, 0L,
             500L, TimeUnit.MILLISECONDS
         )
-
-        EventBus.subscribe<ServerDisconnectEvent>()
-            .listen {
-                if (it.reason != "timed out")
-                {
-                    this.accountedFor.add(it.id)
-                }
-            }
     }
 
     override fun run()
@@ -84,44 +73,6 @@ object ServerContainer : Runnable
             }
         }
 
-        val newServerList = things.values
-
-        this.previousServerList = this.servers
-            .map {
-                it.id to it::class.simpleName!!
-            }
-            .toSet()
-
-        val newServerListIds = newServerList.map { it.id }
-
-        val removedServers = this.previousServerList
-            .filter {
-                it.first !in newServerListIds
-            }
-
-        for (removedServer in removedServers)
-        {
-            // Assuming this server has received some sort of disconnection
-            // heartbeat and that it has been removed MANUALLY, not expired.
-            if (removedServer.first in this.accountedFor)
-            {
-                this.accountedFor.remove(removedServer.first)
-                continue
-            }
-
-            // Assume that this server has timed out, and its latest
-            // heartbeat (<5s) has expired.
-
-            // We'll publish a local disconnect event for our event handlers
-            // to handle the logic for (as this process is run on each individual
-            // server being listening on these channels).
-            val disconnection = ServerDisconnectEvent(
-                removedServer.first, removedServer.second, "timed out"
-            )
-
-            disconnection.push(local = true)
-        }
-
-        this.servers = CopyOnWriteArrayList(newServerList)
+        this.servers = CopyOnWriteArrayList(things.values)
     }
 }
