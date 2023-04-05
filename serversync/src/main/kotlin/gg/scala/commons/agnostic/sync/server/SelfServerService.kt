@@ -21,7 +21,8 @@ class SelfServerService<T : AbstractServer>(
     private val serializer: (T) -> String
 )
 {
-    private val keyspace = "${ServerSyncPipeline.NAMESPACE}:servers:${this.server.id}"
+    private val keyspace = "${ServerSyncPipeline.NAMESPACE}:serversv2"
+    private val heartbeatKeyspace = "${ServerSyncPipeline.NAMESPACE}:heartbeats"
 
     fun configure(): CompletionStage<Void>
     {
@@ -30,16 +31,13 @@ class SelfServerService<T : AbstractServer>(
         return CompletableFuture
             .supplyAsync {
                 ServerContainer.container.sync()
-                    .setex(
-                        keyspace, 5L,
-                        this.serializer(this.server)
+                    .hset(
+                        keyspace, this.server.id, this.serializer(this.server)
                     )
             }
-            .exceptionally {
-                it.printStackTrace()
-                return@exceptionally null
-            }
             .thenRunAsync {
+                this.scheduleNamespaceExpiration()
+
                 val event = ServerConnectedEvent(
                     this.server.id, this.server.javaClass.typeName
                 )
@@ -51,11 +49,31 @@ class SelfServerService<T : AbstractServer>(
                     this.updateMeta.invoke(this.server)
 
                     ServerContainer.container.sync()
-                        .setex(
-                            keyspace, 5L, this.serializer(this.server)
+                        .hset(
+                            keyspace, this.server.id, this.serializer(this.server)
                         )
+
+                    this.scheduleNamespaceExpiration()
                 }, 0L, 500L, TimeUnit.MILLISECONDS)
             }
+            .exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
+            }
+    }
+
+    private fun scheduleNamespaceExpiration()
+    {
+        kotlin.runCatching {
+            ServerContainer.container.sync().hset(
+                heartbeatKeyspace, this.server.id,
+                "${System.currentTimeMillis() + Duration.ofSeconds(5L).toMillis()}"
+            )
+        }.onFailure {
+            Logger.getGlobal().log(
+                Level.SEVERE, "Failed to update expiration for self server service", it
+            )
+        }
     }
 
     fun disconnect(reason: String = "unknown"): CompletionStage<Void>
@@ -63,13 +81,15 @@ class SelfServerService<T : AbstractServer>(
         return CompletableFuture
             .supplyAsync {
                 ServerContainer.container.sync()
-                    .set(keyspace, this.serializer(this.server))
+                    .del(
+                        keyspace, this.server.id
+                    )
             }
-            .exceptionally {
-                Logger.getGlobal().log(
-                    Level.SEVERE, "Failed to update server through SelfServerService", it
-                )
-                return@exceptionally null
+            .thenRunAsync {
+                ServerContainer.container.sync()
+                    .hdel(
+                        heartbeatKeyspace, this.server.id
+                    )
             }
             .thenRunAsync {
                 val event = ServerDisconnectEvent(
@@ -77,6 +97,12 @@ class SelfServerService<T : AbstractServer>(
                 )
 
                 event.push()
+            }
+            .exceptionally {
+                Logger.getGlobal().log(
+                    Level.SEVERE, "Failed to update server through SelfServerService", it
+                )
+                return@exceptionally null
             }
     }
 }

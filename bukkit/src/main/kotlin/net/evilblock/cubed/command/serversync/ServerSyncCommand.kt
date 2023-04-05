@@ -36,6 +36,7 @@ object ServerSyncCommand : ScalaCommand()
 
         ServerContainer
             .allServers<GameServer>()
+            .sortedBy { it.id }
             .forEach {
                 player.sendMessage(" ${CC.GRAY}- ${CC.WHITE}${it.id} ${CC.GRAY}(${it.getPlayersCount()}/${it.getMaxPlayers()})")
             }

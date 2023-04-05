@@ -49,7 +49,8 @@ object ServerContainer : Runnable
     fun configure()
     {
         ServerSync.scheduleAtFixedRate(
-            ::run, 0L, 500L, TimeUnit.MILLISECONDS
+            ::run, 0L,
+            500L, TimeUnit.MILLISECONDS
         )
 
         EventBus.subscribe<ServerDisconnectEvent>()
@@ -63,18 +64,27 @@ object ServerContainer : Runnable
 
     override fun run()
     {
-        val newServerList = this.container.sync()
-            .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
-            .let {
-                if (it.isEmpty())
-                    return@let emptyList()
-
-                container.sync()
-                    .mget(*it.toTypedArray())
-                    .map { pair ->
-                        Serializers.gson.fromJson(pair.value, AbstractServer::class.java)
-                    }
+        val things = this.container.sync()
+            .hgetall("${ServerSyncPipeline.NAMESPACE}:serversv2")
+            .mapValues {
+                Serializers.gson.fromJson(it.value, AbstractServer::class.java)
             }
+            .toMutableMap()
+
+        val expirations = this.container.sync()
+            .hgetall(
+                "${ServerSyncPipeline.NAMESPACE}:heartbeats"
+            )
+
+        for ((k, v) in expirations)
+        {
+            if (System.currentTimeMillis() >= v.toLong())
+            {
+                things.remove(k)
+            }
+        }
+
+        val newServerList = things.values
 
         this.previousServerList = this.servers
             .map {
