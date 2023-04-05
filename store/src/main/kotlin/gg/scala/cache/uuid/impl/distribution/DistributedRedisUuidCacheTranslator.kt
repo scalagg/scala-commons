@@ -59,7 +59,7 @@ class DistributedRedisUuidCacheTranslator(
 
     override fun close()
     {
-        this.aware.shutdown()
+
     }
 
     /**

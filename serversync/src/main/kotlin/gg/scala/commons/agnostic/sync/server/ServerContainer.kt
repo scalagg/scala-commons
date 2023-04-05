@@ -68,11 +68,12 @@ object ServerContainer : Runnable
     {
         val newServerList = this.container.sync()
             .keys("${ServerSyncPipeline.NAMESPACE}:servers:*")
-            .mapNotNull {
-                this.container.sync().get(it)
-            }
-            .map {
-                Serializers.gson.fromJson(it, AbstractServer::class.java)
+            .let {
+                container.sync()
+                    .mget(*it.toTypedArray())
+                    .map { pair ->
+                        Serializers.gson.fromJson(pair.value, AbstractServer::class.java)
+                    }
             }
 
         this.previousServerList = this.servers
