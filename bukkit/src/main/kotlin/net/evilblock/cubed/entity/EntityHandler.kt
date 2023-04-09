@@ -69,15 +69,19 @@ object EntityHandler
     {
         if (dataFile.exists())
         {
-            if (plugin.config<CommonsGeneralConfig>().backups)
+            val general = plugin.config<CommonsGeneralConfig>()
+            if (general.backups)
             {
                 Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
             }
 
-            Files.read(dataFile) { reader ->
-                val entities = Serializers.gson.fromJson(reader, object : TypeToken<List<Entity>>()
-                {}.type) as List<Entity>
-                mapExistingEntities(entities)
+            if (!general.doNotSaveEntities)
+            {
+                Files.read(dataFile) { reader ->
+                    val entities = Serializers.gson.fromJson(reader, object : TypeToken<List<Entity>>()
+                    {}.type) as List<Entity>
+                    mapExistingEntities(entities)
+                }
             }
         }
 
@@ -103,8 +107,13 @@ object EntityHandler
 
         try
         {
-            val json = Serializers.gson.toJson(entities.filter { it.persistent }, dataType)
-            Files.write(json, dataFile)
+            val general = plugin.config<CommonsGeneralConfig>()
+
+            if (!general.doNotSaveEntities)
+            {
+                val json = Serializers.gson.toJson(entities.filter { it.persistent }, dataType)
+                Files.write(json, dataFile)
+            }
         } catch (e: Exception)
         {
             e.printStackTrace()

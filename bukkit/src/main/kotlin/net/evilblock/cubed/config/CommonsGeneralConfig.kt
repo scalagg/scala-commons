@@ -17,6 +17,7 @@ class CommonsGeneralConfig
     val enable1Dot7Entities = true
     val enableUnifiedMetrics = false
     val ignoreServerCheck = false
+    val doNotSaveEntities = false
 
     @Comment("Should we enable helper's built-in /helper information command?")
     val infoCommand = true
