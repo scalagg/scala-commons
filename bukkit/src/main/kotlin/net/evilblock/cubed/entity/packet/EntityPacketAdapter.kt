@@ -16,6 +16,7 @@ import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.event.PlayerDamageEntityEvent
 import net.evilblock.cubed.entity.event.PlayerRightClickEntityEvent
@@ -37,16 +38,32 @@ object EntityPacketAdapter : PacketAdapter(
     ScalaCommonsSpigot.instance,
     *(if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
     {
-        arrayOf(
-            PacketType.Play.Client.USE_ENTITY,
-            PacketType.Play.Server.SPAWN_ENTITY,
-        )
+        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
+        {
+            arrayOf(
+                PacketType.Play.Server.SPAWN_ENTITY
+            )
+        } else
+        {
+            arrayOf(
+                PacketType.Play.Client.USE_ENTITY,
+                PacketType.Play.Server.SPAWN_ENTITY,
+            )
+        }
     } else
     {
-        arrayOf(
-            PacketType.Play.Client.USE_ENTITY,
-            PacketType.Play.Server.SPAWN_ENTITY_LIVING
-        )
+        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
+        {
+            arrayOf(
+                PacketType.Play.Server.SPAWN_ENTITY_LIVING
+            )
+        } else
+        {
+            arrayOf(
+                PacketType.Play.Client.USE_ENTITY,
+                PacketType.Play.Server.SPAWN_ENTITY_LIVING
+            )
+        }
     })
 )
 {
@@ -62,8 +79,11 @@ object EntityPacketAdapter : PacketAdapter(
                 lastRightClick.remove(it.player.uniqueId)
             }
 
-        ProtocolLibrary.getProtocolManager()
-            .addPacketListener(this)
+        if (!ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
+        {
+            ProtocolLibrary.getProtocolManager()
+                .addPacketListener(this)
+        }
     }
 
     override fun onPacketReceiving(event: PacketEvent) {

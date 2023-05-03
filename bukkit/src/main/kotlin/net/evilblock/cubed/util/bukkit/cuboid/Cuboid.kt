@@ -16,6 +16,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.entity.Entity
 import java.util.*
 
+
 class Cuboid : Iterable<Block>, Cloneable, ConfigurationSerializable {
 
     protected val worldName: String
@@ -101,6 +102,7 @@ class Cuboid : Iterable<Block>, Cloneable, ConfigurationSerializable {
 
         return res
     }
+
 
     fun getWalls(): List<Block> {
         val blocks = ArrayList<Block>()

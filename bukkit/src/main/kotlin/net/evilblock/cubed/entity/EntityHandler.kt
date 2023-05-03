@@ -7,7 +7,6 @@
 
 package net.evilblock.cubed.entity
 
-import com.google.common.base.Charsets
 import com.google.gson.reflect.TypeToken
 import gg.scala.commons.util.Files
 import gg.scala.flavor.inject.Inject
