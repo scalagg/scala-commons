@@ -52,7 +52,7 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
             }
 
             val element = JsonObject().also {
-                it.addProperty("id", item.type.name)
+                it.addProperty("id", item.type.id)
                 it.addProperty(getDataKey(item), item.durability)
                 it.addProperty("count", item.amount)
             }
