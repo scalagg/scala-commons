@@ -8,7 +8,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @SupportedAnnotationTypes({"gg.scala.commons.core.plugin.Plugin"})
 public class SpigotPluginProcessor extends PluginProcessorAbstract {
 
