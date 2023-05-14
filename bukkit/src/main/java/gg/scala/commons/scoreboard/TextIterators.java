@@ -38,7 +38,7 @@ public class TextIterators {
      * @param secondaryColor - secondary color
      * @return new text fade animation
      */
-    public TextIterator textFade(@NotNull String text, @NotNull ChatColor primaryColor, @NotNull ChatColor fadeColor, @NonNull ChatColor secondaryColor) {
+    public TextIterator textFade(@NotNull String text, @NotNull ChatColor primaryColor, @NotNull ChatColor fadeColor, @NotNull ChatColor secondaryColor) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
