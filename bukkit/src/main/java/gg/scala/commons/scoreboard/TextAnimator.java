@@ -22,13 +22,13 @@ public class TextAnimator {
         this.iterator = iterator;
     }
 
-    public TextFrame current() {
+    public @NotNull TextFrame current() {
         return iterator
                 .getFrameIterator()
                 .getCurrentFrame();
     }
 
-    public TextComponent currentIntoTextComponent() {
+    public @NotNull TextComponent currentIntoTextComponent() {
         return current().intoTextComponent();
     }
 
