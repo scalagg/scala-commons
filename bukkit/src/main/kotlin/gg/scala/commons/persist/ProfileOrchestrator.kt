@@ -75,7 +75,9 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
         Events
             .subscribe(PlayerQuitEvent::class.java)
             .handler {
-                controller.localCache().remove(it.player.uniqueId)
+                controller
+                    .localCache()
+                    .remove(it.player.uniqueId)
                     ?.let { cached ->
                         this.controller.save(cached, DataStoreStorageType.MONGO)
                             .exceptionally { throwable ->
