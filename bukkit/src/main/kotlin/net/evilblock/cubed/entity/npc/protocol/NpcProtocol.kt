@@ -246,10 +246,12 @@ object NpcProtocol
             // send equipment updates
             if (npc.itemInHand != null)
             {
-                MinecraftProtocol.send(
-                    player,
-                    MinecraftProtocol.buildEntityEquipmentPacket(npc.id, 0, npc.itemInHand!!)
-                )
+                runCatching {
+                    MinecraftProtocol.send(
+                        player,
+                        MinecraftProtocol.buildEntityEquipmentPacket(npc.id, 0, npc.itemInHand!!)
+                    )
+                }
             }
 
             if (npc.helmet != null)
