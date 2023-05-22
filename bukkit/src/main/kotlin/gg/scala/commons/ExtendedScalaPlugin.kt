@@ -630,7 +630,10 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 if (methodSub.isAnnotationPresent(AssignPermission::class.java))
                 {
                     val commandNoWhitespace = registeredCommand
-                        .command.split(" ")
+                        .command
+                        .split("|")
+                        .first()
+                        .split(" ")
                         .toMutableList()
                         .apply { removeFirst() }
                         .joinToString(".")
