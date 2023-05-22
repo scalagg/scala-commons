@@ -1,5 +1,7 @@
 package gg.scala.commons;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +18,7 @@ public class Patterns {
         )
     );
 
-    public static Matcher matchPlaceholderSyntax(String expression) {
+    public static @NotNull Matcher matchPlaceholderSyntax(@NotNull String expression) {
         return PATTERN.matcher(expression);
     }
 }
