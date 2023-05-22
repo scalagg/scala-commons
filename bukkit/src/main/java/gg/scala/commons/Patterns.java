@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
  * @since 5/2/2022
  */
 public class Patterns {
-
     private static final Pattern PATTERN = Pattern.compile(
         new String(
             Base64.getDecoder()
@@ -17,8 +16,7 @@ public class Patterns {
         )
     );
 
-    public static Matcher matcher(String expression)
-    {
+    public static Matcher matchPlaceholderSyntax(String expression) {
         return PATTERN.matcher(expression);
     }
 }

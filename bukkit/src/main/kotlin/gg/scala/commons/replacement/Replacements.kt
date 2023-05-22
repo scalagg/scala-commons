@@ -31,7 +31,7 @@ object Replacements
     ): String
     {
         val matcher = Patterns
-            .matcher(text)
+            .matchPlaceholderSyntax(text)
 
         val builder = StringBuffer()
 
