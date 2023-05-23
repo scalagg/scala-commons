@@ -11,6 +11,7 @@ import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.distribution.MenuRowDistribution
+import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.entity.Player
 import kotlin.math.ceil
@@ -33,12 +34,14 @@ abstract class PaginatedMenu : Menu()
 
     var distribution = MenuRowDistribution.NONE
 
-    override fun getTitle(player: Player): String
+    override fun getTitleContextual(player: Player, items: Int): String
     {
-        val pages = getPages(player)
+        val pages = getPagesGivenAmount(
+            player, buttonAmount = items
+        )
 
         return "${getPrePaginatedTitle(player)}${
-            if (pages > 1) " ($page/$pages)" else ""
+            if (pages > 1) "  ($page/$pages)" else ""
         }"
     }
 
@@ -49,18 +52,17 @@ abstract class PaginatedMenu : Menu()
         openMenu(player)
     }
 
-    internal fun getPages(player: Player): Int
+    private fun getPagesGivenAmount(player: Player, buttonAmount: Int): Int
     {
-        val buttonAmount = getAllPagesButtons(player).size
-
-        return if (buttonAmount == 0)
-        {
-            1
-        } else
-        {
+        return if (buttonAmount == 0) 1 else
             ceil(buttonAmount / getMaxItemsPerPage(player).toDouble()).toInt()
-        }
     }
+
+    internal fun getPages(player: Player) =
+        getPagesGivenAmount(
+            player,
+            buttonAmount = getAllPagesButtons(player).size
+        )
 
     override fun getButtons(player: Player): MutableMap<Int, Button>
     {
@@ -75,10 +77,12 @@ abstract class PaginatedMenu : Menu()
         }
 
         val pageButtonSlots = getPageButtonSlots()
+
         if (pageButtonSlots != null)
         {
-            buttons[pageButtonSlots.first] = PageButton(-1, this)
-            buttons[pageButtonSlots.second] = PageButton(1, this)
+            val pages = getPages(player)
+            buttons[pageButtonSlots.first] = PageButton(-1, menu = this, pages)
+            buttons[pageButtonSlots.second] = PageButton(1, menu = this, pages)
         }
 
         val buttonSlots = getAllPagesButtonSlots()
@@ -93,7 +97,8 @@ abstract class PaginatedMenu : Menu()
             val minIndex = ((page - 1) * getMaxItemsPerPage(player).toDouble()).toInt()
             val maxIndex = (page * getMaxItemsPerPage(player).toDouble()).toInt()
 
-            for (entry in getAllPagesButtons(player).entries)
+            val allPageButtons = getAllPagesButtons(player)
+            for (entry in allPageButtons.entries)
             {
                 var ind = entry.key
                 if (ind in minIndex until maxIndex)
@@ -109,7 +114,8 @@ abstract class PaginatedMenu : Menu()
             val minIndex = (page - 1) * maxPerPage
             val maxIndex = page * maxPerPage
 
-            for ((index, entry) in getAllPagesButtons(player).entries.withIndex())
+            val allPageButtons = getAllPagesButtons(player)
+            for ((index, entry) in allPageButtons.entries.withIndex())
             {
                 if (index in minIndex until maxIndex)
                 {

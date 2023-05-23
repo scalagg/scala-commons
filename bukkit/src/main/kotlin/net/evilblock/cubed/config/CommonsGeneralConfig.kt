@@ -13,7 +13,6 @@ class CommonsGeneralConfig
 {
     val debug = false
     val timezone = "EST"
-    val backups = false
     val enable1Dot7Entities = true
     val enableUnifiedMetrics = false
     val ignoreServerCheck = false
@@ -21,7 +20,7 @@ class CommonsGeneralConfig
     val bigHorse = false
 
     @Comment("Should we enable helper's built-in /helper information command?")
-    val infoCommand = true
+    val infoCommand = false
 
     @Comment("Mojang, Ashcon")
     var uuidCacheResolverType = "Mojang"

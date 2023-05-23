@@ -58,6 +58,11 @@ abstract class Menu
 
     abstract fun getButtons(player: Player): Map<Int, Button>
 
+    open fun getTitleContextual(player: Player, items: Int): String
+    {
+        return getTitle(player)
+    }
+
     open fun getTitle(player: Player): String
     {
         return staticTitle
@@ -73,14 +78,19 @@ abstract class Menu
 
     private fun createInventory(player: Player): Inventory
     {
-        var title = ChatColor.translateAlternateColorCodes('&', getTitle(player))
+        val invButtons = getButtons(player)
+        var size = size(invButtons)
+
+        var title = ChatColor
+            .translateAlternateColorCodes(
+                '&',
+                getTitle(player)
+            )
+
         if (title.length > 32)
         {
             title = title.substring(0, 31)
         }
-
-        val invButtons = getButtons(player)
-        var size = size(invButtons)
 
         val minSize = getMinSize()
         if (minSize != -1)

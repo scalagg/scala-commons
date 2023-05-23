@@ -11,13 +11,10 @@ import gg.scala.commons.core.plugin.PluginWebsite
  * @since 10/10/2022
  */
 @Plugin(
-    name = "Example",
+    name = "devtoolkit",
     version = "%remote%/%branch%/%id%"
 )
 @PluginAuthor("%author%")
 @PluginWebsite("%website%")
 @PluginDependency("scala-commons")
 class ExamplePlugin : ExtendedScalaPlugin()
-{
-
-}

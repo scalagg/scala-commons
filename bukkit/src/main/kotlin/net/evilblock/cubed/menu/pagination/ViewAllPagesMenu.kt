@@ -9,12 +9,12 @@ package net.evilblock.cubed.menu.pagination
 
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
-import net.evilblock.cubed.menu.buttons.BackButton
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.entity.Player
 
 class ViewAllPagesMenu(
-    private val menu: PaginatedMenu
+    private val menu: PaginatedMenu,
+    private val pages: Int
 ) : Menu() {
 
     init {
@@ -35,7 +35,7 @@ class ViewAllPagesMenu(
         val buttons = HashMap<Int, Button>()
 
         var index = 10
-        for (i in 1..menu.getPages(player)) {
+        for (i in 1..pages) {
             buttons[index++] = JumpToPageButton(i, menu, menu.page == i)
             if ((index - 8) % 9 == 0) {
                 index += 2

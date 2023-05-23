@@ -11,18 +11,19 @@ import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
-import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 
-class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button() {
+class PageButton(
+    private val mod: Int,
+    private val menu: PaginatedMenu,
+    private val pages: Int
+) : Button() {
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
         val hasNext = hasNext(player)
@@ -32,7 +33,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
             hasNext && !menu.verticalView
         )
         {
-            ViewAllPagesMenu(menu).openMenu(player)
+            ViewAllPagesMenu(menu, pages = this.pages).openMenu(player)
             playNeutral(player)
             return
         }
@@ -46,7 +47,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
 
     private fun hasNext(player: Player): Boolean {
         val pg = menu.page + mod
-        return pg > 0 && menu.getPages(player) >= pg
+        return pg in 1..pages
     }
 
     override fun getName(player: Player): String {
@@ -54,7 +55,7 @@ class PageButton(private val mod: Int, private val menu: PaginatedMenu) : Button
             return " "
         }
 
-        return (if (mod > 0) CC.GREEN + (if (menu.verticalView) "Scroll down" else "Next page") else CC.RED + (if (menu.verticalView) "Scroll up" else "Previous page")) + ChatColor.GRAY + " (${menu.page + mod}/${menu.getPages(player)})"
+        return (if (mod > 0) CC.GREEN + (if (menu.verticalView) "Scroll down" else "Next page") else CC.RED + (if (menu.verticalView) "Scroll up" else "Previous page")) + ChatColor.GRAY + " (${menu.page + mod}/$pages)"
     }
 
     override fun getDescription(player: Player): List<String> {
