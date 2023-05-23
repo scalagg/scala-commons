@@ -52,8 +52,6 @@ class Sign(
                 XMaterial.OAK_WALL_SIGN.parseMaterial()
             )
 
-        println(lines + " <- Lines")
-
         val tileEntity = WrapperPlayClientUpdateSign()
         tileEntity.location = blockPosition
         tileEntity.lines = lines

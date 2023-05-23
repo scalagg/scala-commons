@@ -631,12 +631,13 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                 {
                     val commandNoWhitespace = registeredCommand
                         .command
-                        .split("|")
-                        .first()
                         .split(" ")
                         .toMutableList()
                         .apply { removeFirst() }
-                        .joinToString(".")
+                        .joinToString(".") {
+                            // ensure we use the primary key
+                            it.split("|").first()
+                        }
 
                     registeredCommand.requiredPermissions
                         .add(

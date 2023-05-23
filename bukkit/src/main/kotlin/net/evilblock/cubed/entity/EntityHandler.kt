@@ -14,7 +14,6 @@ import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import net.evilblock.cubed.ScalaCommonsSpigot
-import net.evilblock.cubed.backup.BackupHandler
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.serializers.Serializers
@@ -69,10 +68,6 @@ object EntityHandler
         if (dataFile.exists())
         {
             val general = plugin.config<CommonsGeneralConfig>()
-            if (general.backups)
-            {
-                Files.copy(dataFile, BackupHandler.findNextBackupFile("entities"))
-            }
 
             if (!general.doNotSaveEntities)
             {
