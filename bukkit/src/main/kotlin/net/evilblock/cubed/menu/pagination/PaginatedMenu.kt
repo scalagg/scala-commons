@@ -36,9 +36,15 @@ abstract class PaginatedMenu : Menu()
 
     override fun getTitleContextual(player: Player, items: Int): String
     {
-        val pages = getPagesGivenAmount(
-            player, buttonAmount = items
-        )
+        val pages = if (items != -1)
+        {
+            getPagesGivenAmount(
+                player, buttonAmount = items
+            )
+        } else
+        {
+            getPages(player)
+        }
 
         return "${getPrePaginatedTitle(player)}${
             if (pages > 1) "  ($page/$pages)" else ""

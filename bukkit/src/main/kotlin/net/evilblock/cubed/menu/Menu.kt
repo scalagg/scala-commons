@@ -84,7 +84,7 @@ abstract class Menu
         var title = ChatColor
             .translateAlternateColorCodes(
                 '&',
-                getTitle(player)
+                getTitleContextual(player, -1)
             )
 
         if (title.length > 32)
