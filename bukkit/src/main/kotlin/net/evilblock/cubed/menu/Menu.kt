@@ -8,6 +8,7 @@
 package net.evilblock.cubed.menu
 
 import com.cryptomorin.xseries.XMaterial
+import net.evilblock.cubed.menu.distribution.MenuRowDistribution
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
@@ -43,6 +44,7 @@ abstract class Menu
     var closed: Boolean = false
 
     var inventoryType = InventoryType.CHEST
+    var distribution = MenuRowDistribution.NONE
 
     private var staticTitle: String
 

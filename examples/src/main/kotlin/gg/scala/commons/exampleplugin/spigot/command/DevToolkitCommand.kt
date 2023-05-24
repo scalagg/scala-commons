@@ -10,6 +10,7 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.issuer.ScalaPlayer
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.menu.distribution.MenuRowDistribution
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
@@ -38,7 +39,8 @@ object DevToolkitCommand : ScalaCommand()
         {
             init
             {
-                autoUpdate = true
+                this.autoUpdate = true
+                this.distribution = MenuRowDistribution.SQUASHED
             }
 
             override fun size(buttons: Map<Int, Button>) = 18
@@ -47,7 +49,7 @@ object DevToolkitCommand : ScalaCommand()
             override fun getAllPagesButtons(player: Player): Map<Int, Button>
             {
                 val map = mutableMapOf<Int, Button>()
-                for (i in 1..((2..18).random()))
+                for (i in 1..((2..5).random()))
                 {
                     map[map.size] = ItemBuilder
                         .of(org.bukkit.Material.CAKE)

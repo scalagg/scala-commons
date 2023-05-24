@@ -32,8 +32,6 @@ abstract class PaginatedMenu : Menu()
     var verticalView = false
     var applyHeader = true
 
-    var distribution = MenuRowDistribution.NONE
-
     override fun getTitleContextual(player: Player, items: Int): String
     {
         val pages = if (items != -1)
@@ -93,9 +91,7 @@ abstract class PaginatedMenu : Menu()
 
         val buttonSlots = getAllPagesButtonSlots()
             .ifEmpty {
-                this.distribution.allDistributed(
-                    size(buttons) / 9, buttons
-                )
+                this.distribution.allDistributed(buttons)
             }
 
         if (buttonSlots.isEmpty())

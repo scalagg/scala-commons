@@ -60,15 +60,18 @@ enum class MenuRowDistribution(
     });
 
     fun allDistributed(
-        rows: Int, buttons: Map<Int, Button>
+        buttons: Map<Int, Button>
     ): List<Int>
     {
         return mutableListOf<Int>()
             .apply {
-                for (row in 0 until rows)
+                for ((index, values) in buttons.entries.chunked(9).withIndex())
                 {
+                    val buttons = mutableMapOf<Int, Button>()
+                    values.forEach { entry -> buttons[entry.key] = entry.value }
+
                     this.addAll(
-                        distributed(row, buttons)
+                        distributed(index + 1, buttons)
                     )
                 }
             }
