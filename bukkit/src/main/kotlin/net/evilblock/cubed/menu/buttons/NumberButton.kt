@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.menu.buttons
 
+import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -21,11 +22,11 @@ abstract class NumberButton(
     override fun getDescription(player: Player): List<String> {
         return arrayListOf<String>().also { desc ->
             desc.add("")
-            desc.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to increase by +1")
-            desc.add("${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to decrease by -1")
+            desc.add("${CC.GREEN}Left-click${ChatColor.GRAY}: increase by +1")
+            desc.add("${CC.RED}Right-click${ChatColor.GRAY}: decrease by -1")
             desc.add("")
-            desc.add("${ChatColor.GREEN}${ChatColor.BOLD}SHIFT LEFT-CLICK ${ChatColor.GREEN}to increase by +10")
-            desc.add("${ChatColor.RED}${ChatColor.BOLD}SHIFT RIGHT-CLICK ${ChatColor.RED}to decrease by -10")
+            desc.add("${CC.B_GREEN}Shift & Left-click${ChatColor.GRAY}: increase by +10")
+            desc.add("${CC.B_RED}Shift & Right-click${ChatColor.GRAY}: decrease by -10")
         }
     }
 
