@@ -166,7 +166,7 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
             val element = json as JsonObject?
             val id = element!!.get("id").asInt
             val data = (if (element.has("damage")) element.get("damage").asShort else if (element.has("data")) element.get("data").asShort else 0).toShort()
-            val count = element.get("count").asInt
+            val count = if (element.has("count")) element.get("count").asInt else 1
             val item = ItemStack(id, count, data)
 
             val meta = item.itemMeta

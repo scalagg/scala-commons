@@ -1,6 +1,8 @@
 package gg.scala.commons.command
 
 import co.aikar.commands.*
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.adventure.ScalaMiniMessage
@@ -14,12 +16,14 @@ import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.uuid.UUIDUtil
 import net.evilblock.cubed.util.time.Duration
+import net.evilblock.cubed.util.time.TimeUtil
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -65,6 +69,56 @@ class ScalaCommandManager(
 
             return@ExceptionHandler true
         }
+
+        val cooldownMappings = mutableMapOf<String, Cache<UUID, Long>>()
+
+        commandConditions
+            .addCondition(
+                ScalaPlayer::class.java,
+                "cooldown"
+            ) { context, execContext, value ->
+                val length = context
+                    .getConfigValue("duration", 1)
+                    .toLong()
+
+                val unit = TimeUnit.valueOf(
+                    context
+                        .getConfigValue(
+                            "unit",
+                            "SECONDS"
+                        )
+                )
+
+                val mapping = cooldownMappings
+                    .computeIfAbsent(
+                        execContext.cmd.command
+                    ) {
+                        CacheBuilder
+                            .newBuilder()
+                            .expireAfterWrite(
+                                length, unit
+                            )
+                            .build()
+                    }
+
+                val cooldown = mapping.getIfPresent(value.uniqueId)
+
+                if (cooldown != null)
+                {
+                    throw ConditionFailedException(
+                        "You're on cooldown! Try performing this command again in ${
+                            TimeUtil.formatIntoAbbreviatedString(
+                                ((cooldown - System.currentTimeMillis()) / 1000).toInt()
+                            )
+                        }."
+                    )
+                }
+
+                mapping.put(
+                    value.uniqueId,
+                    System.currentTimeMillis() + unit.toMillis(length)
+                )
+            }
 
         val audiences = BukkitAudiences.create(plugin)
 
