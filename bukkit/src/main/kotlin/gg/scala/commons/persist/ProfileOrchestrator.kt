@@ -80,6 +80,8 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
                     .localCache()
                     .remove(it.player.uniqueId)
                     ?.let { cached ->
+                        preLogout(cached)
+
                         this.controller.save(cached, DataStoreStorageType.MONGO)
                             .exceptionally { throwable ->
                                 throwable.printStackTrace()
@@ -87,6 +89,11 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
                             }
                     }
             }
+    }
+
+    open fun preLogout(profile: T)
+    {
+
     }
 
     open fun postLoad(uniqueId: UUID)
