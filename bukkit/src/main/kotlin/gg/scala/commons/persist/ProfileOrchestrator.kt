@@ -7,6 +7,7 @@ import gg.scala.store.storage.type.DataStoreStorageType
 import me.lucko.helper.Events
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
+import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -73,7 +74,7 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             }
 
         Events
-            .subscribe(PlayerQuitEvent::class.java)
+            .subscribe(PlayerQuitEvent::class.java, EventPriority.LOWEST)
             .handler {
                 controller
                     .localCache()
