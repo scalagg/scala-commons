@@ -64,38 +64,21 @@ object NpcProtocol
         PACKET_PLAY_OUT_PLAYER_INFO_CLASS.declaredClasses
             .find {
                 it.simpleName.equals("PlayerInfoData", true)
-            }!!
-
-    private val PLAYER_INFO_DATA_CONSTRUCTOR_PARAMETERS = mutableListOf<Class<*>>()
-        .apply {
-            if (!MinecraftReflection.isModern())
-                this.add(PACKET_PLAY_OUT_PLAYER_INFO_CLASS)
-
-            this.add(MinecraftReflection.getGameProfileClass())
-            this.add(Int::class.java)
-            this.add(ENUM_GAME_MODE_CLASS)
-            this.add(I_CHAT_BASE_COMPONENT_CLASS)
-
-            if (
-                ServerVersion.getVersion()
-                    .isNewerThanOrEquals(ServerVersion.v1_19)
-            )
-            {
-                val pubKeyClass = Reflection
-                    .getClassSuppressed(
-                        "net.minecraft.world.entity.player.ProfilePublicKey\$a"
-                    )!!
-
-                this.add(pubKeyClass)
             }
-        }
-        .toTypedArray()
+            ?: MinecraftReflection.getNMSClass(
+                "PacketPlayOutPlayerInfo\$PlayerInfoData"
+            )
 
-    private val PLAYER_INFO_DATA_CONSTRUCTOR =
-        Reflection.getDeclaredConstructor(
-            PLAYER_INFO_DATA_CLASS,
-            *PLAYER_INFO_DATA_CONSTRUCTOR_PARAMETERS
-        )!!
+    private val PLAYER_INFO_DATA_CONSTRUCTOR = PLAYER_INFO_DATA_CLASS
+        ?.declaredConstructors?.first()
+        ?: throw IllegalStateException(
+            "Constructors not found for the data class"
+        )
+
+    private val tropicSpigotEnabled = Reflection
+        .getClassSuppressed(
+            "dev.reximian9k.spigot.knockback.DefaultKnockbackProfileReference"
+        ) != null
 
     private val NOT_SET_GAMEMODE =
         Reflection.getEnum(
@@ -113,7 +96,10 @@ object NpcProtocol
 
         if (!MinecraftReflection.isModern())
         {
-            arguments.add(playerInfoPacket)
+            if (!tropicSpigotEnabled)
+            {
+                arguments.add(playerInfoPacket)
+            }
         }
 
         arguments.add(gameProfile)

@@ -38,32 +38,16 @@ object EntityPacketAdapter : PacketAdapter(
     ScalaCommonsSpigot.instance,
     *(if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
     {
-        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
-        {
-            arrayOf(
-                PacketType.Play.Server.SPAWN_ENTITY
-            )
-        } else
-        {
-            arrayOf(
-                PacketType.Play.Client.USE_ENTITY,
-                PacketType.Play.Server.SPAWN_ENTITY,
-            )
-        }
+        arrayOf(
+            PacketType.Play.Client.USE_ENTITY,
+            PacketType.Play.Server.SPAWN_ENTITY,
+        )
     } else
     {
-        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
-        {
-            arrayOf(
-                PacketType.Play.Server.SPAWN_ENTITY_LIVING
-            )
-        } else
-        {
-            arrayOf(
-                PacketType.Play.Client.USE_ENTITY,
-                PacketType.Play.Server.SPAWN_ENTITY_LIVING
-            )
-        }
+        arrayOf(
+            PacketType.Play.Client.USE_ENTITY,
+            PacketType.Play.Server.SPAWN_ENTITY_LIVING
+        )
     })
 )
 {
@@ -79,7 +63,7 @@ object EntityPacketAdapter : PacketAdapter(
                 lastRightClick.remove(it.player.uniqueId)
             }
 
-        if (!ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().bigHorse)
+        if (!ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().enableEntityPacketAdapters)
         {
             ProtocolLibrary.getProtocolManager()
                 .addPacketListener(this)
