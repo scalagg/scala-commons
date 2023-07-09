@@ -17,8 +17,9 @@ class CommonsGeneralConfig
     val enableUnifiedMetrics = false
     val ignoreServerCheck = false
     val doNotSaveEntities = false
+
     val enableEntityPacketAdapters = true
-    val useAlternativeHolograms = true
+    val listenToOutgoingPackets = false
 
     @Comment("Should we enable helper's built-in /helper information command?")
     val infoCommand = false

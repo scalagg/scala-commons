@@ -9,8 +9,10 @@ package net.evilblock.cubed.entity.packet
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.comphenix.protocol.events.PacketListener
 import com.comphenix.protocol.wrappers.WrappedWatchableObject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -37,14 +39,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Service
 object EntityPacketAdapter : PacketAdapter(
     ScalaCommonsSpigot.instance,
-    PacketType.Play.Client.USE_ENTITY,
-    /*if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
-    {
-        PacketType.Play.Server.SPAWN_ENTITY
-    } else
-    {
-        PacketType.Play.Server.SPAWN_ENTITY_LIVING
-    }*/
+    PacketType.Play.Client.USE_ENTITY
 )
 {
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
@@ -59,25 +54,74 @@ object EntityPacketAdapter : PacketAdapter(
                 lastRightClick.remove(it.player.uniqueId)
             }
 
-        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().enableEntityPacketAdapters)
+        val config = ScalaCommonsSpigot.instance
+            .config<CommonsGeneralConfig>()
+
+        if (config.enableEntityPacketAdapters)
         {
             ProtocolLibrary.getProtocolManager()
                 .addPacketListener(this)
         }
+
+        if (config.listenToOutgoingPackets)
+        {
+            ProtocolLibrary.getProtocolManager()
+                .addPacketListener(
+                    object : PacketAdapter(
+                        ScalaCommonsSpigot.instance,
+                        ListenerPriority.NORMAL,
+                        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
+                        {
+                            PacketType.Play.Server.SPAWN_ENTITY
+                        } else
+                        {
+                            PacketType.Play.Server.SPAWN_ENTITY_LIVING
+                        }
+                    )
+                    {
+                        /**
+                         * Handles protocol changes for holograms.
+                         */
+                        override fun onPacketSending(event: PacketEvent)
+                        {
+                            if (!NpcProtocol.tropicSpigotEnabled)
+                            {
+                                if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING)
+                                {
+                                    val entityId = event.packet.integers.read(0)
+                                    val entity = EntityHandler.getEntityById(entityId) ?: return
+
+                                    if (entity is HologramEntity)
+                                    {
+                                        val dataWatcher = event.packet.dataWatcherModifier.read(0)
+                                        dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
+                                        event.packet.dataWatcherModifier.write(0, dataWatcher)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+        }
     }
 
-    override fun onPacketReceiving(event: PacketEvent) {
-        if (event.packetType == PacketType.Play.Client.USE_ENTITY) {
+    override fun onPacketReceiving(event: PacketEvent)
+    {
+        if (event.packetType == PacketType.Play.Client.USE_ENTITY)
+        {
             val entityId = event.packet.integers.read(0)
 
             val entity = EntityHandler.getEntityById(entityId) ?: return
-            if (entity.location.world != event.player.world || entity.location.distanceSquared(event.player.location) > 8.0) {
+            if (entity.location.world != event.player.world || entity.location.distanceSquared(event.player.location) > 8.0)
+            {
                 return
             }
 
-            if (useEntitySpamTimings.containsKey(event.player.uniqueId)) {
+            if (useEntitySpamTimings.containsKey(event.player.uniqueId))
+            {
                 val lastTime = useEntitySpamTimings[event.player.uniqueId]!!
-                if (System.currentTimeMillis() - lastTime < 25) {
+                if (System.currentTimeMillis() - lastTime < 25)
+                {
                     event.isCancelled = true
                     return
                 }
@@ -87,16 +131,21 @@ object EntityPacketAdapter : PacketAdapter(
 
             // ProtocolLib on 1.7 server doesn't recognize 1.8 client INTERACT_AT action, so the action will be null
             val useAction = Reflection.getDeclaredFieldValue(event.packet.handle, "action") as Enum<*>?
-            when (useAction?.name) {
-                null, INTERACT, INTERACT_AT -> {
+            when (useAction?.name)
+            {
+                null, INTERACT, INTERACT_AT ->
+                {
                     val rightClickEvent = PlayerRightClickEntityEvent(event.player, entity)
                     Bukkit.getPluginManager().callEvent(rightClickEvent)
 
-                    if (rightClickEvent.spamProtection) {
-                        if (lastRightClick.contains(event.player.uniqueId)) {
+                    if (rightClickEvent.spamProtection)
+                    {
+                        if (lastRightClick.contains(event.player.uniqueId))
+                        {
                             val lastRightClick = lastRightClick[event.player.uniqueId]!!
 
-                            if (System.currentTimeMillis() < lastRightClick + 500) {
+                            if (System.currentTimeMillis() < lastRightClick + 500)
+                            {
                                 return
                             }
                         }
@@ -104,22 +153,39 @@ object EntityPacketAdapter : PacketAdapter(
 
                     lastRightClick[event.player.uniqueId] = System.currentTimeMillis()
 
-                    if (!rightClickEvent.isCancelled) {
+                    if (!rightClickEvent.isCancelled)
+                    {
                         // if export tool is enabled, mark/un-mark entity for export
-                        if (event.player.hasPermission("commons.entity.export") && EntityPortTool.isTracking(event.player)) {
-                            if (EntityPortTool.isTrackingEntity(event.player, entity)) {
+                        if (event.player.hasPermission("commons.entity.export") && EntityPortTool.isTracking(event.player))
+                        {
+                            if (EntityPortTool.isTrackingEntity(event.player, entity))
+                            {
                                 EntityPortTool.removeTrackedEntity(event.player, entity)
-                                event.player.sendMessage("${ChatColor.YELLOW}Entity #${entity.id} is no longer marked for export! ${ChatColor.GRAY}(${EntityPortTool.getTrackedEntities(event.player).size} selected)")
-                            } else {
+                                event.player.sendMessage(
+                                    "${ChatColor.YELLOW}Entity #${entity.id} is no longer marked for export! ${ChatColor.GRAY}(${
+                                        EntityPortTool.getTrackedEntities(
+                                            event.player
+                                        ).size
+                                    } selected)"
+                                )
+                            } else
+                            {
                                 EntityPortTool.addTrackedEntity(event.player, entity)
-                                event.player.sendMessage("${ChatColor.GREEN}Entity #${entity.id} is now marked for export! ${ChatColor.GRAY}(${EntityPortTool.getTrackedEntities(event.player).size} selected)")
+                                event.player.sendMessage(
+                                    "${ChatColor.GREEN}Entity #${entity.id} is now marked for export! ${ChatColor.GRAY}(${
+                                        EntityPortTool.getTrackedEntities(
+                                            event.player
+                                        ).size
+                                    } selected)"
+                                )
                             }
 
                             return
                         }
 
                         // automatically open entity management menu if player is in fast edit mode
-                        if (event.player.gameMode == GameMode.CREATIVE && event.player.hasMetadata("EntityFastEdit")) {
+                        if (event.player.gameMode == GameMode.CREATIVE && event.player.hasMetadata("EntityFastEdit"))
+                        {
                             Tasks.delayed(1L) {
                                 EditEntityMenu(entity).openMenu(event.player)
                             }
@@ -130,41 +196,29 @@ object EntityPacketAdapter : PacketAdapter(
                         entity.onRightClick(event.player)
                     }
                 }
-                ATTACK -> {
+
+                ATTACK ->
+                {
                     entity.onLeftClick(event.player)
 
-                    if (entity.isDamageable()) {
+                    if (entity.isDamageable())
+                    {
                         val damageEvent = PlayerDamageEntityEvent(event.player, entity)
                         Bukkit.getPluginManager().callEvent(damageEvent)
 
-                        if (!damageEvent.isCancelled) {
+                        if (!damageEvent.isCancelled)
+                        {
                             // work later
                         }
                     }
                 }
-                else -> {}
-            }
-        }
-    }
 
-    /**
-     * Handles protocol changes for holograms.
-     *//*
-    override fun onPacketSending(event: PacketEvent) {
-        if (!NpcProtocol.tropicSpigotEnabled)
-        {
-            if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
-                val entityId = event.packet.integers.read(0)
-                val entity = EntityHandler.getEntityById(entityId) ?: return
-
-                if (entity is HologramEntity) {
-                    val dataWatcher = event.packet.dataWatcherModifier.read(0)
-                    dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
-                    event.packet.dataWatcherModifier.write(0, dataWatcher)
+                else ->
+                {
                 }
             }
         }
-    }*/
+    }
 
     /**
      * Use constant string names in place of the EntityUseAction enum for compatibility.
