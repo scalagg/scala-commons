@@ -75,7 +75,7 @@ object NpcProtocol
             "Constructors not found for the data class"
         )
 
-    private val tropicSpigotEnabled = Reflection
+    val tropicSpigotEnabled = Reflection
         .getClassSuppressed(
             "dev.reximian9k.spigot.knockback.DefaultKnockbackProfileReference"
         ) != null

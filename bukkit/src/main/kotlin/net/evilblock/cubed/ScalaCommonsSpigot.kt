@@ -1,8 +1,6 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import com.solexgames.lib.commons.hologram.HologramCommand
-import com.solexgames.lib.commons.hologram.HologramManager
 import dev.cubxity.plugins.metrics.common.config.UnifiedMetricsServerConfig
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.AwareHub
@@ -22,10 +20,8 @@ import gg.scala.commons.agnostic.sync.server.ServerContainer
 import gg.scala.commons.agnostic.sync.server.impl.GameServer
 import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.agnostic.sync.server.state.ServerState
-import gg.scala.commons.annotations.commands.ManualRegister
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
-import gg.scala.commons.command.ScalaCommandManager
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.metrics.internal.UnifiedMetricsBukkitBootstrap
 import gg.scala.commons.persist.datasync.DataSyncService
@@ -42,8 +38,6 @@ import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.commons.util.Players
 import me.lucko.helper.Commands
-import me.lucko.helper.hologram.BukkitHologramFactory
-import me.lucko.helper.hologram.HologramFactory
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
@@ -75,7 +69,6 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.ServicePriority
 import org.bukkit.potion.PotionEffect
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.BlockVector
@@ -127,7 +120,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     }
 
     var versionProvider: ProtocolVersion = ProtocolLibVersionProvider
-    lateinit var hologramManager: HologramManager
 
     @ContainerEnable
     fun containerEnable()
@@ -200,20 +192,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 SentryService.initialize(this)
             }.onFailure {
                 logger.log(Level.WARNING, "[Sentry] Failed to enable sentry support!", it)
-            }
-
-            if (config<CommonsGeneralConfig>().useAlternativeHolograms)
-            {
-                Bukkit.getServicesManager()
-                    .register(
-                        HologramFactory::class.java,
-                        BukkitHologramFactory(),
-                        this, ServicePriority.High
-                    )
-
-                hologramManager = HologramManager()
-                hologramManager.saveHologramService(hologramManager.loadHologramService())
-                hologramManager.loadAllAsync()
             }
 
             enableUnifiedMetricsCompat()
@@ -406,18 +384,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 .registerAndBind(
                     this, "helper"
                 )
-        }
-    }
-
-    @ManualRegister
-    fun manualRegister(manager: ScalaCommandManager)
-    {
-        if (config<CommonsGeneralConfig>().useAlternativeHolograms)
-        {
-            manager.registerCommand(HologramCommand())
-        } else
-        {
-            manager.registerCommand(net.evilblock.cubed.entity.hologram.command.HologramCommand)
         }
     }
 
