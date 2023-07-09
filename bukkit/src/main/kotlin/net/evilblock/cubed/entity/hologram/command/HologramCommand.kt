@@ -23,7 +23,6 @@ import net.evilblock.cubed.util.text.TextUtil
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-@AutoRegister
 @CommandAlias("hologram|holo")
 @CommandPermission("commons.holograms")
 object HologramCommand : ScalaCommand()

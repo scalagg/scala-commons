@@ -18,6 +18,7 @@ class CommonsGeneralConfig
     val ignoreServerCheck = false
     val doNotSaveEntities = false
     val enableEntityPacketAdapters = true
+    val useAlternativeHolograms = true
 
     @Comment("Should we enable helper's built-in /helper information command?")
     val infoCommand = false
