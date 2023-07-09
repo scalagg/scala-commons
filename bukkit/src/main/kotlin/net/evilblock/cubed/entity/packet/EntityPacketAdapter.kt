@@ -36,19 +36,14 @@ import java.util.concurrent.ConcurrentHashMap
 @Service
 object EntityPacketAdapter : PacketAdapter(
     ScalaCommonsSpigot.instance,
-    *(if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
+    PacketType.Play.Client.USE_ENTITY,
+    if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
     {
-        arrayOf(
-            PacketType.Play.Client.USE_ENTITY,
-            PacketType.Play.Server.SPAWN_ENTITY,
-        )
+        PacketType.Play.Server.SPAWN_ENTITY
     } else
     {
-        arrayOf(
-            PacketType.Play.Client.USE_ENTITY,
-            PacketType.Play.Server.SPAWN_ENTITY_LIVING
-        )
-    })
+        PacketType.Play.Server.SPAWN_ENTITY_LIVING
+    }
 )
 {
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
@@ -63,7 +58,7 @@ object EntityPacketAdapter : PacketAdapter(
                 lastRightClick.remove(it.player.uniqueId)
             }
 
-        if (!ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().enableEntityPacketAdapters)
+        if (ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>().enableEntityPacketAdapters)
         {
             ProtocolLibrary.getProtocolManager()
                 .addPacketListener(this)

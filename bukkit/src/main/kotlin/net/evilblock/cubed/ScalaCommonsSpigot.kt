@@ -22,6 +22,7 @@ import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.container.ContainerPreEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.metrics.internal.UnifiedMetricsBukkitBootstrap
 import gg.scala.commons.persist.datasync.DataSyncService
