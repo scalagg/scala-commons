@@ -3,35 +3,25 @@ package net.evilblock.cubed.nametag
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import java.util.concurrent.ConcurrentHashMap
 
-internal class NametagThread : Thread("Commons - Nametag Thread") {
+internal class NametagThread : Runnable
+{
+    override fun run()
+    {
+        val updatesIterator = pendingUpdates.keys.toList()
 
-    init {
-        this.isDaemon = true
-    }
-
-    override fun run() {
-        while (true) {
-            val updatesIterator = pendingUpdates.keys.iterator()
-            while (updatesIterator.hasNext()) {
-                val pendingUpdate = updatesIterator.next()
-                try {
-                    NametagHandler.applyUpdate(pendingUpdate)
-                    updatesIterator.remove()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-            }
-
-            try {
-                sleep(NametagHandler.updateInterval * 50L)
-            } catch (e2: InterruptedException) {
-                e2.printStackTrace()
+        for (pendingUpdate in updatesIterator)
+        {
+            runCatching {
+                NametagHandler.applyUpdate(pendingUpdate)
+                pendingUpdates.remove(pendingUpdate)
+            }.onFailure {
+                it.printStackTrace()
             }
         }
     }
 
-    companion object {
+    companion object
+    {
         var pendingUpdates = ConcurrentHashMap<NametagUpdate, Boolean>()
     }
 }

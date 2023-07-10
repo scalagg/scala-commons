@@ -16,11 +16,15 @@ import gg.scala.flavor.service.Service
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.thread.EntityTickThread
+import net.evilblock.cubed.nametag.NametagHandler
+import net.evilblock.cubed.nametag.NametagThread
 import net.evilblock.cubed.serializers.Serializers
+import net.evilblock.cubed.services.CommonsServiceExecutor
 import org.bukkit.entity.Player
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 @Service
 object EntityHandler
@@ -79,7 +83,13 @@ object EntityHandler
             }
         }
 
-        EntityTickThread.start()
+        CommonsServiceExecutor
+            .scheduleAtFixedRate(
+                EntityTickThread,
+                0L,
+                50L,
+                TimeUnit.MILLISECONDS
+            )
 
         loaded = true
     }

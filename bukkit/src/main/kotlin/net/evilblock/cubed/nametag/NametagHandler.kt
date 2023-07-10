@@ -8,12 +8,14 @@ import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
 import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
+import net.evilblock.cubed.services.CommonsServiceExecutor
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 @Service
 object NametagHandler
@@ -46,13 +48,19 @@ object NametagHandler
             return
         }
 
-        async = nametagConfig.asyncUpdates
-        updateInterval = nametagConfig.asyncUpdatesInterval
+        async = nametagConfig.pushAsyncUpdates
+        updateInterval = nametagConfig.asyncUpdatesIntervalTicks
 
         isNametagRestrictionEnabled = nametagConfig.packetRestriction
         nametagRestrictBypass = nametagConfig.packetRestrictionPrefix
 
-        NametagThread().start()
+        CommonsServiceExecutor
+            .scheduleAtFixedRate(
+                NametagThread(),
+                0L,
+                updateInterval * 50L,
+                TimeUnit.MILLISECONDS
+            )
 
         registerProvider(NametagProvider.DefaultNametagProvider())
     }

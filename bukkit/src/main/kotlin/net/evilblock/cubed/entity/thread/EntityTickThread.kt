@@ -12,7 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 
 @Service
-object EntityTickThread : Thread("Commons - Entities")
+object EntityTickThread : Runnable
 {
     @Inject
     lateinit var plugin: ScalaCommonsSpigot
@@ -26,22 +26,15 @@ object EntityTickThread : Thread("Commons - Entities")
 
     override fun run()
     {
-        while (true)
-        {
-            try
-            {
-                tickEntities()
+        runCatching {
+            tickEntities()
 
-                if (ticks++ % 10 == 0L)
-                {
-                    updateWatchers()
-                }
-            } catch (e: Exception)
+            if (ticks++ % 10 == 0L)
             {
-                e.printStackTrace()
+                updateWatchers()
             }
-
-            sleep(50L)
+        }.onFailure {
+            it.printStackTrace()
         }
     }
 

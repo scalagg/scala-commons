@@ -18,6 +18,6 @@ class CommonsNametagConfig
     @Coloured
     val packetRestrictionPrefix = ""
 
-    val asyncUpdates = false
-    val asyncUpdatesInterval = 2
+    val pushAsyncUpdates = true
+    val asyncUpdatesIntervalTicks = 2
 }
