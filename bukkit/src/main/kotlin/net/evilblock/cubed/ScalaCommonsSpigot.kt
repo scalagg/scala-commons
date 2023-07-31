@@ -290,7 +290,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 setMetadata("server", "cpu", 0.00)
             }
 
-            setMetadata("server", "host", Bukkit.getIp())
+            setMetadata("server", "host", if (config.advertisedServerAddress == "__default__") Bukkit.getIp() else config.advertisedServerAddress)
             setMetadata("server", "port", Bukkit.getPort())
 
             setMetadata("server", "software", server.version)

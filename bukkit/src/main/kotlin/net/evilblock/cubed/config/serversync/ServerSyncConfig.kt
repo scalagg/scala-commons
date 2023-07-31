@@ -18,6 +18,7 @@ class ServerSyncConfig
         "* Ensure no plugins make use of this functionality before disabling it!"
     )
     val enabled = true
+    var advertisedServerAddress = "__default__"
 
     @Comment("This is your unique server ID.")
     val serverId = "na-server-1"
