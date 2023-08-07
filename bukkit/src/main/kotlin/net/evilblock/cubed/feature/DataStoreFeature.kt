@@ -31,7 +31,7 @@ object DataStoreFeature
 
         AwareCloud.uri = WrappedAwareUri(
             storeRedis.hostname, storeRedis.port,
-            storeRedis.password, 0
+            storeRedis.password, storeRedis.database ?: 0
         )
     }
 }
