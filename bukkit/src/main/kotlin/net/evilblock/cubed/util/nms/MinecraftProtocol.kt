@@ -21,8 +21,8 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.floor
 
-object MinecraftProtocol {
-
+object MinecraftProtocol
+{
     private val PLAYER_CONNECTION_FIELD = Reflection
         .getDeclaredField(
             MinecraftReflection.ENTITY_PLAYER_CLASS,
@@ -50,7 +50,8 @@ object MinecraftProtocol {
         )
 
     @JvmStatic
-    fun newPacket(name: String): Any {
+    fun newPacket(name: String): Any
+    {
         return Reflection.callConstructor(
             if (MinecraftReflection.isModern())
             {
@@ -81,30 +82,37 @@ object MinecraftProtocol {
     }
 
     @JvmStatic
-    fun send(player: Player, packet: Any) {
+    fun send(player: Player, packet: Any)
+    {
         ReflectionUtils.sendPacketSync(player, packet)
     }
 
     @JvmStatic
-    fun send(player: Player, vararg packets: Any) {
+    fun send(player: Player, vararg packets: Any)
+    {
         ReflectionUtils.sendPacketSync(player, packets)
     }
 
     @JvmStatic
-    fun newBlockPosition(x: Int, y: Int, z: Int): Any {
-        return BLOCK_POSITION_CONSTRUCTOR?.newInstance(x, y, z) ?: throw IllegalStateException("BlockPosition not supported on this server version")
+    fun newBlockPosition(x: Int, y: Int, z: Int): Any
+    {
+        return BLOCK_POSITION_CONSTRUCTOR?.newInstance(x, y, z)
+            ?: throw IllegalStateException("BlockPosition not supported on this server version")
     }
 
     @JvmStatic
-    fun newBlockActionPacket(block: Block, action: Int, param: Int): Any {
+    fun newBlockActionPacket(block: Block, action: Int, param: Int): Any
+    {
         val packet = newPacket("PacketPlayOutBlockAction")
 
-        if (ProtocolLibrary.getProtocolManager().minecraftVersion.isAtLeast(MinecraftVersion.COLOR_UPDATE)) {
+        if (ProtocolLibrary.getProtocolManager().minecraftVersion.isAtLeast(MinecraftVersion.COLOR_UPDATE))
+        {
             Reflection.setDeclaredFieldValue(packet, "a", newBlockPosition(block.x, block.y, block.z))
             Reflection.setDeclaredFieldValue(packet, "b", action)
             Reflection.setDeclaredFieldValue(packet, "c", param)
             Reflection.setDeclaredFieldValue(packet, "d", MinecraftReflection.getHandle(block))
-        } else {
+        } else
+        {
             Reflection.setDeclaredFieldValue(packet, "a", block.x)
             Reflection.setDeclaredFieldValue(packet, "b", block.y)
             Reflection.setDeclaredFieldValue(packet, "c", block.z)
@@ -116,7 +124,8 @@ object MinecraftProtocol {
         return packet
     }
 
-    fun buildEntityHeadRotationPacket(id: Int, yaw: Float): Any {
+    fun buildEntityHeadRotationPacket(id: Int, yaw: Float): Any
+    {
         val packet = newPacket("PacketPlayOutEntityHeadRotation")
 
         Reflection.setDeclaredFieldValue(packet, "a", id)
@@ -125,7 +134,8 @@ object MinecraftProtocol {
         return packet
     }
 
-    fun buildEntityLookPacket(id: Int, yaw: Float, pitch: Float): Any {
+    fun buildEntityLookPacket(id: Int, yaw: Float, pitch: Float): Any
+    {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutEntityLook")
         val owningClass = getPacketClass("PacketPlayOutEntity")
 
@@ -137,7 +147,8 @@ object MinecraftProtocol {
         return packet
     }
 
-    fun buildEntityRelMovePacket(id: Int, from: Location, to: Location): Any {
+    fun buildEntityRelMovePacket(id: Int, from: Location, to: Location): Any
+    {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutRelEntityMove")
         val owningClass = getPacketClass("PacketPlayOutEntity")
 
@@ -162,7 +173,8 @@ object MinecraftProtocol {
         return packet
     }
 
-    fun buildEntityRelMoveLookPacket(id: Int, from: Location, to: Location): Any {
+    fun buildEntityRelMoveLookPacket(id: Int, from: Location, to: Location): Any
+    {
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutRelEntityMoveLook")
         val owningClass = getPacketClass("PacketPlayOutEntity")
 
@@ -189,7 +201,8 @@ object MinecraftProtocol {
         return packet
     }
 
-    fun buildEntityTeleportPacket(id: Int, location: Location): Any {
+    fun buildEntityTeleportPacket(id: Int, location: Location): Any
+    {
         val packet = newPacket("PacketPlayOutEntityTeleport")
 
         Reflection.setDeclaredFieldValue(packet, "a", id)
@@ -203,7 +216,8 @@ object MinecraftProtocol {
     }
 
     @JvmStatic
-    fun buildEntityEquipmentPacket(id: Int, slot: Int, itemStack: ItemStack): Any {
+    fun buildEntityEquipmentPacket(id: Int, slot: Int, itemStack: ItemStack): Any
+    {
         val packet = newPacket("PacketPlayOutEntityEquipment")
         Reflection.setDeclaredFieldValue(packet, "a", id)
         Reflection.setDeclaredFieldValue(packet, "b", slot)
@@ -212,7 +226,8 @@ object MinecraftProtocol {
     }
 
     @JvmStatic
-    fun buildEntityEquipmentPacket(id: Int, slot: Any, itemStack: ItemStack): Any {
+    fun buildEntityEquipmentPacket(id: Int, slot: Any, itemStack: ItemStack): Any
+    {
         val packet = newPacket("PacketPlayOutEntityEquipment")
         Reflection.setDeclaredFieldValue(packet, "a", id)
         Reflection.setDeclaredFieldValue(packet, "b", slot)
@@ -221,7 +236,8 @@ object MinecraftProtocol {
     }
 
     @JvmStatic
-    fun buildSpawnEntityLivingPacket(id: Int, uuid: UUID, typeId: Int, location: Location): Any {
+    fun buildSpawnEntityLivingPacket(id: Int, uuid: UUID, typeId: Int, location: Location): Any
+    {
         return newPacket("PacketPlayOutSpawnEntityLiving").also { packet ->
             Reflection.setDeclaredFieldValue(packet, "a", id)
             Reflection.setDeclaredFieldValue(packet, "b", 30)
@@ -233,13 +249,15 @@ object MinecraftProtocol {
         }
     }
 
-    private fun convert(double: Double): Long {
+    private fun convert(double: Double): Long
+    {
         val var2 = double.toLong()
         return if (double < var2.toDouble()) var2 - 1L else var2
     }
 
     @JvmStatic
-    fun getPlayerVersion(player: Player): Int {
+    fun getPlayerVersion(player: Player): Int
+    {
         return ScalaCommonsSpigot.instance.versionProvider.getProtocolVersion(player)
     }
 

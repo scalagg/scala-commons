@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:1.7.20"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
 
     compileOnly project(":serializers")
     compileOnly "gg.scala.aware:aware:1.1.8"
