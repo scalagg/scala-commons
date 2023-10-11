@@ -45,7 +45,7 @@ abstract class PaginatedMenu : Menu()
         }
 
         return "${getPrePaginatedTitle(player)}${
-            if (pages > 1) "  ($page/$pages)" else ""
+            if (pages > 1) " ($page/$pages)" else ""
         }"
     }
 
