@@ -2,11 +2,7 @@ package gg.scala.commons.agnostic.sync.server
 
 import gg.scala.commons.agnostic.sync.ServerSync
 import gg.scala.commons.agnostic.sync.ServerSyncPipeline
-import gg.scala.commons.agnostic.sync.event.EventBus
-import gg.scala.commons.agnostic.sync.event.events.ServerDisconnectEvent
 import net.evilblock.cubed.serializers.Serializers
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 /**
@@ -20,14 +16,15 @@ object ServerContainer : Runnable
             this.internal().connect()
         }!!
 
-    var servers = ConcurrentHashMap<String, AbstractServer>()
+    private var servers = mutableMapOf<String, AbstractServer>()
+    private var serverLockObject = Any()
 
-    fun allServers() = this.servers
+    fun allServers() = this.servers.toMap()
 
     inline fun <reified T> allServers() =
-        this.servers.values.filterIsInstance<T>()
+        allServers().values.filterIsInstance<T>()
 
-    fun getServer(id: String) = this.servers.values
+    fun getServer(id: String) = allServers().values
         .find {
             it.id.equals(id, true)
         }
@@ -35,7 +32,7 @@ object ServerContainer : Runnable
     inline fun <reified T> getServer(id: String) =
         this.getServer(id) as T
 
-    fun getServersInGroup(group: String) = this.servers.values
+    fun getServersInGroup(group: String) = allServers().values
         .filter {
             group in it.groups
         }
@@ -46,15 +43,19 @@ object ServerContainer : Runnable
     fun configure()
     {
         ServerSync.scheduleAtFixedRate(
-            ::run, 0L,
+            ::safeRun, 0L,
             500L, TimeUnit.MILLISECONDS
         )
     }
 
+    private fun safeRun() = runCatching(::run).onFailure { it.printStackTrace() }
+
     override fun run()
     {
-        val things = this.container.sync()
+        val rawServerList = this.container.sync()
             .hgetall("${ServerSyncPipeline.NAMESPACE}:serversv2")
+
+        val mappedServers = rawServerList
             .mapValues {
                 Serializers.gson.fromJson(it.value, AbstractServer::class.java)
             }
@@ -69,19 +70,19 @@ object ServerContainer : Runnable
         {
             if (System.currentTimeMillis() >= v.toLong())
             {
-                things.remove(k)
+                mappedServers.remove(k)
             }
         }
 
-        things.forEach {
+        mappedServers.forEach {
             if (servers[it.key] == null)
             {
                 servers[it.key] = it.value
             }
         }
 
-        servers.forEach { (t, _) ->
-            if (things[t] == null)
+        servers.toMap().forEach { (t, _) ->
+            if (mappedServers[t] == null)
             {
                 servers.remove(t)
             }

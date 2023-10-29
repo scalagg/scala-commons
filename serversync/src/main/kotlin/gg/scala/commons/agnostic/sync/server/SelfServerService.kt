@@ -81,13 +81,13 @@ class SelfServerService<T : AbstractServer>(
         return CompletableFuture
             .supplyAsync {
                 ServerContainer.container.sync()
-                    .del(
+                    .hdel(
                         keyspace, this.server.id
                     )
             }
             .thenRunAsync {
                 ServerContainer.container.sync()
-                    .hdel(
+                    .del(
                         heartbeatKeyspace, this.server.id
                     )
             }
