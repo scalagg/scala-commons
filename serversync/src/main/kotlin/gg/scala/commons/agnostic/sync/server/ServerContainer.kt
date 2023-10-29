@@ -20,14 +20,14 @@ object ServerContainer : Runnable
             this.internal().connect()
         }!!
 
-    var servers = CopyOnWriteArrayList<AbstractServer>()
+    var servers = ConcurrentHashMap<String, AbstractServer>()
 
     fun allServers() = this.servers
 
     inline fun <reified T> allServers() =
-        this.servers.filterIsInstance<T>()
+        this.servers.values.filterIsInstance<T>()
 
-    fun getServer(id: String) = this.servers
+    fun getServer(id: String) = this.servers.values
         .find {
             it.id.equals(id, true)
         }
@@ -35,7 +35,7 @@ object ServerContainer : Runnable
     inline fun <reified T> getServer(id: String) =
         this.getServer(id) as T
 
-    fun getServersInGroup(group: String) = this.servers
+    fun getServersInGroup(group: String) = this.servers.values
         .filter {
             group in it.groups
         }
@@ -73,6 +73,18 @@ object ServerContainer : Runnable
             }
         }
 
-        this.servers = CopyOnWriteArrayList(things.values)
+        things.forEach {
+            if (servers[it.key] == null)
+            {
+                servers[it.key] = it.value
+            }
+        }
+
+        servers.forEach { (t, _) ->
+            if (things[t] == null)
+            {
+                servers.remove(t)
+            }
+        }
     }
 }
