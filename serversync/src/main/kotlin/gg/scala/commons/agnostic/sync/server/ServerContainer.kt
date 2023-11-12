@@ -17,7 +17,6 @@ object ServerContainer : Runnable
         }!!
 
     private var servers = mutableMapOf<String, AbstractServer>()
-    private var serverLockObject = Any()
 
     fun allServers() = this.servers.toMap()
 
@@ -87,5 +86,7 @@ object ServerContainer : Runnable
                 servers.remove(t)
             }
         }
+
+        servers.putAll(mappedServers)
     }
 }
