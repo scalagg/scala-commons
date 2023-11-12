@@ -216,15 +216,25 @@ class ScalaCommandManager(
             return@registerAsyncCompletion completions
         }
 
-        commandContexts.registerContext(Duration::class.java) { c ->
-            val firstArg = c.popFirstArg()
+        commandContexts.registerOptionalContext(Duration::class.java) { context ->
+            val firstArg = context.firstArg
 
-            return@registerContext try
+            return@registerOptionalContext try
             {
-                Duration.parse(firstArg)
+                val duration = Duration.parse(firstArg)
+                context.popFirstArg()
+
+                duration
             } catch (ignored: Exception)
             {
-                throw ConditionFailedException("That's an invalid duration. Example: ${CC.BOLD}1h30m")
+                if (context.isOptional)
+                {
+                    return@registerOptionalContext null
+                }
+
+                throw ConditionFailedException(
+                    "That's an invalid duration. Example: ${CC.BOLD}1h30m"
+                )
             }
         }
 
