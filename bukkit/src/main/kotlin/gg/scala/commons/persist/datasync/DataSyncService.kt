@@ -1,10 +1,16 @@
 package gg.scala.commons.persist.datasync
 
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.UpdateOptions
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.store.spigot.ScalaDataStoreSpigotImpl
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.serializers.Serializers
+import org.bson.Document
+import java.util.concurrent.CompletableFuture
 
 /**
  * @author GrowlyX
@@ -14,6 +20,13 @@ abstract class DataSyncService<T>
 {
     private var cached: T? = null
     private val cache = ScalaCommonsSpigot.instance.kvConnection
+
+    private var collection: MongoCollection<Document>? = null
+
+    open fun locatedIn(): DataSyncSource
+    {
+        return DataSyncSource.Redis
+    }
 
     abstract fun keys(): DataSyncKeys
     abstract fun type(): Class<T>
@@ -44,6 +57,8 @@ abstract class DataSyncService<T>
                     type().name
                 } facets for ${
                     javaClass.name
+                } in ${
+                    locatedIn()
                 }"
             )
         }
@@ -53,6 +68,15 @@ abstract class DataSyncService<T>
 
     fun load()
     {
+        if (locatedIn() == DataSyncSource.Mongo)
+        {
+            val resource = ScalaDataStoreSpigotImpl
+                .getNewMongoConnection()
+                .getAppliedResource()
+
+            collection = resource.getCollection("DataSync")
+        }
+
         sync()
             .listen(
                 keys().sync().asString()
@@ -66,16 +90,59 @@ abstract class DataSyncService<T>
                 javaClass.name
             }, listening on key ${
                 keys().sync().asString()
+            } for changes to the copy in ${
+                locatedIn()
             }"
         )
     }
 
+    private fun pullModelFromSource(): String?
+    {
+        if (collection != null)
+        {
+            return collection!!
+                .find(Filters.eq("uid", keys().newStore()))
+                .first()?.toJson()
+        }
+
+        return cache().sync()
+            .get(
+                keys().newStore()
+            )
+    }
+
+    private fun pushNewModelToSource(model: T)
+    {
+        if (collection != null)
+        {
+            val tree = Serializers.gson.toJsonTree(model)
+            tree.asJsonObject.addProperty(
+                "uid",
+                keys().newStore()
+            )
+
+            collection!!.updateOne(
+                Filters.eq("uid", keys().newStore()),
+                Document(
+                    "\$set",
+                    Document.parse(
+                        Serializers.gson.toJson(tree)
+                    )
+                ),
+                UpdateOptions().upsert(true)
+            )
+        }
+
+        cache().sync()
+            .set(
+                keys().newStore(),
+                Serializers.gson.toJson(cached)
+            )
+    }
+
     internal fun reload()
     {
-        val model = cache().sync()
-            .get(
-                keys().store().asString()
-            )
+        val model = pullModelFromSource()
 
         if (model == null)
         {
@@ -83,12 +150,7 @@ abstract class DataSyncService<T>
                 .getDeclaredConstructor()
                 .newInstance()
 
-            cache().sync()
-                .set(
-                    keys().store().asString(),
-                    Serializers.gson.toJson(cached)
-                )
-
+            pushNewModelToSource(cached!!)
             pushKvUpdate()
             return
         }
@@ -114,19 +176,14 @@ abstract class DataSyncService<T>
         }
     }
 
-    fun sync(
-        newModel: T
-    )
+    fun sync(newModel: T): CompletableFuture<Void>
     {
         cached = newModel
 
-        cache().sync()
-            .set(
-                keys().store().asString(),
-                Serializers.gson.toJson(cached)
-            )
-
-        pushKvUpdate()
+        return CompletableFuture.runAsync {
+            pushNewModelToSource(newModel)
+            pushKvUpdate()
+        }
     }
 
     private fun pushKvUpdate()
@@ -137,7 +194,7 @@ abstract class DataSyncService<T>
                 sync()
             )
             .publish(
-                AwareThreadContext.ASYNC
+                AwareThreadContext.SYNC
             )
     }
 }
