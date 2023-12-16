@@ -131,6 +131,7 @@ abstract class DataSyncService<T>
                 ),
                 UpdateOptions().upsert(true)
             )
+            return
         }
 
         cache().sync()
