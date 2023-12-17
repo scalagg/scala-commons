@@ -51,6 +51,11 @@ object ServerContainer : Runnable
 
     override fun run()
     {
+        if (!container.isOpen)
+        {
+            return
+        }
+
         val rawServerList = this.container.sync()
             .hgetall("${ServerSyncPipeline.NAMESPACE}:serversv2")
 
