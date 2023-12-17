@@ -50,7 +50,9 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
                     .loadOptimalCopy(
                         it.uniqueId
                     ) {
-                        new(it.uniqueId)
+                        new(it.uniqueId).apply {
+                            controller.save(this, DataStoreStorageType.MONGO)
+                        }
                     }.join()
 
                 this.postLoad(it.uniqueId)
