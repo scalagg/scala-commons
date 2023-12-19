@@ -242,12 +242,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             flavor().inject(DataStoreFeature)
         }
 
-        AwareHub.configure(
-            AwareCloud.uri
-        ) {
-            Serializers.gson
-        }
-
         ScalaStoreUuidCache
             .configure(
                 DistributedRedisUuidCacheTranslator(aware),
@@ -403,7 +397,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }
 
         ServerSync.awaitTermination(1L, TimeUnit.SECONDS)
-        AwareHub.close()
 
         kotlin.runCatching {
             bukkitBootstrap.metrics.disable()
