@@ -148,7 +148,7 @@ object NametagHandler
 
         NametagUpdateEvent(toRefresh).call()
 
-        while (provided == null && providerIndex < providers.size - 1)
+        while (provided == null && providerIndex < providers.size)
         {
             provided = providers
                 .getOrNull(providerIndex++)
