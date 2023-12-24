@@ -148,11 +148,16 @@ object NametagHandler
 
         NametagUpdateEvent(toRefresh).call()
 
-        while (provided == null)
+        while (provided == null && providerIndex < providers.size - 1)
         {
             provided = providers
                 .getOrNull(providerIndex++)
                 ?.fetchNametag(toRefresh, refreshFor)
+        }
+
+        if (provided == null)
+        {
+            return
         }
 
         if (isNametagRestrictionEnabled)
