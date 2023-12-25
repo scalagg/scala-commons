@@ -4,14 +4,11 @@ import gg.scala.store.controller.DataStoreObjectController
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.storable.IDataStoreObject
 import gg.scala.store.storage.type.DataStoreStorageType
-import me.lucko.helper.Events
-import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
-import org.bukkit.event.EventPriority
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.bukkit.event.player.PlayerLoginEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 /**
@@ -20,7 +17,7 @@ import kotlin.reflect.KClass
  */
 abstract class ProfileOrchestrator<T : IDataStoreObject>
 {
-    private lateinit var controller: DataStoreObjectController<T>
+    lateinit var controller: DataStoreObjectController<T>
 
     fun find(player: Player): T? =
         controller.localCache()[player.uniqueId]
@@ -43,54 +40,7 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
         controller = DataStoreObjectControllerCache
             .create(type())
 
-        Events
-            .subscribe(AsyncPlayerPreLoginEvent::class.java)
-            .handler {
-                controller
-                    .loadOptimalCopy(
-                        it.uniqueId
-                    ) {
-                        new(it.uniqueId).apply {
-                            controller.save(this, DataStoreStorageType.MONGO)
-                        }
-                    }.join()
-
-                this.postLoad(it.uniqueId)
-            }
-
-        Events
-            .subscribe(PlayerLoginEvent::class.java)
-            .handler {
-                if (!controller.localCache().containsKey(it.player.uniqueId))
-                {
-                    it.disallow(
-                        PlayerLoginEvent.Result.KICK_OTHER,
-                        "${CC.RED}Sorry! One of your profiles failed to load:\n${
-                            type().java.name.split(".")
-                                .joinToString(".") { component ->
-                                    if (component.first().isUpperCase()) component else component.first().toString()
-                                }
-                        }\n\n${CC.GRAY}Please report this to an administrator."
-                    )
-                }
-            }
-
-        Events
-            .subscribe(PlayerQuitEvent::class.java, EventPriority.LOWEST)
-            .handler {
-                controller
-                    .localCache()
-                    .remove(it.player.uniqueId)
-                    ?.let { cached ->
-                        preLogout(cached)
-
-                        this.controller.save(cached, DataStoreStorageType.MONGO)
-                            .exceptionally { throwable ->
-                                throwable.printStackTrace()
-                                return@exceptionally null
-                            }
-                    }
-            }
+        ProfileOrchestratorService.registerSelf(this)
     }
 
     open fun preLogout(profile: T)
@@ -101,6 +51,52 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
     open fun postLoad(uniqueId: UUID)
     {
 
+    }
+
+    fun logoutSequenceFor(uniqueId: UUID): CompletableFuture<Void>
+    {
+        val profile = controller.localCache()[uniqueId]
+            ?: return CompletableFuture.completedFuture(null)
+
+        return CompletableFuture
+            .runAsync {
+                preLogout(profile)
+            }
+            .thenComposeAsync {
+                controller.save(profile, DataStoreStorageType.MONGO)
+            }
+            .exceptionally {
+                Logger.getAnonymousLogger()
+                    .log(
+                        Level.SEVERE,
+                        "Failed to save copy of ${type().simpleName} for $uniqueId on logout",
+                        it
+                    )
+                return@exceptionally null
+            }
+    }
+
+    fun loadCopyOf(uniqueId: UUID) = controller
+        .loadOptimalCopy(
+            uniqueId
+        ) {
+            new(uniqueId).apply {
+                save(this)
+            }
+        }
+        .exceptionally {
+            Logger.getAnonymousLogger()
+                .log(
+                    Level.SEVERE,
+                    "Failed to load copy of ${type().simpleName} for $uniqueId on login",
+                    it
+                )
+            return@exceptionally null
+        }
+
+    fun save(profile: T)
+    {
+        controller.save(profile, DataStoreStorageType.MONGO)
     }
 
     abstract fun type(): KClass<T>

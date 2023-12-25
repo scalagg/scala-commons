@@ -24,6 +24,7 @@ import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.metrics.internal.UnifiedMetricsBukkitBootstrap
+import gg.scala.commons.persist.ProfileOrchestratorService
 import gg.scala.commons.persist.datasync.DataSyncService
 import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.protocol.ProtocolVersion
@@ -150,6 +151,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             TimeZone.setDefault(default)
 
             this.configureRedisServices()
+            ProfileOrchestratorService.configureEventHandlers(this)
 
             Serializers.create {
                 registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackAdapter())
