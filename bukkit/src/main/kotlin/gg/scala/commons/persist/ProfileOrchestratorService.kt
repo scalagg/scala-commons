@@ -49,7 +49,7 @@ object ProfileOrchestratorService
                             .containsKey(it.player.uniqueId)
                     }
 
-                if (profilesNotLoaded.isEmpty())
+                if (profilesNotLoaded.isNotEmpty())
                 {
                     it.disallow(
                         PlayerLoginEvent.Result.KICK_OTHER,
