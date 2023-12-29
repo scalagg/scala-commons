@@ -12,8 +12,9 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.events.PacketListener
 import com.comphenix.protocol.wrappers.WrappedWatchableObject
+import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
@@ -38,21 +39,38 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Service
 object EntityPacketAdapter : PacketAdapter(
-    ScalaCommonsSpigot.instance,
-    PacketType.Play.Client.USE_ENTITY
+    AdapterParameteters()
+        .plugin(ScalaCommonsSpigot.instance)
+        .types(
+            PacketType.Play.Client.USE_ENTITY,
+            if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
+            {
+                PacketType.Play.Server.SPAWN_ENTITY
+            } else
+            {
+                PacketType.Play.Server.SPAWN_ENTITY_LIVING
+            }
+        )
+        .listenerPriority(ListenerPriority.NORMAL)
+        .optionAsync()
 )
 {
+    @Inject
+    lateinit var injected: ExtendedScalaPlugin
+
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
     private val lastRightClick = ConcurrentHashMap<UUID, Long>()
 
     @Configure
     fun configure()
     {
-        Events.subscribe(PlayerQuitEvent::class.java)
+        Events
+            .subscribe(PlayerQuitEvent::class.java)
             .handler {
                 useEntitySpamTimings.remove(it.player.uniqueId)
                 lastRightClick.remove(it.player.uniqueId)
             }
+            .bindWith(injected)
 
         val config = ScalaCommonsSpigot.instance
             .config<CommonsGeneralConfig>()
@@ -62,46 +80,27 @@ object EntityPacketAdapter : PacketAdapter(
             ProtocolLibrary.getProtocolManager()
                 .addPacketListener(this)
         }
+    }
 
-        if (config.listenToOutgoingPackets)
+    /**
+     * Handles protocol changes for holograms.
+     */
+    override fun onPacketSending(event: PacketEvent)
+    {
+        if (!NpcProtocol.tropicSpigotEnabled)
         {
-            ProtocolLibrary.getProtocolManager()
-                .addPacketListener(
-                    object : PacketAdapter(
-                        ScalaCommonsSpigot.instance,
-                        ListenerPriority.NORMAL,
-                        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
-                        {
-                            PacketType.Play.Server.SPAWN_ENTITY
-                        } else
-                        {
-                            PacketType.Play.Server.SPAWN_ENTITY_LIVING
-                        }
-                    )
-                    {
-                        /**
-                         * Handles protocol changes for holograms.
-                         */
-                        override fun onPacketSending(event: PacketEvent)
-                        {
-                            if (!NpcProtocol.tropicSpigotEnabled)
-                            {
-                                if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING)
-                                {
-                                    val entityId = event.packet.integers.read(0)
-                                    val entity = EntityHandler.getEntityById(entityId) ?: return
+            if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING)
+            {
+                val entityId = event.packet.integers.read(0)
+                val entity = EntityHandler.getEntityById(entityId) ?: return
 
-                                    if (entity is HologramEntity)
-                                    {
-                                        val dataWatcher = event.packet.dataWatcherModifier.read(0)
-                                        dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
-                                        event.packet.dataWatcherModifier.write(0, dataWatcher)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                )
+                if (entity is HologramEntity)
+                {
+                    val dataWatcher = event.packet.dataWatcherModifier.read(0)
+                    dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
+                    event.packet.dataWatcherModifier.write(0, dataWatcher)
+                }
+            }
         }
     }
 

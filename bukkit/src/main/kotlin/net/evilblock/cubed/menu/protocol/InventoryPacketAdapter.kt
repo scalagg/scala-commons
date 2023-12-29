@@ -18,13 +18,24 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import java.util.*
 
-object InventoryPacketAdapter : PacketAdapter(ScalaCommonsSpigot.instance, PacketType.Play.Client.CLIENT_COMMAND, PacketType.Play.Client.CLOSE_WINDOW) {
+object InventoryPacketAdapter : PacketAdapter(
+    AdapterParameteters()
+        .plugin(ScalaCommonsSpigot.instance)
+        .types(
+            PacketType.Play.Client.CLIENT_COMMAND,
+            PacketType.Play.Client.CLOSE_WINDOW
+        )
+        .optionAsync()
+) {
 
     override fun onPacketReceiving(event: PacketEvent?) {
         val player = event!!.player
         val packet = event.packet
 
-        if (packet.type === PacketType.Play.Client.CLIENT_COMMAND && packet.clientCommands.size() != 0 && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
+        if (
+            packet.type === PacketType.Play.Client.CLIENT_COMMAND &&
+            packet.clientCommands.size() != 0 && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT
+        ) {
             if (!currentlyOpen.contains(player.uniqueId)) {
                 Tasks.sync {
                     Bukkit.getPluginManager()
@@ -51,5 +62,4 @@ object InventoryPacketAdapter : PacketAdapter(ScalaCommonsSpigot.instance, Packe
 
     @JvmStatic
     var currentlyOpen: HashSet<UUID> = HashSet()
-
 }

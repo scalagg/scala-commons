@@ -14,7 +14,10 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.menu.Menu
 
 object MenuPacketAdapter : PacketAdapter(
-    ScalaCommonsSpigot.instance, PacketType.Play.Client.CLOSE_WINDOW
+    AdapterParameteters()
+        .plugin(ScalaCommonsSpigot.instance)
+        .types(PacketType.Play.Client.CLOSE_WINDOW)
+        .optionAsync()
 )
 {
     override fun onPacketReceiving(event: PacketEvent)
