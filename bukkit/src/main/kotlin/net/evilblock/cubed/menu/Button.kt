@@ -161,7 +161,7 @@ abstract class Button {
         fun playFail(player: Player) {
             player.playSound(
                 player.location,
-                XSound.BLOCK_DISPENSER_FAIL.parseSound(),
+                XSound.BLOCK_ANVIL_LAND.parseSound(),
                 20.0F, 0.1F
             )
         }
@@ -170,8 +170,8 @@ abstract class Button {
         fun playSuccess(player: Player) {
             player.playSound(
                 player.location,
-                XSound.BLOCK_NOTE_BLOCK_CHIME.parseSound(),
-                20.0F, 15.0F
+                XSound.BLOCK_NOTE_BLOCK_BASS.parseSound(),
+                20.0F, 2.0F
             )
         }
 
