@@ -1,14 +1,20 @@
 package gg.scala.commons.persist
 
+import gg.scala.aware.AwareBuilder
+import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
+import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
-import gg.scala.store.storage.type.DataStoreStorageType
 import me.lucko.helper.Events
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.Reflection
+import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.logging.Logger
 
 /**
  * @author GrowlyX
@@ -16,10 +22,18 @@ import java.util.concurrent.CompletableFuture
  */
 object ProfileOrchestratorService
 {
-    private val registry = mutableListOf<ProfileOrchestrator<*>>()
+    private val registry = mutableMapOf<Class<*>, ProfileOrchestrator<*>>()
     fun registerSelf(orchestrator: ProfileOrchestrator<*>)
     {
-        registry += orchestrator
+        registry[orchestrator.type().java] = orchestrator
+    }
+
+    val aware by lazy {
+        AwareBuilder
+            .of<AwareMessage>("backend:profiles")
+            .codec(AwareMessageCodec)
+            .logger(Logger.getAnonymousLogger())
+            .build()
     }
 
     fun configureEventHandlers(plugin: ExtendedScalaPlugin)
@@ -29,7 +43,7 @@ object ProfileOrchestratorService
             .handler {
                 CompletableFuture
                     .allOf(
-                        *(registry.map { orchestrator ->
+                        *(registry.values.map { orchestrator ->
                             orchestrator.loadCopyOf(it.uniqueId)
                                 .thenRunAsync {
                                     orchestrator.postLoad(it.uniqueId)
@@ -43,7 +57,7 @@ object ProfileOrchestratorService
         Events
             .subscribe(PlayerLoginEvent::class.java)
             .handler {
-                val profilesNotLoaded = registry
+                val profilesNotLoaded = registry.values
                     .filterNot { orchestrator ->
                         orchestrator.controller.localCache()
                             .containsKey(it.player.uniqueId)
@@ -71,7 +85,7 @@ object ProfileOrchestratorService
             .subscribe(PlayerQuitEvent::class.java, EventPriority.LOWEST)
             .handler {
                 CompletableFuture.allOf(
-                    *registry
+                    *registry.values
                         .map { orchestrator ->
                             orchestrator.logoutSequenceFor(it.player.uniqueId)
                         }
@@ -79,5 +93,21 @@ object ProfileOrchestratorService
                 )
             }
             .bindWith(plugin)
+
+        aware.listen("update") {
+            val uniqueId = retrieve<UUID>("player")
+            val type = Reflection
+                .getClassSuppressed(retrieve<String>("type"))
+                ?: return@listen
+            Bukkit.getPlayer(uniqueId) ?: return@listen
+
+            val registrar = registry[type]
+                ?: return@listen
+
+            with(registrar) {
+                updateLocalCache(uniqueId)
+            }
+        }
+        aware.connect().toCompletableFuture().join()
     }
 }

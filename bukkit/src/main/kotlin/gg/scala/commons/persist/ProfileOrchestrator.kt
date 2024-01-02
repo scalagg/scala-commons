@@ -1,5 +1,7 @@
 package gg.scala.commons.persist
 
+import gg.scala.aware.message.AwareMessage
+import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.store.controller.DataStoreObjectController
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.storable.IDataStoreObject
@@ -76,6 +78,48 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             }
     }
 
+    fun saveAndUpdateGlobally(profile: T) = save(profile)
+        .thenRunAsync {
+            AwareMessage
+                .of(
+                    "update",
+                    ProfileOrchestratorService.aware,
+                    "player" to profile.identifier,
+                    "type" to profile.javaClass.name
+                )
+                .publish(AwareThreadContext.SYNC)
+        }
+
+    fun updateLocalCache(uniqueId: UUID) = loadCopyOf(uniqueId)
+        .thenAccept {
+            controller.localCache().computeIfPresent(uniqueId) { _, _ -> it }
+        }
+
+    fun <V> useAsyncThenSaveGlobally(
+        uniqueId: UUID,
+        block: (T) -> V
+    ) = CompletableFuture
+        .supplyAsync {
+            find(uniqueId)
+        }
+        .thenComposeAsync {
+            if (it == null)
+            {
+                return@thenComposeAsync loadCopyOf(uniqueId)
+                    .thenApplyAsync { profile ->
+                        profile to block(profile)
+                    }
+            }
+
+            CompletableFuture.completedFuture(it to block(it))
+        }
+        .thenComposeAsync { value ->
+            saveAndUpdateGlobally(value.first)
+                .thenApplyAsync {
+                    value.second
+                }
+        }
+
     fun loadCopyOf(uniqueId: UUID) = controller
         .loadOptimalCopy(
             uniqueId
@@ -94,10 +138,7 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             return@exceptionally null
         }
 
-    fun save(profile: T)
-    {
-        controller.save(profile, DataStoreStorageType.MONGO)
-    }
+    fun save(profile: T) = controller.save(profile, DataStoreStorageType.MONGO)
 
     abstract fun type(): KClass<T>
     abstract fun new(uniqueId: UUID): T
