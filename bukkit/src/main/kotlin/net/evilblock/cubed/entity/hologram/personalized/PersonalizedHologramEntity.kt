@@ -31,7 +31,7 @@ abstract class PersonalizedHologramEntity(location: Location) : HologramEntity("
     }
 
     fun updateLinesFor(player: Player, lines: List<String>) {
-        sent[player.uniqueId]!!.updateLines(lines)
+        sent[player.uniqueId]?.updateLines(lines)
     }
 
     fun updateLinesForAll() {
