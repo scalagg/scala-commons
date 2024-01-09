@@ -9,6 +9,7 @@ import gg.scala.commons.annotations.Listeners
 import gg.scala.commons.annotations.Model
 import gg.scala.commons.annotations.commands.AssignPermission
 import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.annotations.commands.HighPriority
 import gg.scala.commons.annotations.commands.ManualRegister
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizers
@@ -387,7 +388,8 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     this.flavor.inject(instance)
 
                     this.commandManager.registerCommand(
-                        instance as BaseCommand
+                        instance as BaseCommand,
+                        instance.javaClass.isAnnotationPresent(HighPriority::class.java)
                     )
 
                     kotlin.runCatching scoped@{
