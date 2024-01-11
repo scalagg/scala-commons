@@ -45,7 +45,7 @@ public class TextAnimator {
 
     public TextAnimator schedule() {
         Preconditions.checkState(
-                bukkitTask != null,
+                bukkitTask == null,
                 "TextAnimator was already scheduled"
         );
 
