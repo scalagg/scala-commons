@@ -1,5 +1,6 @@
 package gg.scala.commons.scoreboard;
 
+import gg.scala.commons.scoreboard.animations.TextFadeAnimation;
 import gg.scala.commons.scoreboard.animations.TextTypingAnimation;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ public class TextIterators {
      * @return new text fade animation
      */
     public static TextIterator textFade(@NotNull String text, @NotNull ChatColor primaryColor, @NotNull ChatColor fadeColor, @NotNull ChatColor secondaryColor) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new TextFadeAnimation(text, primaryColor, fadeColor, secondaryColor);
     }
 
     /**
