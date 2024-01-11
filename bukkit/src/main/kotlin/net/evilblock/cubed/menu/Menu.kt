@@ -294,11 +294,26 @@ abstract class Menu
             }
         }
 
+    private val inventoryTypeMappings = mapOf(
+        InventoryType.CHEST to "minecraft:chest",
+        InventoryType.PLAYER to "minecraft:chest",
+        InventoryType.ENDER_CHEST to "minecraft:chest",
+        InventoryType.DISPENSER to "minecraft:dispenser",
+        InventoryType.DROPPER to "minecraft:dropper",
+        InventoryType.FURNACE to "minecraft:furnace",
+        InventoryType.WORKBENCH to "minecraft:crafting_table",
+        InventoryType.BREWING to "minecraft:brewing_stand",
+        InventoryType.ENCHANTING to "minecraft:enchanting_table",
+        InventoryType.HOPPER to "minecraft:hopper",
+        InventoryType.BEACON to "minecraft:beacon",
+        InventoryType.ANVIL to "minecraft:anvil"
+    )
+
     private fun getWindowType(size: Int): Any
     {
         if (!MinecraftReflection.isModern())
         {
-            return "minecraft:chest"
+            return inventoryTypeMappings[inventoryType]!!
         }
 
         val sizeRow = (size / 9) - 1
