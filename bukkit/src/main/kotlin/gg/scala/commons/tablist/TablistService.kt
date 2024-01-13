@@ -1,24 +1,26 @@
 package gg.scala.commons.tablist
 
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.ListenerOptions
+import com.comphenix.protocol.events.ListenerPriority
+import com.comphenix.protocol.events.PacketAdapter
+import com.comphenix.protocol.events.PacketEvent
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import io.github.nosequel.tab.shared.TabHandler
 import io.github.nosequel.tab.shared.entry.TabElement
 import me.lucko.helper.Events
-import me.lucko.helper.utils.Players
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsTablistConfig
-import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
-import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.util.nms.MinecraftProtocol
-import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -30,10 +32,16 @@ import java.util.concurrent.TimeUnit
  */
 @Service
 object TablistService : ScheduledExecutorService by Executors
-    .newSingleThreadScheduledExecutor()
+    .newSingleThreadScheduledExecutor(), PacketAdapter(
+        AdapterParameteters()
+            .plugin(ScalaCommonsSpigot.instance)
+            .types(PacketType.Play.Server.PLAYER_INFO)
+            .options(ListenerOptions.ASYNC)
+            .listenerPriority(ListenerPriority.HIGHEST)
+    )
 {
     @Inject
-    lateinit var plugin: ScalaCommonsSpigot
+    lateinit var commons: ScalaCommonsSpigot
 
     val cachedElements = ConcurrentHashMap<UUID, TabElement>()
     val displaying = mutableSetOf<UUID>()
@@ -43,26 +51,33 @@ object TablistService : ScheduledExecutorService by Executors
 
     var tabListTicksCalculator: (Player) -> Long? = { null }
 
-    fun removePlayerFor(toBeRemoved: Player, removedFor: Player)
+    override fun onPacketSending(event: PacketEvent)
     {
-        val removePacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
-            Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "REMOVE_PLAYER")!!,
-            arrayListOf(MinecraftReflection.getHandle(toBeRemoved))
-        )
+        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
+        if (event.player.uniqueId in displaying)
+        {
+            val firstAlivePlayer = wrapped.data
+                .firstOrNull { Bukkit.getPlayer(it.profile.uuid) != null }
 
-        MinecraftProtocol.send(removedFor, removePacket)
+            if (firstAlivePlayer != null)
+            {
+                event.isCancelled = true
+            }
+        }
     }
 
     @Configure
     fun configure()
     {
-        val config = plugin.config<CommonsTablistConfig>()
+        val config = commons.config<CommonsTablistConfig>()
 
         if (!config.enabled)
         {
-            plugin.logger.info("Skipping tablist initialization!")
+            commons.logger.info("Skipping tablist initialization!")
             return
         }
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(this)
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
@@ -83,15 +98,6 @@ object TablistService : ScheduledExecutorService by Executors
                     this.populator
                         ?.displayPreProcessor(it.player)
                         ?.thenAccept { display ->
-                            for (player in Players.all())
-                            {
-                                removePlayerFor(player, it.player)
-                                if (player.uniqueId in displaying)
-                                {
-                                    removePlayerFor(it.player, player)
-                                }
-                            }
-
                             if (display)
                             {
                                 this.displaying.add(it.player.uniqueId)
@@ -99,14 +105,14 @@ object TablistService : ScheduledExecutorService by Executors
                         }
                 }
             }
-            .bindWith(this.plugin)
+            .bindWith(commons)
 
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
                 this.cachedElements.remove(it.player.uniqueId)
                 this.displaying.remove(it.player.uniqueId)
             }
-            .bindWith(this.plugin)
+            .bindWith(commons)
 
         this.scheduleAtFixedRate(
             TablistExecutor, 0L, 50L, TimeUnit.MILLISECONDS
@@ -124,6 +130,6 @@ object TablistService : ScheduledExecutorService by Executors
             }
 
             this.cachedElements[it.uniqueId]
-        }, this.plugin, 2L)
+        }, commons, 2L)
     }
 }
