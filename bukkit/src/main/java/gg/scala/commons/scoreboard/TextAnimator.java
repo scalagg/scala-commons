@@ -3,6 +3,7 @@ package gg.scala.commons.scoreboard;
 import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,10 +29,12 @@ public class TextAnimator {
                 .getCurrentFrame();
     }
 
+    @Contract("-> new")
     public @NotNull TextComponent currentIntoTextComponent() {
         return current().intoTextComponent();
     }
 
+    @Contract("-> this")
     public TextAnimator dispose() {
         Preconditions.checkNotNull(
                 bukkitTask,
@@ -43,6 +46,7 @@ public class TextAnimator {
         return this;
     }
 
+    @Contract("-> this")
     public TextAnimator schedule() {
         Preconditions.checkState(
                 bukkitTask == null,

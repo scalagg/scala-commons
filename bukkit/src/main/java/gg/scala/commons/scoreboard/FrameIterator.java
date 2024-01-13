@@ -28,10 +28,10 @@ public final class FrameIterator implements Iterator<String> {
     public String next() {
         if (currentFrame == null || --currentFrameDelayTicks <= 0) {
             currentFrame = frameIterator.next();
-            currentFrameDelayTicks = currentFrame.getDelay();
+            currentFrameDelayTicks = currentFrame.delay();
         }
 
-        return currentFrame.getText();
+        return currentFrame.text();
     }
 
 

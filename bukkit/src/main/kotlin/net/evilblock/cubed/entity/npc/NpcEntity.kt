@@ -12,6 +12,7 @@ import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.hologram.menu.button.UpdateFloatingItemButton
+import net.evilblock.cubed.entity.living.LivingEntity
 import net.evilblock.cubed.entity.npc.animation.FloatAnimation
 import net.evilblock.cubed.entity.npc.animation.MultiRingsAnimation
 import net.evilblock.cubed.entity.npc.animation.RingsAnimation
@@ -30,7 +31,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ThreadLocalRandom
 
-open class NpcEntity(private var lines: List<String>, location: Location) : Entity(location) {
+open class NpcEntity(private var lines: List<String>, location: Location) : LivingEntity(location) {
 
     @Transient internal lateinit var nametag: NametagUpdates
     @Transient lateinit var hologram: HologramEntity

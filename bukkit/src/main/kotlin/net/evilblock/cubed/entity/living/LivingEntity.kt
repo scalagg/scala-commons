@@ -15,13 +15,13 @@ import net.evilblock.cubed.util.nms.particle.ParticleUtil
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
 abstract class LivingEntity(location: Location) : Entity(location = location), TickableEntity
 {
-
     var health: Double = 20.0
     var dead: Boolean = false
 
@@ -36,6 +36,16 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
     override fun tick()
     {
         tickEffects()
+    }
+
+    override fun spawn(player: Player)
+    {
+        if (dead)
+        {
+            return
+        }
+
+        super.spawn(player)
     }
 
     override fun onLeftClick(player: Player)
@@ -81,6 +91,16 @@ abstract class LivingEntity(location: Location) : Entity(location = location), T
 
         lastAttack = System.currentTimeMillis()
         health -= damage
+
+        if (attacker is Player)
+        {
+            attacker.playSound(
+                attacker.location,
+                Sound.HURT_FLESH,
+                1.0f,
+                1.0f
+            )
+        }
 
         if (health <= 0.0)
         {
