@@ -77,7 +77,7 @@ object TablistService : ScheduledExecutorService by Executors
             return
         }
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(this)
+//        ProtocolLibrary.getProtocolManager().addPacketListener(this)
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
