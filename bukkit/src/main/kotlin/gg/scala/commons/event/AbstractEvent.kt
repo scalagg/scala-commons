@@ -6,8 +6,6 @@
  */
 
 package gg.scala.commons.event
-
-import io.reactivex.rxjava3.core.Flowable
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
@@ -53,7 +51,4 @@ abstract class AbstractEvent<T : Any> : Event()
 
         return this.postPushCompute()
     }
-
-    fun flow(): Flowable<T> = Flowable
-        .fromCallable { push() }
 }

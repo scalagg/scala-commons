@@ -1,7 +1,6 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import dev.cubxity.plugins.metrics.common.config.UnifiedMetricsServerConfig
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.AwareHub
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
@@ -23,7 +22,6 @@ import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.commons.config.annotations.ContainerConfig
-import gg.scala.commons.metrics.internal.UnifiedMetricsBukkitBootstrap
 import gg.scala.commons.persist.ProfileOrchestratorService
 import gg.scala.commons.persist.datasync.DataSyncService
 import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
@@ -195,8 +193,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }.onFailure {
                 logger.log(Level.WARNING, "[Sentry] Failed to enable sentry support!", it)
             }
-
-            enableUnifiedMetricsCompat()
         }.onFailure {
             logger.log(
                 Level.WARNING,
@@ -204,31 +200,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 it
             )
             server.shutdown()
-        }
-    }
-
-    private lateinit var bukkitBootstrap: UnifiedMetricsBukkitBootstrap
-
-    private fun enableUnifiedMetricsCompat()
-    {
-        if (config<CommonsGeneralConfig>().enableUnifiedMetrics)
-        {
-            if (server.pluginManager.isPluginEnabled("UnifiedMetrics"))
-            {
-                logger.info("A UnifiedMetrics platform is already configured! Remove the plugin to use this feature!")
-                return
-            }
-
-            if (!this.config<ServerSyncConfig>().enabled)
-            {
-                logger.info("ServerSync must be enabled to use the embedded metrics feature!")
-                return
-            }
-
-            bukkitBootstrap = UnifiedMetricsBukkitBootstrap(this)
-            bukkitBootstrap.metrics.config.server =
-                UnifiedMetricsServerConfig(ServerSync.local.id)
-            bukkitBootstrap.metrics.enable()
         }
     }
 
@@ -399,10 +370,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }
 
         ServerSync.awaitTermination(1L, TimeUnit.SECONDS)
-
-        kotlin.runCatching {
-            bukkitBootstrap.metrics.disable()
-        }
     }
 
     /**

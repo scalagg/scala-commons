@@ -26,7 +26,9 @@ object Serializers
     {
         synchronized(gsonBuilder) {
             this.gsonBuilder.use()
-            this.gson = gsonBuilder.create()
+            this.gson = gsonBuilder
+                .registerTypeAdapter(UUID::class.java, UUIDAdapter)
+                .create()
         }
     }
 
@@ -36,7 +38,9 @@ object Serializers
     {
         synchronized(gsonBuilder) {
             use.invoke(this.gsonBuilder)
-            this.gson = this.gsonBuilder.create()
+            this.gson = this.gsonBuilder
+                .registerTypeAdapter(UUID::class.java, UUIDAdapter)
+                .create()
         }
     }
 }

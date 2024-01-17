@@ -118,21 +118,7 @@ open class ConfigContainer(
                     ).publish()
                 }
 
-                ConfigWatchEvent(this).flow()
-                    .subscribe { state: EventQuadState ->
-                        when (state)
-                        {
-                            EventQuadState.FAILED ->
-                            {
-                                Players.operators().forEach {
-                                    it.sendMessage("${CC.GREEN}[Config Watcher] ${CC.RED}Failed to updated config!")
-                                }
-                            }
-                            else ->
-                            {
-                            }
-                        }
-                    }
+                ConfigWatchEvent(this).callEvent()
             }
 
             this.lastModificationTimestamp = lastModified

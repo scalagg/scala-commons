@@ -34,9 +34,6 @@ import gg.scala.commons.localization.container.LocalizationContainerized
 import gg.scala.commons.plugin.PluginBridge
 import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.quality.PluginQolInternal
-import gg.scala.commons.scripts.ScriptPluginService
-import gg.scala.commons.scripts.binding.Scripts
-import gg.scala.commons.scripts.config.ScriptConfig
 import gg.scala.commons.tablist.TablistPopulator
 import gg.scala.commons.tablist.TablistService
 import gg.scala.flavor.Flavor
@@ -200,28 +197,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         {
             containerized.inject()
         }
-
-        if (
-            this::class.java
-                .getAnnotation(
-                    RequiresScripts::class.java
-                ) != null
-        )
-        {
-            val scriptFile = File(
-                this.dataFolder, "scripts"
-            )
-
-            this.configContainerized
-                .inject(
-                    ContainerConfig("scripts", ScriptConfig::class)
-                )
-
-            if (!scriptFile.exists())
-            {
-                scriptFile.mkdirs()
-            }
-        }
     }
 
     override fun enable()
@@ -276,23 +251,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         for (containerized in this.containerized)
         {
             containerized.loadAll()
-        }
-
-        if (
-            this::class.java
-                .getAnnotation(
-                    RequiresScripts::class.java
-                ) != null
-        )
-        {
-            val scriptService =
-                ScriptPluginService(this)
-
-            scriptService.enable()
-
-            this.flavor {
-                bind<Scripts>() to Scripts(scriptService)
-            }
         }
 
         this.qolInternal = PluginQolInternal(this)
