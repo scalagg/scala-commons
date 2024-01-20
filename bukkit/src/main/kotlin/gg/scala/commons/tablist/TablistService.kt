@@ -122,6 +122,7 @@ object TablistService : ScheduledExecutorService by Executors
                 Tasks.delayed(ticks) {
                     val handle0 = TablistManager.get().getTablist(it.player)
                     handle0.cellStacking = CellStacking.VERTICAL
+                    handle0.init()
 
                     this.populator
                         ?.displayPreProcessor(it.player)
