@@ -98,11 +98,12 @@ object TablistService : ScheduledExecutorService by Executors
             commons.logger.info("Skipping tablist initialization!")
             return
         }
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(this)
-
+//        ProtocolLibrary.getProtocolManager().addPacketListener(this)
         TablistManager.init()
-//        TablistUpdateTask.getInstance().start()
+
+        scheduleAtFixedRate(
+            TablistExecutor, 0L, 1L, TimeUnit.SECONDS
+        )
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
@@ -130,7 +131,8 @@ object TablistService : ScheduledExecutorService by Executors
                             val handle = TablistManager.get().getTablist(it.player)
 
                             if (handle.tablistPopulator == null) {
-                                handle.tablistPopulator = PlayerTablistPopulator(handle, DefaultPlayersProvider.getInstance())
+                                handle.tablistPopulator =
+                                    PlayerTablistPopulator(handle, DefaultPlayersProvider.getInstance())
                             }
 
                             if (display)
@@ -150,10 +152,6 @@ object TablistService : ScheduledExecutorService by Executors
                 TablistManager.get().release(it.player)
             }
             .bindWith(commons)
-
-        this.scheduleAtFixedRate(
-            TablistExecutor, 0L, 50L, TimeUnit.MILLISECONDS
-        )
     }
 
     fun register(populator: TablistPopulator)

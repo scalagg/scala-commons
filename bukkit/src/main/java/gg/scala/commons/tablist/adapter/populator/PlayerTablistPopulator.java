@@ -1,15 +1,21 @@
 package gg.scala.commons.tablist.adapter.populator;
 
+import gg.scala.commons.tablist.DefaultSkinData;
 import gg.scala.commons.tablist.TablistHandle;
+import gg.scala.commons.tablist.TablistPlayer;
 import gg.scala.commons.tablist.adapter.TablistPopulator;
 import gg.scala.commons.tablist.cell.TablistCell;
+import gg.scala.commons.tablist.cell.TablistCellModern;
 import gg.scala.commons.tablist.manage.TablistManager;
 import gg.scala.commons.tablist.util.Util;
+import gg.scala.commons.tablist.util.data.SkinData;
 import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Reximian9k (https://github.com/reximian9k)
@@ -52,9 +58,9 @@ public class PlayerTablistPopulator extends TablistPopulator {
     }
 
     protected boolean canUpdate() {
-        if (!requiresUpdate || availableCells.isEmpty()) {
+        /*if (!requiresUpdate || availableCells.isEmpty()) {
             return false;
-        }
+        }*/
 
         return System.currentTimeMillis() >= nextListUpdate;
     }
@@ -63,23 +69,24 @@ public class PlayerTablistPopulator extends TablistPopulator {
         requiresUpdate = false;
         nextListUpdate = System.currentTimeMillis() + RandomUtils.nextLong(4000, 6000);
 
-        Collection<? extends Player> users = provider.getPlayers(parent.getHolder());
-        int actualVersion = Util.getClientVersion(parent.getHolder());
+        Collection<TablistPlayer> users = provider.getPlayers(parent.getHolder())
+            .stream().sorted(Comparator.comparingInt(TablistPlayer::getRankWeight).reversed())
+            .toList();
 
         int i = 0;
-        for (Player other : users) {
+        for (TablistPlayer other : users) {
             int nextIndex = availableCells.get(i++);
 
             TablistCell entry = parent.getCell(nextIndex);
+            entry.setValue(other.getDisplayName());
+            entry.setPing(other.getPing());
 
-            TablistHandle handle = TablistManager.get().getTablist(other);
-            String appearance = handle.getTablistAppearance(actualVersion);
-
-            if (appearance == null) {
-                appearance = other.getDisplayName();
+            if (entry instanceof TablistCellModern modern) {
+                modern.setSkinData(new SkinData(
+                    other.getSkinValue(),
+                    other.getSkinSignature()
+                ));
             }
-
-            entry.setValue(appearance);
 
             parent.updateCell(nextIndex);
 
@@ -94,6 +101,10 @@ public class PlayerTablistPopulator extends TablistPopulator {
 
                 TablistCell entry = parent.getCell(nextIndex);
                 entry.setValue(null);
+                if (entry instanceof TablistCellModern modern) {
+                    modern.setSkinData(DefaultSkinData.getDefaultSkin());
+                }
+
                 parent.updateCell(nextIndex);
             }
         }

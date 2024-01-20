@@ -1,5 +1,7 @@
 package gg.scala.commons.tablist.adapter.populator;
 
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+import gg.scala.commons.tablist.TablistPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -20,8 +22,17 @@ public final class DefaultPlayersProvider extends PlayersProvider {
     private DefaultPlayersProvider() { }
 
     @Override
-    public Collection<? extends Player> getPlayers(Player viewer) {
-        return Bukkit.getServer().getOnlinePlayers().stream().filter(viewer::canSee).collect(Collectors.toList());
+    public Collection<TablistPlayer> getPlayers(Player viewer) {
+        return Bukkit.getServer().getOnlinePlayers().stream().filter(viewer::canSee)
+            .map(player -> new TablistPlayer(
+                "",
+                "",
+                1,
+                1,
+                player.getName(),
+                player.getDisplayName()
+            ))
+            .collect(Collectors.toList());
     }
 
 }
