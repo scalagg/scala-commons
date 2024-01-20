@@ -27,11 +27,10 @@ object TablistExecutor : Runnable
 
             kotlin.runCatching {
                 TablistService.populator?.populate(handle.holder, proxy)
+                handle.onTick()
             }.onFailure {
                 it.printStackTrace()
             }
-
-            handle.onTick()
 
 //            TablistService.cachedElements[player.uniqueId] = element
         }
