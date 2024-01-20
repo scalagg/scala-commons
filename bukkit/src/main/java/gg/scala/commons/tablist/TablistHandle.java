@@ -23,17 +23,10 @@ import java.util.List;
 public class TablistHandle {
 
     private final Player holder;
-    private TablistEditor editor;
 
     public TablistHandle(Player holder) {
         this.holder = holder;
         this.stacking = Util.getClientVersion(holder) < 47 ? CellStacking.HORIZONTAL : CellStacking.VERTICAL;
-    }
-
-    public TablistEditor edit() {
-        if (editor == null)
-            editor = new TablistEditor(this);
-        return editor;
     }
 
     public Player getHolder() {
