@@ -7,6 +7,12 @@ import com.comphenix.protocol.events.ListenerOptions
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.comphenix.protocol.wrappers.EnumWrappers
+import com.comphenix.protocol.wrappers.PlayerInfoData
+import gg.scala.commons.tablist.adapter.populator.DefaultPlayersProvider
+import gg.scala.commons.tablist.adapter.populator.PlayerTablistPopulator
+import gg.scala.commons.tablist.manage.TablistManager
+import gg.scala.commons.tablist.util.Util
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -53,17 +59,32 @@ object TablistService : ScheduledExecutorService by Executors
 
     override fun onPacketSending(event: PacketEvent)
     {
-        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
-        if (event.player.uniqueId in displaying)
-        {
-            val firstAlivePlayer = wrapped.data
-                .firstOrNull { Bukkit.getPlayer(it.profile.uuid) != null }
+//        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
+//        if (event.player.uniqueId in displaying)
+//        {
+//            val firstAlivePlayer = wrapped.data
+//                .firstOrNull { Bukkit.getPlayer(it.profile.uuid) != null }
+//
+//            if (firstAlivePlayer != null)
+//            {
+//                event.isCancelled = true
+//            }
+//        }
 
-            if (firstAlivePlayer != null)
-            {
-                event.isCancelled = true
-            }
+        if (Util.getClientVersion(event.player) > 5) {
+            return
         }
+
+        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
+        val data = wrapped.data[0]
+
+        if (wrapped.action == EnumWrappers.PlayerInfoAction.ADD_PLAYER && data.latency != -1) {
+            event.isCancelled = true
+            return
+        }
+
+        wrapped.data = Collections.singletonList(PlayerInfoData(
+            data.profileId, 0, data.isListed, data.gameMode, data.profile, data.displayName))
     }
 
     @Configure
@@ -77,7 +98,10 @@ object TablistService : ScheduledExecutorService by Executors
             return
         }
 
-//        ProtocolLibrary.getProtocolManager().addPacketListener(this)
+        ProtocolLibrary.getProtocolManager().addPacketListener(this)
+
+        TablistManager.init()
+//        TablistUpdateTask.getInstance().start()
 
         Events.subscribe(PlayerJoinEvent::class.java)
             .handler {
@@ -95,12 +119,21 @@ object TablistService : ScheduledExecutorService by Executors
                 }
 
                 Tasks.delayed(ticks) {
+                    TablistManager.get().getTablist(it.player).init()
+
                     this.populator
                         ?.displayPreProcessor(it.player)
                         ?.thenAccept { display ->
+                            val handle = TablistManager.get().getTablist(it.player)
+
+                            if (handle.tablistPopulator == null) {
+                                handle.tablistPopulator = PlayerTablistPopulator(handle, DefaultPlayersProvider.getInstance())
+                            }
+
                             if (display)
                             {
-                                this.displaying.add(it.player.uniqueId)
+                                TablistManager.get().getTablist(it.player).isEnabled = true
+//                                this.displaying.add(it.player.uniqueId)
                             }
                         }
                 }
@@ -109,8 +142,9 @@ object TablistService : ScheduledExecutorService by Executors
 
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
-                this.cachedElements.remove(it.player.uniqueId)
-                this.displaying.remove(it.player.uniqueId)
+//                this.cachedElements.remove(it.player.uniqueId)
+//                this.displaying.remove(it.player.uniqueId)
+                TablistManager.get().release(it.player)
             }
             .bindWith(commons)
 
@@ -123,13 +157,13 @@ object TablistService : ScheduledExecutorService by Executors
     {
         this.populator = populator
 
-        this.handler = TabHandler({
-            if (it.uniqueId !in this.displaying)
-            {
-                return@TabHandler null
-            }
-
-            this.cachedElements[it.uniqueId]
-        }, commons, 2L)
+//        this.handler = TabHandler({
+//            if (it.uniqueId !in this.displaying)
+//            {
+//                return@TabHandler null
+//            }
+//
+//            this.cachedElements[it.uniqueId]
+//        }, commons, 2L)
     }
 }
