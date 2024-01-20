@@ -22,7 +22,7 @@ public class TablistAdapterLegacy extends TablistAdapter {
     }
 
     @Override
-    public void createTablist() {
+    public void initTablist() {
         if (handle.getCellStacking() == CellStacking.VERTICAL) {
             int[] columnIndex = new int[] { 0, 20, 40 };
             int currIndex = 0;
@@ -34,6 +34,49 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
                     handle.getCells()[columnIndex[currIndex++]++] = cell;
+//                    sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
+//                            TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
+//                    sendPacketToHolder(ScoreboardTeamUtil.createTeam(
+//                            cell.getCellBase(), cell.getPrefix(), cell.getSuffix(),
+//                            Collections.singletonList(cell.getCellBase()), PacketUtil.TEAM_PROP_SPEC_NONE));
+
+                    if (currIndex == 3) {
+                        currIndex = 0;
+                    }
+                }
+            }
+        } else {
+            for (int f = 0; f < 6; f++) {
+                for (int s = 0; s < 10; s++) {
+                    int i = Integer.parseInt(f + "" + s);
+                    String base = "\u00A7" + f + "\u00A7" + s + "\u00A7r";
+                    UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
+                    TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
+
+                    handle.getCells()[i] = cell;
+//                    sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
+//                            TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
+//                    sendPacketToHolder(ScoreboardTeamUtil.createTeam(
+//                            cell.getCellBase(), cell.getPrefix(), cell.getSuffix(),
+//                            Collections.singletonList(cell.getCellBase()), PacketUtil.TEAM_PROP_SPEC_NONE));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void createTablist() {
+        if (handle.getCellStacking() == CellStacking.VERTICAL) {
+            int[] columnIndex = new int[] { 0, 20, 40 };
+            int currIndex = 0;
+
+            for (int f = 0; f < 6; f++) {
+                for (int s = 0; s < 10; s++) {
+                    String base = "\u00A7" + f + "\u00A7" + s + "\u00A7r";
+                    UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
+                    TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
+
+//                    handle.getCells()[columnIndex[currIndex++]++] = cell;
                     sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
                             TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
                     sendPacketToHolder(ScoreboardTeamUtil.createTeam(
@@ -53,7 +96,7 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
-                    handle.getCells()[i] = cell;
+//                    handle.getCells()[i] = cell;
                     sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
                             TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
                     sendPacketToHolder(ScoreboardTeamUtil.createTeam(

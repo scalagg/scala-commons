@@ -14,6 +14,8 @@ public abstract class TablistAdapter {
         this.handle = handle;
     }
 
+    public abstract void initTablist();
+
     public abstract void createTablist();
 
     public abstract void destroyTablist();

@@ -62,6 +62,7 @@ public class TablistHandle {
             this.extension = v17 ? new TablistAdapterLegacy(this) : new TablistAdapterModern(this);
             this.cells = new TablistCell[v17 ? 60 : 80];
             this.extendedFeaturesEnabled = !v17;
+            extension.initTablist();
         }
     }
 
