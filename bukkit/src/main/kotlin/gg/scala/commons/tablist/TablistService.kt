@@ -11,6 +11,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.PlayerInfoData
 import gg.scala.commons.tablist.adapter.populator.DefaultPlayersProvider
 import gg.scala.commons.tablist.adapter.populator.PlayerTablistPopulator
+import gg.scala.commons.tablist.cell.CellStacking
 import gg.scala.commons.tablist.manage.TablistManager
 import gg.scala.commons.tablist.util.Util
 import gg.scala.flavor.inject.Inject
@@ -119,7 +120,8 @@ object TablistService : ScheduledExecutorService by Executors
                 }
 
                 Tasks.delayed(ticks) {
-                    TablistManager.get().getTablist(it.player).init()
+                    val handle0 = TablistManager.get().getTablist(it.player)
+                    handle0.cellStacking = CellStacking.VERTICAL
 
                     this.populator
                         ?.displayPreProcessor(it.player)
