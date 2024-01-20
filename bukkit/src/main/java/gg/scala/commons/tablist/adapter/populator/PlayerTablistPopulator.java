@@ -76,7 +76,7 @@ public class PlayerTablistPopulator extends TablistPopulator {
             String appearance = handle.getTablistAppearance(actualVersion);
 
             if (appearance == null) {
-                appearance = other.getName();
+                appearance = other.getDisplayName();
             }
 
             entry.setValue(appearance);
