@@ -43,7 +43,7 @@ public class TablistHandle {
     private TablistAdapter extension;
 
     private CellStacking stacking;
-    private String cellLength = "                           ";
+    private String cellLength = "           ";
     private String tablistAppearanceLegacy, tablistAppearanceModern;
 
     private SkinDataMapping skinMapping = DefaultSkinData.getDefaultSkinMapping();

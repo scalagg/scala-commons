@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 
 object TextSplitter {
 
-    private val STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + '§'.toString() + "[0-9A-FK-OR]")
+    private val STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + '\u00A7'.toString() + "[0-9A-FK-OR]")
 
     @JvmStatic
     fun stripColor(input: String): String {
@@ -24,7 +24,7 @@ object TextSplitter {
     }
 
     @JvmStatic
-    fun split(length: Int = 32, firstLineLength: Int = length, text: String, linePrefix: String = "§7", wordSuffix: String = " "): List<String> {
+    fun split(length: Int = 32, firstLineLength: Int = length, text: String, linePrefix: String = "\u00A77", wordSuffix: String = " "): List<String> {
         if (text.length <= length) {
             return arrayListOf(linePrefix + text)
         }

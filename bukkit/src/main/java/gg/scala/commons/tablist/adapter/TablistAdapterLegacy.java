@@ -29,7 +29,7 @@ public class TablistAdapterLegacy extends TablistAdapter {
 
             for (int f = 0; f < 6; f++) {
                 for (int s = 0; s < 10; s++) {
-                    String base = "§" + f + "§" + s + "§r";
+                    String base = "\u00A7" + f + "\u00A7" + s + "\u00A7r";
                     UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
@@ -49,7 +49,7 @@ public class TablistAdapterLegacy extends TablistAdapter {
             for (int f = 0; f < 6; f++) {
                 for (int s = 0; s < 10; s++) {
                     int i = Integer.parseInt(f + "" + s);
-                    String base = "§" + f + "§" + s + "§r";
+                    String base = "\u00A7" + f + "\u00A7" + s + "\u00A7r";
                     UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 

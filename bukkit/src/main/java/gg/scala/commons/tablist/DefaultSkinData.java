@@ -2,6 +2,7 @@ package gg.scala.commons.tablist;
 
 import gg.scala.commons.tablist.skins.SingleSkinDataMapping;
 import gg.scala.commons.tablist.util.data.SkinData;
+import io.github.nosequel.tab.shared.skin.SkinUtil;
 
 import javax.annotation.Nonnull;
 
@@ -11,20 +12,8 @@ import javax.annotation.Nonnull;
 public class DefaultSkinData {
 
     private static SkinData DEFAULT_SKIN = new SkinData(
-            "eyJ0aW1lc3RhbXAiOjE1NDk3MDQ3MTA3NDYsInByb2ZpbGVJZCI6ImVmYWY1NzU3NzgxZTQ3YWViYzE0Y2Q4M" +
-                    "mM5MWM3ZjgyIiwicHJvZmlsZU5hbWUiOiJNaW5lU2tpbiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0" +
-                    "ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmU" +
-                    "vZjEyN2E4YzYwMzAzYTJlM2I5MzUxOTJlMzFhM2EzZjA2NzNiZDZkMDdmMGQ0OTViMmY3MTY4ZGI5ZjcwYm" +
-                    "M0MyJ9fX0=",
-            "qCkQgDlUaQ2PYAdRaxVvZOYCPu5Z++qQoLYAvOZSK4wbUuhwwtJ+MWia2FcYf2IM5pjdJ7MdEcbj5q4m3/F" +
-                    "S6IQw9mhFdk/Fl1O4cUDqTJCTzOybLv0u94qloAfgEysVI/cnUzyhWLjIwV+GB/eXb1GDmxsZLkgad3azeX" +
-                    "Gi4yuyhI4y4uNjO/JDBc7OTnfCukDXq+EeQ3KYzlmyjdQWFisJqm3b/gS398H6HGg6Bx9Sv6hNkiJEQFfre" +
-                    "lWyDIMlBPsMGW8p3CI0H/l0EpWBkmr+ltDh0TcSiyBsOxOHK+UitOmpC/UFoEfjtIhnMLMlH2eMtw0L8EPyI" +
-                    "uQfuV/C78/inxm1ai5luPg4FG7s0zDQK4WTBnLdJOeMK49T2dIOT1U119t2yh+cb9eBq62PGmYbPBI/FRcka" +
-                    "/ET1rV3eyRFL8BbMoJFC+n8VGvbhCML0Rf8wnHroEiFYZzr8oSVWJPXvNJU8PgP2EcXH1xFFvPeO2D8QtOKf" +
-                    "rNgc9jFA++igSwsRCNkKFO1tF4M+zyfVxyIm858ZzHCuBKQ7d2O1xJQ7z+u9/syDBxLxw0kSzwfPq8Vrp3Cw" +
-                    "sUSID0vusauUh1m/RpgvUcIOoek5XSAFGnIN7MQrKo/bcwNFK8lhe/5BswUJ6sByFO1cLHHuzR5CfPuALlF5" +
-                    "l/znpJb4ElaBac="
+        "eyJ0aW1lc3RhbXAiOjE0MTEyNjg3OTI3NjUsInByb2ZpbGVJZCI6IjNmYmVjN2RkMGE1ZjQwYmY5ZDExODg1YTU0NTA3MTEyIiwicHJvZmlsZU5hbWUiOiJsYXN0X3VzZXJuYW1lIiwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg0N2I1Mjc5OTg0NjUxNTRhZDZjMjM4YTFlM2MyZGQzZTMyOTY1MzUyZTNhNjRmMzZlMTZhOTQwNWFiOCJ9fX0=",
+        "u8sG8tlbmiekrfAdQjy4nXIcCfNdnUZzXSx9BE1X5K27NiUvE1dDNIeBBSPdZzQG1kHGijuokuHPdNi/KXHZkQM7OJ4aCu5JiUoOY28uz3wZhW4D+KG3dH4ei5ww2KwvjcqVL7LFKfr/ONU5Hvi7MIIty1eKpoGDYpWj3WjnbN4ye5Zo88I2ZEkP1wBw2eDDN4P3YEDYTumQndcbXFPuRRTntoGdZq3N5EBKfDZxlw4L3pgkcSLU5rWkd5UH4ZUOHAP/VaJ04mpFLsFXzzdU4xNZ5fthCwxwVBNLtHRWO26k/qcVBzvEXtKGFJmxfLGCzXScET/OjUBak/JEkkRG2m+kpmBMgFRNtjyZgQ1w08U6HHnLTiAiio3JswPlW5v56pGWRHQT5XWSkfnrXDalxtSmPnB5LmacpIImKgL8V9wLnWvBzI7SHjlyQbbgd+kUOkLlu7+717ySDEJwsFJekfuR6N/rpcYgNZYrxDwe4w57uDPlwNL6cJPfNUHV7WEbIU1pMgxsxaXe8WSvV87qLsR7H06xocl2C0JFfe2jZR4Zh3k9xzEnfCeFKBgGb4lrOWBu1eDWYgtKV67M2Y+B3W5pjuAjwAxn0waODtEn/3jKPbc/sxbPvljUCw65X+ok0UUN1eOwXV5l2EGzn05t3Yhwq19/GxARg63ISGE8CKw="
     );
 
     public static SingleSkinDataMapping DEFAULT_MAPPING = new SingleSkinDataMapping(getDefaultSkin());

@@ -34,7 +34,7 @@ public class TablistAdapterModern extends TablistAdapter {
 
             for (int f = 0; f < 8; f++) {
                 for (int s = 0; s < 10; s++) {
-                    String name = "!§" + f + "§" + s;
+                    String name = "!\u00A7" + f + "\u00A7" + s;
 
                     Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                             handle.getSkinMapping().getMappingFor(currentIndex));
@@ -50,7 +50,7 @@ public class TablistAdapterModern extends TablistAdapter {
                     for (int i = 0; i < 20; i++) {
                         int nameIndex = i + (indexOffset * 20);
                         char[] indexStr = (nameIndex < 10 ? "0" + nameIndex : "" + nameIndex).toCharArray();
-                        String name = "!§" + indexStr[0] + "§" + indexStr[1];
+                        String name = "!\u00A7" + indexStr[0] + "\u00A7" + indexStr[1];
 
                         int currentIndex = indexOffset + (i * 3);
 
@@ -66,7 +66,7 @@ public class TablistAdapterModern extends TablistAdapter {
                 final String shortEmptyCellSpace = "{\"text\":\"\"}";
                 for (int nameIndex = 60; nameIndex < 80; nameIndex++) {
                     char[] indexStr = ("" + nameIndex).toCharArray();
-                    String name = "!§" + indexStr[0] + "§" + indexStr[1];
+                    String name = "!\u00A7" + indexStr[0] + "\u00A7" + indexStr[1];
 
                     Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                             handle.getSkinMapping().getMappingFor(nameIndex));
@@ -80,7 +80,7 @@ public class TablistAdapterModern extends TablistAdapter {
                     for (int i = 0; i < 20; i++) {
                         int nameIndex = i + (indexOffset * 20);
                         char[] indexStr = (nameIndex < 10 ? "0" + nameIndex : "" + nameIndex).toCharArray();
-                        String name = "!§" + indexStr[0] + "§" + indexStr[1];
+                        String name = "!\u00A7" + indexStr[0] + "\u00A7" + indexStr[1];
 
                         int currentIndex = indexOffset + (i * 4);
 

@@ -51,16 +51,16 @@ public class TablistCellLegacy extends TablistCell {
             this.prefix = value.substring(0, 16);
             String suffix = value.substring(16);
 
-            if (prefix.endsWith("§")) {
+            if (prefix.endsWith("\u00A7")) {
                 prefix = prefix.substring(0, 15);
-                suffix = "§" + suffix;
+                suffix = "\u00A7" + suffix;
             }
 
             ChatColor last;
             ChatColor lastColor = null, lastFormat = null;
 
             for (int i = prefix.length() - 2; i >= 0; i--) {
-                if (prefix.charAt(i) == '§') {
+                if (prefix.charAt(i) == '\u00A7') {
                     last = ChatColor.getByChar(prefix.charAt(i + 1));
 
                     if (last != null) {
@@ -85,7 +85,7 @@ public class TablistCellLegacy extends TablistCell {
                 }
             }
 
-            if (!suffix.startsWith("§")) {
+            if (!suffix.startsWith("\u00A7")) {
                 String suffixStart =
                         lastColor == null ? lastFormat == null ? "" : lastFormat.toString() :
                         lastColor + (lastFormat == null ? "" : lastFormat.toString());
