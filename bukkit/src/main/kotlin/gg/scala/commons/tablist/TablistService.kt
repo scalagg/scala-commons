@@ -39,13 +39,7 @@ import java.util.concurrent.TimeUnit
  */
 @Service
 object TablistService : ScheduledExecutorService by Executors
-    .newSingleThreadScheduledExecutor(), PacketAdapter(
-        AdapterParameteters()
-            .plugin(ScalaCommonsSpigot.instance)
-            .types(PacketType.Play.Server.PLAYER_INFO)
-            .options(ListenerOptions.ASYNC)
-            .listenerPriority(ListenerPriority.HIGHEST)
-    )
+    .newSingleThreadScheduledExecutor()
 {
     @Inject
     lateinit var commons: ScalaCommonsSpigot
@@ -57,7 +51,7 @@ object TablistService : ScheduledExecutorService by Executors
     var populator: TablistPopulator? = null
 
     var tabListTicksCalculator: (Player) -> Long? = { null }
-
+/*
     override fun onPacketSending(event: PacketEvent)
     {
 //        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
@@ -86,12 +80,12 @@ object TablistService : ScheduledExecutorService by Executors
 
         wrapped.data = Collections.singletonList(PlayerInfoData(
             data.profileId, 0, data.isListed, data.gameMode, data.profile, data.displayName))
-    }
+    }*/
 
     @Configure
     fun configure()
     {
-        val config = commons.config<CommonsTablistConfig>()
+        /*val config = commons.config<CommonsTablistConfig>()
 
         if (!config.enabled)
         {
@@ -151,7 +145,7 @@ object TablistService : ScheduledExecutorService by Executors
 //                this.displaying.remove(it.player.uniqueId)
                 TablistManager.get().release(it.player)
             }
-            .bindWith(commons)
+            .bindWith(commons)*/
     }
 
     fun register(populator: TablistPopulator)
