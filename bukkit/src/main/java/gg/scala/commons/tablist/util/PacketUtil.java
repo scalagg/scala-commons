@@ -56,7 +56,6 @@ public class PacketUtil {
 
             try {
                 PPO_PLAYER_INFO_ENTRY_CONSTRUCTOR = PacketPlayOutPlayerInfo.PlayerInfoData.class.getConstructor(
-                        PacketPlayOutPlayerInfo.PlayerInfoData.class,
                         GameProfile.class, int.class, WorldSettings.EnumGamemode.class, IChatBaseComponent.class);
             } catch (Throwable t0) {
                 t0.printStackTrace();
