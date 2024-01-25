@@ -1,8 +1,8 @@
 dependencies {
-    kapt "gg.scala.commons:bukkit:3.2.2"
-    compileOnly "gg.scala.commons:bukkit:3.2.2"
+    kapt "gg.scala.commons:bukkit:3.2.1"
+    compileOnly "gg.scala.commons:bukkit:3.2.1"
 
-    compileOnly "gg.scala.spigot:server:1.1.3"
+    compileOnly "gg.scala.spigot:server:1.1.0"
 }
 
 kapt {

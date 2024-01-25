@@ -1,7 +1,6 @@
 package gg.scala.commons.command
 
 import co.aikar.commands.*
-import co.aikar.commands.MessageType;
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import gg.scala.cache.uuid.ScalaStoreUuidCache

@@ -13,7 +13,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        mavenLocal()
 
         maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -37,10 +36,10 @@ subprojects {
 
             credentials {
                 setUsername(
-                        property("artifactory_user")
+                    property("artifactory_user")
                 )
                 setPassword(
-                        property("artifactory_password")
+                    property("artifactory_password")
                 )
             }
         }
@@ -74,7 +73,7 @@ subprojects {
 
         repositories {
             maven {
-                name "PotPvP"
+                name "Scala"
                 url "${property("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
@@ -86,8 +85,8 @@ subprojects {
     }
 
     tasks.build.dependsOn(
-            shadowJar,
-            publishShadowPublicationToPotPvPRepository
+        shadowJar,
+        publishShadowPublicationToScalaRepository
     )
 }
 
