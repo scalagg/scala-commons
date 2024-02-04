@@ -1,7 +1,7 @@
 package gg.scala.commons.tablist
 
-import io.github.nosequel.tab.shared.entry.TabElement
-import me.lucko.helper.utils.Players
+import gg.scala.commons.tablist.adapter.TabElementProxy
+import gg.scala.commons.tablist.manage.TablistManager
 
 /**
  * @author GrowlyX
@@ -9,24 +9,23 @@ import me.lucko.helper.utils.Players
  */
 object TablistExecutor : Runnable
 {
+    private val proxy = TabElementProxy()
+
     override fun run()
     {
-        val displayingTo = Players.all()
-            .filter {
-                TablistService.displaying.contains(it.uniqueId)
-            }
-
-        for (player in displayingTo)
-        {
-            val element = TabElement()
-
-            kotlin.runCatching {
-                TablistService.populator?.populate(player, element)
-            }.onFailure {
+        runCatching(::caughtRun)
+            .onFailure {
                 it.printStackTrace()
             }
+    }
 
-            TablistService.cachedElements[player.uniqueId] = element
+    fun caughtRun()
+    {
+        for (handle in TablistManager.get().tablistHandles)
+        {
+            proxy.setActiveHandle(handle)
+            TablistService.populator?.populate(handle.holder, proxy)
+            handle.onTick()
         }
     }
 }

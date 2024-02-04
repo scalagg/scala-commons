@@ -11,7 +11,7 @@ import java.nio.charset.Charset
 
 object HiddenLore {
 
-    private const val COLOR_CHAR = '§'
+    private const val COLOR_CHAR = '\u00A7'
 
     private val SEQUENCE_HEADER = "" + COLOR_CHAR + "r" + COLOR_CHAR + "n" + COLOR_CHAR + "r"
     private val SEQUENCE_FOOTER = "" + COLOR_CHAR + "r" + COLOR_CHAR + "o" + COLOR_CHAR + "r"

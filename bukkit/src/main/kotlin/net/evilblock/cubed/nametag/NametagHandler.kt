@@ -206,7 +206,7 @@ object NametagHandler
             .config<CommonsNametagConfig>()
 
         val newName = if (nametagConfig.unweightedTab)
-            "§0§4§$name" else name
+            "\u00A70\u00A74\u00A7$name" else name
 
         val newTeam = NametagInfo(newName, prefix, suffix)
         registeredTeams.add(newTeam)

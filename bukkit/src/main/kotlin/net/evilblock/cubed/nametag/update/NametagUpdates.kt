@@ -107,7 +107,7 @@ class NametagUpdates(
         "0${this.priority}"
     } else {
         if (this.priority == -1)
-            "§0§3§1§9" else this.priority.toString()
+            "\u00A70\u00A73\u00A71\u00A79" else this.priority.toString()
     }
 
     fun send(player: Player, team: String) {

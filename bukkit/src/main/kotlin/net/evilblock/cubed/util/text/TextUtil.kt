@@ -106,7 +106,7 @@ object TextUtil {
         var isBold = false
 
         for (c in message.toCharArray()) {
-            if (c == '§') {
+            if (c == '\u00A7') {
                 previousCode = true
                 continue
             } else if (previousCode) {
@@ -151,7 +151,7 @@ object TextUtil {
         var isBold = false
 
         for (c in message.toCharArray()) {
-            if (c == '§') {
+            if (c == '\u00A7') {
                 previousCode = true
                 continue
             } else if (previousCode) {

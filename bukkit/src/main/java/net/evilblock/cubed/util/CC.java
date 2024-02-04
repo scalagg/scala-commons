@@ -192,7 +192,7 @@ public class CC {
     public static final String ID_PURPLE = D_PURPLE + I;
     public static final String IL_PURPLE = L_PURPLE + I;
 
-    public static final String BLANK_LINE = "§8 §8 §1 §3 §3 §7 §8 §r";
+    public static final String BLANK_LINE = "\u00A78 \u00A78 \u00A71 \u00A73 \u00A73 \u00A77 \u00A78 \u00A7r";
     public static final String BL = BLANK_LINE;
     public static final String SB_BAR = GRAY + S + "-------------------";
 

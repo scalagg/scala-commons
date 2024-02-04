@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils
 class ProgressBarBuilder(
     private val steps: Int = 10,
     private var char: Char = '⬛',
-    private var completedColor: String = "§a§l",
-    private var uncompletedColor: String = "§e§l"
+    private var completedColor: String = "\u00A7a\u00A7l",
+    private var uncompletedColor: String = "\u00A7e\u00A7l"
 )
 {
     fun build(percentage: Double): String
