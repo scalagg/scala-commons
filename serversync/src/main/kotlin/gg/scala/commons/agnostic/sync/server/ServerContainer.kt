@@ -78,6 +78,13 @@ object ServerContainer : Runnable
             }
         }
 
+        mappedServers.toMap().forEach { (t, _) ->
+            if (!expirations.containsKey(t))
+            {
+                mappedServers.remove(t)
+            }
+        }
+
         mappedServers.forEach {
             if (servers[it.key] == null)
             {
