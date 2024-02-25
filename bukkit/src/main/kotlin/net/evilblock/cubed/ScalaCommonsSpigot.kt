@@ -2,7 +2,6 @@ package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
 import gg.scala.aware.AwareBuilder
-import gg.scala.aware.AwareHub
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import gg.scala.cache.uuid.ScalaStoreUuidCache
@@ -41,7 +40,6 @@ import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
-import net.evilblock.cubed.aware.AwareCloud
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
@@ -92,7 +90,7 @@ import java.util.logging.Level
 // configs
 @ContainerConfig("sentry", SentryConfig::class)
 @ContainerConfig("settings", CommonsGeneralConfig::class)
-@ContainerConfig("tablist", CommonsTablistConfig::class)
+@ContainerConfig("club/frozed/tablist", CommonsTablistConfig::class)
 @ContainerConfig("nametags", CommonsNametagConfig::class)
 @ContainerConfig("scoreboard", CommonsScoreboardConfig::class)
 // serversync
