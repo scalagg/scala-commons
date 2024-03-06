@@ -11,6 +11,7 @@ import co.aikar.commands.CommandHelp
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
+import com.comphenix.protocol.PacketType.Play
 import gg.scala.cache.uuid.ScalaStoreUuidCache
 import gg.scala.cache.uuid.resolver.ResolverType
 import gg.scala.commons.ExtendedScalaPlugin
@@ -30,6 +31,7 @@ import net.evilblock.cubed.scoreboard.preview.menu.ScoreboardTextEditor
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.ItemBuilder
+import net.evilblock.cubed.visibility.VisibilityHandler
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
