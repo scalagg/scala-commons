@@ -90,7 +90,7 @@ import java.util.logging.Level
 // configs
 @ContainerConfig("sentry", SentryConfig::class)
 @ContainerConfig("settings", CommonsGeneralConfig::class)
-@ContainerConfig("club/frozed/tablist", CommonsTablistConfig::class)
+@ContainerConfig("tablist", CommonsTablistConfig::class)
 @ContainerConfig("nametags", CommonsNametagConfig::class)
 @ContainerConfig("scoreboard", CommonsScoreboardConfig::class)
 // serversync
