@@ -8,9 +8,6 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.adventure.ScalaMiniMessage
 import gg.scala.commons.issuer.ScalaPlayer
 import gg.scala.commons.sentry.SentryService
-import net.evilblock.cubed.entity.Entity
-import net.evilblock.cubed.entity.EntityHandler
-import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.MenuTemplateHandler
 import net.evilblock.cubed.util.CC
@@ -148,50 +145,12 @@ class ScalaCommandManager(
                 )
             }
 
-        commandContexts.registerContext(NpcEntity::class.java) { c ->
-            val firstArg = c.popFirstArg()
-
-            val entity: Entity = try
-            {
-                EntityHandler.getEntityById(firstArg.toInt())
-            } catch (e: Exception)
-            {
-                try
-                {
-                    EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
-                } catch (e: Exception)
-                {
-                    throw ConditionFailedException("No NPC by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
-                }
-            } ?: throw ConditionFailedException("No NPC was found.")
-
-            return@registerContext entity as NpcEntity?
-        }
-
         commandContexts.registerIssuerOnlyContext(ConsoleCommandSender::class.java) { c ->
             if (c.sender !is ConsoleCommandSender)
             {
                 throw ConditionFailedException("Only console may perform this command.")
             }
             return@registerIssuerOnlyContext c.sender as ConsoleCommandSender
-        }
-
-        commandContexts.registerContext(Entity::class.java) { c ->
-            val firstArg = c.popFirstArg()
-
-            return@registerContext try
-            {
-                EntityHandler.getEntityByUuid(UUID.fromString(firstArg))
-            } catch (e: Exception)
-            {
-                try
-                {
-                    EntityHandler.getEntityById(firstArg.toInt())
-                } catch (e: Exception)
-                {
-                    throw ConditionFailedException("No entity by id matching ${CC.YELLOW}${firstArg} ${CC.RED}was found.")
-                }
-            } ?: throw ConditionFailedException("No entity was found.")
         }
 
         commandContexts.registerContext(MenuTemplate::class.java) { c ->

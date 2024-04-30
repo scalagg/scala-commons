@@ -45,9 +45,6 @@ import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.config.CommonsScoreboardConfig
 import net.evilblock.cubed.config.CommonsTablistConfig
 import net.evilblock.cubed.config.serversync.ServerSyncConfig
-import net.evilblock.cubed.entity.Entity
-import net.evilblock.cubed.entity.EntitySerializer
-import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.feature.DataStoreFeature
 import net.evilblock.cubed.menu.protocol.InventoryPacketAdapter
 import net.evilblock.cubed.menu.protocol.MenuPacketAdapter
@@ -156,8 +153,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 registerTypeHierarchyAdapter(PotionEffect::class.java, PotionEffectAdapter())
                 registerTypeHierarchyAdapter(BlockVector::class.java, BlockVectorAdapter())
 
-                registerTypeAdapter(Entity::class.java, EntitySerializer)
-                registerTypeAdapter(EntityAnimation::class.java, AbstractTypeSerializer<EntityAnimation>())
                 registerTypeAdapter(MenuTemplate::class.java, AbstractTypeSerializer<MenuTemplate<*>>())
                 registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
             }

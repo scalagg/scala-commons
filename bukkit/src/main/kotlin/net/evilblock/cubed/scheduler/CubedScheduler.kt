@@ -2,7 +2,6 @@ package net.evilblock.cubed.scheduler
 
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.services.CommonsServiceExecutor
 import net.evilblock.cubed.util.bukkit.Tasks
 import java.util.*

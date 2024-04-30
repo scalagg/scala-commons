@@ -45,9 +45,9 @@ import gg.scala.store.storage.storable.IDataStoreObject
 import me.lucko.helper.Schedulers
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import me.lucko.helper.terminable.module.TerminableModule
-import net.evilblock.cubed.nametag.NametagHandler
-import net.evilblock.cubed.nametag.NametagProvider
-import net.evilblock.cubed.nametag.NametagProviderRegister
+//import net.evilblock.cubed.nametag.NametagHandler
+//import net.evilblock.cubed.nametag.NametagProvider
+//import net.evilblock.cubed.nametag.NametagProviderRegister
 import net.evilblock.cubed.scoreboard.ScoreboardAdapter
 import net.evilblock.cubed.scoreboard.ScoreboardAdapterRegister
 import net.evilblock.cubed.scoreboard.ScoreboardHandler
@@ -371,23 +371,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 
                     ScoreboardHandler.configure(
                         instance as ScoreboardAdapter
-                    )
-                }.onFailure {
-                    logger.log(Level.WARNING, "Failed to register command", it)
-                }
-            }
-
-        this.packageIndexer
-            .getTypesAnnotatedWith<NametagProviderRegister>()
-            .forEach {
-                kotlin.runCatching {
-                    val instance = it.objectInstance()
-                        ?: it.newInstance()
-
-                    this.flavor.inject(instance)
-
-                    NametagHandler.registerProvider(
-                        instance as NametagProvider
                     )
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register command", it)

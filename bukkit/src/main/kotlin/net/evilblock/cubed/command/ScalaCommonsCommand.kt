@@ -22,7 +22,6 @@ import gg.scala.commons.scheme.SchemedMenuTests
 import gg.scala.flavor.inject.Inject
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
-import net.evilblock.cubed.entity.thread.EntityTickThread
 import net.evilblock.cubed.menu.template.MenuTemplate
 import net.evilblock.cubed.menu.template.menu.TemplateEditorMenu
 import net.evilblock.cubed.menu.template.menu.TemplatePreviewMenu
