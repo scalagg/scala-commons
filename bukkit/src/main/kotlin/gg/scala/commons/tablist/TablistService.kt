@@ -28,7 +28,7 @@ object TablistService : ScheduledExecutorService by Executors
     var populator: TablistPopulator? = null
     var tabListTicksCalculator: (Player) -> Long? = { null }
 
-    private val systemProvider: TablistSystemProvider = BuiltInV2TablistSystemProvider
+    private val systemProvider: TablistSystemProvider = BuiltInV1TablistSystemProvider
 
     @Configure
     fun configure()

@@ -164,7 +164,7 @@ class AStar
             for (x in -1..1) for (z in -1..1) if (!(x == 0 && z == 0) && x * z == 0)
             {
                 val loc = Location(
-                    Bukkit.getWorlds()[0],
+                    location.world,
                     floor(location.blockX + x.toDouble()) + 0.5,
                     location.blockY.toDouble(),
                     floor(location.blockZ + z.toDouble()) + 0.5
