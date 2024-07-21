@@ -193,7 +193,7 @@ object EntityHandler
 
     fun stopTrackingInstanceEntities(player: Player): MutableSet<Entity>
     {
-        return this.instanceEntities.remove(player.uniqueId)!!
+        return this.instanceEntities.remove(player.uniqueId) ?: mutableSetOf()
     }
 
     fun getInstanceEntities(player: Player): MutableSet<Entity>
