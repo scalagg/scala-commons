@@ -39,9 +39,7 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
 
         }
 
-        controller = DataStoreObjectControllerCache
-            .create(type())
-
+        controller = DataStoreObjectControllerCache.create(type())
         ProfileOrchestratorService.registerSelf(this)
     }
 
@@ -66,6 +64,9 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
             }
             .thenComposeAsync {
                 controller.save(profile, DataStoreStorageType.MONGO)
+            }
+            .thenRun {
+                controller.localCache().remove(uniqueId)
             }
             .exceptionally {
                 Logger.getAnonymousLogger()
