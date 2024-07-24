@@ -202,13 +202,7 @@ object NametagHandler
             }
         }
 
-        val nametagConfig = this.plugin
-            .config<CommonsNametagConfig>()
-
-        val newName = if (nametagConfig.unweightedTab)
-            "\u00A70\u00A74\u00A7$name" else name
-
-        val newTeam = NametagInfo(newName, prefix, suffix)
+        val newTeam = NametagInfo(name, prefix, suffix)
         registeredTeams.add(newTeam)
 
         val addPacket = newTeam.teamAddPacket

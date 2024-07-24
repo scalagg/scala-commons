@@ -29,17 +29,20 @@ public class TabRunnable implements Runnable {
                     continue;
                 }
 
-                for (TabEntry entry : tabEntryList.getEntries()) {
+/*                for (TabEntry entry : tabEntryList.getEntries()) {
                     layout.update(entry.getX(), entry.getY(), entry.getText(), entry.getPing(), new Skin(entry.getSkinData()[0], entry.getSkinData()[1]));
-                }
+                }*/
+
+
 
                 for (int row = 0; row < 20; row++) {
                     for (int column = 0; column < 3; column++) {
-                        if (tabEntryList.getEntry(column, row) == null) {
-                            layout.update(column, row, "", TabLatency.NO_BAR.getValue(), Skin.DEFAULT_SKIN);
-                        }
+                        layout.update(column, row, column + ", " + row, TabLatency.NO_BAR.getValue(), Skin.DEFAULT_SKIN);
                     }
                 }
+            } else {
+
+                System.out.println("Skipping cuz layout mapping null");
             }
         }
     }

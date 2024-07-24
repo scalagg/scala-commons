@@ -1,11 +1,11 @@
 package club.frozed.tablist;
 
-import club.frozed.tablist.util.Reflection;
-import io.netty.channel.Channel;
+import com.comphenix.packetwrapper.WrapperPlayServerScoreboardTeam;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import club.frozed.tablist.util.TinyProtocol;
 
 /**
  * Created by Ryzeon
@@ -13,28 +13,26 @@ import club.frozed.tablist.util.TinyProtocol;
  * Date: 11/12/2020 @ 09:58
  */
 
-public class TabPacket extends TinyProtocol {
+public class TabPacket extends PacketAdapter {
     public TabPacket(Plugin plugin) {
-        super(plugin);
+        super(plugin, PacketType.Play.Server.SCOREBOARD_TEAM);
     }
 
+    private static final PacketType SCOREBOARD_TEAM_PACKET =
+        PacketType.fromClass(PacketPlayOutScoreboardTeam.class);
+
     @Override
-    public Object onPacketOutAsync(Player reciever, Channel channel, Object object) {
-        if (object instanceof PacketPlayOutScoreboardTeam) {
-            PacketPlayOutScoreboardTeam scoreboardTeam = (PacketPlayOutScoreboardTeam) object;
+    public void onPacketSending(PacketEvent event) {
+        final var scoreboardTeamThing = new WrapperPlayServerScoreboardTeam(event.getPacket());
 
-            int value = Reflection.getField(scoreboardTeam.getClass(), "h", int.class).get(scoreboardTeam);
-            String teamName = Reflection.getField(scoreboardTeam.getClass(), "a", String.class).get(scoreboardTeam);
+        System.out.println(scoreboardTeamThing.getName());
 
-            if (value == 4 && !teamName.equalsIgnoreCase("tab")) {
-                Reflection.getField(scoreboardTeam.getClass(), "a", String.class).set(scoreboardTeam, "tab");
-                Reflection.getField(scoreboardTeam.getClass(), "b", String.class).set(scoreboardTeam, "tab");
+        if (scoreboardTeamThing.getMode() == 4 && scoreboardTeamThing.getName().equalsIgnoreCase("tab")) {
+            scoreboardTeamThing.setName("tab");
+            scoreboardTeamThing.setNameTagVisibility("tab");
+            scoreboardTeamThing.setMode(3);
 
-                Reflection.getField(scoreboardTeam.getClass(), "h", int.class).set(scoreboardTeam, 3);
-            }
-
+//            event.setPacket(scoreboardTeamThing.getHandle());
         }
-
-        return super.onPacketOutAsync(reciever, channel, object);
     }
 }
