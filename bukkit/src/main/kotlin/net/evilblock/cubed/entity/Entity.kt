@@ -259,6 +259,11 @@ abstract class Entity(var location: Location)
             return
         }
 
+        if (!::currentWatchers.isInitialized)
+        {
+            return
+        }
+
         if (currentWatchers.contains(player.uniqueId))
         {
             return
@@ -281,6 +286,11 @@ abstract class Entity(var location: Location)
 
     open fun update(player: Player)
     {
+        if (!::currentWatchers.isInitialized)
+        {
+            return
+        }
+
         if (!currentWatchers.contains(player.uniqueId))
         {
             return
@@ -299,7 +309,10 @@ abstract class Entity(var location: Location)
 
     open fun destroy(player: Player)
     {
-        currentWatchers.remove(player.uniqueId)
+        if (::currentWatchers.isInitialized)
+        {
+            currentWatchers.remove(player.uniqueId)
+        }
 
         sendDestroyPackets(player)
 
@@ -316,7 +329,7 @@ abstract class Entity(var location: Location)
 
     fun hasAnyWatchers(): Boolean
     {
-        return currentWatchers.isNotEmpty()
+        return ::currentWatchers.isInitialized && currentWatchers.isNotEmpty()
     }
 
     /**
@@ -324,11 +337,21 @@ abstract class Entity(var location: Location)
      */
     fun getCurrentWatcherPlayers(): List<Player>
     {
+        if (!::currentWatchers.isInitialized)
+        {
+            return emptyList()
+        }
+
         return currentWatchers.mapNotNull { Bukkit.getPlayer(it) }
     }
 
     fun isWatcher(playerUuid: UUID): Boolean
     {
+        if (!::currentWatchers.isInitialized)
+        {
+            return false
+        }
+
         return currentWatchers.contains(playerUuid)
     }
 
