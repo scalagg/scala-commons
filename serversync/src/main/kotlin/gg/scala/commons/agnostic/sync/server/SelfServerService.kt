@@ -87,7 +87,7 @@ class SelfServerService<T : AbstractServer>(
             }
             .thenRunAsync {
                 ServerContainer.container.sync()
-                    .del(
+                    .hdel(
                         heartbeatKeyspace, this.server.id
                     )
             }
