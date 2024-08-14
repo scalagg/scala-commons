@@ -17,14 +17,10 @@ object MenuPacketAdapter : PacketAdapter(
     AdapterParameteters()
         .plugin(ScalaCommonsSpigot.instance)
         .types(PacketType.Play.Client.CLOSE_WINDOW)
-        .optionAsync()
 )
 {
     override fun onPacketReceiving(event: PacketEvent)
     {
-        val openedMenus = Menu.currentlyOpenedMenus
-
-        if (openedMenus.containsKey(event.player.uniqueId))
-            openedMenus[event.player.uniqueId]?.manualClose = true
+        Menu.currentlyOpenedMenus[event.player.uniqueId]?.manualClose = true
     }
 }

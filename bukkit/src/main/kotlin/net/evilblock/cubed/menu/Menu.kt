@@ -386,7 +386,7 @@ abstract class Menu
     companion object
     {
         @JvmStatic
-        var currentlyOpenedMenus: HashMap<UUID, Menu> = hashMapOf()
+        var currentlyOpenedMenus: ConcurrentHashMap<UUID, Menu> = ConcurrentHashMap()
 
         private val OPEN_CUSTOM_INVENTORY_METHOD = kotlin
             .runCatching {

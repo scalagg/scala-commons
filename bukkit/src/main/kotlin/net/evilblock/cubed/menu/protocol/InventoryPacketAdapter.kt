@@ -11,6 +11,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
+import io.netty.util.internal.ConcurrentSet
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.menu.protocol.event.PlayerCloseInventoryEvent
 import net.evilblock.cubed.menu.protocol.event.PlayerOpenInventoryEvent
@@ -25,16 +26,16 @@ object InventoryPacketAdapter : PacketAdapter(
             PacketType.Play.Client.CLIENT_COMMAND,
             PacketType.Play.Client.CLOSE_WINDOW
         )
-        .optionAsync()
 ) {
 
-    override fun onPacketReceiving(event: PacketEvent?) {
-        val player = event!!.player
+    override fun onPacketReceiving(event: PacketEvent) {
+        val player = event.player
         val packet = event.packet
 
         if (
             packet.type === PacketType.Play.Client.CLIENT_COMMAND &&
-            packet.clientCommands.size() != 0 && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT
+            packet.clientCommands.size() != 0
+            && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT
         ) {
             if (!currentlyOpen.contains(player.uniqueId)) {
                 Tasks.sync {
@@ -61,5 +62,5 @@ object InventoryPacketAdapter : PacketAdapter(
     }
 
     @JvmStatic
-    var currentlyOpen: HashSet<UUID> = HashSet()
+    var currentlyOpen: ConcurrentSet<UUID> = ConcurrentSet()
 }
