@@ -144,7 +144,7 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
                             }
 
                             val nbtJson = JsonObject()
-//                            nbtJson.addProperty("type", NBT_TYPE_TO_ID[nbtValueType])
+                            nbtJson.addProperty("type", NBT_TYPE_TO_ID[nbtValueType])
                             nbtJson.add("value", serialized)
 
                             nbtData.add(key, nbtJson)
