@@ -10,6 +10,7 @@ package net.evilblock.cubed.util.nms
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.utility.MinecraftVersion
 import com.cryptomorin.xseries.ReflectionUtils
+import gg.scala.commons.tablist.util.Util
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
@@ -84,13 +85,18 @@ object MinecraftProtocol
     @JvmStatic
     fun send(player: Player, packet: Any)
     {
-        ReflectionUtils.sendPacketSync(player, packet)
+        Util.sendPacket(player, packet)
+//        ReflectionUtils.sendPacketSync(player, packet)
     }
 
     @JvmStatic
     fun send(player: Player, vararg packets: Any)
     {
-        ReflectionUtils.sendPacketSync(player, packets)
+        for (packet in packets)
+        {
+            Util.sendPacket(player, packet)
+        }
+//        ReflectionUtils.sendPacketSync(player, packets)
     }
 
     @JvmStatic

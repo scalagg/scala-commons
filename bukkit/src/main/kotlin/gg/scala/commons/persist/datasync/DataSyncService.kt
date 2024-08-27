@@ -11,6 +11,10 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.serializers.Serializers
 import org.bson.Document
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.locks.ReentrantLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 /**
  * @author GrowlyX
@@ -19,6 +23,7 @@ import java.util.concurrent.CompletableFuture
 abstract class DataSyncService<T>
 {
     private var cached: T? = null
+    private val lock = ReentrantReadWriteLock()
     private val cache = ScalaCommonsSpigot.instance.kvConnection
 
     private var collection: MongoCollection<Document>? = null
@@ -31,7 +36,7 @@ abstract class DataSyncService<T>
     abstract fun keys(): DataSyncKeys
     abstract fun type(): Class<T>
 
-    fun cached() = cached
+    fun cached() = lock.read { cached }
         ?: throw IllegalStateException(
             "DataSyncService did not load facets for ${type().name}!"
         )
@@ -137,7 +142,7 @@ abstract class DataSyncService<T>
         cache().sync()
             .set(
                 keys().newStore(),
-                Serializers.gson.toJson(cached)
+                Serializers.gson.toJson(model)
             )
     }
 
@@ -147,11 +152,13 @@ abstract class DataSyncService<T>
 
         if (model == null)
         {
-            cached = type()
-                .getDeclaredConstructor()
-                .newInstance()
+            lock.write {
+                cached = type()
+                    .getDeclaredConstructor()
+                    .newInstance()
+            }
 
-            pushNewModelToSource(cached!!)
+            pushNewModelToSource(cached())
             pushKvUpdate()
             return
         }
@@ -162,13 +169,15 @@ abstract class DataSyncService<T>
             it.printStackTrace()
         }
 
-        this.cached = Serializers.gson
-            .fromJson(
-                model, type()
-            )
-            ?: type()
-                .getDeclaredConstructor()
-                .newInstance()
+        lock.write {
+            cached = Serializers.gson
+                .fromJson(
+                    model, type()
+                )
+                ?: type()
+                    .getDeclaredConstructor()
+                    .newInstance()
+        }
 
         kotlin.runCatching {
             postReload()
@@ -179,10 +188,12 @@ abstract class DataSyncService<T>
 
     fun sync(newModel: T): CompletableFuture<Void>
     {
-        cached = newModel
+        lock.write {
+            cached = newModel
+        }
 
         return CompletableFuture.runAsync {
-            pushNewModelToSource(newModel)
+            pushNewModelToSource(cached())
             pushKvUpdate()
         }
     }
