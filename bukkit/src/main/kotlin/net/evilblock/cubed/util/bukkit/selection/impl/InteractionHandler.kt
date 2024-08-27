@@ -18,5 +18,4 @@ class InteractionHandler(
             (event.player.getMetadata(metadataKey)[0].value() as (Event) -> Unit).invoke(event)
         }
     }
-
 }

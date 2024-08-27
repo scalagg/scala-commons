@@ -97,42 +97,42 @@ object EntityMoveTool : Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-        if (event.action == Action.RIGHT_CLICK_BLOCK) {
-            val itemInHand = event.player.inventory.itemInHand
-            if (itemInHand != null) {
-                if (isMoveTool(itemInHand)) {
-                    event.isCancelled = true
+        if ((event.action != Action.RIGHT_CLICK_BLOCK)) return
+        val itemInHand = event.player.inventory.itemInHand
+        if (itemInHand != null) {
+            if (isMoveTool(itemInHand)) {
+                event.isCancelled = true
 
-                    val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
+                val uuid =
+                    UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
 
-                    val entity = EntityHandler.getEntityByUuid(uuid)
-                    if (entity != null) {
-                        // npc direction == flipped player yaw
-                        val direction = event.player.eyeLocation.direction.multiply(-1)
-                        val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
+                val entity = EntityHandler.getEntityByUuid(uuid)
+                if (entity != null) {
+                    // npc direction == flipped player yaw
+                    val direction = event.player.eyeLocation.direction.multiply(-1)
+                    val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
 
-                        val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
-                        updatedLocation.direction = direction
+                    val updatedLocation = event.clickedBlock.location.add(0.5, height, 0.5)
+                    updatedLocation.direction = direction
 
-                        val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
-                        updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
-                        updatedLocation.pitch = 0.0F
+                    val directionFace = AngleUtils.yawToFace(updatedLocation.yaw)
+                    updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
+                    updatedLocation.pitch = 0.0F
 
-                        // check with other entity implementations
-                        val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
-                        Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
+                    // check with other entity implementations
+                    val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
+                    Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
 
-                        if (entityMovedEvent.isCancelled) {
-                            return
-                        }
-
-                        entity.updateLocation(updatedLocation)
-                        entity.updateVisibility(false)
-
-                        event.player.inventory.itemInHand = null
-                        event.player.updateInventory()
-                        event.player.sendMessage("${CC.GREEN}Successfully updated location!")
+                    if (entityMovedEvent.isCancelled) {
+                        return
                     }
+
+                    entity.updateLocation(updatedLocation)
+                    entity.updateVisibility(false)
+
+                    event.player.inventory.itemInHand = null
+                    event.player.updateInventory()
+                    event.player.sendMessage("${CC.GREEN}Successfully updated location!")
                 }
             }
         }
