@@ -18,6 +18,7 @@ dependencies {
     implementation project(":store")
     implementation project(":commons")
     implementation project(":serversync")
+    implementation project(":localizer")
 
     implementation project(":core")
 

@@ -2,24 +2,26 @@ rootProject.name = "scala-commons"
 
 // bukkit & rassist replays
 include(
-    "bukkit",
-    "bukkit-rassist",
-    "bukkit-rassist-test"
+        "bukkit",
+        "paper",
+        "localizer",
+        "bukkit-rassist",
+        "bukkit-rassist-test"
 )
 
 // cross-platform
 include(
-    "core",
-    "store",
-    "commons",
-    "examples",
-    "serializers",
-    "migrater"
+        "core",
+        "store",
+        "commons",
+        "examples",
+        "serializers",
+        "migrater"
 )
 
 // serversync
 include(
-    "serversync",
+        "serversync",
 )
 
 // velocity
