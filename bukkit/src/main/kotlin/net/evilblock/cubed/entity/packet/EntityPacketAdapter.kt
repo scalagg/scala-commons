@@ -75,10 +75,13 @@ object EntityPacketAdapter : PacketAdapter(
         val config = ScalaCommonsSpigot.instance
             .config<CommonsGeneralConfig>()
 
-        if (config.enableEntityPacketAdapters)
+        if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
         {
-            ProtocolLibrary.getProtocolManager()
-                .addPacketListener(this)
+            if (config.enableEntityPacketAdapters)
+            {
+                ProtocolLibrary.getProtocolManager()
+                    .addPacketListener(this)
+            }
         }
     }
 

@@ -14,7 +14,7 @@ object Serializers
     private val gsonBuilder = GsonBuilder()
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
-        .setDateFormat(DateFormat.FULL, DateFormat.FULL)
+        .setDateFormat("MMM d, yyyy, h:mm:ss a")
         .serializeNulls()
 
     fun builder() = this.gsonBuilder

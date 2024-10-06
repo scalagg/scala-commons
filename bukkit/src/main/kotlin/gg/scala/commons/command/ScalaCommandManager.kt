@@ -39,7 +39,6 @@ class ScalaCommandManager(
     init
     {
         enableUnstableAPI("help")
-        enableUnstableAPI("brigadier")
 
         listOf<MessageType>(
             MessageType.HELP,
