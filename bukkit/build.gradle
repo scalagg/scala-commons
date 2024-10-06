@@ -43,7 +43,7 @@ dependencies {
     compileOnly "io.sentry:sentry:6.5.0"
 
     // growly
-    implementation "gg.scala.aware:aware:1.1.9"
+    compileOnly "gg.scala.aware:aware:1.2.1"
     implementation "gg.scala.flavor:flavor:0.1.6"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     compileOnly "com.comphenix.protocol:ProtocolLib:5.0.0"

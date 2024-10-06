@@ -80,7 +80,7 @@ import java.util.logging.Level
     apiVersion = "1.19",
     depends = [
         PluginDependency("ProtocolLib"),
-        PluginDependency("store-spigot", soft = true),
+        PluginDependency("store-spigot"),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
         PluginDependency("spark", soft = true),
