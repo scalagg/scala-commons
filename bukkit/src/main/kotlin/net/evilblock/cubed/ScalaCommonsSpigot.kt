@@ -81,7 +81,7 @@ import kotlin.system.exitProcess
     apiVersion = "1.19",
     depends = [
         PluginDependency("ProtocolLib"),
-        PluginDependency("store-spigot"),
+        PluginDependency("store-spigot", soft = true),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
         PluginDependency("spark", soft = true),
