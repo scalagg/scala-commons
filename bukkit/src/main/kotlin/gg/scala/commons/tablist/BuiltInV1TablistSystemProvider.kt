@@ -1,6 +1,6 @@
 package gg.scala.commons.tablist
 
-import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo
+import com.comphenix.packetwrapper.MultiVersionWrapperPlayServerPlayerInfo
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.ListenerPriority
@@ -37,7 +37,7 @@ object BuiltInV1TablistSystemProvider : TablistSystemProvider, PacketAdapter(
             return
         }
 
-        val wrapped = WrapperPlayServerPlayerInfo(event.packet)
+        val wrapped = MultiVersionWrapperPlayServerPlayerInfo(event.packet)
         val data = wrapped.data[0]
 
         if (wrapped.action == EnumWrappers.PlayerInfoAction.ADD_PLAYER && data.latency != -1)

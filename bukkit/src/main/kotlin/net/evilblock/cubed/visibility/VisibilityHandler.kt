@@ -1,7 +1,6 @@
 package net.evilblock.cubed.visibility
 
-import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo
-import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.packetwrapper.MultiVersionWrapperPlayServerPlayerInfo
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode
 import com.comphenix.protocol.wrappers.PlayerInfoData
@@ -9,12 +8,8 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedGameProfile
 import com.comphenix.protocol.wrappers.WrappedSignedProperty
 import com.mojang.authlib.GameProfile
-import io.github.nosequel.tab.shared.skin.SkinType
 import me.lucko.helper.protocol.Protocol
-import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
-import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -86,7 +81,7 @@ object VisibilityHandler
     {
         if (player.hasMetadata("vanished"))
         {
-            val playerInfoAdd = WrapperPlayServerPlayerInfo()
+            val playerInfoAdd = MultiVersionWrapperPlayServerPlayerInfo()
             playerInfoAdd.action = EnumWrappers.PlayerInfoAction.REMOVE_PLAYER
             playerInfoAdd.data = listOf(player.constructData())
 
@@ -119,7 +114,7 @@ object VisibilityHandler
     {
         if (player.hasMetadata("vanished"))
         {
-            val playerInfoAdd = WrapperPlayServerPlayerInfo()
+            val playerInfoAdd = MultiVersionWrapperPlayServerPlayerInfo()
             playerInfoAdd.action = EnumWrappers.PlayerInfoAction.ADD_PLAYER
             playerInfoAdd.data = listOf(player.constructData())
 
