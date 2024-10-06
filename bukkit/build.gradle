@@ -20,6 +20,7 @@ dependencies {
     implementation project(":commons")
     implementation project(":serversync")
     implementation project(":localizer")
+    compileOnly project(":modern-access")
 
     implementation project(":core")
 

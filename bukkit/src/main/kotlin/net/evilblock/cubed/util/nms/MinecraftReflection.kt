@@ -7,6 +7,7 @@
 
 package net.evilblock.cubed.util.nms
 
+import com.mojang.authlib.GameProfile
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.wrapper.Vector3FWrapper
