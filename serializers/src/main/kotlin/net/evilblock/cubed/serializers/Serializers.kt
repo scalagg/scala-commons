@@ -6,6 +6,7 @@ import com.google.gson.LongSerializationPolicy
 import net.evilblock.cubed.serializers.impl.UUIDAdapter
 import org.bson.json.JsonMode
 import org.bson.json.JsonWriterSettings
+import java.text.DateFormat
 import java.util.*
 
 object Serializers
@@ -13,6 +14,7 @@ object Serializers
     private val gsonBuilder = GsonBuilder()
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
+        .setDateFormat(DateFormat.FULL, DateFormat.FULL)
         .serializeNulls()
 
     fun builder() = this.gsonBuilder
