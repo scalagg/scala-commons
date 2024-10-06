@@ -160,13 +160,13 @@ abstract class Menu
 
     fun openMenu(player: Player)
     {
-        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
+        /*if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
         {
             if (currentlyOpenedMenus[player.uniqueId] != null)
             {
                 player.closeInventory()
             }
-        }
+        }*/
 
         if (async)
         {

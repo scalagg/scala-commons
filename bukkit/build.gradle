@@ -20,6 +20,8 @@ dependencies {
     implementation project(":commons")
     implementation project(":serversync")
     implementation project(":localizer")
+
+    implementation("com.googlecode.cqengine:cqengine:3.6.0")
     compileOnly project(":modern-access")
 
     implementation project(":core")

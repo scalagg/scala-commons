@@ -15,6 +15,8 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.java.JavaPlugin
 import java.net.URL
 import java.util.UUID
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * @author GrowlyX
@@ -75,16 +77,20 @@ class ModernAccessPlugin : JavaPlugin()
         val textures: Textures
     )
 
+    @OptIn(ExperimentalEncodingApi::class)
     fun applySkullTexture(stack: ItemStack, texture: String): ItemStack
     {
         val skullMeta = (stack.itemMeta as SkullMeta)
         val profile = Bukkit.createPlayerProfile(UUID.randomUUID())
-        profile.textures.clear()
-        profile.textures.skin = URL(
+        val newTextures = profile.textures
+        newTextures.skin = URL(
             Serializers.gson
-                .fromJson<TextureResponse>(texture, TextureResponse::class.java)
+                .fromJson<TextureResponse>(String(Base64.decode(texture)), TextureResponse::class.java)
                 .textures.SKIN.url
         )
+
+        profile.setTextures(newTextures)
+        skullMeta.playerProfile = profile as PlayerProfile
         stack.itemMeta = skullMeta
         return stack
     }
