@@ -1,28 +1,46 @@
 package net.evilblock.cubed.visibility
 
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.wrappers.EnumWrappers
+import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode
+import com.comphenix.protocol.wrappers.PlayerInfoData
+import com.comphenix.protocol.wrappers.WrappedChatComponent
+import com.comphenix.protocol.wrappers.WrappedGameProfile
+import com.comphenix.protocol.wrappers.WrappedSignedProperty
+import com.mojang.authlib.GameProfile
+import io.github.nosequel.tab.shared.skin.SkinType
+import me.lucko.helper.protocol.Protocol
 import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 
-object VisibilityHandler {
+object VisibilityHandler
+{
 
     private val adapters = LinkedHashMap<String, VisibilityAdapter>()
     private val overrideHandlers = LinkedHashMap<String, OverrideHandler>()
 
-    fun registerAdapter(identifier: String, adapter: VisibilityAdapter) {
+    fun registerAdapter(identifier: String, adapter: VisibilityAdapter)
+    {
         adapters[identifier] = adapter
     }
 
-    fun registerOverride(identifier: String, handler: OverrideHandler) {
+    fun registerOverride(identifier: String, handler: OverrideHandler)
+    {
         overrideHandlers[identifier] = handler
     }
 
-    fun update(player: Player) {
+    fun update(player: Player)
+    {
         if (!Bukkit.isPrimaryThread())
         {
             Tasks.sync {
@@ -36,21 +54,29 @@ object VisibilityHandler {
         }
     }
 
-    fun updateAllTo(viewer: Player) {
-        for (target in Bukkit.getOnlinePlayers()) {
-            if (!shouldSee(target, viewer)) {
+    fun updateAllTo(viewer: Player)
+    {
+        for (target in Bukkit.getOnlinePlayers())
+        {
+            if (!shouldSee(target, viewer))
+            {
                 viewer.hidePlayer(target); removePlayer(target, viewer)
-            } else {
+            } else
+            {
                 viewer.showPlayer(target); addPlayer(target, viewer)
             }
         }
     }
 
-    fun updateToAll(target: Player) {
-        for (viewer in Bukkit.getOnlinePlayers()) {
-            if (!shouldSee(target, viewer)) {
+    fun updateToAll(target: Player)
+    {
+        for (viewer in Bukkit.getOnlinePlayers())
+        {
+            if (!shouldSee(target, viewer))
+            {
                 viewer.hidePlayer(target); removePlayer(target, viewer)
-            } else {
+            } else
+            {
                 viewer.showPlayer(target); addPlayer(target, viewer)
             }
         }
@@ -60,47 +86,69 @@ object VisibilityHandler {
     {
         if (player.hasMetadata("vanished"))
         {
-            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
-                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "REMOVE_PLAYER")!!,
-                arrayListOf(MinecraftReflection.getHandle(player))
-            )
+            val playerInfoAdd = WrapperPlayServerPlayerInfo()
+            playerInfoAdd.action = EnumWrappers.PlayerInfoAction.REMOVE_PLAYER
+            playerInfoAdd.data = listOf(player.constructData())
 
             Tasks.delayed(1L)
             {
-                MinecraftProtocol.send(other, playerInfoAddPacket)
+                Protocol.sendPacket(other, playerInfoAdd.handle)
             }
         }
+    }
+
+    fun Player.constructData(): PlayerInfoData
+    {
+        val profile = WrappedGameProfile(uniqueId, name)
+        val gameProfile = MinecraftReflection.getGameProfile(player) as GameProfile
+
+        val textures = gameProfile.properties.get("textures").first()
+        profile.properties.put("textures", WrappedSignedProperty("textures", textures.value, textures.signature))
+
+        val gameMode = NativeGameMode.fromBukkit(GameMode.SURVIVAL)
+        val component = WrappedChatComponent.fromJson(
+            GsonComponentSerializer.gson().serialize(
+                LegacyComponentSerializer.legacySection().deserialize(displayName)
+            )
+        )
+
+        return PlayerInfoData(uniqueId, ping, true, gameMode, profile, component)
     }
 
     fun addPlayer(player: Player, other: Player)
     {
         if (player.hasMetadata("vanished"))
         {
-            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
-                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!,
-                arrayListOf(MinecraftReflection.getHandle(player))
-            )
+            val playerInfoAdd = WrapperPlayServerPlayerInfo()
+            playerInfoAdd.action = EnumWrappers.PlayerInfoAction.ADD_PLAYER
+            playerInfoAdd.data = listOf(player.constructData())
 
             Tasks.delayed(1L)
             {
-                MinecraftProtocol.send(other, playerInfoAddPacket)
+                Protocol.sendPacket(other, playerInfoAdd.handle)
             }
         }
     }
 
-    fun treatAsOnline(target: Player, viewer: Player): Boolean {
+    fun treatAsOnline(target: Player, viewer: Player): Boolean
+    {
         return !target.hasMetadata("vanished")
     }
 
-    private fun shouldSee(target: Player, viewer: Player): Boolean {
-        for (handler in overrideHandlers.values) {
-            if (handler.getAction(target, viewer) === OverrideAction.SHOW) {
+    private fun shouldSee(target: Player, viewer: Player): Boolean
+    {
+        for (handler in overrideHandlers.values)
+        {
+            if (handler.getAction(target, viewer) === OverrideAction.SHOW)
+            {
                 return true
             }
         }
 
-        for (handler in adapters.values) {
-            if (handler.getAction(target, viewer) === VisibilityAction.HIDE) {
+        for (handler in adapters.values)
+        {
+            if (handler.getAction(target, viewer) === VisibilityAction.HIDE)
+            {
                 return false
             }
         }
@@ -108,15 +156,18 @@ object VisibilityHandler {
         return true
     }
 
-    fun getDebugInfo(target: Player, viewer: Player): List<String> {
+    fun getDebugInfo(target: Player, viewer: Player): List<String>
+    {
         val debug = ArrayList<String>()
         var canSee: Boolean? = null
 
-        for ((key, handler) in overrideHandlers) {
+        for ((key, handler) in overrideHandlers)
+        {
             val action = handler.getAction(target, viewer)
             var color = ChatColor.GRAY
 
-            if (action === OverrideAction.SHOW && canSee == null) {
+            if (action === OverrideAction.SHOW && canSee == null)
+            {
                 canSee = true
                 color = ChatColor.GREEN
             }
@@ -124,11 +175,13 @@ object VisibilityHandler {
             debug.add(color.toString() + "Overriding Handler: $key: $action")
         }
 
-        for ((key, handler) in adapters) {
+        for ((key, handler) in adapters)
+        {
             val action = handler.getAction(target, viewer)
             var color = ChatColor.GRAY
 
-            if (action === VisibilityAction.HIDE && canSee == null) {
+            if (action === VisibilityAction.HIDE && canSee == null)
+            {
                 canSee = false
                 color = ChatColor.GREEN
             }
@@ -136,7 +189,8 @@ object VisibilityHandler {
             debug.add(color.toString() + "Normal Handler: $key: $action")
         }
 
-        if (canSee == null) {
+        if (canSee == null)
+        {
             canSee = true
         }
 

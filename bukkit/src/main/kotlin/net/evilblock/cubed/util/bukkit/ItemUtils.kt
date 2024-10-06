@@ -8,6 +8,9 @@
 package net.evilblock.cubed.util.bukkit
 
 import com.cryptomorin.xseries.XMaterial
+import de.tr7zw.changeme.nbtapi.NBT
+import de.tr7zw.changeme.nbtapi.NBTCompound
+import de.tr7zw.changeme.nbtapi.NBTItem
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.nms.NBTUtil
@@ -174,9 +177,9 @@ object ItemUtils
         NBTUtil.set(tag, "SkullOwner", skullOwner)
 
         NBTUtil.setTag(nmsCopy, tag)
-
         return getBukkitCopy(nmsCopy)
     }
+
 
     @JvmStatic
     fun isSimilar(first: ItemStack, second: ItemStack): Boolean

@@ -9,6 +9,7 @@ import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
 import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
 import net.evilblock.cubed.services.CommonsServiceExecutor
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -176,7 +177,11 @@ object NametagHandler
             teamInfoMap = teamMap[refreshFor.uniqueId]!!
         }
 
-        ScoreboardTeamPacketMod(provided.name, arrayListOf(toRefresh.name), 3).send(refreshFor)
+        if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+        {
+            ScoreboardTeamPacketMod(provided.name, arrayListOf(toRefresh.name), 3).send(refreshFor)
+        }
+
         teamInfoMap[toRefresh.uniqueId] = provided
         teamMap[refreshFor.uniqueId] = teamInfoMap
     }
@@ -185,7 +190,10 @@ object NametagHandler
     {
         for (teamInfo in registeredTeams)
         {
-            teamInfo.teamAddPacket.send(player)
+            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            {
+                teamInfo.teamAddPacket.send(player)
+            }
         }
     }
 
