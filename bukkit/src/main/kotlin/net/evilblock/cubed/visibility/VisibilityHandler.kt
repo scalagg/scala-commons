@@ -62,7 +62,7 @@ object VisibilityHandler {
     {
         if (player.hasMetadata("vanished"))
         {
-            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
             {
                 Tasks.delayed(1L) {
                     ModernAccessPlugin
@@ -88,7 +88,7 @@ object VisibilityHandler {
     {
         if (player.hasMetadata("vanished"))
         {
-            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
             {
                 Tasks.delayed(1L) {
                     ModernAccessPlugin
