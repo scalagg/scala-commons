@@ -73,6 +73,7 @@ import org.spigotmc.SpigotConfig
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+import kotlin.system.exitProcess
 
 // plugin meta
 @Plugin(
@@ -388,13 +389,16 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
         if (onlineAndProxy || offlineAndNoProxy)
         {
-            this.logger.severe(" ")
-            this.logger.severe(" Failed environment check!")
-            this.logger.severe("  Online mode: ${server.onlineMode}")
-            this.logger.severe("  Proxy mode: ${SpigotConfig.bungee}")
-            this.logger.severe(" ")
+            if (server.onlineMode && SpigotConfig.bungee)
+            {
+                logger.severe("You have both online mode and bungeecord mode enabled. Please update your configurations, as this will not allow player logins.")
+            } else if (!server.onlineMode && !SpigotConfig.bungee)
+            {
+                logger.severe("You currently have the server exposed as an offline mode server, without bungeecord mode enabled. Double check your configs.")
+            }
 
-            server.shutdown()
+            logger.info("(!) We are stopping the application to prevent weird issues from arising.")
+            exitProcess(3)
             return false
         }
 
