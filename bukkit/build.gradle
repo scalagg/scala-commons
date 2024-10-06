@@ -64,7 +64,7 @@ dependencies {
 
     // google
     compileOnly "com.google.zxing:core:3.5.0"
-    implementation "com.google.code.gson:gson:2.10.1"
+    compileOnly "com.google.code.gson:gson:2.10.1"
 
     // other
     implementation "com.github.cryptomorin:XSeries:9.1.0"
@@ -73,7 +73,7 @@ dependencies {
     compileOnly "com.viaversion:viaversion-api:4.4.2"
 
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
-    implementation "org.mongodb:mongodb-driver:3.12.11"
+    compileOnly "org.mongodb:mongodb-driver:3.12.11"
     implementation "com.github.mkotb:ConfigAPI:e1c8df3f13"
 
     // scala
@@ -84,7 +84,7 @@ dependencies {
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
     // redis
-    implementation "io.lettuce:lettuce-core:6.2.3.RELEASE.MOD"
+    implementation "io.lettuce:lettuce-core:6.4.0.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.1"

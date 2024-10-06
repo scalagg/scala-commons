@@ -9,6 +9,7 @@ package net.evilblock.cubed.serialize
 
 import com.google.gson.*
 import net.evilblock.cubed.ScalaCommonsSpigot
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import net.evilblock.cubed.util.nms.NBTUtil
@@ -38,11 +39,14 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
         private val NBT_TYPE_TO_ID: MutableMap<Class<*>, Int> = hashMapOf()
 
         init {
-            NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagString")!!] = 1
-            NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagInt")!!] = 2
-            NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagDouble")!!] = 3
-            NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagFloat")!!] = 4
-            NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagLong")!!] = 5
+            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            {
+                NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagString")!!] = 1
+                NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagInt")!!] = 2
+                NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagDouble")!!] = 3
+                NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagFloat")!!] = 4
+                NBT_TYPE_TO_ID[MinecraftReflection.getNMSClass("NBTTagLong")!!] = 5
+            }
         }
 
         @JvmStatic
@@ -124,35 +128,38 @@ class ItemStackAdapter : JsonDeserializer<ItemStack>, JsonSerializer<ItemStack> 
                 element.add("enchants", enchantments as JsonElement)
             }
 
-            if (ItemUtils.itemTagHasKey(item, "PreserveNBT")) {
-                val nbtData = JsonObject()
+            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            {
+                if (ItemUtils.itemTagHasKey(item, "PreserveNBT")) {
+                    val nbtData = JsonObject()
 
-                val nmsCopy = ItemUtils.getNmsCopy(item)
-                val itemTag = NBTUtil.getOrCreateTag(nmsCopy)
+                    val nmsCopy = ItemUtils.getNmsCopy(item)
+                    val itemTag = NBTUtil.getOrCreateTag(nmsCopy)
 
-                val preservedKeys = NBTUtil.getString(itemTag, "PreserveNBT").split(",")
-                for (key in preservedKeys) {
-                    if (NBTUtil.hasKey(itemTag, key)) {
-                        val nbtValue = NBTUtil.get(itemTag, key)
-                        val nbtValueType = nbtValue::class.java
+                    val preservedKeys = NBTUtil.getString(itemTag, "PreserveNBT").split(",")
+                    for (key in preservedKeys) {
+                        if (NBTUtil.hasKey(itemTag, key)) {
+                            val nbtValue = NBTUtil.get(itemTag, key)
+                            val nbtValueType = nbtValue::class.java
 
-                        if (NBT_TYPE_TO_ID.containsKey(nbtValueType)) {
-                            val serialized = if (NBTUtil.isNumber(nbtValue)) {
-                                JsonPrimitive(NBTUtil.getNumber(itemTag, key))
-                            } else {
-                                JsonPrimitive(NBTUtil.getString(itemTag, key))
+                            if (NBT_TYPE_TO_ID.containsKey(nbtValueType)) {
+                                val serialized = if (NBTUtil.isNumber(nbtValue)) {
+                                    JsonPrimitive(NBTUtil.getNumber(itemTag, key))
+                                } else {
+                                    JsonPrimitive(NBTUtil.getString(itemTag, key))
+                                }
+
+                                val nbtJson = JsonObject()
+                                nbtJson.addProperty("type", NBT_TYPE_TO_ID[nbtValueType])
+                                nbtJson.add("value", serialized)
+
+                                nbtData.add(key, nbtJson)
                             }
-
-                            val nbtJson = JsonObject()
-                            nbtJson.addProperty("type", NBT_TYPE_TO_ID[nbtValueType])
-                            nbtJson.add("value", serialized)
-
-                            nbtData.add(key, nbtJson)
                         }
                     }
-                }
 
-                element.add("preserved-nbt", nbtData)
+                    element.add("preserved-nbt", nbtData)
+                }
             }
 
             return element
