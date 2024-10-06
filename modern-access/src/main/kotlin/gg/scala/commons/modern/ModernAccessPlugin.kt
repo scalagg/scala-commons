@@ -1,12 +1,20 @@
 package gg.scala.commons.modern
 
+import com.destroystokyo.paper.profile.PlayerProfile
 import com.mojang.authlib.GameProfile
 import gg.scala.cloudsync.shared.discovery.CloudSyncDiscoveryService
+import net.evilblock.cubed.serializers.Serializers
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
+import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_20_R3.profile.CraftPlayerTextures
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.java.JavaPlugin
+import java.net.URL
+import java.util.UUID
 
 /**
  * @author GrowlyX
@@ -53,5 +61,31 @@ class ModernAccessPlugin : JavaPlugin()
             }
 
         logger.info("Hooked into 1.20")
+    }
+
+    data class Skin(
+        val url: String
+    )
+
+    data class Textures(
+        val SKIN: Skin
+    )
+
+    data class TextureResponse(
+        val textures: Textures
+    )
+
+    fun applySkullTexture(stack: ItemStack, texture: String): ItemStack
+    {
+        val skullMeta = (stack.itemMeta as SkullMeta)
+        val profile = Bukkit.createPlayerProfile(UUID.randomUUID())
+        profile.textures.clear()
+        profile.textures.skin = URL(
+            Serializers.gson
+                .fromJson<TextureResponse>(texture, TextureResponse::class.java)
+                .textures.SKIN.url
+        )
+        stack.itemMeta = skullMeta
+        return stack
     }
 }

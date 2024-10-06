@@ -103,6 +103,7 @@ test {
 shadowJar {
     relocate "co.aikar.commands", "gg.scala.commons.acf"
     relocate "co.aikar.locales", "gg.scala.commons.locales"
+    relocate("de.tr7zw.changeme.nbtapi", "gg.scala.commons.nbt")
 
     relocate "org.reflections", "gg.scala.commons.reflections"
 
