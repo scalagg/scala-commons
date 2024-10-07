@@ -69,8 +69,6 @@ public class SidebarLine<R> {
         Preconditions.checkState(!isStaticText(), "Cannot set updater for static text line");
 
         if (updateTask != null) {
-            Preconditions.checkState(updateTask.isCancelled(),
-                    "Update task for line %s is already running. Cancel it first.", this);
             sidebar.taskIds.remove(updateTask.getTaskId());
         }
 

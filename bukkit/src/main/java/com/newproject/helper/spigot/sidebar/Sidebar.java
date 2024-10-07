@@ -324,7 +324,7 @@ public class Sidebar<R> implements Terminable {
                     continue;
                 }
 
-                if (line.updateTask != null && !line.updateTask.isCancelled()) {
+                if (line.updateTask != null) {
                     // Don't update the line if it's already has its own update task
                     continue;
                 }

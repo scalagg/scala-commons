@@ -31,9 +31,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.newproject.helper.spigot.utils.chat.ChatColorExtensionsKt;
 import me.lucko.helper.protocol.Protocol;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
+import net.evilblock.cubed.util.Color;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -121,7 +121,7 @@ public class PacketScoreboardTeam implements ScoreboardTeam {
         Preconditions.checkArgument(id.length() <= 16, "id cannot be longer than 16 characters");
 
         this.id = id;
-        this.displayName = trimName(ChatColorExtensionsKt.translate(Objects.requireNonNull(displayName, "displayName")));
+        this.displayName = trimName(Color.translate(Objects.requireNonNull(displayName, "displayName")));
         this.autoSubscribe = autoSubscribe;
     }
 
