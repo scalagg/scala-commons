@@ -260,7 +260,7 @@ public interface ScoreboardTeam {
      */
     void unsubscribeAll();
 
-    enum CollisionRule {
+    public enum CollisionRule {
         ALWAYS("always"),
         NEVER("never"),
         PUSH_OTHER_TEAMS("pushOtherTeams"),
@@ -277,7 +277,7 @@ public interface ScoreboardTeam {
         }
     }
 
-    enum NameTagVisibility {
+    public enum NameTagVisibility {
         ALWAYS("always"),
         NEVER("never"),
         HIDE_FOR_OTHER_TEAMS("hideForOtherTeams"),

@@ -1,15 +1,12 @@
-package com.newproject.helper.spigot.nametag
+package gg.scala.commons.nametag
 
-import gg.scala.commons.nametag.NametagService
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import me.lucko.helper.Events
 import me.lucko.helper.terminable.Terminable
-import me.lucko.helper.terminable.TerminableConsumer
-import me.lucko.helper.terminable.module.TerminableModule
 import net.evilblock.cubed.ScalaCommonsSpigot
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -49,14 +46,21 @@ object PlayerNametagHandler
 class PlayerNametag(private val player: Player) : Terminable
 {
     fun update(
-        prefix: Component, suffix: Component, color: ChatColor? = null,
+        prefix: String, suffix: String, color: ChatColor? = null,
         priority: Int = 0, playerTag: Boolean = false
     )
     {
-        NametagService.setNametagOfPlayer(
-            player, prefix, suffix, color = color,
+        /*NametagService.setNametagOfPlayer(
+            player,
+            LegacyComponentSerializer
+                .legacySection()
+                .deserialize(prefix),
+            LegacyComponentSerializer
+                .legacySection()
+                .deserialize(suffix),
+            color = color,
             priority, playerTag
-        )
+        )*/
     }
 
     override fun close()
