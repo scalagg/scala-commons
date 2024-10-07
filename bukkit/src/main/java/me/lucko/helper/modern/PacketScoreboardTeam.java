@@ -23,7 +23,7 @@
  *  SOFTWARE.
  */
 
-package me.lucko.helper.scoreboard;
+package me.lucko.helper.modern;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.InternalStructure;
@@ -158,7 +158,7 @@ public class PacketScoreboardTeam implements ScoreboardTeam {
     @Override
     public void setDisplayName(String displayName) {
         Objects.requireNonNull(displayName, "displayName");
-        displayName = trimName(ChatColorExtensionsKt.translate(displayName));
+        displayName = trimName(Color.translate(displayName));
         if (this.displayName.equals(displayName)) {
             return;
         }

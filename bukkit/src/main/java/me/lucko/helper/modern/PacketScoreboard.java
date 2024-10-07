@@ -23,13 +23,12 @@
  *  SOFTWARE.
  */
 
-package me.lucko.helper.scoreboard;
+package me.lucko.helper.modern;
 
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.base.Preconditions;
 import gg.scala.commons.ExtendedScalaPlugin;
 import me.lucko.helper.Events;
-import me.lucko.helper.text3.Text;
 import me.lucko.helper.utils.Players;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import net.kyori.adventure.text.Component;

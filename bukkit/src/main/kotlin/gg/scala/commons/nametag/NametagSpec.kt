@@ -1,6 +1,6 @@
 package gg.scala.commons.nametag
 
-import me.lucko.helper.scoreboard.PacketScoreboardTeam
+import me.lucko.helper.modern.PacketScoreboardTeam
 import net.kyori.adventure.text.Component
 import java.util.*
 

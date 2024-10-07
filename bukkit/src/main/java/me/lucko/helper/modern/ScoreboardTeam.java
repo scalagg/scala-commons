@@ -23,7 +23,7 @@
  *  SOFTWARE.
  */
 
-package me.lucko.helper.scoreboard;
+package me.lucko.helper.modern;
 
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import net.kyori.adventure.text.Component;

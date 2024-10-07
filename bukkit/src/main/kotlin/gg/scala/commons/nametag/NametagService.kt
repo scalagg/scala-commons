@@ -9,10 +9,10 @@ import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import me.lucko.helper.Events
-import me.lucko.helper.scoreboard.PacketScoreboardProvider
-import me.lucko.helper.scoreboard.PacketScoreboardTeam
-import me.lucko.helper.scoreboard.ScoreboardTeam
-import me.lucko.helper.scoreboard.TeamNameGenerator
+import me.lucko.helper.modern.PacketScoreboardProvider
+import me.lucko.helper.modern.PacketScoreboardTeam
+import me.lucko.helper.modern.ScoreboardTeam
+import me.lucko.helper.modern.TeamNameGenerator
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
