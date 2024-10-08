@@ -1,5 +1,8 @@
 package net.evilblock.cubed.nametag
 
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.wrapper.PacketWrapper
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -192,7 +195,7 @@ object NametagHandler
         MultiVersionScoreboardTeamPackets(provided.name)
             .newTeamMemberUpdatePacket(
                 toRefresh.name,
-                MultiVersionScoreboardTeamPackets.MemberAction.ADD
+                WrapperPlayServerTeams.TeamMode.ADD_ENTITIES
             )
             .send(refreshFor)
 
@@ -204,7 +207,7 @@ object NametagHandler
     {
         for (teamInfo in registeredTeams)
         {
-            teamInfo.teamAddPacket.send(player)
+            (teamInfo.teamAddPacket as PacketWrapper<*>).send(player)
         }
     }
 
@@ -227,7 +230,7 @@ object NametagHandler
         val addPacket = newTeam.teamAddPacket
         for (player in Bukkit.getOnlinePlayers())
         {
-            addPacket.send(player)
+            (addPacket as PacketWrapper<*>).send(player)
         }
 
         return newTeam

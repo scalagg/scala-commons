@@ -1,6 +1,7 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
+import com.github.retrooper.packetevents.PacketEvents
 import de.tr7zw.changeme.nbtapi.NBT
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
@@ -21,6 +22,7 @@ import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.container.ContainerPreEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.persist.ProfileOrchestratorService
 import gg.scala.commons.persist.datasync.DataSyncService
@@ -36,6 +38,7 @@ import gg.scala.commons.sign.Signs
 import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.commons.util.Players
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import me.lucko.helper.Commands
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
@@ -86,6 +89,10 @@ import kotlin.system.exitProcess
         PluginDependency("ScPaper", soft = true),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
+        PluginDependency("Geyser-Spigot", soft = true),
+        PluginDependency("ProtocolSupport", soft = true),
+        PluginDependency("ViaRewind", soft = true),
+        PluginDependency("ViaBackwards", soft = true),
         PluginDependency("spark", soft = true),
         PluginDependency("UnifiedMetrics", soft = true)
     ]
@@ -121,12 +128,21 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
     var versionProvider: ProtocolVersion = ProtocolLibVersionProvider
 
+    @ContainerPreEnable
+    fun preEnable()
+    {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
+        PacketEvents.getAPI().load()
+    }
+
     @ContainerEnable
     fun containerEnable()
     {
         kotlin.runCatching {
             val config = config<CommonsGeneralConfig>()
             Reflection.DEBUG = config.debug
+
+            PacketEvents.getAPI().init()
 
             createInfoCommand()
 
@@ -359,6 +375,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
     @ContainerDisable
     fun containerDisable()
     {
+        PacketEvents.getAPI().terminate()
+
         this.serverSync
             ?.disconnect(
                 reason = "manually stopped"
