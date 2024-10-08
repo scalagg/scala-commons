@@ -7,12 +7,16 @@
 
 package net.evilblock.cubed.scoreboard
 
+import com.github.retrooper.packetevents.protocol.score.ScoreFormatTypes
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateScore
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
@@ -182,19 +186,34 @@ class Scoreboard(
 
     private fun createAndAddMember(score: String)
     {
-        val scoreboardTeamAdd =
-            ScoreboardTeamPacketMod(teamName = score, prefix = "_", suffix = "_", players = arrayListOf(), action = 0)
-        scoreboardTeamAdd.send(this.player)
+        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = "_", suffix = "_")
+        interactions
+            .newCreatePacket(listOf())
+            .send(this.player)
 
-        val scoreboardTeamAddMember =
-            ScoreboardTeamPacketMod(teamName = score, players = arrayListOf(score), action = 3)
-        scoreboardTeamAddMember.send(this.player)
+        interactions
+            .newTeamMemberUpdatePacket(
+                score,
+                WrapperPlayServerTeams.TeamMode.ADD_ENTITIES
+            )
+            .send(player)
 
         this.sentTeamCreates.add(score)
     }
 
+    fun scoreboardScore(score: String, value: Int, scoreboardAction: WrapperPlayServerUpdateScore.Action, objectiveName: String = objective.name) =
+        WrapperPlayServerUpdateScore(score, scoreboardAction, objectiveName, Optional.of(value))
+
     private fun setScore(score: String, value: Int)
     {
+        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
+        {
+            this.displayedScores[score] = value
+            scoreboardScore(score, value, WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM)
+                .send(player)
+            return
+        }
+
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
         Reflection.setDeclaredFieldValue(packet, "b", this.objective.name)
@@ -204,7 +223,6 @@ class Scoreboard(
         Reflection.setDeclaredFieldValue(packet, "d", Reflection.getEnum(enumType, "CHANGE")!!)
 
         this.displayedScores[score] = value
-
         MinecraftProtocol.send(player, packet)
     }
 
@@ -213,6 +231,13 @@ class Scoreboard(
         this.displayedScores.remove(score)
         this.scorePrefixes.remove(score)
         this.scoreSuffixes.remove(score)
+
+        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
+        {
+            scoreboardScore(score, 0, WrapperPlayServerUpdateScore.Action.REMOVE_ITEM, "")
+                .send(player)
+            return
+        }
 
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
@@ -233,9 +258,10 @@ class Scoreboard(
         this.scorePrefixes[score] = prefix
         this.scoreSuffixes[score] = suffix
 
-        ScoreboardTeamPacketMod(
-            score, prefix, suffix, null, 2
-        ).send(this.player)
+        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = prefix, suffix = suffix)
+        interactions
+            .newUpdatePacket()
+            .send(this.player)
     }
 
     private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String>
