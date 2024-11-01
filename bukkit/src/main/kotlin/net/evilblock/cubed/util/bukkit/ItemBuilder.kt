@@ -21,7 +21,9 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.potion.PotionEffect
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.stream.Collectors
@@ -61,6 +63,18 @@ class ItemBuilder(private val item: ItemStack) {
         item.itemMeta = meta
         return this
     }
+
+    fun addCustomPotionEffect(effect: PotionEffect, splash: Boolean): ItemBuilder {
+        try {
+            val meta: PotionMeta = item.itemMeta as PotionMeta
+            meta.setMainEffect(effect.type)
+            meta.addCustomEffect(effect, splash)
+            item.setItemMeta(meta)
+        } catch (ignored: java.lang.ClassCastException) {
+        }
+        return this
+    }
+
 
     fun clearLore() = this.apply {
         this.setLore(listOf())
