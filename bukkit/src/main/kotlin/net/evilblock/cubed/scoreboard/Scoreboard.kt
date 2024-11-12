@@ -7,11 +7,12 @@
 
 package net.evilblock.cubed.scoreboard
 
-import com.github.retrooper.packetevents.protocol.score.ScoreFormatTypes
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateScore
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.events.PacketContainer
+import com.comphenix.protocol.wrappers.EnumWrappers
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
+import me.lucko.helper.modern.PacketScoreboard
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
@@ -194,22 +195,47 @@ class Scoreboard(
         interactions
             .newTeamMemberUpdatePacket(
                 score,
-                WrapperPlayServerTeams.TeamMode.ADD_ENTITIES
+                MultiVersionScoreboardTeamPackets.MemberAction.ADD
             )
             .send(player)
 
         this.sentTeamCreates.add(score)
     }
 
-    fun scoreboardScore(score: String, value: Int, scoreboardAction: WrapperPlayServerUpdateScore.Action, objectiveName: String = objective.name) =
-        WrapperPlayServerUpdateScore(score, scoreboardAction, objectiveName, Optional.of(value))
+    fun scoreboardScore(score: String, value: Int, scoreboardAction: EnumWrappers.ScoreboardAction): PacketContainer
+    {
+        // http://wiki.vg/Protocol#Update_Score
+        val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+
+        // set "Entity name" - aka the name of the score - limited to 40.
+        packet.getStrings().write(0, score)
+
+        // set objective name - The name of the objective the score belongs to
+        packet.getStrings().write(1, this.objective.name)
+
+        // set value of the score - The score to be displayed next to the entry. Only sent when Action does not equal 1.
+        packet.getIntegers().write(0, value)
+
+        // has display name
+        packet.getBooleans().write(0, true)
+
+        // display name
+        packet.getChatComponents().write(0, PacketScoreboard.toComponent(this.objective.name))
+
+        // has number format
+        packet.getBooleans().write(1, false)
+
+        // set the action - 0 to create/update an item. 1 to remove an item.
+        packet.getScoreboardActions().write(0, scoreboardAction)
+        return packet
+    }
 
     private fun setScore(score: String, value: Int)
     {
         if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
         {
             this.displayedScores[score] = value
-            scoreboardScore(score, value, WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM)
+            scoreboardScore(score, value, EnumWrappers.ScoreboardAction.CHANGE)
                 .send(player)
             return
         }
@@ -234,7 +260,7 @@ class Scoreboard(
 
         if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
         {
-            scoreboardScore(score, 0, WrapperPlayServerUpdateScore.Action.REMOVE_ITEM, "")
+            scoreboardScore(score, 0, EnumWrappers.ScoreboardAction.REMOVE)
                 .send(player)
             return
         }

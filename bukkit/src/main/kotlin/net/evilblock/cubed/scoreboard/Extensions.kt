@@ -1,8 +1,6 @@
 package net.evilblock.cubed.scoreboard
 
 import com.comphenix.protocol.events.PacketContainer
-import com.github.retrooper.packetevents.PacketEvents
-import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import me.lucko.helper.protocol.Protocol
 import org.bukkit.entity.Player
 
@@ -10,10 +8,7 @@ import org.bukkit.entity.Player
  * @author GrowlyX
  * @since 10/7/2024
  */
-fun PacketWrapper<*>.send(player: Player)
+fun PacketContainer.send(player: Player)
 {
-    PacketEvents.getAPI().playerManager.getUser(player)
-        .apply {
-            sendPacket(this@send)
-        }
+    Protocol.sendPacket(player, this)
 }

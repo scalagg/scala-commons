@@ -9,7 +9,6 @@ repositories {
     maven { url "https://repo.viaversion.com" }
     maven { url "https://jitpack.io" }
 
-    maven { url 'https://repo.codemc.io/repository/maven-releases/' }
     maven { url "https://repo.codemc.io/repository/maven-public/" }
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
     maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
@@ -28,8 +27,6 @@ dependencies {
     implementation project(":core")
 
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
-
-    implementation 'com.github.retrooper:packetevents-spigot:2.5.0'
 
     // todo: only api on standalone?
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
@@ -109,9 +106,6 @@ shadowJar {
     relocate "co.aikar.commands", "gg.scala.commons.acf"
     relocate "co.aikar.locales", "gg.scala.commons.locales"
     relocate("de.tr7zw.changeme.nbtapi", "gg.scala.commons.nbt")
-
-    relocate("com.github.retrooper.packetevents", "gg.scala.commons.protocol.api")
-    relocate("io.github.retrooper.packetevents", "gg.scala.commons.protocol.impl")
 
     relocate "org.reflections", "gg.scala.commons.reflections"
 
