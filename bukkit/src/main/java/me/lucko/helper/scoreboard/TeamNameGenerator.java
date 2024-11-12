@@ -1,4 +1,4 @@
-package me.lucko.helper.modern;
+package me.lucko.helper.scoreboard;
 
 import org.jetbrains.annotations.NotNull;
 

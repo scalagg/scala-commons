@@ -23,31 +23,21 @@
  *  SOFTWARE.
  */
 
-package me.lucko.helper.modern;
-
-import gg.scala.commons.ExtendedScalaPlugin;
+package me.lucko.helper.scoreboard;
 
 import javax.annotation.Nonnull;
 
 /**
- * Implementation of {@link ScoreboardProvider} for {@link PacketScoreboard}s.
+ * An object which provides {@link Scoreboard} instances.
  */
-public final class PacketScoreboardProvider implements ScoreboardProvider {
+public interface ScoreboardProvider {
 
-    private final ExtendedScalaPlugin plugin;
-    private PacketScoreboard scoreboard = null;
-
-    public PacketScoreboardProvider(ExtendedScalaPlugin plugin) {
-        this.plugin = plugin;
-    }
-
+    /**
+     * Gets the scoreboard provided by this instance.
+     *
+     * @return the scoreboard
+     */
     @Nonnull
-    @Override
-    public synchronized PacketScoreboard getScoreboard() {
-        if (this.scoreboard == null) {
-            this.scoreboard = new PacketScoreboard(this.plugin);
-        }
-        return this.scoreboard;
-    }
+    Scoreboard getScoreboard();
 
 }
