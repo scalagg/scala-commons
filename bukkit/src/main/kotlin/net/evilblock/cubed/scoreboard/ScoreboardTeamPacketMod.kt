@@ -17,8 +17,6 @@ class ScoreboardTeamPacketMod(teamName: String, prefix: String, suffix: String, 
     private val packet = PACKET_PLAY_OUT_SCOREBOARD_TEAM.newInstance()
 
     init {
-
-
         try {
             Reflection.setDeclaredFieldValue(packet, "a", teamName)
             Reflection.setDeclaredFieldValue(packet, "h", action)
