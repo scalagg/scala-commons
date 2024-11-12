@@ -10,7 +10,6 @@ package net.evilblock.cubed.menu
 import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.distribution.MenuRowDistribution
 import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
@@ -160,14 +159,6 @@ abstract class Menu
 
     fun openMenu(player: Player)
     {
-        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
-        {
-            if (currentlyOpenedMenus[player.uniqueId] != null)
-            {
-                player.closeInventory()
-            }
-        }
-
         if (async)
         {
             Tasks.async {

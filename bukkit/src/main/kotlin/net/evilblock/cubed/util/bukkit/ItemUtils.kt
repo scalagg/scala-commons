@@ -8,14 +8,9 @@
 package net.evilblock.cubed.util.bukkit
 
 import com.cryptomorin.xseries.XMaterial
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import de.tr7zw.changeme.nbtapi.NBT
-import gg.scala.commons.modern.ModernAccessPlugin
 import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.evilblock.cubed.util.nms.NBTUtil
 import org.apache.commons.lang.WordUtils
 import org.bukkit.ChatColor
 import org.bukkit.Color
@@ -156,31 +151,36 @@ object ItemUtils
     @JvmStatic
     fun applySkullTexture(itemStack: ItemStack, texture: String): ItemStack
     {
-        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
-        {
-            return ModernAccessPlugin.instance().applySkullTexture(itemStack, texture)
+        NBT.modify(itemStack) { t ->
+            val skullOwner = t.resolveOrCreateCompound("SkullOwner")
+            skullOwner.setString("Id", UUID.randomUUID().toString())
+
+            skullOwner
+                .getOrCreateCompound("Properties")
+                .getCompoundList("textures")
+                .addCompound()
+                .setString("Value", texture)
         }
 
-        val nmsCopy = getNmsCopy(itemStack)
-
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-
-        val skullOwner = NBTUtil.getCompound(tag, "SkullOwner")
-        NBTUtil.setString(skullOwner, "Id", UUID.randomUUID().toString())
-
-        val textureValueTag = NBTUtil.newTag()
-        NBTUtil.setString(textureValueTag, "Value", texture)
-
-        val textures = NBTUtil.newList()
-        NBTUtil.addToList(textures, textureValueTag)
-
-        val properties = NBTUtil.getCompound(skullOwner, "Properties")
-        NBTUtil.set(properties, "textures", textures)
-        NBTUtil.set(skullOwner, "Properties", properties)
-        NBTUtil.set(tag, "SkullOwner", skullOwner)
-
-        NBTUtil.setTag(nmsCopy, tag)
-        return getBukkitCopy(nmsCopy)
+        /**
+         *         val skullOwner = NBTUtil.getCompound(tag, "SkullOwner")
+         *         NBTUtil.setString(skullOwner, "Id", UUID.randomUUID().toString())
+         *
+         *         val textureValueTag = NBTUtil.newTag()
+         *         NBTUtil.setString(textureValueTag, "Value", texture)
+         *
+         *         val textures = NBTUtil.newList()
+         *         NBTUtil.addToList(textures, textureValueTag)
+         *
+         *         val properties = NBTUtil.getCompound(skullOwner, "Properties")
+         *         NBTUtil.set(properties, "textures", textures)
+         *         NBTUtil.set(skullOwner, "Properties", properties)
+         *         NBTUtil.set(tag, "SkullOwner", skullOwner)
+         *
+         *         NBTUtil.setTag(nmsCopy, tag)
+         *         return getBukkitCopy(nmsCopy)
+         */
+        return itemStack
     }
 
 

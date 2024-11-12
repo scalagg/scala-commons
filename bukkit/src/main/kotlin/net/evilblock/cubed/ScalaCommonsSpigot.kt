@@ -83,7 +83,6 @@ import kotlin.system.exitProcess
     depends = [
         PluginDependency("ProtocolLib"),
         PluginDependency("store-spigot"),
-        PluginDependency("ScPaper", soft = true),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
         PluginDependency("spark", soft = true),
