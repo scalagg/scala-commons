@@ -9,7 +9,6 @@ import gg.scala.commons.util.Players
 import gg.scala.flavor.FlavorBinder
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
-import org.bukkit.Bukkit
 import xyz.mkotb.configapi.ConfigFactory
 import java.io.File
 import java.nio.file.Files
@@ -119,7 +118,7 @@ open class ConfigContainer(
                     ).publish()
                 }
 
-                Bukkit.getPluginManager().callEvent(ConfigWatchEvent(this))
+                ConfigWatchEvent(this).callEvent()
             }
 
             this.lastModificationTimestamp = lastModified
