@@ -155,7 +155,7 @@ object NametagHandler
             return
         }
 
-        if (this.providers.isEmpty)
+        if (this.providers.isEmpty())
         {
             return
         }

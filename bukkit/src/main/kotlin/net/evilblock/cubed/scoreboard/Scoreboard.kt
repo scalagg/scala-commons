@@ -142,7 +142,7 @@ class Scoreboard(
             val separated = this
                 .separate(line, this.usedBaseScores)
 
-            var prefix =  separated[0]
+            val prefix =  separated[0]
             var score = separated[1]
             var suffix = separated[2]
 
