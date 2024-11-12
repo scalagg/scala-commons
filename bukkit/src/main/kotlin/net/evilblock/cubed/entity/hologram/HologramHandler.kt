@@ -8,7 +8,7 @@
 package net.evilblock.cubed.entity.hologram
 
 import net.evilblock.cubed.entity.EntityHandler
-import net.evilblock.cubed.entity.npc.personalized.PersonalizedNpcEntity
+import net.evilblock.cubed.entity.hologram.personalized.PersonalizedHologramEntity
 import net.evilblock.cubed.entity.hologram.updating.UpdatingHologramEntity
 
 object HologramHandler {
@@ -21,8 +21,8 @@ object HologramHandler {
         return EntityHandler.getEntitiesByType(UpdatingHologramEntity::class.java)
     }
 
-    fun getPersonalizedHolograms(): List<PersonalizedNpcEntity> {
-        return EntityHandler.getEntitiesByType(PersonalizedNpcEntity::class.java)
+    fun getPersonalizedHolograms(): List<PersonalizedHologramEntity> {
+        return EntityHandler.getEntitiesByType(PersonalizedHologramEntity::class.java)
     }
 
 }
