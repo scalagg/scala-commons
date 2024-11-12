@@ -9,8 +9,11 @@ package net.evilblock.cubed.util.bukkit
 
 import com.cryptomorin.xseries.XMaterial
 import de.tr7zw.changeme.nbtapi.NBT
+import de.tr7zw.changeme.nbtapi.NBTCompound
+import de.tr7zw.changeme.nbtapi.NBTItem
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftReflection
+import net.evilblock.cubed.util.nms.NBTUtil
 import org.apache.commons.lang.WordUtils
 import org.bukkit.ChatColor
 import org.bukkit.Color
@@ -135,11 +138,15 @@ object ItemUtils
     @JvmStatic
     fun setMonsterEggType(item: ItemStack, type: EntityType): ItemStack
     {
-        NBT.modify(item) { t ->
-            t.resolveOrCreateCompound("EntityTag").setString("id", type.name)
-        }
+        val idTag = NBTUtil.newTag()
+        NBTUtil.setString(idTag, "id", type.getName())
 
-        return item
+        val nmsCopy = getNmsCopy(item)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        NBTUtil.set(tag, "EntityTag", idTag)
+        NBTUtil.setTag(nmsCopy, tag)
+
+        return getBukkitCopy(nmsCopy)
     }
 
     @JvmStatic
@@ -151,36 +158,26 @@ object ItemUtils
     @JvmStatic
     fun applySkullTexture(itemStack: ItemStack, texture: String): ItemStack
     {
-        NBT.modify(itemStack) { t ->
-            val skullOwner = t.resolveOrCreateCompound("SkullOwner")
-            skullOwner.setString("Id", UUID.randomUUID().toString())
+        val nmsCopy = getNmsCopy(itemStack)
 
-            skullOwner
-                .getOrCreateCompound("Properties")
-                .getCompoundList("textures")
-                .addCompound()
-                .setString("Value", texture)
-        }
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
 
-        /**
-         *         val skullOwner = NBTUtil.getCompound(tag, "SkullOwner")
-         *         NBTUtil.setString(skullOwner, "Id", UUID.randomUUID().toString())
-         *
-         *         val textureValueTag = NBTUtil.newTag()
-         *         NBTUtil.setString(textureValueTag, "Value", texture)
-         *
-         *         val textures = NBTUtil.newList()
-         *         NBTUtil.addToList(textures, textureValueTag)
-         *
-         *         val properties = NBTUtil.getCompound(skullOwner, "Properties")
-         *         NBTUtil.set(properties, "textures", textures)
-         *         NBTUtil.set(skullOwner, "Properties", properties)
-         *         NBTUtil.set(tag, "SkullOwner", skullOwner)
-         *
-         *         NBTUtil.setTag(nmsCopy, tag)
-         *         return getBukkitCopy(nmsCopy)
-         */
-        return itemStack
+        val skullOwner = NBTUtil.getCompound(tag, "SkullOwner")
+        NBTUtil.setString(skullOwner, "Id", UUID.randomUUID().toString())
+
+        val textureValueTag = NBTUtil.newTag()
+        NBTUtil.setString(textureValueTag, "Value", texture)
+
+        val textures = NBTUtil.newList()
+        NBTUtil.addToList(textures, textureValueTag)
+
+        val properties = NBTUtil.getCompound(skullOwner, "Properties")
+        NBTUtil.set(properties, "textures", textures)
+        NBTUtil.set(skullOwner, "Properties", properties)
+        NBTUtil.set(tag, "SkullOwner", skullOwner)
+
+        NBTUtil.setTag(nmsCopy, tag)
+        return getBukkitCopy(nmsCopy)
     }
 
 
@@ -297,57 +294,113 @@ object ItemUtils
     @JvmStatic
     fun itemTagHasKey(itemStack: ItemStack, key: String): Boolean
     {
-        val nbt = NBT.readNbt(itemStack)
-        if (nbt == null)
+        val nmsCopy = getNmsCopy(itemStack)
+
+        if (!NBTUtil.hasTag(nmsCopy))
         {
             return false
         }
 
-        return nbt.hasTag(key)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        return NBTUtil.hasKey(tag, key)
     }
 
     @JvmStatic
-    fun readItemTagKey(itemStack: ItemStack, key: String): String?
+    fun readItemTagKey(itemStack: ItemStack, key: String): Any
     {
-        val nbt = NBT.readNbt(itemStack)
-        if (nbt == null)
+        val nmsCopy = getNmsCopy(itemStack)
+
+        if (!NBTUtil.hasTag(nmsCopy))
         {
-            return null
+            return false
         }
 
-        return nbt.getString(key)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        return NBTUtil.get(tag, key)
     }
 
     @JvmStatic
     fun addToItemTag(itemStack: ItemStack, key: String, value: String, preserve: Boolean = false): ItemStack
     {
-        NBT.modify(itemStack) { t ->
-            t.setString(key, value)
-        }
+        val nmsCopy = getNmsCopy(itemStack)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+
+        NBTUtil.setString(tag, key, value)
 
         if (preserve)
         {
-            preserveItemNBT(itemStack, key)
+            preserveItemNBT(nmsCopy, tag, key)
         }
-        return itemStack
+
+        NBTUtil.setTag(nmsCopy, tag)
+
+        return getBukkitCopy(nmsCopy)
     }
+
+    @JvmStatic
+    fun addToItemTag(itemStack: ItemStack, pairs: List<Pair<String, String>>, preserve: Boolean = false): ItemStack
+    {
+        val nmsCopy = getNmsCopy(itemStack)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+
+        for (pair in pairs)
+        {
+            NBTUtil.setString(tag, pair.first, pair.second)
+
+            if (preserve)
+            {
+                preserveItemNBT(nmsCopy, tag, pair.first)
+            }
+        }
+
+        NBTUtil.setTag(nmsCopy, tag)
+
+        return getBukkitCopy(nmsCopy)
+    }
+
+//    @JvmStatic
+//    fun addUUIDToItemTag(itemStack: ItemStack, key: String, uuid: UUID, preserve: Boolean = false): ItemStack {
+//        val nmsCopy = getNmsCopy(itemStack)
+//        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+//
+//        NBTUtil.setUUID(tag, key, uuid)
+//
+//        if (preserve) {
+//            preserveItemNBT(nmsCopy, tag, "${key}Most")
+//            preserveItemNBT(nmsCopy, tag, "${key}Least")
+//        }
+//
+//        NBTUtil.setTag(nmsCopy, tag)
+//
+//        return getBukkitCopy(nmsCopy)
+//    }
 
     @JvmStatic
     fun preserveItemNBT(itemStack: ItemStack, key: String): ItemStack
     {
-        NBT.modify(itemStack) { t ->
-            if (t.hasTag("PreserveNBT"))
-            {
-                val currentKeys = t.getString("PreserveNBT").split(",").toHashSet()
-                currentKeys.add(key)
+        val nmsCopy = getNmsCopy(itemStack)
+        val tag = NBTUtil.getOrCreateTag(nmsCopy)
 
-                t.setString("PreserveNBT", currentKeys.joinToString(","))
-            } else
-            {
-                t.setString("PreserveNBT", key)
-            }
+        preserveItemNBT(nmsCopy, tag, key)
+
+        return getBukkitCopy(nmsCopy)
+    }
+
+    @JvmStatic
+    fun preserveItemNBT(item: Any, tag: Any, key: String)
+    {
+        if (NBTUtil.hasKey(tag, "PreserveNBT"))
+        {
+            val currentKeys = NBTUtil.getString(tag, "PreserveNBT").split(",").toHashSet()
+            currentKeys.add(key)
+
+            NBTUtil.setString(tag, "PreserveNBT", currentKeys.joinToString(separator = ","))
+        } else
+        {
+            NBTUtil.setString(tag, "PreserveNBT", key)
         }
-        return itemStack
+
+        NBTUtil.setTag(item, tag)
     }
 
     /**

@@ -1,7 +1,6 @@
 package net.evilblock.cubed
 
 import com.comphenix.protocol.ProtocolLibrary
-import de.tr7zw.changeme.nbtapi.NBT
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
@@ -147,7 +146,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }
 
             TimeZone.setDefault(default)
-            NBT.preloadApi()
 
             this.configureRedisServices()
             ProfileOrchestratorService.configureEventHandlers(this)

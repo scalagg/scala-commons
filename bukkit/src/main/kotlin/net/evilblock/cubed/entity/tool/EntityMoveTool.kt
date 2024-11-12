@@ -80,8 +80,7 @@ object EntityMoveTool : Listener {
         for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
             if (isMoveTool(itemStack)) {
-                val uuid = ItemUtils.readItemTagKey(itemStack, "EntityMoveTool")?.let { UUID.fromString(it) }
-                    ?: return
+                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
 
                 EntityHandler.getEntityByUuid(uuid)
                     ?.updateVisibility(false)
@@ -104,11 +103,8 @@ object EntityMoveTool : Listener {
             if (isMoveTool(itemInHand)) {
                 event.isCancelled = true
 
-                val uuid = ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool")
-                    .let { UUID.fromString(it) }
-                        ?: return run {
-                            event.isCancelled = true
-                        }
+                val uuid =
+                    UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
 
                 val entity = EntityHandler.getEntityByUuid(uuid)
                 if (entity != null) {
