@@ -41,10 +41,7 @@ object NametagService
     private val prefixAttribute = propertyAttribute(NametagSpec::prefix)
     private val suffixAttribute = propertyAttribute(NametagSpec::suffix)
 
-    /**
-     * Maps a user to their subscribed user viewers, and what team the user is viewing.
-     */
-    private val subscriptions = ConcurrentHashMap<UUID, MutableMap<UUID, UUID>>()
+    private val playerToSpecMappings = ConcurrentHashMap<UUID, UUID>()
 
     @Configure
     fun configure()
@@ -56,7 +53,7 @@ object NametagService
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
                 removeFromExisting(it.player)
-                subscriptions.remove(it.player.uniqueId)
+                playerToSpecMappings.remove(it.player.uniqueId)
             }
             .bindWith(ScalaCommonsSpigot.instance)
 
@@ -76,24 +73,21 @@ object NametagService
         .retrieve(QueryFactory.equal(idAttribute, id))
         .firstOrNull()
 
-    private fun findUniqueNametagSubscriptionsOf(player: Player): List<NametagSpec>
+    private fun findTeamOfPlayer(player: Player): NametagSpec?
     {
-        val uniqueSubscriptions = subscriptions[player.uniqueId]
-            ?: return emptyList()
+        val spec = playerToSpecMappings[player.uniqueId]
+            ?: return null
 
-        return uniqueSubscriptions.values.toSet().mapNotNull(::findTeamByID)
+        return findTeamByID(spec)
     }
 
-    private fun buildAndRegisterNewSpec(
+    private fun buildNewSpec(
         prefix: Component, suffix: Component, color: ChatColor?,
         sortPriority: Int, playerTag: Boolean = false
     ): NametagSpec
     {
         val generatedName = TeamNameGenerator.generate(sortPriority, playerTag)
-
         val team = PacketScoreboardTeam(generatedName, "", true)
-        team.setAutoSubscribe(false)
-
         val newColor = color ?: prefix.color()?.value()?.let { closestChatColor(it) }
         team.apply {
             this.prefix = prefix
@@ -110,35 +104,30 @@ object NametagService
         ).apply(nameTagTeams::add)
     }
 
-    fun findExistingSubscriptionFor(player: Player, viewer: Player) = subscriptions[player.uniqueId]
-        ?.let { map ->
-            map[viewer.uniqueId]?.let(::findTeamByID)
-        }
-
-    fun setNametagOfPlayerFor(
-        player: Player, viewer: Player,
-        prefix: Component, suffix: Component, color: ChatColor? = null,
+    fun setNametagOfPlayer(
+        player: Player, prefix: Component, suffix: Component, color: ChatColor? = null,
         sortPriority: Int = 0,
         playerTag: Boolean = false
     )
     {
         val team = findExistingTeam(prefix, suffix)
-            ?: buildAndRegisterNewSpec(prefix, suffix, color, sortPriority, playerTag)
+            ?: buildNewSpec(prefix, suffix, color, sortPriority, playerTag)
 
-        findExistingSubscriptionFor(player, viewer)?.apply {
-            this.team.unsubscribe(viewer)
+        findTeamOfPlayer(player)?.apply {
+            this.team.removePlayer(player)
+            playerToSpecMappings.remove(player.uniqueId)
         }
 
-/*        team.team.addPlayer(player)
-        subscriptions[player.uniqueId] = team.uniqueId*/
+        team.team.addPlayer(player)
+        playerToSpecMappings[player.uniqueId] = team.uniqueId
     }
 
     private fun removeFromExisting(player: Player)
     {
-/*        val team = findTeamOfPlayer(player)
+        val team = findTeamOfPlayer(player)
             ?: return
 
-        team.team.removePlayer(player)*/
+        team.team.removePlayer(player)
     }
 
     fun removeFromAll(player: Player)

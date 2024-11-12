@@ -7,9 +7,9 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
-import net.evilblock.cubed.scoreboard.MultiVersionScoreboardTeamPackets
-import net.evilblock.cubed.scoreboard.send
+import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
 import net.evilblock.cubed.services.CommonsServiceExecutor
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -17,8 +17,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 object NametagHandler
@@ -32,7 +31,6 @@ object NametagHandler
     private var teamCreateIndex = 0
 
     private var providers = CopyOnWriteArrayList<NametagProvider>()
-    val providerLock = ReentrantLock()
 
     private var isNametagRestrictionEnabled: Boolean = false
     private var nametagRestrictBypass: String = ""
@@ -43,7 +41,9 @@ object NametagHandler
     @Configure
     fun configure()
     {
-        val nametagConfig = this.plugin.config<CommonsNametagConfig>()
+        val nametagConfig = this.plugin
+            .config<CommonsNametagConfig>()
+
         if (nametagConfig.enabled)
         {
             plugin.logger.info("Auto-updating nametags are disabled by config")
@@ -56,34 +56,21 @@ object NametagHandler
         isNametagRestrictionEnabled = nametagConfig.packetRestriction
         nametagRestrictBypass = nametagConfig.packetRestrictionPrefix
 
-        if (async)
-        {
-            CommonsServiceExecutor
-                .scheduleAtFixedRate(
-                    NametagThread(),
-                    0L,
-                    updateInterval * 50L,
-                    TimeUnit.MILLISECONDS
-                )
-        }
-
-        /*if (serverNewerThan18)
-        {
-            plugin.flavor {
-                inject(NametagService)
-                inject(PlayerNametagHandler)
-            }
-        }*/
+        CommonsServiceExecutor
+            .scheduleAtFixedRate(
+                NametagThread(),
+                0L,
+                updateInterval * 50L,
+                TimeUnit.MILLISECONDS
+            )
 
         registerProvider(NametagProvider.DefaultNametagProvider())
     }
 
     fun registerProvider(newProvider: NametagProvider)
     {
-        providerLock.withLock {
-            providers.add(newProvider)
-            providers.sortByDescending { it.weight }
-        }
+        providers.add(newProvider)
+        providers.sortByDescending { it.weight }
     }
 
     fun reloadPlayer(toRefresh: Player)
@@ -128,7 +115,8 @@ object NametagHandler
 
     internal fun applyUpdate(nametagUpdate: NametagUpdate)
     {
-        val toRefreshPlayer = Bukkit.getPlayer(nametagUpdate.toRefresh) ?: return
+        val toRefreshPlayer = Bukkit.getPlayerExact(nametagUpdate.toRefresh) ?: return
+
         if (nametagUpdate.refreshFor == null)
         {
             for (refreshFor in Bukkit.getOnlinePlayers())
@@ -137,7 +125,7 @@ object NametagHandler
             }
         } else
         {
-            val refreshForPlayer = Bukkit.getPlayer(nametagUpdate.refreshFor)
+            val refreshForPlayer = Bukkit.getPlayerExact(nametagUpdate.refreshFor)
             if (refreshForPlayer != null)
             {
                 reloadPlayerInternal(toRefreshPlayer, refreshForPlayer)
@@ -152,7 +140,7 @@ object NametagHandler
             return
         }
 
-        if (this.providers.isEmpty)
+        if (this.providers.isEmpty())
         {
             return
         }
@@ -189,12 +177,10 @@ object NametagHandler
             teamInfoMap = teamMap[refreshFor.uniqueId]!!
         }
 
-        MultiVersionScoreboardTeamPackets(provided.name)
-            .newTeamMemberUpdatePacket(
-                toRefresh.name,
-                MultiVersionScoreboardTeamPackets.MemberAction.ADD
-            )
-            .send(refreshFor)
+        if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+        {
+            ScoreboardTeamPacketMod(provided.name, arrayListOf(toRefresh.name), 3).send(refreshFor)
+        }
 
         teamInfoMap[toRefresh.uniqueId] = provided
         teamMap[refreshFor.uniqueId] = teamInfoMap
@@ -204,7 +190,10 @@ object NametagHandler
     {
         for (teamInfo in registeredTeams)
         {
-            teamInfo.teamAddPacket.send(player)
+            if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+            {
+                teamInfo.teamAddPacket.send(player)
+            }
         }
     }
 

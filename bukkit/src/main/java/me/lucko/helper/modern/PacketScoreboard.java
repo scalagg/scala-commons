@@ -55,11 +55,11 @@ import java.util.UUID;
 @NonnullByDefault
 public class PacketScoreboard implements Scoreboard {
 
-    public static WrappedChatComponent toComponent(String text) {
-        return WrappedChatComponent.fromText(GsonComponentSerializer.gson().serialize(LegacyComponentSerializer.legacySection().deserialize(text)));
+    static WrappedChatComponent toComponent(String text) {
+        return WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(LegacyComponentSerializer.legacySection().deserialize(text)));
     }
 
-    public static WrappedChatComponent toComponent(Component component) {
+    static WrappedChatComponent toComponent(Component component) {
         return WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(component));
     }
     // teams & objectives shared by all players.

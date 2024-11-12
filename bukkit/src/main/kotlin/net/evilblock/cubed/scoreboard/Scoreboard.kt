@@ -7,17 +7,12 @@
 
 package net.evilblock.cubed.scoreboard
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.wrappers.EnumWrappers
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
-import me.lucko.helper.modern.PacketScoreboard
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
@@ -187,59 +182,19 @@ class Scoreboard(
 
     private fun createAndAddMember(score: String)
     {
-        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = "_", suffix = "_")
-        interactions
-            .newCreatePacket(listOf())
-            .send(this.player)
+        val scoreboardTeamAdd =
+            ScoreboardTeamPacketMod(teamName = score, prefix = "_", suffix = "_", players = arrayListOf(), action = 0)
+        scoreboardTeamAdd.send(this.player)
 
-        interactions
-            .newTeamMemberUpdatePacket(
-                score,
-                MultiVersionScoreboardTeamPackets.MemberAction.ADD
-            )
-            .send(player)
+        val scoreboardTeamAddMember =
+            ScoreboardTeamPacketMod(teamName = score, players = arrayListOf(score), action = 3)
+        scoreboardTeamAddMember.send(this.player)
 
         this.sentTeamCreates.add(score)
     }
 
-    fun scoreboardScore(score: String, value: Int, scoreboardAction: EnumWrappers.ScoreboardAction): PacketContainer
-    {
-        // http://wiki.vg/Protocol#Update_Score
-        val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
-
-        // set "Entity name" - aka the name of the score - limited to 40.
-        packet.getStrings().write(0, score)
-
-        // set objective name - The name of the objective the score belongs to
-        packet.getStrings().write(1, this.objective.name)
-
-        // set value of the score - The score to be displayed next to the entry. Only sent when Action does not equal 1.
-        packet.getIntegers().write(0, value)
-
-        // has display name
-        packet.getBooleans().write(0, true)
-
-        // display name
-        packet.getChatComponents().write(0, PacketScoreboard.toComponent(this.objective.name))
-
-        // has number format
-        packet.getBooleans().write(1, false)
-
-        // set the action - 0 to create/update an item. 1 to remove an item.
-        packet.getScoreboardActions().write(0, scoreboardAction)
-        return packet
-    }
-
     private fun setScore(score: String, value: Int)
     {
-        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
-        {
-            this.displayedScores[score] = value
-            scoreboardScore(score, value, EnumWrappers.ScoreboardAction.CHANGE)
-                .send(player)
-            return
-        }
-
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
         Reflection.setDeclaredFieldValue(packet, "b", this.objective.name)
@@ -249,6 +204,7 @@ class Scoreboard(
         Reflection.setDeclaredFieldValue(packet, "d", Reflection.getEnum(enumType, "CHANGE")!!)
 
         this.displayedScores[score] = value
+
         MinecraftProtocol.send(player, packet)
     }
 
@@ -257,13 +213,6 @@ class Scoreboard(
         this.displayedScores.remove(score)
         this.scorePrefixes.remove(score)
         this.scoreSuffixes.remove(score)
-
-        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
-        {
-            scoreboardScore(score, 0, EnumWrappers.ScoreboardAction.REMOVE)
-                .send(player)
-            return
-        }
 
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
@@ -284,10 +233,9 @@ class Scoreboard(
         this.scorePrefixes[score] = prefix
         this.scoreSuffixes[score] = suffix
 
-        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = prefix, suffix = suffix)
-        interactions
-            .newUpdatePacket()
-            .send(this.player)
+        ScoreboardTeamPacketMod(
+            score, prefix, suffix, null, 2
+        ).send(this.player)
     }
 
     private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String>

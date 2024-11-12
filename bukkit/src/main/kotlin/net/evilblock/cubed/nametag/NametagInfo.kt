@@ -1,6 +1,7 @@
 package net.evilblock.cubed.nametag
 
-import net.evilblock.cubed.scoreboard.MultiVersionScoreboardTeamPackets
+import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
+import java.util.ArrayList
 
 class NametagInfo(
     val name: String,
@@ -8,6 +9,6 @@ class NametagInfo(
     val suffix: String
 )
 {
-    val teamAddPacket = MultiVersionScoreboardTeamPackets(name, prefix, suffix)
-        .newCreatePacket(listOf())
+    val teamAddPacket =
+        ScoreboardTeamPacketMod(name, prefix, suffix, ArrayList(), 0)
 }
