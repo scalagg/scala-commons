@@ -8,6 +8,7 @@
 package net.evilblock.cubed.entity.npc
 
 import com.cryptomorin.xseries.XMaterial
+import gg.scala.spigot.logger.Logger
 import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
@@ -201,18 +202,33 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Livi
     }
 
     fun updateTextureByUsername(username: String, onComplete: (Boolean, Exception?) -> Unit) {
-        try {
-            val texture = NpcTexture
-                .fetchTextureByUsername(username)
-                .orElseThrow {
-                    IllegalStateException("Failed to fetch texture by username")
-                }
+        if (username.startsWith("url:")) {
+            try {
+                val texture = NpcTexture
+                    .fetchTextureByUrl(username.removePrefix("url:"))
+                    .orElseThrow {
+                        IllegalStateException("Failed to fetch texture by URL")
+                    }
+                updateTexture(texture!!.textureValue, texture.textureSignature)
+                onComplete(true, null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onComplete(false, e)
+            }
+        } else {
+            try {
+                val texture = NpcTexture
+                    .fetchTextureByUsername(username)
+                    .orElseThrow {
+                        IllegalStateException("Failed to fetch texture by username")
+                    }
 
-            updateTexture(texture!!.textureValue, texture.textureSignature)
-            onComplete.invoke(true, null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onComplete(false, e)
+                updateTexture(texture!!.textureValue, texture.textureSignature)
+                onComplete.invoke(true, null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onComplete(false, e)
+            }
         }
     }
 
