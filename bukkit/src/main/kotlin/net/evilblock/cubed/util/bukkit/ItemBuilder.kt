@@ -8,12 +8,16 @@
 package net.evilblock.cubed.util.bukkit
 
 import com.cryptomorin.xseries.XMaterial
+import com.mojang.authlib.GameProfile
+import com.mojang.authlib.properties.Property
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
+import net.minecraft.server.v1_8_R3.NBTTagCompound
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -24,9 +28,11 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.potion.PotionEffect
+import java.lang.reflect.Field
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.stream.Collectors
+
 
 class ItemBuilder(private val item: ItemStack) {
 
@@ -153,6 +159,41 @@ class ItemBuilder(private val item: ItemStack) {
         val meta = item.itemMeta
         meta.spigot().isUnbreakable = unbreakable
         item.itemMeta = meta
+        return this
+    }
+
+    fun setBase64Head(head: String): ItemBuilder {
+        val skullMeta = item.itemMeta
+        val profile = GameProfile(UUID.randomUUID(), null)
+        profile.properties.put("textures", Property("textures", head))
+        var profileField: Field? = null
+        try {
+            profileField = skullMeta.javaClass.getDeclaredField("profile")
+        } catch (e: NoSuchFieldException) {
+            e.printStackTrace()
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+
+        profileField!!.setAccessible(true)
+
+        try {
+            profileField.set(skullMeta, profile)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        }
+        item.setItemMeta(skullMeta)
+        return this
+    }
+
+    fun setNBTData(key: String, value: String): ItemBuilder {
+        val nmsStack = CraftItemStack.asNMSCopy(item)
+        val compound: NBTTagCompound = if ((nmsStack.hasTag())) nmsStack.tag else NBTTagCompound()
+        compound.setString(key, value)
+        nmsStack.tag = compound
+        item.setItemMeta(CraftItemStack.getItemMeta(nmsStack))
         return this
     }
 

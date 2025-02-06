@@ -20,7 +20,7 @@ abstract class AbstractServer : AbstractTypeSerializable
 
     var state = ServerState.Connected
 
-    private val metadata = CopyOnWriteArrayList<Pair<Key, MetadataValue>>()
+    val metadata = CopyOnWriteArrayList<Pair<Key, MetadataValue>>()
 
     var lastHeartbeat = System.currentTimeMillis()
     var initialHeartbeat = System.currentTimeMillis()
