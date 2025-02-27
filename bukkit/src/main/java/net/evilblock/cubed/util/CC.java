@@ -197,6 +197,6 @@ public class CC {
     public static final String SB_BAR = GRAY + S + "-------------------";
 
     static {
-        setup(GREEN, YELLOW);
+        setup(GOLD, YELLOW);
     }
 }
