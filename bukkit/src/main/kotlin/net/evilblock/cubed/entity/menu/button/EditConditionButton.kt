@@ -48,7 +48,7 @@ class EditConditionButton(
                 }
 
                 override fun acceptInput(context: ConversationContext, input: String): Prompt? {
-                    entity.command = input
+                    entity.condition = input
                     context.forWhom.sendRawMessage("${CC.GREEN}Updated condition!")
 
                     EditEntityMenu(entity).openMenu(context.forWhom as Player)
@@ -57,7 +57,7 @@ class EditConditionButton(
                 }
             })
         } else {
-            entity.command = null
+            entity.condition = null
             player.sendMessage("${CC.GREEN}Unset condition!")
         }
     }
