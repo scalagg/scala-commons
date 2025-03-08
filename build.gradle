@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group "gg.scala.commons"
-    version "4.0.1"
+    version "4.0.2"
 
     repositories {
         mavenCentral()

@@ -10,15 +10,12 @@ package net.evilblock.cubed.entity
 import net.evilblock.cubed.entity.animation.EntityAnimation
 import net.evilblock.cubed.entity.animation.EntityAnimationType
 import net.evilblock.cubed.entity.hologram.HologramEntity
-import net.evilblock.cubed.entity.menu.button.DeleteButton
-import net.evilblock.cubed.entity.menu.button.EditAnimationButton
-import net.evilblock.cubed.entity.menu.button.MoveLocationButton
-import net.evilblock.cubed.entity.menu.button.UpdateCommandButton
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
 import net.evilblock.cubed.entity.hooks.EntityHooks
+import net.evilblock.cubed.entity.menu.button.*
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.nms.MinecraftProtocol
@@ -79,6 +76,7 @@ abstract class Entity(var location: Location)
     internal lateinit var debugView: MutableMap<UUID, HologramEntity>
 
     var command: String? = null
+    var condition: String? = null
 
     var motionX: Double = 0.0
     var motionY: Double = 0.0
@@ -417,6 +415,7 @@ abstract class Entity(var location: Location)
         return arrayListOf<Button>().also { buttons ->
             buttons.add(UpdateCommandButton(this))
             buttons.add(MoveLocationButton(this))
+            buttons.add(EditConditionButton(this))
 
             if (getAnimationTypes().isNotEmpty())
             {
