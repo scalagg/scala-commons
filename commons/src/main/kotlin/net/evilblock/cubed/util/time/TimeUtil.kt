@@ -162,6 +162,32 @@ object TimeUtil {
     }
 
     @JvmStatic
+    fun millisToRoundedTime(millis: Long): String {
+        if (millis == Long.MAX_VALUE) {
+            return "Permanent"
+        }
+
+        val adjustedMillis = millis + 1
+        val seconds = adjustedMillis / 1000L
+        val minutes = seconds / 60L
+        val hours = minutes / 60L
+        val days = hours / 24L
+        val weeks = days / 7L
+        val months = weeks / 4L
+        val years = months / 12L
+
+        return when {
+            years > 0L -> "$years year${if (years == 1L) "" else "s"}"
+            months > 0L -> "$months month${if (months == 1L) "" else "s"}"
+            weeks > 0L -> "$weeks week${if (weeks == 1L) "" else "s"}"
+            days > 0L -> "$days day${if (days == 1L) "" else "s"}"
+            hours > 0L -> "$hours hour${if (hours == 1L) "" else "s"}"
+            minutes > 0L -> "$minutes minute${if (minutes == 1L) "" else "s"}"
+            else -> "$seconds second${if (seconds == 1L) "" else "s"}"
+        }
+    }
+
+    @JvmStatic
     fun elapsed(from: Long, required: Long): Boolean {
         return System.currentTimeMillis() - from > required
     }
