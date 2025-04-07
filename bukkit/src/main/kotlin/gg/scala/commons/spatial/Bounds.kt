@@ -1,6 +1,5 @@
 package gg.scala.commons.spatial
 
-import gg.scala.commons.util.spatial.Position
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World

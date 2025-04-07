@@ -1,7 +1,5 @@
 package gg.scala.commons.spatial
 
-import gg.scala.commons.util.spatial.Orientation
-import gg.scala.commons.util.spatial.Position
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
