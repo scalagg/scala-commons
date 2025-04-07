@@ -81,6 +81,14 @@ object TimeUtil {
     }
 
     @JvmStatic
+    fun formatMillisIntoAbbreviatedString(millis: Long) = formatIntoAbbreviatedString(millis / 1000L)
+
+    @JvmStatic
+    fun formatIntoAbbreviatedString(secs: Long) {
+        // ...
+    }
+
+    @JvmStatic
     fun formatIntoAbbreviatedString(secs: Int): String {
         if (secs == 0) {
             return "0s"

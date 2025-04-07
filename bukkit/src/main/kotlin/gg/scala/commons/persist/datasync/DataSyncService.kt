@@ -198,6 +198,14 @@ abstract class DataSyncService<T>
         }
     }
 
+    fun editAndSave(dsl: T.() -> Unit)
+    {
+        with(cached()) {
+            dsl()
+            sync(this)
+        }
+    }
+
     private fun pushKvUpdate()
     {
         AwareMessage
