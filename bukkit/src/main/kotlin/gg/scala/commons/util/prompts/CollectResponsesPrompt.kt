@@ -8,10 +8,6 @@ import net.evilblock.cubed.util.bukkit.prompt.InputPrompt
 import org.bukkit.entity.Player
 import java.util.LinkedList
 
-/**
- * @author Subham
- * @since 4/4/25
- */
 class CollectResponsesPrompt(private val player: Player)
 {
     private val responses = mutableMapOf<String, String>()

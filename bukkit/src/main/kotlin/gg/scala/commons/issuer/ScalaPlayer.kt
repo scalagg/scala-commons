@@ -9,13 +9,6 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
 
-/**
- * Issuer-aware context wrapper
- * for Bukkit [Player]s.
- *
- * @author GrowlyX
- * @since 9/9/2022
- */
 data class ScalaPlayer(
     private val player: Player,
     private val audiences: BukkitAudiences,
@@ -60,7 +53,7 @@ data class ScalaPlayer(
 
     fun teleport(location: Location)
     {
-        // TODO: Use PaperLib for asynchronous teleportation
+
         this.player.teleport(location)
     }
 }

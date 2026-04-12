@@ -1,9 +1,5 @@
 package gg.scala.commons.localize
 
-/**
- * @author GrowlyX
- * @since 7/25/2023
- */
 interface ResourceBucket
 {
     companion object

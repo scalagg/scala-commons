@@ -9,9 +9,6 @@ import org.bukkit.GameMode;
 
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistCellModern extends TablistCell {
 
     private static final String EMPTY_DISPLAY_NAME = "{\"text\":\"\"}";

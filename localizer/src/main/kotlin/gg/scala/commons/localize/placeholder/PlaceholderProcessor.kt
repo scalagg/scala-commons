@@ -1,9 +1,5 @@
 package gg.scala.commons.localize.placeholder
 
-/**
- * @author GrowlyX
- * @since 7/26/2023
- */
 interface PlaceholderProcessor
 {
     companion object

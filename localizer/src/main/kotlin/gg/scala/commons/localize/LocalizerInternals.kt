@@ -3,10 +3,6 @@ package gg.scala.commons.localize
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 7/25/2023
- */
 internal object LocalizerInternals
 {
     fun generateSnakeCaseID(method: Method) = method.name

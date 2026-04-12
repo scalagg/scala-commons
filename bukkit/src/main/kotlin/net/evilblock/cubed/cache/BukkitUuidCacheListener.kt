@@ -6,10 +6,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 
-/**
- * @author GrowlyX
- * @since 2/1/2022
- */
 @Listeners
 object BukkitUuidCacheListener : Listener
 {

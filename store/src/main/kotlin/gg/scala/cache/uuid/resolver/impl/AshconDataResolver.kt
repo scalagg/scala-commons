@@ -10,10 +10,6 @@ import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-/**
- * @author GrowlyX
- * @since 9/13/2022
- */
 object AshconDataResolver : DataResolver
 {
     private val invalidCache = Caffeine.newBuilder()

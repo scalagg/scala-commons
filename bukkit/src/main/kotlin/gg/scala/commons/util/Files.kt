@@ -7,10 +7,6 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.util.stream.Collectors
 
-/**
- * @author AgentRKID
- * @since 8/7/2022
- */
 object Files
 {
     fun read(file: File, unit: (BufferedReader) -> Unit)

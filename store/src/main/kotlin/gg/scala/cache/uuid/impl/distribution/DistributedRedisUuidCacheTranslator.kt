@@ -10,23 +10,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.ForkJoinPool
 
-/**
- * Commits the UUID, String [Pair]
- * to our redis cache.
- *
- * This [Pair] is then distributed
- * across all online instances,
- * updating it without committing.
- *
- * Usernames as [String] form in pairs
- * are scanned as their lowercase form
- * to prevent us from encountering any
- * issues while finding a match for the
- * username in our [usernameCache] map.
- *
- * @author GrowlyX
- * @since 2/1/2022
- */
 class DistributedRedisUuidCacheTranslator(
     private val aware: Aware<AwareMessage>
 ) : ScalaStoreUuidCacheTranslator
@@ -43,9 +26,6 @@ class DistributedRedisUuidCacheTranslator(
     private lateinit var connection:
             StatefulRedisConnection<String, String>
 
-    /**
-     * An initial startup method for this translator.
-     */
     override fun configure(): CompletionStage<Void>
     {
         return this.aware.connect()
@@ -64,10 +44,6 @@ class DistributedRedisUuidCacheTranslator(
 
     }
 
-    /**
-     * Pre-loads the cache through whatever
-     * service the implementation is using.
-     */
     override fun preLoadCache(async: Boolean)
     {
         val loadFunction = {
@@ -103,12 +79,6 @@ class DistributedRedisUuidCacheTranslator(
         }
     }
 
-    /**
-     * Commits a UUID, Username pair to whatever
-     * service the implementation is using.
-     *
-     * @param pair the uniqueId, username pair
-     */
     override fun update(
         pair: Pair<UUID, String>, commit: Boolean
     )
@@ -134,13 +104,6 @@ class DistributedRedisUuidCacheTranslator(
         }
     }
 
-    /**
-     * Finds a cached uniqueId, or
-     * fetches & caches the newly fetched uniqueId.
-     *
-     * @param username the player username
-     * @return a nullable [UUID]
-     */
     override fun uniqueId(username: String): UUID?
     {
         return kotlin.runCatching {
@@ -149,13 +112,6 @@ class DistributedRedisUuidCacheTranslator(
         }.getOrNull()
     }
 
-    /**
-     * Finds a cached username, or
-     * fetches & caches the newly fetched username.
-     *
-     * @param uniqueId the player uniqueId
-     * @return a nullable [String]
-     */
     override fun username(uniqueId: UUID): String?
     {
         return uniqueIdCache[uniqueId] ?: internalUsername(uniqueId)

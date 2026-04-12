@@ -9,12 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static net.evilblock.cubed.util.bukkit.Tasks.asyncTimer;
 
-/**
- * Animates a TextIterator using Bukkit's async scheduler.
- *
- * @author GrowlyX
- * @since 5/14/2023
- */
 public class TextAnimator {
     private final TextIterator iterator;
     private @Nullable BukkitTask bukkitTask;

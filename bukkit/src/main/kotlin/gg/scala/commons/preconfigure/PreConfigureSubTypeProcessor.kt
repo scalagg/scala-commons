@@ -7,10 +7,6 @@ import gg.scala.flavor.service.Service
 import org.reflections.scanners.Scanners
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/23/2022
- */
 object PreConfigureSubTypeProcessor
 {
     val processors =
@@ -53,6 +49,7 @@ object PreConfigureSubTypeProcessor
                 val instance = service.objectInstance()
                     ?: service
                         .getDeclaredConstructor()
+                        .apply { isAccessible = true }
                         .newInstance()
 
                 if (instance.javaClass.isAnnotationPresent(EagerInjection::class.java))
@@ -68,7 +65,9 @@ object PreConfigureSubTypeProcessor
     fun Class<*>.objectInstance(): Any?
     {
         return runCatching {
-            getDeclaredField("INSTANCE").get(null)
+            val field = getDeclaredField("INSTANCE")
+            field.isAccessible = true
+            field.get(null)
         }.getOrNull()
     }
 }

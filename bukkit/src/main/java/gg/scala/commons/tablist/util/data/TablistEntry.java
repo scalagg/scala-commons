@@ -4,9 +4,6 @@ import org.bukkit.GameMode;
 
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistEntry {
 
     private UUID userId;

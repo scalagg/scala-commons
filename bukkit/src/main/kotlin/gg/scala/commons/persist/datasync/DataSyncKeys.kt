@@ -2,18 +2,10 @@ package gg.scala.commons.persist.datasync
 
 import net.kyori.adventure.key.Key
 
-/**
- * @author GrowlyX
- * @since 2/10/2023
- */
 interface DataSyncKeys
 {
     fun store(): Key
 
-    /**
-     * It's incredible stupid that we're using
-     * a [Key] for the store template.
-     */
     fun newStore(): String
     {
         return store().asString()

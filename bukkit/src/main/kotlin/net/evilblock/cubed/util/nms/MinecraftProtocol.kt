@@ -1,17 +1,11 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.nms
 
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.utility.MinecraftVersion
 import gg.scala.commons.tablist.util.Util
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemUtils
 import org.bukkit.Location
@@ -23,12 +17,42 @@ import kotlin.math.floor
 
 object MinecraftProtocol
 {
+    private val ENTITY_DATA_ACCESSOR_CLASS = Reflection.getClassSuppressed("net.minecraft.network.syncher.EntityDataAccessor")
+    private val DATA_VALUE_CLASS = Reflection.getClassSuppressed("net.minecraft.network.syncher.SynchedEntityData\$DataValue")
+    private val DATA_VALUE_CREATE_METHOD = if (ENTITY_DATA_ACCESSOR_CLASS != null && DATA_VALUE_CLASS != null)
+    {
+        Reflection.getMethodSuppressed(DATA_VALUE_CLASS, "create", ENTITY_DATA_ACCESSOR_CLASS, Any::class.java)
+    }
+    else null
+
+    private val COMPONENT_CLASS = Reflection.getClassSuppressed("net.minecraft.network.chat.Component")
+    private val COMPONENT_LITERAL_METHOD = COMPONENT_CLASS?.let {
+        Reflection.getMethodSuppressed(it, "literal", String::class.java)
+    }
+
     private val PLAYER_CONNECTION_FIELD = Reflection
         .getDeclaredField(
             MinecraftReflection.ENTITY_PLAYER_CLASS,
             if (MinecraftReflection.isModern())
-                "b" else "playerConnection"
+                "connection" else "playerConnection"
         )!!
+
+    private val PACKET_CLASS = Reflection.getClassSuppressed("net.minecraft.network.protocol.Packet")
+        ?: MinecraftReflection.getNMSClass("Packet")
+
+    private val SEND_PACKET_METHOD = Reflection.getMethodSuppressed(
+        PLAYER_CONNECTION_FIELD.type,
+        "send",
+        PACKET_CLASS!!
+    ) ?: Reflection.getMethodSuppressed(
+        PLAYER_CONNECTION_FIELD.type,
+        "sendPacket",
+        PACKET_CLASS!!
+    ) ?: Reflection.getMethodSuppressed(
+        PLAYER_CONNECTION_FIELD.type,
+        "a",
+        PACKET_CLASS!!
+    )
 
     private val BLOCK_POSITION_CLASS =
         if (MinecraftReflection.isModern())
@@ -84,8 +108,15 @@ object MinecraftProtocol
     @JvmStatic
     fun send(player: Player, packet: Any)
     {
-        Util.sendPacket(player, packet)
-//        ReflectionUtils.sendPacketSync(player, packet)
+        if (!MinecraftReflection.isModern())
+        {
+            Util.sendPacket(player, packet)
+            return
+        }
+
+        val handle = MinecraftReflection.getHandle(player)
+        val connection = PLAYER_CONNECTION_FIELD.get(handle)
+        SEND_PACKET_METHOD!!.invoke(connection, packet)
     }
 
     @JvmStatic
@@ -93,9 +124,8 @@ object MinecraftProtocol
     {
         for (packet in packets)
         {
-            Util.sendPacket(player, packet)
+            send(player, packet)
         }
-//        ReflectionUtils.sendPacketSync(player, packets)
     }
 
     @JvmStatic
@@ -110,7 +140,7 @@ object MinecraftProtocol
     {
         val packet = newPacket("PacketPlayOutBlockAction")
 
-        if (ProtocolLibrary.getProtocolManager().minecraftVersion.isAtLeast(MinecraftVersion.COLOR_UPDATE))
+        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_12_R2))
         {
             Reflection.setDeclaredFieldValue(packet, "a", newBlockPosition(block.x, block.y, block.z))
             Reflection.setDeclaredFieldValue(packet, "b", action)
@@ -131,6 +161,11 @@ object MinecraftProtocol
 
     fun buildEntityHeadRotationPacket(id: Int, yaw: Float): Any
     {
+        if (MinecraftReflection.isModern())
+        {
+            return buildEntityLookPacket(id, yaw, 0.0f)
+        }
+
         val packet = newPacket("PacketPlayOutEntityHeadRotation")
 
         Reflection.setDeclaredFieldValue(packet, "a", id)
@@ -141,6 +176,14 @@ object MinecraftProtocol
 
     fun buildEntityLookPacket(id: Int, yaw: Float, pitch: Float): Any
     {
+        if (MinecraftReflection.isModern())
+        {
+            val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket\$Rot")!!
+            val constructor = packetClass.declaredConstructors.first { it.parameterTypes.size == 4 }
+            constructor.isAccessible = true
+            return constructor.newInstance(id, AngleUtils.yawToBytes(yaw), AngleUtils.yawToBytes(pitch), true)
+        }
+
         val packet = newPacket("PacketPlayOutEntity\$PacketPlayOutEntityLook")
         val owningClass = getPacketClass("PacketPlayOutEntity")
 
@@ -208,6 +251,25 @@ object MinecraftProtocol
 
     fun buildEntityTeleportPacket(id: Int, location: Location): Any
     {
+        if (MinecraftReflection.isModern())
+        {
+            val vec3Class = Reflection.getClassSuppressed("net.minecraft.world.phys.Vec3")!!
+            val vec3Constructor = vec3Class.declaredConstructors.first { it.parameterTypes.size == 3 }
+            vec3Constructor.isAccessible = true
+            val vec3 = vec3Constructor.newInstance(location.x, location.y, location.z)
+            val zero = Reflection.getDeclaredField(vec3Class, "ZERO")!!.get(null)
+            val pmrClass = Reflection.getClassSuppressed("net.minecraft.world.entity.PositionMoveRotation")!!
+            val pmrConstructor = pmrClass.declaredConstructors.first { it.parameterTypes.size == 4 }
+            pmrConstructor.isAccessible = true
+            val positionMoveRotation = pmrConstructor.newInstance(vec3, zero, location.yaw, location.pitch)
+            val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket")!!
+            val teleport = packetClass.declaredMethods.first { method ->
+                method.name == "teleport" && method.parameterTypes.size == 4
+            }
+            teleport.isAccessible = true
+            return teleport.invoke(null, id, positionMoveRotation, emptySet<Any>(), true)!!
+        }
+
         val packet = newPacket("PacketPlayOutEntityTeleport")
 
         Reflection.setDeclaredFieldValue(packet, "a", id)
@@ -223,6 +285,11 @@ object MinecraftProtocol
     @JvmStatic
     fun buildEntityEquipmentPacket(id: Int, slot: Int, itemStack: ItemStack): Any
     {
+        if (MinecraftReflection.isModern())
+        {
+            return buildModernEntityEquipmentPacket(id, slot, itemStack)
+        }
+
         val packet = newPacket("PacketPlayOutEntityEquipment")
         Reflection.setDeclaredFieldValue(packet, "a", id)
         Reflection.setDeclaredFieldValue(packet, "b", slot)
@@ -233,6 +300,11 @@ object MinecraftProtocol
     @JvmStatic
     fun buildEntityEquipmentPacket(id: Int, slot: Any, itemStack: ItemStack): Any
     {
+        if (MinecraftReflection.isModern() && slot is Int)
+        {
+            return buildModernEntityEquipmentPacket(id, slot, itemStack)
+        }
+
         val packet = newPacket("PacketPlayOutEntityEquipment")
         Reflection.setDeclaredFieldValue(packet, "a", id)
         Reflection.setDeclaredFieldValue(packet, "b", slot)
@@ -243,6 +315,18 @@ object MinecraftProtocol
     @JvmStatic
     fun buildSpawnEntityLivingPacket(id: Int, uuid: UUID, typeId: Int, location: Location): Any
     {
+        if (MinecraftReflection.isModern())
+        {
+            val typeName = when (typeId)
+            {
+                30 -> "ARMOR_STAND"
+                120 -> "VILLAGER"
+                else -> throw IllegalArgumentException("Unsupported modern entity type id: $typeId")
+            }
+
+            return buildModernAddEntityPacket(id, uuid, typeName, location)
+        }
+
         return newPacket("PacketPlayOutSpawnEntityLiving").also { packet ->
             Reflection.setDeclaredFieldValue(packet, "a", id)
             Reflection.setDeclaredFieldValue(packet, "b", 30)
@@ -264,6 +348,107 @@ object MinecraftProtocol
     fun getPlayerVersion(player: Player): Int
     {
         return ScalaCommonsSpigot.instance.versionProvider.getProtocolVersion(player)
+    }
+
+    @JvmStatic
+    fun buildModernAddEntityPacket(id: Int, uuid: UUID, typeName: String, location: Location): Any
+    {
+        val entityTypeClass = Reflection.getClassSuppressed("net.minecraft.world.entity.EntityType")!!
+        val entityType = Reflection.getDeclaredField(entityTypeClass, typeName)?.get(null)
+            ?: Reflection.getField(entityTypeClass, typeName)?.get(null)
+            ?: throw IllegalStateException("Missing EntityType.$typeName")
+        val vec3Class = Reflection.getClassSuppressed("net.minecraft.world.phys.Vec3")!!
+        val zero = Reflection.getDeclaredField(vec3Class, "ZERO")!!.get(null)
+        val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundAddEntityPacket")!!
+        val constructor = packetClass.constructors.firstOrNull { it.parameterTypes.size == 11 }
+            ?: throw IllegalStateException("Missing ClientboundAddEntityPacket ctor")
+        return constructor.newInstance(
+            id,
+            uuid,
+            location.x,
+            location.y,
+            location.z,
+            location.pitch,
+            location.yaw,
+            entityType,
+            0,
+            zero,
+            location.yaw.toDouble()
+        )
+    }
+
+    @JvmStatic
+    fun createEntityDataValue(ownerClassName: String, fieldName: String, value: Any): Any
+    {
+        val ownerClass = Reflection.getClassSuppressed(ownerClassName)!!
+        val accessor = Reflection.getDeclaredField(ownerClass, fieldName)!!.get(null)
+        if (DATA_VALUE_CREATE_METHOD != null)
+        {
+            return DATA_VALUE_CREATE_METHOD.invoke(null, accessor, value)!!
+        }
+
+        val serializer = Reflection.callMethod(accessor, "serializer")!!
+        val id = Reflection.callMethod(accessor, "id") as Int
+        val dataValueConstructor = DATA_VALUE_CLASS!!.declaredConstructors.first { it.parameterTypes.size == 3 }
+        dataValueConstructor.isAccessible = true
+        return dataValueConstructor.newInstance(id, serializer, value)
+    }
+
+    @JvmStatic
+    fun buildModernEntityMetadataPacket(id: Int, values: List<Any>): Any
+    {
+        val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket")!!
+        val constructor = packetClass.declaredConstructors.first {
+            it.parameterTypes.size == 2 && it.parameterTypes[1] == List::class.java
+        }
+        constructor.isAccessible = true
+        return constructor.newInstance(id, values)
+    }
+
+    @JvmStatic
+    fun buildModernRemoveEntitiesPacket(vararg ids: Int): Any
+    {
+        val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket")!!
+        return Reflection.callConstructor(packetClass, ids)!!
+    }
+
+    @JvmStatic
+    fun createLiteralComponent(text: String): Any
+    {
+        return COMPONENT_LITERAL_METHOD!!.invoke(null, text)!!
+    }
+
+    private fun buildModernEntityEquipmentPacket(id: Int, slot: Int, itemStack: ItemStack): Any
+    {
+        val packetClass = Reflection.getClassSuppressed("net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket")!!
+        val pairClass = Reflection.getClassSuppressed("com.mojang.datafixers.util.Pair")!!
+        val equipmentSlotClass = Reflection.getClassSuppressed("net.minecraft.world.entity.EquipmentSlot")!!
+        val modernSlotName = when (slot)
+        {
+            0 -> "MAINHAND"
+            1 -> "FEET"
+            2 -> "LEGS"
+            3 -> "CHEST"
+            4 -> "HEAD"
+            else -> throw IllegalArgumentException("Unsupported equipment slot index: $slot")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val slotEnum = java.lang.Enum.valueOf(equipmentSlotClass as Class<out Enum<*>>, modernSlotName)
+        val nmsItem = ItemUtils.getNmsCopy(itemStack)
+        val pair = Reflection.getMethodSuppressed(pairClass, "of", Any::class.java, Any::class.java)
+            ?.invoke(null, slotEnum, nmsItem)
+            ?: run {
+                val pairConstructor = pairClass.declaredConstructors.first { it.parameterTypes.size == 2 }
+                pairConstructor.isAccessible = true
+                pairConstructor.newInstance(slotEnum, nmsItem)
+            }
+        val constructor = packetClass.declaredConstructors.first {
+            it.parameterTypes.size >= 2 && it.parameterTypes[0] == Int::class.javaPrimitiveType && it.parameterTypes[1] == List::class.java
+        }
+        constructor.isAccessible = true
+        return if (constructor.parameterCount == 2) constructor.newInstance(id, listOf(pair))
+        else constructor.newInstance(id, listOf(pair), false)
     }
 
 }

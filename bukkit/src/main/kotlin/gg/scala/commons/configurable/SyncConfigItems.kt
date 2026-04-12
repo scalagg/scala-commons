@@ -27,10 +27,6 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-/**
- * @author Subham
- * @since 4/3/25
- */
 fun <T> Menu.editStringList(
     service: DataSyncService<T>,
     title: String,
@@ -118,7 +114,6 @@ fun <T> Menu.editStringMap(
             }
         }.openMenu(player)
     }
-
 
 fun <T> Menu.editString(
     service: DataSyncService<T>,
@@ -316,7 +311,6 @@ fun <T> Menu.editFloat(
             .start(player)
     }
 
-
 fun <T> Menu.editDouble(
     service: DataSyncService<T>,
     title: String,
@@ -481,7 +475,6 @@ inline fun <T, U> Menu.editListSelector(
         }) }
         openMenu(player)
     }
-
 
 fun <T> Menu.editChatColor(
     service: DataSyncService<T>,

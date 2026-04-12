@@ -9,10 +9,6 @@ import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 2/1/2022
- */
 object ScalaStoreUuidCache
 {
     private var translator: ScalaStoreUuidCacheTranslator =
@@ -60,13 +56,6 @@ object ScalaStoreUuidCache
         lambda.invoke(translator)
     }
 
-    /**
-     * Finds a cached uniqueId, or
-     * fetches & caches the newly fetched uniqueId.
-     *
-     * @param username the player username
-     * @return a nullable [UUID]
-     */
     fun uniqueId(username: String): UUID?
     {
         val translated = translator
@@ -86,15 +75,6 @@ object ScalaStoreUuidCache
         return response.first
     }
 
-    /**
-     * Finds a cached username, or
-     * fetches & caches the newly fetched username.
-     *
-     * If the two checks above fail, we will resort to
-     *
-     * @param uniqueId the player uniqueId
-     * @return a nullable [String]
-     */
     fun username(uniqueId: UUID): String?
     {
         val translated = translator

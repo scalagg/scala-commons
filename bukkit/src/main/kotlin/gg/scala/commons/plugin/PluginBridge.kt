@@ -5,10 +5,6 @@ import com.google.common.cache.CacheBuilder
 import gg.scala.commons.ExtendedScalaPlugin
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/23/2022
- */
 object PluginBridge
 {
     val cache: Cache<KClass<out ExtendedScalaPlugin>, ExtendedScalaPlugin> =

@@ -13,7 +13,6 @@ import org.bukkit.map.MapView;
 import java.awt.*;
 
 /**
- * @author Joseph Hirschfeld
  * @date 1/11/2016
  */
 public final class ImageMapRenderer extends MapRenderer {

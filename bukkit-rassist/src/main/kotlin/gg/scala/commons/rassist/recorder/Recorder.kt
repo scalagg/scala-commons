@@ -1,10 +1,11 @@
 package gg.scala.commons.rassist.recorder
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.events.PacketEvent
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerAbstract
+import com.github.retrooper.packetevents.event.PacketListenerPriority
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.event.PacketSendEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType as PEPacketType
 import gg.scala.commons.rassist.RAssistBridge
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.dao.ReplayMetadata
@@ -13,9 +14,9 @@ import gg.scala.commons.rassist.dao.packet.ReplayPacketWrapper
 import gg.scala.commons.rassist.dao.packet.enums.PacketAnimationType
 import gg.scala.commons.rassist.dao.packet.enums.PacketEquipmentSlot
 import gg.scala.commons.rassist.packet.ReplayPacketBridge
+import gg.scala.commons.rassist.packet.PacketEventsReplayPacketFactory
 import gg.scala.commons.rassist.util.ReplayPacketUtils
 import me.lucko.helper.Events
-import me.lucko.helper.protocol.Protocol
 import me.lucko.helper.terminable.composite.CompositeTerminable
 import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.Bukkit
@@ -29,22 +30,13 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Level
 
-/**
- * @author GrowlyX
- * @since 5/7/2022
- */
 class Recorder(
     private val uniqueId: UUID,
     private val players: List<UUID>
-) : PacketAdapter(
-    ScalaCommonsSpigot.instance,
-    ListenerPriority.MONITOR,
-    ReplayPacketBridge.packetTypesInternal
-)
+) : PacketListenerAbstract(PacketListenerPriority.MONITOR)
 {
     private val packets =
         LinkedList<ReplayPacketWrapper>()
-
 
     private val metadata =
         ReplayMetadata(
@@ -74,33 +66,29 @@ class Recorder(
         for (recordedPlayer in players)
         {
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createLoginSuccessPacket(recordedPlayer)
+                PacketEventsReplayPacketFactory
+                    .createLoginSuccessPacket(currentDelta(), recordedPlayer)
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createLoginPacket(recordedPlayer)
+                PacketEventsReplayPacketFactory
+                    .createLoginPacket(currentDelta(), recordedPlayer)
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createPositionPacket(recordedPlayer.location)
+                PacketEventsReplayPacketFactory
+                    .createPositionPacket(currentDelta(), recordedPlayer.location)
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createPlayerSpawnPacket(recordedPlayer)
+                PacketEventsReplayPacketFactory
+                    .createPlayerSpawnPacket(currentDelta(), recordedPlayer)
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
+                PacketEventsReplayPacketFactory
                     .createEntityEquipmentPacket(
+                        currentDelta(),
                         recordedPlayer,
                         PacketEquipmentSlot.BOOTS,
                         recordedPlayer.equipment.boots
@@ -108,9 +96,9 @@ class Recorder(
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
+                PacketEventsReplayPacketFactory
                     .createEntityEquipmentPacket(
+                        currentDelta(),
                         recordedPlayer,
                         PacketEquipmentSlot.LEGGINGS,
                         recordedPlayer.equipment.leggings
@@ -118,9 +106,9 @@ class Recorder(
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
+                PacketEventsReplayPacketFactory
                     .createEntityEquipmentPacket(
+                        currentDelta(),
                         recordedPlayer,
                         PacketEquipmentSlot.CHESTPLATE,
                         recordedPlayer.equipment.chestplate
@@ -128,9 +116,9 @@ class Recorder(
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
+                PacketEventsReplayPacketFactory
                     .createEntityEquipmentPacket(
+                        currentDelta(),
                         recordedPlayer,
                         PacketEquipmentSlot.HELMET,
                         recordedPlayer.equipment.helmet
@@ -138,9 +126,8 @@ class Recorder(
             )
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createTeleportPacket(recordedPlayer, recordedPlayer.location)
+                PacketEventsReplayPacketFactory
+                    .createTeleportPacket(currentDelta(), recordedPlayer, recordedPlayer.location)
             )
         }
     }
@@ -148,15 +135,15 @@ class Recorder(
     fun initialize()
     {
         RecorderStorage.recorders[uniqueId] = this
-        Protocol.manager().addPacketListener(this)
+        PacketEvents.getAPI().eventManager.registerListener(this)
 
         Events.subscribe(PlayerRespawnEvent::class.java, EventPriority.MONITOR)
             .filter { active() && this.players.contains(it.player.uniqueId) }
             .handler {
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createPlayerSpawnPacket(
+                            currentDelta(),
                             it.player, it.respawnLocation
                         )
                 )
@@ -168,9 +155,9 @@ class Recorder(
             .filter { it.entity is Player }
             .handler { event ->
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createEntityDamagePacket(
+                            currentDelta(),
                             event.entity as Player,
                             EntityEffect.DEATH
                         )
@@ -184,9 +171,9 @@ class Recorder(
             .filter { (it.entity as Player).noDamageTicks <= ((it.entity as Player).maximumNoDamageTicks / 2.0) }
             .handler { event ->
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createEntityDamagePacket(
+                            currentDelta(),
                             event.entity as Player,
                             EntityEffect.HURT
                         )
@@ -198,9 +185,9 @@ class Recorder(
             .filter { active() && this.players.contains(it.player.uniqueId) }
             .handler { event ->
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createTeleportPacket(
+                            currentDelta(),
                             event.player, event.to
                         )
                 )
@@ -211,9 +198,9 @@ class Recorder(
             .filter { active() && this.players.contains(it.player.uniqueId) }
             .handler { event ->
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createEntityEquipmentPacket(
+                            currentDelta(),
                             event.player,
                             PacketEquipmentSlot.HAND,
                             event.player.itemInHand
@@ -226,9 +213,9 @@ class Recorder(
             .filter { active() && this.players.contains(it.player.uniqueId) }
             .handler { event ->
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
+                    PacketEventsReplayPacketFactory
                         .createEntityAnimationPacket(
+                            currentDelta(),
                             event.player,
                             PacketAnimationType.SWING_ARM
                         )
@@ -242,9 +229,9 @@ class Recorder(
                 if (event.from.yaw != event.to.yaw)
                 {
                     savePacket(
-                        ReplayPacketBridge
-                            .converter()
+                        PacketEventsReplayPacketFactory
                             .createHeadRotationPacket(
+                                currentDelta(),
                                 event.player, event.to.yaw
                             )
                     )
@@ -256,9 +243,9 @@ class Recorder(
                 if (ReplayPacketUtils.differentLocation(event.from, event.to))
                 {
                     savePacket(
-                        ReplayPacketBridge
-                            .converter()
+                        PacketEventsReplayPacketFactory
                             .createPositionLookPacket(
+                                currentDelta(),
                                 event.player, move,
                                 event.to.yaw, event.to.pitch
                             )
@@ -266,18 +253,17 @@ class Recorder(
                 } else if (ReplayPacketUtils.hasRotated(event.from, event.to))
                 {
                     savePacket(
-                        ReplayPacketBridge
-                            .converter()
+                        PacketEventsReplayPacketFactory
                             .createLookPacket(
+                                currentDelta(),
                                 event.player, event.to.yaw, event.to.pitch
                             )
                     )
                 } else
                 {
                     savePacket(
-                        ReplayPacketBridge
-                            .converter()
-                            .createPositionPacket(event.player, move)
+                        PacketEventsReplayPacketFactory
+                            .createPositionPacket(currentDelta(), event.player, move)
                     )
                 }
             }
@@ -296,9 +282,8 @@ class Recorder(
                 ?: continue
 
             savePacket(
-                ReplayPacketBridge
-                    .converter()
-                    .createDestroyPacket(
+                PacketEventsReplayPacketFactory
+                    .createDestroyPacket(currentDelta(),
                         bukkit
                     )
             )
@@ -312,8 +297,7 @@ class Recorder(
         this.terminable
             .closeAndReportException()
 
-        Protocol.manager()
-            .removePacketListener(this)
+        PacketEvents.getAPI().eventManager.unregisterListener(this)
 
         return CompletableFuture
             .supplyAsync {
@@ -330,40 +314,36 @@ class Recorder(
             }
     }
 
-    override fun onPacketReceiving(event: PacketEvent)
+    override fun onPacketReceive(event: PacketReceiveEvent)
     {
-        if (active() && this.players.contains(event.player.uniqueId))
+        val player = event.getPlayer<Player>() ?: return
+        if (active() && this.players.contains(player.uniqueId))
         {
-            if (event.packetType === PacketType.Play.Client.ARM_ANIMATION)
+            if (event.packetType === PEPacketType.Play.Client.ANIMATION)
             {
                 savePacket(
-                    ReplayPacketBridge
-                        .converter()
-                        .convertAnimationPacket(event.player, event.packet)
+                    PacketEventsReplayPacketFactory
+                        .convertAnimationPacket(currentDelta(), player)
                 )
             }
         }
     }
 
-    override fun onPacketSending(event: PacketEvent)
+    override fun onPacketSend(event: PacketSendEvent)
     {
-        if (active() && this.players.contains(event.player.uniqueId))
+        val player = event.getPlayer<Player>() ?: return
+        if (active() && this.players.contains(player.uniqueId))
         {
-            savePacket(event.packet)
+            if (ReplayPacketBridge.packetTypesInternalPE.contains(event.packetType)) {
+                savePacket(ReplayPacketWrapper.fromPacketEvent((System.currentTimeMillis() - this.metadata.timestamps.beginning).toInt(), event))
+            }
         }
     }
 
-    private fun savePacket(
-        container: PacketContainer
-    )
+    private fun savePacket(wrapper: ReplayPacketWrapper)
     {
-        val delta = (System.currentTimeMillis() - this.metadata.timestamps.beginning).toInt()
-
-        val wrapper =
-            ReplayPacketWrapper(
-                delta, container
-            )
-
         this.packets.add(wrapper)
     }
+
+    private fun currentDelta(): Int = (System.currentTimeMillis() - this.metadata.timestamps.beginning).toInt()
 }

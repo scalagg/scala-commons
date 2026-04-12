@@ -5,10 +5,6 @@ import gg.scala.commons.agnostic.sync.server.event.ServerEvent
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 object EventBus
 {
     val subscribers = ConcurrentHashMap<String, MutableList<EventSubscriber>>()

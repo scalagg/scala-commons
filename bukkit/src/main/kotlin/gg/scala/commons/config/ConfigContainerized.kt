@@ -13,10 +13,6 @@ import gg.scala.flavor.FlavorBinder
 import xyz.mkotb.configapi.ConfigFactory
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/17/2022
- */
 class ConfigContainerized(
     val plugin: ExtendedScalaPlugin
 ) : Containerized

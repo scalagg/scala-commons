@@ -1,16 +1,11 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.buttons
 
 import com.cryptomorin.xseries.XMaterial
 import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.ItemUtils
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -22,11 +17,11 @@ abstract class TexturedHeadButton(private val texture: String? = null) : Button(
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial.SKELETON_SKULL
+        return XMaterial.PLAYER_HEAD
     }
 
     override fun getDamageValue(player: Player): Byte {
-        return 3.toByte()
+        return if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_13)) 0.toByte() else 3.toByte()
     }
 
     override fun getButtonItem(player: Player): ItemStack {

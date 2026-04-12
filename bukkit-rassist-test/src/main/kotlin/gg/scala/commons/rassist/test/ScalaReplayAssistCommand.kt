@@ -17,10 +17,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.zip.DeflaterOutputStream
 import java.util.zip.InflaterOutputStream
 
-/**
- * @author GrowlyX
- * @since 5/8/2022
- */
 @AutoRegister
 object ScalaReplayAssistCommand : ScalaCommand()
 {
@@ -74,8 +70,6 @@ object ScalaReplayAssistCommand : ScalaCommand()
         player.sendMessage(
             "${CC.GREEN}We've stopping your recording"
         )
-
-
 
         return recording!!.stopAndSave()
             .thenAccept {

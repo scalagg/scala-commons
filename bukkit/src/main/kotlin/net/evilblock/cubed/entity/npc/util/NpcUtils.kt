@@ -7,10 +7,7 @@ import org.bukkit.block.BlockFace
 
 object NpcUtils
 {
-    /**
-     * A map of block types to their heights, used
-     * to handle edge cases when updating an NPC's location.
-     */
+
     val BLOCK_HEIGHTS = mutableMapOf(
         "SLAB" to 0.3,
         "STAIRS" to 0.5,

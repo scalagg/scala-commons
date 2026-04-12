@@ -69,14 +69,6 @@ import java.lang.reflect.Method
 import java.util.logging.Level
 import kotlin.reflect.KClass
 
-/**
- * An extension of [ExtendedJavaPlugin] with
- * support for our custom annotation-based
- * plugin framework.
- *
- * @author GrowlyX
- * @since 10/15/2021
- */
 open class ExtendedScalaPlugin : ExtendedJavaPlugin()
 {
     companion object
@@ -208,7 +200,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
-                        ?: it.newInstance()
+                        ?: it.instantiate()
 
                     this.flavor.binders.add(
                         FlavorBinder(instance::class) to instance
@@ -263,16 +255,6 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             bind<AudienceProvider>() to audiences
         }
 
-        this.packageIndexer
-            .getMethodsAnnotatedWith<ContainerEnable>()
-            .forEach {
-                kotlin.runCatching {
-                    it.invoke(this)
-                }.onFailure { throwable ->
-                    logger.log(Level.WARNING, "Failed to enable container part!", throwable)
-                }
-            }
-
         this.commandManager = ScalaCommandManager(
             this,
             primary = ChatColor.getByChar(CC.PRI[1])!!,
@@ -293,7 +275,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                     kotlin.runCatching {
                         method.invoke(
                             customizer.objectInstance()
-                                ?: customizer.newInstance(),
+                                ?: customizer.instantiate(),
                             this.commandManager
                         )
                     }.onFailure {
@@ -317,7 +299,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
             .forEach { method ->
                 val declaring = method.declaringClass
-                    .objectInstance() ?: method.declaringClass.newInstance()
+                    .objectInstance() ?: method.declaringClass.instantiate()
 
                 this.flavor.inject(declaring)
 
@@ -337,11 +319,21 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             }
 
         this.packageIndexer
+            .getMethodsAnnotatedWith<ContainerEnable>()
+            .forEach {
+                kotlin.runCatching {
+                    it.invoke(this)
+                }.onFailure { throwable ->
+                    logger.log(Level.WARNING, "Failed to enable container part!", throwable)
+                }
+            }
+
+        this.packageIndexer
             .getTypesAnnotatedWith<AutoRegister>()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
-                        ?: it.newInstance()
+                        ?: it.instantiate()
 
                     this.flavor.inject(instance)
 
@@ -365,7 +357,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
-                        ?: it.newInstance()
+                        ?: it.instantiate()
 
                     this.flavor.inject(instance)
 
@@ -382,7 +374,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
-                        ?: it.newInstance()
+                        ?: it.instantiate()
 
                     this.flavor.inject(instance)
 
@@ -399,7 +391,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach {
                 kotlin.runCatching {
                     val instance = it.objectInstance()
-                        ?: it.newInstance()
+                        ?: it.instantiate()
 
                     this.flavor.inject(instance)
 
@@ -440,7 +432,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             .forEach { clazz ->
                 kotlin.runCatching {
                     this.flavor.inject(
-                        clazz.objectInstance() ?: clazz.newInstance()
+                        clazz.objectInstance() ?: clazz.instantiate()
                     )
                 }.onSuccess {
                     logger.info(
@@ -462,7 +454,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.packageIndexer
             .getTypesAnnotatedWith<Listeners>()
             .mapNotNull {
-                it.objectInstance() ?: it.newInstance()
+                it.objectInstance() ?: it.instantiate()
             }
             .forEach {
                 kotlin.runCatching {
@@ -482,7 +474,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.packageIndexer
             .getTypesAnnotatedWith<Repeating>()
             .mapNotNull {
-                it.objectInstance() ?: it.newInstance()
+                it.objectInstance() ?: it.instantiate()
             }
             .filterIsInstance<Runnable>()
             .forEach {
@@ -551,7 +543,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         this.getLocalServicesInstanceOf<TerminableModule>()
             .forEach { module ->
                 kotlin.runCatching {
-                    // already injected
+
                     bindModule(module)
                 }.onFailure {
                     logger.log(Level.WARNING, "Failed to register TerminableModule ${module.javaClass.name}", it)
@@ -566,7 +558,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
         return this.packageIndexer
             .getTypesAnnotatedWith<Service>()
             .mapNotNull {
-                it.objectInstance() ?: it.newInstance()
+                it.objectInstance() ?: it.instantiate()
             }
             .filterIsInstance<T>()
     }
@@ -595,7 +587,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
                         .toMutableList()
                         .apply { removeFirst() }
                         .joinToString(".") {
-                            // ensure we use the primary key
+
                             it.split("|").first()
                         }
 
@@ -693,7 +685,7 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
             ?: return null
 
         return subTypes.objectInstance() as T
-            ?: subTypes.newInstance() as T
+            ?: subTypes.instantiate() as T
     }
 
     inline fun <reified T> contract(): T?
@@ -705,8 +697,19 @@ open class ExtendedScalaPlugin : ExtendedJavaPlugin()
     {
         return runCatching {
             this.kotlin.objectInstance
-                ?: getDeclaredField("INSTANCE")
-                    .get(null)
-        }.getOrNull()
+        }.getOrElse {
+            runCatching {
+                val field = getDeclaredField("INSTANCE")
+                field.isAccessible = true
+                field.get(null)
+            }.getOrNull()
+        }
+    }
+
+    fun <T> Class<T>.instantiate(): T
+    {
+        val constructor = getDeclaredConstructor()
+        constructor.isAccessible = true
+        return constructor.newInstance()
     }
 }

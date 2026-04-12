@@ -1,8 +1,5 @@
 package gg.scala.commons.tablist.util.data;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class SkinData {
 
     private final String value;

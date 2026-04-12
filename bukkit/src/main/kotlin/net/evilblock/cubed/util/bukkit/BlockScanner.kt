@@ -198,9 +198,6 @@ open class BlockScanner(
             return BlockScannerTypesWhereStage(this, predicate)
         }
 
-//        override fun clone(): BlockScannerTypesStage {
-//            return BlockScannerTypesStage(this, types)
-//        }
     }
 
     class BlockScannerTypesWhereStage(scanner: BlockScannerTypesStage, var test: Predicate<Block>) : BlockScannerTypesStage(scanner) {
@@ -272,8 +269,5 @@ open class BlockScanner(
             return this
         }
 
-//        override fun clone(): BlockScannerTypesWhereStage {
-//            return BlockScannerTypesWhereStage(this, test)
-//        }
     }
 }

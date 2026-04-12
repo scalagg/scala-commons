@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu
 
@@ -21,7 +16,11 @@ import org.bukkit.event.player.PlayerQuitEvent
 @Listeners
 object ButtonListeners : Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    private fun isTopInventoryClick(event: InventoryClickEvent): Boolean {
+        return event.rawSlot >= 0 && event.rawSlot < event.view.topInventory.size
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onInventoryDragEvent(event: InventoryDragEvent) {
         val openMenu = Menu.currentlyOpenedMenus[event.whoClicked.uniqueId]
         if (openMenu != null) {
@@ -30,8 +29,7 @@ object ButtonListeners : Listener {
                 return
             }
 
-            // check if dragging in both the menu and their own inventory
-            // by comparing max used slot to max slots
+            
             if (event.newItems.maxByOrNull { it.key }!!.key >= event.view.topInventory.size) {
                 event.isCancelled = true
                 return
@@ -47,7 +45,7 @@ object ButtonListeners : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onButtonPress(event: InventoryClickEvent) {
         val player = event.whoClicked as Player
 
@@ -58,9 +56,8 @@ object ButtonListeners : Listener {
                 return
             }
 
-            // handle bottom mechanics (edit own inventory)
             if (!openMenu.keepBottomMechanics) {
-                if (event.clickedInventory != event.view.topInventory) {
+                if (!isTopInventoryClick(event)) {
                     event.isCancelled = true
                     return
                 }
@@ -73,9 +70,8 @@ object ButtonListeners : Listener {
                 }
             }
 
-            // handle items being inserted via cursor
             if (event.cursor != null && event.cursor.type != Material.AIR && (event.click == ClickType.LEFT || event.click == ClickType.RIGHT || event.click == ClickType.MIDDLE)) {
-                if (event.clickedInventory == event.view.topInventory) {
+                if (isTopInventoryClick(event)) {
                     event.isCancelled = true
 
                     val itemInserted = when (event.click) {
@@ -122,7 +118,6 @@ object ButtonListeners : Listener {
                 }
             }
 
-            // handle items being inserted via shift-clicking
             if (event.slot != event.rawSlot) {
                 if (event.click == ClickType.SHIFT_LEFT || event.click == ClickType.SHIFT_RIGHT) {
                     event.isCancelled = true
@@ -137,7 +132,6 @@ object ButtonListeners : Listener {
                 return
             }
 
-            // handle button
             if (openMenu.buttons.containsKey(event.slot)) {
                 val button = openMenu.buttons[event.slot]!!
                 val cancel = button.shouldCancel(player, event.slot, event.click)
@@ -154,7 +148,6 @@ object ButtonListeners : Listener {
 
                 button.clicked(player, event.slot, event.click, event.view)
 
-                // check if player is still in the same menu and needs to update
                 if (Menu.currentlyOpenedMenus.containsKey(player.uniqueId)) {
                     val newMenu = Menu.currentlyOpenedMenus[player.uniqueId]
                     if (newMenu === openMenu && newMenu.updateAfterClick) {
@@ -166,19 +159,18 @@ object ButtonListeners : Listener {
                     Tasks.delayed(1L) { player.updateInventory() }
                 }
 
-                return // we return here so we don't reach the block of code below
+                return 
             } else {
-                if (event.clickedInventory == event.view.topInventory) {
+                if (isTopInventoryClick(event)) {
                     event.isCancelled = true
                 }
             }
 
-            // handle non-cancelling menu
             if (event.click == ClickType.SHIFT_LEFT || event.click == ClickType.SHIFT_RIGHT) {
                 event.isCancelled = true
 
                 if (openMenu.nonCancelling && event.currentItem != null) {
-                    if (event.slot == event.rawSlot && event.clickedInventory == event.view.topInventory) {
+                    if (event.slot == event.rawSlot && isTopInventoryClick(event)) {
                         player.openInventory.topInventory.addItem(event.currentItem)
                         event.currentItem = null
                     }
@@ -187,7 +179,7 @@ object ButtonListeners : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onInventoryClose(event: InventoryCloseEvent) {
         val player = event.player as Player
 

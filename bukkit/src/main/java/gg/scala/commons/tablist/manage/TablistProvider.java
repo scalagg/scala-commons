@@ -5,9 +5,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public interface TablistProvider {
 
     Collection<TablistHandle> getTablistHandles();

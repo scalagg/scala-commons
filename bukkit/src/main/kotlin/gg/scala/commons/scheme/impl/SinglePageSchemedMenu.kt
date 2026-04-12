@@ -6,10 +6,6 @@ import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 8/1/2022
- */
 class SinglePageSchemedMenu : AbstractCompositeSchemedMenu<Menu>()
 {
     override fun createMenu(player: Player): Menu

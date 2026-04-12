@@ -8,9 +8,6 @@ import org.bukkit.ChatColor;
 
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistCellLegacy extends TablistCell {
 
     private String prefix = "";

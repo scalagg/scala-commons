@@ -6,10 +6,6 @@ import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 object ServerSyncPipeline
 {
     @JvmStatic

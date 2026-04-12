@@ -11,10 +11,6 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 7/25/2023
- */
 class LocalizationGenerator(
     clazz: KClass<*>
 ) : InvocationHandler

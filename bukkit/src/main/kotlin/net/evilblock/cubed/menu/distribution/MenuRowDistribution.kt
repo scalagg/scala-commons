@@ -2,13 +2,6 @@ package net.evilblock.cubed.menu.distribution
 
 import net.evilblock.cubed.menu.Button
 
-/**
- * Easy utility containing
- * several row item distribution mappings.
- *
- * @author GrowlyX
- * @since 3/15/2022
- */
 enum class MenuRowDistribution(
     private val rowDistribution: (Int) -> List<Int>
 )
@@ -83,8 +76,8 @@ enum class MenuRowDistribution(
     {
         val buttonsInRow = buttons.keys
             .filter {
-                // math to calculate whether this button
-                // position is in the correct "row".
+
+                
                 row * 9 >= it && (row * 9) + 9 <= it
             }.size
 

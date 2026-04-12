@@ -11,10 +11,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 class SelfServerService<T : AbstractServer>(
     private val server: T,
     private val updateMeta: (T) -> Unit,

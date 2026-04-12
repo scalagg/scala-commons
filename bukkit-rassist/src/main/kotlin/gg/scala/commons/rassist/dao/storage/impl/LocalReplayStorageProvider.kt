@@ -4,10 +4,6 @@ import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.dao.storage.ReplayStorageProvider
 import java.util.*
 
-/**
- * @author GrowlyX
- * @since 5/8/2022
- */
 object LocalReplayStorageProvider : ReplayStorageProvider
 {
     private val localStorage =

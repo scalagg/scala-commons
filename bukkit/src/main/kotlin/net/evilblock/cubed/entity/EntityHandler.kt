@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity
 
@@ -42,28 +37,13 @@ object EntityHandler
     internal var loaded: Boolean = false
     internal var saving: Boolean = false
 
-    /**
-     * Entities that are tracked by any player that the entity is visible to.
-     */
     private val entities: MutableSet<Entity> = ConcurrentHashMap.newKeySet(1024)
 
-    /**
-     * Instance entities are entities that are tracked by one player rather than multiple.
-     */
     private val instanceEntities: MutableMap<UUID, MutableSet<Entity>> = ConcurrentHashMap()
 
-    /**
-     * These maps purpose is to provide a way to perform quick entity lookups.
-     *
-     * This technique consumes more memory rather than more processing power, and
-     * that's optimal for our setup.
-     */
     private val entitiesById: MutableMap<Int, Entity> = ConcurrentHashMap(1024)
     private val entitiesByUuid: MutableMap<UUID, Entity> = ConcurrentHashMap(1024)
 
-    /**
-     * A set of players that have debug view enabled.
-     */
     private val debugView: MutableSet<UUID> = ConcurrentHashMap.newKeySet(10)
 
     @Configure

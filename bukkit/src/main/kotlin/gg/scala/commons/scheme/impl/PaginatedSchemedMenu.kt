@@ -6,10 +6,6 @@ import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 8/1/2022
- */
 class PaginatedSchemedMenu : AbstractCompositeSchemedMenu<PaginatedMenu>()
 {
     override fun createMenu(player: Player): PaginatedMenu

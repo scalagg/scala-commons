@@ -16,10 +16,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-/**
- * @author GrowlyX
- * @since 2/10/2023
- */
 abstract class DataSyncService<T>
 {
     private var cached: T? = null
@@ -27,6 +23,7 @@ abstract class DataSyncService<T>
     private val cache = ScalaCommonsSpigot.instance.kvConnection
 
     private var collection: MongoCollection<Document>? = null
+    private val reloadCallbacks = mutableListOf<() -> Unit>()
 
     open fun locatedIn(): DataSyncSource
     {
@@ -45,6 +42,11 @@ abstract class DataSyncService<T>
     open fun sync() = ScalaCommonsSpigot.instance.aware
     open fun plugin(): ExtendedScalaPlugin =
         ScalaCommonsSpigot.instance
+
+    fun onReload(callback: () -> Unit)
+    {
+        reloadCallbacks += callback
+    }
 
     open fun cleanup()
     {
@@ -69,6 +71,10 @@ abstract class DataSyncService<T>
         }
 
         initialReloadComplete = true
+
+        reloadCallbacks.forEach { callback ->
+            kotlin.runCatching { callback() }.onFailure { it.printStackTrace() }
+        }
     }
 
     fun load()

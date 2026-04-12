@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit
 
@@ -41,13 +36,10 @@ object AngleUtils {
     fun wrapAngle(angle: Int): Int {
         var angle = angle
 
-        // reduce the angle
         angle %= 360;
 
-        // force it to be the positive remainder, so that 0 <= angle < 360
         angle = (angle + 360) % 360;
 
-        // force into the minimum absolute value residue class, so that -180 < angle <= 180
         while (angle > 180) {
             angle -= 360
         }
@@ -55,14 +47,6 @@ object AngleUtils {
         return angle
     }
 
-    /**
-     * Converts the given yaw to bytes.
-     * When sending packets, a position's yaw uses the Angle data type.
-     * See http://wiki.vg/index.php?title=Protocol&oldid=7368#Data_types
-     *
-     * @param yaw The yaw to convert to bytes.
-     * @return The yaw converted to bytes.
-     */
     @JvmStatic
     fun yawToBytes(yaw: Float): Byte {
         return (yaw.toDouble() * 256.0F / 360.0F).toInt().toByte()

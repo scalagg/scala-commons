@@ -1,9 +1,5 @@
 package gg.scala.commons.localization
 
-/**
- * @author GrowlyX
- * @since 3/30/2022
- */
 enum class LocalizationContext(
     private val extended: String
 )

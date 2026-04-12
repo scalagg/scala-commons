@@ -3,10 +3,6 @@ package net.evilblock.cubed.library
 import gg.scala.commons.annotations.LibraryLoader
 import gg.scala.commons.library.model.Library
 
-/**
- * @author GrowlyX
- * @since 7/30/2022
- */
 @Library(
     groupId = "io.sentry",
     artifactId = "sentry",

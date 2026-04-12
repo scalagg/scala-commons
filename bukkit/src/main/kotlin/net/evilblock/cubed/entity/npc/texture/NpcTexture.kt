@@ -20,10 +20,6 @@ data class NpcTexture(val textureValue: String, val textureSignature: String) {
     companion object {
         private val parser = JsonParser()
 
-        /**
-         * Attempts to fetch a player texture by username.
-         * Should not be called very often as the server could be rate-limited which will cause issues.
-         */
         @JvmStatic
         fun fetchTextureByUsername(username: String): Optional<NpcTexture> {
             val uuid: UUID = ScalaStoreUuidCache.uniqueId(username) ?: return Optional.empty()

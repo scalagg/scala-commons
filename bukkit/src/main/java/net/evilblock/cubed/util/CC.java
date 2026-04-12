@@ -6,14 +6,24 @@ import gg.scala.commons.ExtendedScalaPlugin;
 import gg.scala.commons.command.ScalaCommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author puugz, GrowlyX
- * @since 08/07/2021 17:49
- */
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class CC {
+    public static final char COLOR_CHAR = ChatColor.COLOR_CHAR;
+    private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
+    public static final String NORMAL_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String SMALL_ALPHABET = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀѕᴛᴜᴠᴡxʏᴢ";
+
     public static void setup(
         @NotNull String primary,
         @NotNull String secondary
@@ -27,15 +37,14 @@ public class CC {
         UB_PRI = primary + BOLD + UNDERLINE;
         UB_SEC = secondary + BOLD + UNDERLINE;
 
-        // TODO: 10/10/2022 use liftgate lease system
         try {
             for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
                 if (plugin instanceof ExtendedScalaPlugin) {
                     try {
                         final ScalaCommandManager manager = ((ExtendedScalaPlugin) plugin).getCommandManager();
 
-                        final ChatColor primaryCC = ChatColor.getByChar(CC.PRI.charAt(1));
-                        final ChatColor secondaryCC = ChatColor.getByChar(CC.SEC.charAt(1));
+                        final ChatColor primaryCC = nearestChatColor(CC.PRI);
+                        final ChatColor secondaryCC = nearestChatColor(CC.SEC);
 
                         Lists.newArrayList(
                             MessageType.HELP,
@@ -195,6 +204,225 @@ public class CC {
     public static final String BLANK_LINE = "\u00A78 \u00A78 \u00A71 \u00A73 \u00A73 \u00A77 \u00A78 \u00A7r";
     public static final String BL = BLANK_LINE;
     public static final String SB_BAR = GRAY + S + "-------------------";
+
+    public static final String LEFT_ARROW = "«";
+    public static final String RIGHT_ARROW = "»";
+    public static final String HEART = DARK_RED + "❤";
+
+    public static String translate(String message) {
+        if (message == null) {
+            return null;
+        }
+
+        Matcher matcher = HEX_PATTERN.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            message = message.replace(hexCode, hexToLegacy(hexCode));
+            matcher = HEX_PATTERN.matcher(message);
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public static String toSmallCaps(String message) {
+        if (message == null || message.isEmpty()) {
+            return message;
+        }
+
+        StringBuilder convertedText = new StringBuilder();
+        String upperCase = message.toUpperCase(Locale.ROOT);
+
+        for (int index = 0; index < upperCase.length(); index++) {
+            char character = upperCase.charAt(index);
+            if (character == ' ') {
+                convertedText.append(character);
+                continue;
+            }
+
+            int alphabetIndex = NORMAL_ALPHABET.indexOf(character);
+            convertedText.append(alphabetIndex == -1 ? character : SMALL_ALPHABET.charAt(alphabetIndex));
+        }
+
+        return convertedText.toString();
+    }
+
+    public static String reverseTranslate(String colorCode) {
+        if (colorCode == null || !colorCode.startsWith("§x")) {
+            throw new IllegalArgumentException("Invalid color code format");
+        }
+
+        StringBuilder hexColor = new StringBuilder("#");
+        for (int i = 3; i < colorCode.length(); i += 2) {
+            hexColor.append(colorCode.charAt(i));
+        }
+
+        return hexColor.toString();
+    }
+
+    public static String getHexColor(String color) {
+        if (color == null || color.isEmpty()) {
+            return "#FFFFFF";
+        }
+
+        if (color.contains("#")) {
+            return color;
+        }
+
+        if (color.contains("§x")) {
+            return reverseTranslate(color);
+        }
+
+        if (color.length() > 1 && color.charAt(0) == COLOR_CHAR) {
+            ChatColor chatColor = ChatColor.getByChar(color.charAt(1));
+            return CHAT_COLOR_TO_HEX.getOrDefault(chatColor, "#FFFFFF");
+        }
+
+        return color;
+    }
+
+    public static ChatColor getNearestChatColorByHex(String hex) {
+        java.awt.Color color = java.awt.Color.decode(hex);
+        ChatColor nearestColor = ChatColor.WHITE;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (Map.Entry<ChatColor, String> entry : CHAT_COLOR_TO_HEX.entrySet()) {
+            java.awt.Color chatColor = java.awt.Color.decode(entry.getValue());
+            double distance = getColorDistance(color, chatColor);
+
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestColor = entry.getKey();
+            }
+        }
+
+        return nearestColor;
+    }
+
+    public static ChatColor nearestChatColor(String input) {
+        if (input == null || input.isEmpty()) {
+            return ChatColor.WHITE;
+        }
+
+        if (input.startsWith("#") && input.length() == 7) {
+            return getNearestChatColorByHex(input);
+        }
+
+        if (input.startsWith("§x") && input.length() >= 14) {
+            return getNearestChatColorByHex(reverseTranslate(input.substring(0, 14)));
+        }
+
+        ChatColor chatColor = input.length() > 1 ? ChatColor.getByChar(input.charAt(1)) : null;
+        return chatColor == null ? ChatColor.WHITE : chatColor;
+    }
+
+    public static ChatColor toChatColor(Color color) {
+        return COLOR_TO_CHAT_COLOR.getOrDefault(color, ChatColor.WHITE);
+    }
+
+    public static String getColorName(Color color) {
+        return COLOR_TO_NAME.getOrDefault(color, "Custom");
+    }
+
+    public static Material toWoolData(ChatColor color) {
+        return CHAT_COLOR_TO_WOOL_DATA.getOrDefault(color, wool("WHITE_WOOL"));
+    }
+
+    public static Set<Color> getPredefinedColors() {
+        return COLOR_TO_NAME.keySet();
+    }
+
+    public static final Map<ChatColor, String> CHAT_COLOR_TO_HEX = new HashMap<ChatColor, String>() {{
+        put(ChatColor.DARK_RED, "#AA0000");
+        put(ChatColor.RED, "#FF5555");
+        put(ChatColor.GOLD, "#FFAA00");
+        put(ChatColor.YELLOW, "#FFFF55");
+        put(ChatColor.GREEN, "#55FF55");
+        put(ChatColor.DARK_GREEN, "#00AA00");
+        put(ChatColor.DARK_AQUA, "#00AAAA");
+        put(ChatColor.AQUA, "#55FFFF");
+        put(ChatColor.BLUE, "#5555FF");
+        put(ChatColor.DARK_PURPLE, "#AA00AA");
+        put(ChatColor.LIGHT_PURPLE, "#FF55FF");
+        put(ChatColor.WHITE, "#FFFFFF");
+        put(ChatColor.GRAY, "#AAAAAA");
+        put(ChatColor.DARK_GRAY, "#555555");
+        put(ChatColor.BLACK, "#000000");
+    }};
+
+    public static final Map<Color, String> COLOR_TO_NAME = new HashMap<Color, String>() {{
+        put(Color.WHITE, "WHITE");
+        put(Color.RED, "RED");
+        put(Color.BLUE, "BLUE");
+        put(Color.AQUA, "AQUA");
+        put(Color.PURPLE, "DARK_PURPLE");
+        put(Color.FUCHSIA, "LIGHT_PURPLE");
+        put(Color.ORANGE, "GOLD");
+        put(Color.YELLOW, "YELLOW");
+        put(Color.LIME, "GREEN");
+        put(Color.GREEN, "DARK_GREEN");
+        put(Color.SILVER, "GRAY");
+        put(Color.GRAY, "DARK_GRAY");
+        put(Color.MAROON, "DARK_RED");
+        put(Color.NAVY, "DARK_AQUA");
+        put(Color.BLACK, "BLACK");
+    }};
+
+    public static final Map<Color, ChatColor> COLOR_TO_CHAT_COLOR = new HashMap<Color, ChatColor>() {{
+        put(Color.WHITE, ChatColor.WHITE);
+        put(Color.RED, ChatColor.RED);
+        put(Color.BLUE, ChatColor.BLUE);
+        put(Color.AQUA, ChatColor.AQUA);
+        put(Color.PURPLE, ChatColor.DARK_PURPLE);
+        put(Color.FUCHSIA, ChatColor.LIGHT_PURPLE);
+        put(Color.ORANGE, ChatColor.GOLD);
+        put(Color.YELLOW, ChatColor.YELLOW);
+        put(Color.LIME, ChatColor.GREEN);
+        put(Color.GREEN, ChatColor.DARK_GREEN);
+        put(Color.SILVER, ChatColor.GRAY);
+        put(Color.GRAY, ChatColor.DARK_GRAY);
+        put(Color.MAROON, ChatColor.DARK_RED);
+        put(Color.NAVY, ChatColor.DARK_AQUA);
+        put(Color.BLACK, ChatColor.BLACK);
+    }};
+
+    public static final Map<ChatColor, Material> CHAT_COLOR_TO_WOOL_DATA = new HashMap<ChatColor, Material>() {{
+        put(ChatColor.DARK_RED, wool("RED_WOOL"));
+        put(ChatColor.RED, wool("RED_WOOL"));
+        put(ChatColor.GOLD, wool("ORANGE_WOOL"));
+        put(ChatColor.YELLOW, wool("YELLOW_WOOL"));
+        put(ChatColor.GREEN, wool("LIME_WOOL"));
+        put(ChatColor.DARK_GREEN, wool("GREEN_WOOL"));
+        put(ChatColor.DARK_AQUA, wool("CYAN_WOOL"));
+        put(ChatColor.AQUA, wool("LIGHT_BLUE_WOOL"));
+        put(ChatColor.BLUE, wool("BLUE_WOOL"));
+        put(ChatColor.DARK_PURPLE, wool("PURPLE_WOOL"));
+        put(ChatColor.LIGHT_PURPLE, wool("MAGENTA_WOOL"));
+        put(ChatColor.WHITE, wool("WHITE_WOOL"));
+        put(ChatColor.GRAY, wool("LIGHT_GRAY_WOOL"));
+        put(ChatColor.DARK_GRAY, wool("GRAY_WOOL"));
+        put(ChatColor.BLACK, wool("BLACK_WOOL"));
+    }};
+
+    private static String hexToLegacy(String hexCode) {
+        String normalized = hexCode.replace('#', 'x');
+        StringBuilder builder = new StringBuilder();
+        for (char character : normalized.toCharArray()) {
+            builder.append('&').append(character);
+        }
+        return builder.toString();
+    }
+
+    private static double getColorDistance(java.awt.Color first, java.awt.Color second) {
+        int redDiff = first.getRed() - second.getRed();
+        int greenDiff = first.getGreen() - second.getGreen();
+        int blueDiff = first.getBlue() - second.getBlue();
+        return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
+    }
+
+    private static Material wool(String modernName) {
+        Material material = Material.matchMaterial(modernName);
+        return material != null ? material : Material.matchMaterial("WOOL");
+    }
 
     static {
         setup(GOLD, YELLOW);

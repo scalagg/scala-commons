@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.template.menu
 
@@ -61,7 +56,6 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
             return false
         }
 
-        // inserts selected button into clicked slot
         if (player.openInventory.cursor == PLACEMENT_CURSOR && selectedButton != null) {
             template.boundButtons[slot] = selectedButton!!
             player.openInventory.cursor = null
@@ -110,8 +104,8 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
             if (clickType.isShiftClick && clickType.isLeftClick) {
                 if (!template.boundButtons.containsKey(slot)) {
-                    // if button types is empty, insert a placeholder button at slot
-                    // otherwise, open the button type selection menu
+
+                    
                     val templateButtonTypes = template.getTemplateButtonFactories()
                     if (templateButtonTypes.isEmpty()) {
                         template.boundButtons[slot] = TemplatePlaceholderButton()
@@ -135,7 +129,6 @@ class EditTemplateLayoutMenu(private val template: MenuTemplate<*>) : Menu() {
         override fun getButtons(player: Player): Map<Int, Button> {
             val buttons = hashMapOf<Int, Button>()
 
-            // template placeholder button type is always available
             buttons[0] = FactoryButton(TemplatePlaceholderButton.Factory())
 
             for (factory in template.getTemplateButtonFactories()) {

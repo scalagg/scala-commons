@@ -1,17 +1,14 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit
 
 import com.cryptomorin.xseries.XMaterial
+import de.tr7zw.changeme.nbtapi.NBT
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.MinecraftReflection
-import net.evilblock.cubed.util.nms.NBTUtil
 import org.apache.commons.lang.WordUtils
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
@@ -44,6 +41,52 @@ object ItemUtils
             CRAFT_ITEM_STACK_CLASS,
             "asBukkitCopy", ITEM_STACK_CLASS
         )!!
+
+    private val ITEM_META_CLASS = Reflection.getClassSuppressed("org.bukkit.inventory.meta.ItemMeta")
+    private val NAMESPACED_KEY_CLASS = Reflection.getClassSuppressed("org.bukkit.NamespacedKey")
+    private val PERSISTENT_DATA_CONTAINER_CLASS = Reflection.getClassSuppressed("org.bukkit.persistence.PersistentDataContainer")
+    private val PERSISTENT_DATA_TYPE_CLASS = Reflection.getClassSuppressed("org.bukkit.persistence.PersistentDataType")
+    private val GET_PERSISTENT_DATA_CONTAINER_METHOD = ITEM_META_CLASS?.let {
+        Reflection.getMethodSuppressed(it, "getPersistentDataContainer")
+    }
+    private val PERSISTENT_DATA_HAS_METHOD = if (PERSISTENT_DATA_CONTAINER_CLASS != null && NAMESPACED_KEY_CLASS != null && PERSISTENT_DATA_TYPE_CLASS != null)
+    {
+        Reflection.getMethodSuppressed(
+            PERSISTENT_DATA_CONTAINER_CLASS,
+            "has",
+            NAMESPACED_KEY_CLASS,
+            PERSISTENT_DATA_TYPE_CLASS
+        )
+    } else null
+    private val PERSISTENT_DATA_GET_METHOD = if (PERSISTENT_DATA_CONTAINER_CLASS != null && NAMESPACED_KEY_CLASS != null && PERSISTENT_DATA_TYPE_CLASS != null)
+    {
+        Reflection.getMethodSuppressed(
+            PERSISTENT_DATA_CONTAINER_CLASS,
+            "get",
+            NAMESPACED_KEY_CLASS,
+            PERSISTENT_DATA_TYPE_CLASS
+        )
+    } else null
+    private val PERSISTENT_DATA_SET_METHOD = if (PERSISTENT_DATA_CONTAINER_CLASS != null && NAMESPACED_KEY_CLASS != null && PERSISTENT_DATA_TYPE_CLASS != null)
+    {
+        Reflection.getMethodSuppressed(
+            PERSISTENT_DATA_CONTAINER_CLASS,
+            "set",
+            NAMESPACED_KEY_CLASS,
+            PERSISTENT_DATA_TYPE_CLASS,
+            Any::class.java
+        )
+    } else null
+    private val NAMESPACED_KEY_CONSTRUCTOR = kotlin.runCatching {
+        NAMESPACED_KEY_CLASS
+            ?.getDeclaredConstructor(String::class.java, String::class.java)
+            ?.apply { isAccessible = true }
+    }.getOrNull()
+    private val PERSISTENT_DATA_STRING_TYPE = kotlin.runCatching {
+        PERSISTENT_DATA_TYPE_CLASS
+            ?.getField("STRING")
+            ?.get(null)
+    }.getOrNull()
 
     private val EQUIPMENT_ITEMS =
         mutableMapOf<XMaterial, EquipmentSlot>()
@@ -135,47 +178,112 @@ object ItemUtils
     @JvmStatic
     fun setMonsterEggType(item: ItemStack, type: EntityType): ItemStack
     {
-        val idTag = NBTUtil.newTag()
-        NBTUtil.setString(idTag, "id", type.getName())
+        if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_21))
+        {
+            val material = Material.matchMaterial("${type.name}_SPAWN_EGG")
+            if (material != null)
+            {
+                item.type = material
+            }
 
-        val nmsCopy = getNmsCopy(item)
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-        NBTUtil.set(tag, "EntityTag", idTag)
-        NBTUtil.setTag(nmsCopy, tag)
+            return item
+        }
 
-        return getBukkitCopy(nmsCopy)
+        NBT.modify(item) { t ->
+            t.resolveOrCreateCompound("EntityTag").setString("id", type.name)
+        }
+
+        return item
     }
 
     @JvmStatic
     fun makeTexturedSkull(texture: String): ItemStack
     {
-        return applySkullTexture(ItemStack(Material.SKULL_ITEM, 1, 3), texture)
+        val base = if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_13))
+        {
+            ItemStack(XMaterial.PLAYER_HEAD.parseMaterial()!!)
+        } else
+        {
+            ItemStack(Material.SKULL_ITEM, 1, 3)
+        }
+
+        return applySkullTexture(base, texture)
     }
 
     @JvmStatic
     fun applySkullTexture(itemStack: ItemStack, texture: String): ItemStack
     {
-        val nmsCopy = getNmsCopy(itemStack)
+        if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_13))
+        {
+            itemStack.type = XMaterial.PLAYER_HEAD.parseMaterial()!!
+            itemStack.durability = 0
+        }
 
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        val skullMeta = itemStack.itemMeta as? SkullMeta
+            ?: return itemStack
 
-        val skullOwner = NBTUtil.getCompound(tag, "SkullOwner")
-        NBTUtil.setString(skullOwner, "Id", UUID.randomUUID().toString())
+        if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_21) && applyModernSkullTexture(skullMeta, texture))
+        {
+            itemStack.itemMeta = skullMeta
+            return itemStack
+        }
 
-        val textureValueTag = NBTUtil.newTag()
-        NBTUtil.setString(textureValueTag, "Value", texture)
+        val profile = buildLegacySkullProfile(texture)
 
-        val textures = NBTUtil.newList()
-        NBTUtil.addToList(textures, textureValueTag)
+        kotlin.runCatching {
+            val profileField = skullMeta.javaClass.getDeclaredField("profile")
+            profileField.isAccessible = true
+            profileField.set(skullMeta, profile)
+        }.recoverCatching {
+            val profileField = skullMeta.javaClass.declaredFields.firstOrNull { field ->
+                field.name.equals("profile", ignoreCase = true)
+            } ?: throw it
 
-        val properties = NBTUtil.getCompound(skullOwner, "Properties")
-        NBTUtil.set(properties, "textures", textures)
-        NBTUtil.set(skullOwner, "Properties", properties)
-        NBTUtil.set(tag, "SkullOwner", skullOwner)
+            profileField.isAccessible = true
+            profileField.set(skullMeta, profile)
+        }
 
-        NBTUtil.setTag(nmsCopy, tag)
+        itemStack.itemMeta = skullMeta
+        return itemStack
+    }
 
-        return getBukkitCopy(nmsCopy)
+    private fun buildLegacySkullProfile(texture: String): Any
+    {
+        return MinecraftReflection.newGameProfile(UUID.randomUUID(), "scala-head", texture, "")
+    }
+
+    private fun applyModernSkullTexture(skullMeta: SkullMeta, texture: String): Boolean
+    {
+        val paperProfileClass = Reflection.getClassSuppressed("com.destroystokyo.paper.profile.PlayerProfile")
+            ?: return false
+        val profileClass = Reflection.getClassSuppressed("org.bukkit.profile.PlayerProfile")
+            ?: return false
+
+        val createProfile = Reflection.getMethodSuppressed(
+            Bukkit::class.java,
+            "createProfile",
+            UUID::class.java,
+            String::class.java
+        ) ?: return false
+
+        val playerProfile = createProfile.invoke(null, UUID.randomUUID(), "scala-head")
+            ?: return false
+
+        val profilePropertyClass = Reflection.getClassSuppressed("com.destroystokyo.paper.profile.ProfileProperty")
+            ?: return false
+        val property = Reflection.callConstructor(profilePropertyClass, "textures", texture)
+            ?: Reflection.callConstructor(profilePropertyClass, "textures", texture, null)
+            ?: return false
+        val setProperty = Reflection.getMethodSuppressed(paperProfileClass, "setProperty", profilePropertyClass)
+            ?: return false
+        setProperty.invoke(playerProfile, property)
+
+        val setPlayerProfile = Reflection.getMethodSuppressed(skullMeta.javaClass, "setPlayerProfile", paperProfileClass)
+            ?: Reflection.getMethodSuppressed(skullMeta.javaClass, "setOwnerProfile", profileClass)
+            ?: return false
+
+        setPlayerProfile.invoke(skullMeta, playerProfile)
+        return true
     }
 
     @JvmStatic
@@ -291,118 +399,168 @@ object ItemUtils
     @JvmStatic
     fun itemTagHasKey(itemStack: ItemStack, key: String): Boolean
     {
-        val nmsCopy = getNmsCopy(itemStack)
+        val nbtHasKey = kotlin.runCatching {
+            NBT.readNbt(itemStack)?.hasTag(key) == true
+        }.getOrDefault(false)
 
-        if (!NBTUtil.hasTag(nmsCopy))
+        if (nbtHasKey)
         {
-            return false
+            return true
         }
 
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-        return NBTUtil.hasKey(tag, key)
+        return readPersistentString(itemStack, key) != null
     }
 
     @JvmStatic
-    fun readItemTagKey(itemStack: ItemStack, key: String): Any
+    fun readItemTagKey(itemStack: ItemStack, key: String): String?
     {
-        val nmsCopy = getNmsCopy(itemStack)
+        val nbtValue = kotlin.runCatching {
+            NBT.readNbt(itemStack)?.getString(key)
+        }.getOrNull()
 
-        if (!NBTUtil.hasTag(nmsCopy))
+        if (nbtValue != null)
         {
-            return false
+            return nbtValue
         }
 
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-        return NBTUtil.get(tag, key)
+        return readPersistentString(itemStack, key)
     }
 
     @JvmStatic
     fun addToItemTag(itemStack: ItemStack, key: String, value: String, preserve: Boolean = false): ItemStack
     {
-        val nmsCopy = getNmsCopy(itemStack)
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        val wroteWithNbt = kotlin.runCatching {
+            NBT.modify(itemStack) { t ->
+                t.setString(key, value)
+            }
+            true
+        }.getOrDefault(false)
 
-        NBTUtil.setString(tag, key, value)
+        if (!wroteWithNbt)
+        {
+            writePersistentString(itemStack, key, value)
+        }
 
         if (preserve)
         {
-            preserveItemNBT(nmsCopy, tag, key)
+            preserveItemNBT(itemStack, key)
         }
-
-        NBTUtil.setTag(nmsCopy, tag)
-
-        return getBukkitCopy(nmsCopy)
+        return itemStack
     }
-
-    @JvmStatic
-    fun addToItemTag(itemStack: ItemStack, pairs: List<Pair<String, String>>, preserve: Boolean = false): ItemStack
-    {
-        val nmsCopy = getNmsCopy(itemStack)
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-
-        for (pair in pairs)
-        {
-            NBTUtil.setString(tag, pair.first, pair.second)
-
-            if (preserve)
-            {
-                preserveItemNBT(nmsCopy, tag, pair.first)
-            }
-        }
-
-        NBTUtil.setTag(nmsCopy, tag)
-
-        return getBukkitCopy(nmsCopy)
-    }
-
-//    @JvmStatic
-//    fun addUUIDToItemTag(itemStack: ItemStack, key: String, uuid: UUID, preserve: Boolean = false): ItemStack {
-//        val nmsCopy = getNmsCopy(itemStack)
-//        val tag = NBTUtil.getOrCreateTag(nmsCopy)
-//
-//        NBTUtil.setUUID(tag, key, uuid)
-//
-//        if (preserve) {
-//            preserveItemNBT(nmsCopy, tag, "${key}Most")
-//            preserveItemNBT(nmsCopy, tag, "${key}Least")
-//        }
-//
-//        NBTUtil.setTag(nmsCopy, tag)
-//
-//        return getBukkitCopy(nmsCopy)
-//    }
 
     @JvmStatic
     fun preserveItemNBT(itemStack: ItemStack, key: String): ItemStack
     {
-        val nmsCopy = getNmsCopy(itemStack)
-        val tag = NBTUtil.getOrCreateTag(nmsCopy)
+        val modified = kotlin.runCatching {
+            NBT.modify(itemStack) { t ->
+                if (t.hasTag("PreserveNBT"))
+                {
+                    val currentKeys = t.getString("PreserveNBT").split(",").toHashSet()
+                    currentKeys.add(key)
 
-        preserveItemNBT(nmsCopy, tag, key)
+                    t.setString("PreserveNBT", currentKeys.joinToString(","))
+                } else
+                {
+                    t.setString("PreserveNBT", key)
+                }
+            }
+            true
+        }.getOrDefault(false)
 
-        return getBukkitCopy(nmsCopy)
-    }
-
-    @JvmStatic
-    fun preserveItemNBT(item: Any, tag: Any, key: String)
-    {
-        if (NBTUtil.hasKey(tag, "PreserveNBT"))
+        if (!modified)
         {
-            val currentKeys = NBTUtil.getString(tag, "PreserveNBT").split(",").toHashSet()
+            val currentKeys = readPersistentString(itemStack, "PreserveNBT")
+                ?.split(",")
+                ?.filter { it.isNotBlank() }
+                ?.toHashSet()
+                ?: hashSetOf()
+
             currentKeys.add(key)
-
-            NBTUtil.setString(tag, "PreserveNBT", currentKeys.joinToString(separator = ","))
-        } else
-        {
-            NBTUtil.setString(tag, "PreserveNBT", key)
+            writePersistentString(itemStack, "PreserveNBT", currentKeys.joinToString(","))
         }
 
-        NBTUtil.setTag(item, tag)
+        return itemStack
     }
 
-    /**
-     * Gets a player head item with the skin of the given [owner].
-     */
+    private fun writePersistentString(itemStack: ItemStack, key: String, value: String): Boolean
+    {
+        val meta = itemStack.itemMeta
+            ?: return false
+        val persistentDataContainer = getPersistentDataContainer(meta)
+            ?: return false
+        val namespacedKey = createPersistentDataKey(key)
+            ?: return false
+        val stringType = PERSISTENT_DATA_STRING_TYPE
+            ?: return false
+
+        return kotlin.runCatching {
+            PERSISTENT_DATA_SET_METHOD?.invoke(
+                persistentDataContainer,
+                namespacedKey,
+                stringType,
+                value
+            )
+            itemStack.itemMeta = meta
+            true
+        }.getOrDefault(false)
+    }
+
+    private fun readPersistentString(itemStack: ItemStack, key: String): String?
+    {
+        val meta = itemStack.itemMeta
+            ?: return null
+        val persistentDataContainer = getPersistentDataContainer(meta)
+            ?: return null
+        val namespacedKey = createPersistentDataKey(key)
+            ?: return null
+        val stringType = PERSISTENT_DATA_STRING_TYPE
+            ?: return null
+
+        val hasKey = kotlin.runCatching {
+            PERSISTENT_DATA_HAS_METHOD?.invoke(
+                persistentDataContainer,
+                namespacedKey,
+                stringType
+            ) as? Boolean
+        }.getOrNull()
+
+        if (hasKey == false)
+        {
+            return null
+        }
+
+        return kotlin.runCatching {
+            PERSISTENT_DATA_GET_METHOD?.invoke(
+                persistentDataContainer,
+                namespacedKey,
+                stringType
+            ) as? String
+        }.getOrNull()
+    }
+
+    private fun getPersistentDataContainer(meta: Any): Any?
+    {
+        return kotlin.runCatching {
+            GET_PERSISTENT_DATA_CONTAINER_METHOD?.invoke(meta)
+        }.getOrNull()
+    }
+
+    private fun createPersistentDataKey(key: String): Any?
+    {
+        val normalizedKey = buildString {
+            key.lowercase(Locale.ROOT).forEach { character ->
+                append(
+                    if (character.isLetterOrDigit() || character == '/' || character == '.' || character == '_' || character == '-')
+                        character else '-'
+                )
+            }
+        }
+
+        return kotlin.runCatching {
+            NAMESPACED_KEY_CONSTRUCTOR?.newInstance("sccommons", normalizedKey)
+        }.getOrNull()
+    }
+
     @JvmStatic
     fun getPlayerHeadItem(owner: String): ItemStack
     {
@@ -424,9 +582,6 @@ object ItemUtils
         XMaterial.LEATHER_HELMET
     )
 
-    /**
-     * Applies the given [color] to the given [itemStack]'s metadata if the [itemStack] is a leather armor type.
-     */
     @JvmStatic
     fun colorLeatherArmor(itemStack: ItemStack, color: Color): ItemStack
     {

@@ -34,7 +34,6 @@ public final class FrameIterator implements Iterator<String> {
         return currentFrame.text();
     }
 
-
     @Override
     public boolean hasNext() {
         return true;

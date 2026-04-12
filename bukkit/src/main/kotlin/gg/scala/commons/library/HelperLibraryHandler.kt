@@ -12,10 +12,6 @@ import java.net.URLClassLoader
 import java.nio.file.Files
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 10/14/2021
- */
 object HelperLibraryHandler
 {
     private val URL_INJECTOR = Suppliers.memoize {
@@ -25,10 +21,6 @@ object HelperLibraryHandler
         )
     }
 
-    /**
-     * Scans and registers all declared fields in a class
-     * which are [Library] instances.
-     */
     fun loadAll(clazz: Class<*>)
     {
         val fields = clazz

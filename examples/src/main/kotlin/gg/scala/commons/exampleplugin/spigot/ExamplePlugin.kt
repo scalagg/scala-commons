@@ -6,10 +6,6 @@ import gg.scala.commons.core.plugin.PluginAuthor
 import gg.scala.commons.core.plugin.PluginDependency
 import gg.scala.commons.core.plugin.PluginWebsite
 
-/**
- * @author GrowlyX
- * @since 10/10/2022
- */
 @Plugin(
     name = "devtoolkit",
     version = "%remote%/%branch%/%id%"

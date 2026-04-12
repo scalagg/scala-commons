@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit
 
@@ -19,26 +14,11 @@ object InventoryUtils {
         return changeInventoryAmount(inventory.contents, itemStack, amount, true)
     }
 
-//    @JvmStatic
-//    fun removeAmountFromInventory(inventory: Inventory, itemStack: ItemStack, amount: Int) {
-//        changeInventoryAmount(inventory.contents, itemStack, amount, false)
-//    }
-
     @JvmStatic
     fun addAmountToInventory(inventory: Array<ItemStack?>, itemStack: ItemStack, amount: Int): ItemStack? {
         return changeInventoryAmount(inventory, itemStack, amount, true)
     }
 
-//    @JvmStatic
-//    fun removeAmountFromInventory(inventory: Array<ItemStack?>, itemStack: ItemStack, amount: Int) {
-//        changeInventoryAmount(inventory, itemStack, amount, false)
-//    }
-
-    /**
-     * Finds the first entry in the given [inventory] that is null.
-     *
-     * @return The first index whose entry in the [inventory] is null, or -1.
-     */
     private fun firstEmpty(inventory: Array<ItemStack?>): Int {
         for (i in inventory.indices) {
             if (inventory[i] == null) {
@@ -48,13 +28,6 @@ object InventoryUtils {
         return -1
     }
 
-    /**
-     * Tries to insert the given [itemStack] to the given [inventory]. The given [itemStack] will try and be stacked onto
-     * existing slots in the [inventory] whose items are similar to the [itemStack] and can fit more in their stacks.
-     *
-     * First we try and stack, then use an empty slot if there is still a remaining amount to be inserted. Essentially we
-     * are mocking how the Minecraft Inventory UI works.
-     */
     private fun changeInventoryAmount(inventory: Array<ItemStack?>, itemStack: ItemStack, amount: Int, add: Boolean): ItemStack? {
         var remainingAmount = amount
 

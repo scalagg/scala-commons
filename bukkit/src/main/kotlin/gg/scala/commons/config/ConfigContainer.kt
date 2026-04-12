@@ -18,10 +18,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/17/2022
- */
 open class ConfigContainer(
     val plugin: ExtendedScalaPlugin,
     private val factory: ConfigFactory?,

@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit.cuboid
 
@@ -15,7 +10,6 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.entity.Entity
 import java.util.*
-
 
 class Cuboid : Iterable<Block>, Cloneable, ConfigurationSerializable {
 
@@ -102,7 +96,6 @@ class Cuboid : Iterable<Block>, Cloneable, ConfigurationSerializable {
 
         return res
     }
-
 
     fun getWalls(): List<Block> {
         val blocks = ArrayList<Block>()

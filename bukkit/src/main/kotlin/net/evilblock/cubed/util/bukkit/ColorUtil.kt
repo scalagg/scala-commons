@@ -1,12 +1,8 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit
 
+import com.cryptomorin.xseries.XMaterial
 import org.apache.commons.lang.WordUtils
 import org.bukkit.ChatColor
 import org.bukkit.Color
@@ -110,6 +106,25 @@ object ColorUtil {
     @JvmStatic
     fun toWoolData(color: ChatColor): Int {
         return CHAT_COLOR_TO_WOOL_DATA[color] ?: 0
+    }
+
+    @JvmStatic
+    fun toGlassPaneMaterial(color: ChatColor): XMaterial {
+        return when (color) {
+            ChatColor.DARK_RED, ChatColor.RED -> XMaterial.RED_STAINED_GLASS_PANE
+            ChatColor.GOLD -> XMaterial.ORANGE_STAINED_GLASS_PANE
+            ChatColor.YELLOW -> XMaterial.YELLOW_STAINED_GLASS_PANE
+            ChatColor.GREEN, ChatColor.DARK_GREEN -> XMaterial.LIME_STAINED_GLASS_PANE
+            ChatColor.DARK_AQUA -> XMaterial.CYAN_STAINED_GLASS_PANE
+            ChatColor.AQUA -> XMaterial.LIGHT_BLUE_STAINED_GLASS_PANE
+            ChatColor.BLUE -> XMaterial.BLUE_STAINED_GLASS_PANE
+            ChatColor.DARK_PURPLE -> XMaterial.PURPLE_STAINED_GLASS_PANE
+            ChatColor.LIGHT_PURPLE -> XMaterial.MAGENTA_STAINED_GLASS_PANE
+            ChatColor.GRAY -> XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE
+            ChatColor.DARK_GRAY -> XMaterial.GRAY_STAINED_GLASS_PANE
+            ChatColor.BLACK -> XMaterial.BLACK_STAINED_GLASS_PANE
+            else -> XMaterial.WHITE_STAINED_GLASS_PANE
+        }
     }
 
     @JvmStatic

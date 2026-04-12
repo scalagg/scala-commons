@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity.tool
 
@@ -15,9 +10,7 @@ import net.evilblock.cubed.entity.npc.util.NpcUtils
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.AngleUtils
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import net.evilblock.cubed.util.bukkit.ItemUtils
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.minecraft.server.v1_8_R3.NBTTagString
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -26,6 +19,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.*
 import org.bukkit.event.block.Action
+import org.bukkit.event.Event.Result
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
@@ -35,44 +29,42 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-/**
- * Handles bukkit events for Move Tool functionality and UX.
- */
 @Listeners
 object EntityMoveTool : Listener {
+
+    private const val moveToolTagPrefix = "entity-move-tool:"
 
     @JvmStatic
     fun makeMoveTool(entity: Entity): ItemStack {
         val item = ItemBuilder.of(XMaterial.PIG_SPAWN_EGG)
-            .data(120)
             .name("${CC.GREEN}Move ${entity.getTypeName()}")
             .setLore(arrayListOf<String>().also { desc ->
                 desc.add("${CC.GRAY}Place this mob egg wherever")
                 desc.add("${CC.GRAY}you'd like to move the NPC.")
+                desc.add("${ChatColor.DARK_GRAY}$moveToolTagPrefix${entity.uuid}")
             })
             .build()
 
-        return ItemUtils.addToItemTag(ItemUtils.setMonsterEggType(item, EntityType.VILLAGER), "EntityMoveTool", entity.uuid.toString())
+        return net.evilblock.cubed.util.bukkit.ItemUtils.setMonsterEggType(item, EntityType.VILLAGER)
     }
 
-    /**
-     * If the given [itemStack] is a move tool.
-     */
     @JvmStatic
     fun isMoveTool(itemStack: ItemStack?): Boolean {
         if (itemStack == null) {
             return false
         }
 
-        if (itemStack.type != XMaterial.PIG_SPAWN_EGG.parseMaterial()) {
-            return false
-        }
+        return moveToolUuid(itemStack) != null
+    }
 
-        if (ItemUtils.itemTagHasKey(itemStack, "EntityMoveTool")) {
-            return true
-        }
-
-        return false
+    private fun moveToolUuid(itemStack: ItemStack?): UUID?
+    {
+        val lore = itemStack?.itemMeta?.lore ?: return null
+        val raw = lore.firstOrNull { it.startsWith("${ChatColor.DARK_GRAY}$moveToolTagPrefix") }
+            ?: return null
+        return kotlin.runCatching {
+            UUID.fromString(raw.removePrefix("${ChatColor.DARK_GRAY}$moveToolTagPrefix"))
+        }.getOrNull()
     }
 
     @JvmStatic
@@ -80,7 +72,7 @@ object EntityMoveTool : Listener {
         for (i in 0 until 36) {
             val itemStack = player.inventory.contents[i]
             if (isMoveTool(itemStack)) {
-                val uuid = UUID.fromString((ItemUtils.readItemTagKey(itemStack, "EntityMoveTool") as NBTTagString).a_())
+                val uuid = moveToolUuid(itemStack) ?: continue
 
                 EntityHandler.getEntityByUuid(uuid)
                     ?.updateVisibility(false)
@@ -92,9 +84,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Handles move tool functionality.
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if ((event.action != Action.RIGHT_CLICK_BLOCK)) return
@@ -102,13 +91,14 @@ object EntityMoveTool : Listener {
         if (itemInHand != null) {
             if (isMoveTool(itemInHand)) {
                 event.isCancelled = true
+                event.setUseInteractedBlock(Result.DENY)
+                event.setUseItemInHand(Result.DENY)
 
-                val uuid =
-                    UUID.fromString((ItemUtils.readItemTagKey(itemInHand, "EntityMoveTool") as NBTTagString).a_())
+                val uuid = moveToolUuid(itemInHand) ?: return
 
                 val entity = EntityHandler.getEntityByUuid(uuid)
                 if (entity != null) {
-                    // npc direction == flipped player yaw
+
                     val direction = event.player.eyeLocation.direction.multiply(-1)
                     val height = NpcUtils.BLOCK_HEIGHTS.getOrDefault(event.clickedBlock.type.name, 1.0)
 
@@ -119,7 +109,6 @@ object EntityMoveTool : Listener {
                     updatedLocation.yaw = AngleUtils.faceToYaw(directionFace).toFloat()
                     updatedLocation.pitch = 0.0F
 
-                    // check with other entity implementations
                     val entityMovedEvent = EntityMovedEvent(event.player, entity, updatedLocation)
                     Bukkit.getServer().pluginManager.callEvent(entityMovedEvent)
 
@@ -138,9 +127,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Prevents any move tools from being inserted into a container via clicks.
-     */
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (event.action.name.contains("DROP") && isMoveTool(event.currentItem)) {
@@ -148,9 +134,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Prevents any move tools from being inserted into a container via drag.
-     */
     @EventHandler
     fun onInventoryDragEvent(event: InventoryDragEvent) {
         if (event.cursor != null && isMoveTool(event.cursor)) {
@@ -159,9 +142,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Prevents any move tools from being dropped due to a player death.
-     */
     @EventHandler
     fun onPlayerDeathEvent(event: PlayerDeathEvent) {
         val dropIterator = event.drops.iterator()
@@ -173,9 +153,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Prevents any move tools from being dropped.
-     */
     @EventHandler
     fun onPlayerDropItemEvent(event: PlayerDropItemEvent) {
         if (isMoveTool(event.itemDrop.itemStack)) {
@@ -187,13 +164,6 @@ object EntityMoveTool : Listener {
         }
     }
 
-    /**
-     * Removes any move tools from the player's inventory when they logout.
-     *
-     * If any move tools are found, the entity is extracted from the item metadata
-     * and the entity's visibility is updated to visible to prevent any NPCs
-     * from becoming "lost".
-     */
     @EventHandler
     fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         clearInventoryOfTool(event.player)

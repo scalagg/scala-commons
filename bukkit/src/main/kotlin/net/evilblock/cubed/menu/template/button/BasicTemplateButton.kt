@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.template.button
 
@@ -72,7 +67,7 @@ class BasicTemplateButton(private var icon: ItemStack) : MenuTemplateButton(), C
             },
             ButtonAction(clickType = ClickType.MIDDLE, color = ChatColor.AQUA, text = "copy item") { menu, player, template, slot ->
                 player.openInventory.cursor = icon.clone()
-//                player.inventory.addItem(icon.clone())
+
                 player.updateInventory()
             }
         )

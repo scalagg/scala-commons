@@ -7,10 +7,6 @@ import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import net.evilblock.cubed.util.Color
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 5/2/2022
- */
 @Service
 @IgnoreAutoScan
 object Replacements

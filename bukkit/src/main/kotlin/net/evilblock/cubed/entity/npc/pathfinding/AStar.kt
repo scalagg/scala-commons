@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 package net.evilblock.cubed.entity.npc.pathfinding
 
 import org.bukkit.Bukkit
@@ -47,17 +42,15 @@ class AStar
 
     fun getPath(): MutableList<Location>
     {
-        // check if player could stand at start and endpoint, if not return empty path
+
         if (!(canStandAt(startLocation) && canStandAt(endLocation)))
         {
             return mutableListOf()
         }
 
-        // time for benchmark
         val nsStart = System.nanoTime()
         uncheckedNodes.add(startNode)
 
-        // cycle through untested nodes until a exit condition is fulfilled
         while (checkedNodes.size < maxNodeTests && !pathFound && uncheckedNodes.size > 0)
         {
             var n = uncheckedNodes[0]
@@ -91,7 +84,6 @@ class AStar
             checkedNodes.add(n)
         }
 
-        // returning if no path has been found
         if (!pathFound)
         {
             val duration = (System.nanoTime() - nsStart) / 1000000f
@@ -263,12 +255,10 @@ class AStar
         val deltaY = abs(loc1.y - loc2.y)
         val deltaZ = abs(loc1.z - loc2.z)
 
-        // euclidean distance
         val distance2d = sqrt(deltaX * deltaX + deltaZ * deltaZ)
         return sqrt(distance2d * distance2d + deltaY * deltaY)
 
-        // manhattan distance
-        //return deltaX + deltaY + deltaZ;
+        
     }
 
     companion object

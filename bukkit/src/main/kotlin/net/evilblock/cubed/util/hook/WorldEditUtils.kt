@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.hook
 
@@ -55,10 +50,10 @@ object WorldEditUtils {
     @Throws(Exception::class)
     fun clipboard(schematicFile: File): CuboidClipboard {
         val clipboard = SchematicFormat.MCEDIT.load(schematicFile)
-        // systems like the ArenaGrid assume that pastes will 'begin' directly at the Vector
-        // provided. to ensure we can do this, we manually clear any offset (distance from
-        // corner of schematic to player) to ensure our pastes aren't dependant on the
-        // location of the player when copied
+
+        
+
+        
         clipboard.offset = Vector(0, 0, 0)
         return clipboard
     }
@@ -95,8 +90,8 @@ object WorldEditUtils {
         try {
             newEditSession(world).setBlocks(region, air)
         } catch (ex: MaxChangedBlocksException) {
-            // our block change limit is Integer.MAX_VALUE, so will never
-            // have to worry about this happening
+
+            
             throw RuntimeException(ex)
         }
     }

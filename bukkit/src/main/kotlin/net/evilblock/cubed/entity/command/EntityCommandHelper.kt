@@ -9,10 +9,6 @@ import net.evilblock.cubed.util.bukkit.FancyMessage
 import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 10/9/2022
- */
 object EntityCommandHelper
 {
     fun teleportToAnEntity(player: Player, entity: Entity)

@@ -1,18 +1,18 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.scoreboard
 
+import com.github.retrooper.packetevents.protocol.score.BlankScoreFormat
+import com.github.retrooper.packetevents.protocol.score.ScoreFormatTypes
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateScore
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableSet
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.scoreboard.preview.ScoreboardPreviewHandler
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Reflection
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.nms.MinecraftProtocol
 import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.Bukkit
@@ -103,22 +103,39 @@ class Scoreboard(
             return
         }
 
+        val normalizedLines = LinkedList<String>()
+        var previousLine: String? = null
+        for (line in lines)
+        {
+            if (line == previousLine)
+            {
+                continue
+            }
+
+            normalizedLines += line
+            previousLine = line
+        }
+
+        lines.clear()
+        lines.addAll(normalizedLines)
+
         this.recentlyUpdatedScores.clear()
         this.usedBaseScores.clear()
 
-        var nextValue = lines.size
-        Preconditions.checkArgument(lines.size <= 15, "Too many lines passed! (${lines.size})" as Any)
-        Preconditions.checkArgument(title.length <= 32, "Title is too long! (${title.length})" as Any)
-
-        if (this.objective.displayName != title)
-        {
-            this.objective.displayName = title
-        }
-
+        val preparedLines = mutableListOf<Triple<String, String, String>>()
+        var previewValue = lines.size
         for (s in lines)
         {
+            if (this.afterV113)
+            {
+                val identifier = ChatColor.values()[previewValue].toString()
+                preparedLines += Triple(ChatColor.translateAlternateColorCodes('&', s), identifier, "")
+                previewValue--
+                continue
+            }
+
             val nextValues = ChatColor
-                .values()[nextValue]
+                .values()[previewValue]
                 .toString()
 
             val line = "$nextValues${CC.WHITE}$s"
@@ -135,12 +152,41 @@ class Scoreboard(
                 )
             }
 
-            val separated = this
-                .separate(line, this.usedBaseScores)
+            val separated = this.separate(line, this.usedBaseScores)
+            preparedLines += Triple(separated[0], separated[1], separated[2])
+            previewValue--
+        }
 
-            var prefix =  separated[0]
-            var score = separated[1]
-            var suffix = separated[2]
+        for (displayedScore in ImmutableSet.copyOf(this.displayedScores.keys))
+        {
+            if (preparedLines.any { it.second == displayedScore })
+            {
+                continue
+            }
+
+            this.removeScore(displayedScore)
+        }
+
+        this.usedBaseScores.clear()
+
+        var nextValue = lines.size
+        Preconditions.checkArgument(lines.size <= 15, "Too many lines passed! (${lines.size})" as Any)
+        val visibleTitleLength = ChatColor.stripColor(title)?.length ?: title.length
+        Preconditions.checkArgument(
+            visibleTitleLength <= (if (this.afterV113) 128 else 32),
+            "Title is too long! ($visibleTitleLength)" as Any
+        )
+
+        if (this.objective.displayName != title)
+        {
+            this.objective.displayName = title
+        }
+
+        for (prepared in preparedLines)
+        {
+            val prefix = prepared.first
+            val score = prepared.second
+            val suffix = prepared.third
 
             this.recentlyUpdatedScores.add(score)
 
@@ -154,6 +200,10 @@ class Scoreboard(
                 this.displayedScores[score] != nextValue
             )
             {
+                if (this.displayedScores.containsKey(score) && this.displayedScores[score] != nextValue)
+                {
+                    this.removeScore(score)
+                }
                 this.setScore(score, nextValue)
             }
 
@@ -178,23 +228,39 @@ class Scoreboard(
 
             this.removeScore(displayedScore)
         }
+
     }
 
     private fun createAndAddMember(score: String)
     {
-        val scoreboardTeamAdd =
-            ScoreboardTeamPacketMod(teamName = score, prefix = "_", suffix = "_", players = arrayListOf(), action = 0)
-        scoreboardTeamAdd.send(this.player)
+        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = "_", suffix = "_")
+        interactions
+            .newCreatePacket(listOf())
+            .send(this.player)
 
-        val scoreboardTeamAddMember =
-            ScoreboardTeamPacketMod(teamName = score, players = arrayListOf(score), action = 3)
-        scoreboardTeamAddMember.send(this.player)
+        interactions
+            .newTeamMemberUpdatePacket(
+                score,
+                WrapperPlayServerTeams.TeamMode.ADD_ENTITIES
+            )
+            .send(player)
 
         this.sentTeamCreates.add(score)
     }
 
+    fun scoreboardScore(score: String, value: Int, scoreboardAction: WrapperPlayServerUpdateScore.Action, objectiveName: String = objective.name) =
+        WrapperPlayServerUpdateScore(score, scoreboardAction, objectiveName, value, null, BlankScoreFormat.INSTANCE)
+
     private fun setScore(score: String, value: Int)
     {
+        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
+        {
+            this.displayedScores[score] = value
+            scoreboardScore(score, value, WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM)
+                .send(player)
+            return
+        }
+
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
         Reflection.setDeclaredFieldValue(packet, "b", this.objective.name)
@@ -204,7 +270,6 @@ class Scoreboard(
         Reflection.setDeclaredFieldValue(packet, "d", Reflection.getEnum(enumType, "CHANGE")!!)
 
         this.displayedScores[score] = value
-
         MinecraftProtocol.send(player, packet)
     }
 
@@ -213,6 +278,21 @@ class Scoreboard(
         this.displayedScores.remove(score)
         this.scorePrefixes.remove(score)
         this.scoreSuffixes.remove(score)
+        objective.scoreboard.resetScores(score)
+        objective.scoreboard.getTeam(score)?.unregister()
+
+        if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_8_8))
+        {
+            scoreboardScore(score, 0, WrapperPlayServerUpdateScore.Action.REMOVE_ITEM, this.objective.name)
+                .send(player)
+            if (this.sentTeamCreates.remove(score))
+            {
+                MultiVersionScoreboardTeamPackets(teamID = score)
+                    .newRemovePacket()
+                    .send(this.player)
+            }
+            return
+        }
 
         val packet = MinecraftProtocol.newPacket("PacketPlayOutScoreboardScore")
         Reflection.setDeclaredFieldValue(packet, "a", score)
@@ -224,6 +304,13 @@ class Scoreboard(
         Reflection.setDeclaredFieldValue(packet, "d", enum)
 
         MinecraftProtocol.send(player, packet)
+
+        if (this.sentTeamCreates.remove(score))
+        {
+            MultiVersionScoreboardTeamPackets(teamID = score)
+                .newRemovePacket()
+                .send(this.player)
+        }
     }
 
     private fun updateScore(
@@ -233,9 +320,10 @@ class Scoreboard(
         this.scorePrefixes[score] = prefix
         this.scoreSuffixes[score] = suffix
 
-        ScoreboardTeamPacketMod(
-            score, prefix, suffix, null, 2
-        ).send(this.player)
+        val interactions = MultiVersionScoreboardTeamPackets(teamID = score, prefix = prefix, suffix = suffix)
+        interactions
+            .newUpdatePacket()
+            .send(this.player)
     }
 
     private fun separate(line: String, usedBaseScores: MutableCollection<String>): Array<String>

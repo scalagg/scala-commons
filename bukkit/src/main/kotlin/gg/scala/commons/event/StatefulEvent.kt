@@ -5,17 +5,10 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.event.Cancellable
 import java.util.logging.Level
 
-/**
- * @author GrowlyX
- * @since 7/30/2022
- */
 abstract class StatefulEvent : AbstractEvent<EventQuadState>(), Cancellable
 {
     private var state = EventQuadState.NOT_SET
 
-    /**
-     * The state is automatically updated through Bukkit's Cancellable logic.
-     */
     override fun postPushCompute() = this.state
 
     override fun postPushFailure(throwable: Throwable): EventQuadState

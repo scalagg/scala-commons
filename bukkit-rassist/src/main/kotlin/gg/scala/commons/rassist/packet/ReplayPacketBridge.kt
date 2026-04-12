@@ -1,42 +1,49 @@
 package gg.scala.commons.rassist.packet
 
-import com.comphenix.protocol.PacketType
-import gg.scala.commons.rassist.dao.packet.versions.ReplayPacketConverterLegacyImp
+import com.github.retrooper.packetevents.protocol.packettype.PacketType as PEPacketType
 
-/**
- * @author GrowlyX
- * @since 5/7/2022
- */
 object ReplayPacketBridge
 {
-    val packetTypesInternal = listOf(
-        PacketType.Play.Client.ARM_ANIMATION,
-        PacketType.Play.Server.REL_ENTITY_MOVE,
-        PacketType.Play.Server.REL_ENTITY_MOVE_LOOK, PacketType.Play.Server.ENTITY_LOOK,
-        PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
-        PacketType.Play.Server.LIGHT_UPDATE, PacketType.Play.Server.WORLD_BORDER,
-        PacketType.Play.Server.WORLD_PARTICLES, PacketType.Play.Server.WORLD_EVENT,
-        PacketType.Play.Server.NAMED_SOUND_EFFECT, PacketType.Play.Server.LOOK_AT,
-        PacketType.Play.Server.VIEW_CENTRE, PacketType.Play.Server.UPDATE_TIME,
-        PacketType.Play.Server.COLLECT, PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-        PacketType.Play.Server.SPAWN_ENTITY, PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
-        PacketType.Play.Server.SPAWN_ENTITY_LIVING, PacketType.Play.Server.SPAWN_ENTITY_WEATHER,
-        PacketType.Play.Server.SPAWN_ENTITY_PAINTING, PacketType.Play.Server.ENTITY,
-        PacketType.Play.Server.ENTITY_VELOCITY, PacketType.Play.Server.ENTITY_TELEPORT,
-        PacketType.Play.Server.ENTITY_STATUS, PacketType.Play.Server.ATTACH_ENTITY,
-        PacketType.Play.Server.ENTITY_EFFECT, PacketType.Play.Server.REMOVE_ENTITY_EFFECT,
-        PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.EXPLOSION,
-        PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.ENTITY_DESTROY,
-        PacketType.Play.Server.ENTITY_SOUND, PacketType.Play.Server.UNLOAD_CHUNK,
-        PacketType.Play.Server.MULTI_BLOCK_CHANGE, PacketType.Play.Server.BLOCK_CHANGE,
-        PacketType.Play.Server.BLOCK_ACTION, PacketType.Play.Server.UPDATE_SIGN,
-        PacketType.Play.Server.BLOCK_BREAK_ANIMATION, PacketType.Play.Server.GAME_STATE_CHANGE
-    ).filter {
-        it.isSupported
-    }
-
-    private val converter =
-        ReplayPacketConverterLegacyImp()
-
-    fun converter() = converter
+    val packetTypesInternalPE = listOf(
+        PEPacketType.Play.Client.ANIMATION,
+        PEPacketType.Play.Server.ENTITY_RELATIVE_MOVE,
+        PEPacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION,
+        PEPacketType.Play.Server.ENTITY_ROTATION,
+        PEPacketType.Play.Server.CHUNK_DATA,
+        PEPacketType.Play.Server.MAP_CHUNK_BULK,
+        PEPacketType.Play.Server.UPDATE_LIGHT,
+        PEPacketType.Play.Server.WORLD_BORDER,
+        PEPacketType.Play.Server.PARTICLE,
+        PEPacketType.Play.Server.EFFECT,
+        PEPacketType.Play.Server.SOUND_EFFECT,
+        PEPacketType.Play.Server.FACE_PLAYER,
+        PEPacketType.Play.Server.UPDATE_VIEW_POSITION,
+        PEPacketType.Play.Server.TIME_UPDATE,
+        PEPacketType.Play.Server.COLLECT_ITEM,
+        PEPacketType.Play.Server.SPAWN_PLAYER,
+        PEPacketType.Play.Server.SPAWN_ENTITY,
+        PEPacketType.Play.Server.SPAWN_EXPERIENCE_ORB,
+        PEPacketType.Play.Server.SPAWN_LIVING_ENTITY,
+        PEPacketType.Play.Server.SPAWN_WEATHER_ENTITY,
+        PEPacketType.Play.Server.SPAWN_PAINTING,
+        PEPacketType.Play.Server.ENTITY_MOVEMENT,
+        PEPacketType.Play.Server.ENTITY_VELOCITY,
+        PEPacketType.Play.Server.ENTITY_TELEPORT,
+        PEPacketType.Play.Server.ENTITY_STATUS,
+        PEPacketType.Play.Server.ATTACH_ENTITY,
+        PEPacketType.Play.Server.ENTITY_EFFECT,
+        PEPacketType.Play.Server.REMOVE_ENTITY_EFFECT,
+        PEPacketType.Play.Server.ENTITY_EQUIPMENT,
+        PEPacketType.Play.Server.EXPLOSION,
+        PEPacketType.Play.Server.ENTITY_METADATA,
+        PEPacketType.Play.Server.DESTROY_ENTITIES,
+        PEPacketType.Play.Server.ENTITY_SOUND_EFFECT,
+        PEPacketType.Play.Server.UNLOAD_CHUNK,
+        PEPacketType.Play.Server.MULTI_BLOCK_CHANGE,
+        PEPacketType.Play.Server.BLOCK_CHANGE,
+        PEPacketType.Play.Server.BLOCK_ACTION,
+        PEPacketType.Play.Server.UPDATE_SIGN,
+        PEPacketType.Play.Server.BLOCK_BREAK_ANIMATION,
+        PEPacketType.Play.Server.CHANGE_GAME_STATE,
+    ).filterNotNull()
 }

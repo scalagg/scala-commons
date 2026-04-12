@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.template.button
 
@@ -51,7 +46,7 @@ class TemplatePlaceholderButton : MenuTemplateButton(), CloneableMenuTemplateBut
     }
 
     companion object {
-        // https://minecraft-heads.com/custom-heads/monsters/36801-magic-slime-green
+
         private const val TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhhNWE1ZDdmMTM1NTRiN2Q4OGQyNzY2ZTlhM2FmZTI3YTY4YTU2MmIxOWNmYzRkODQxYjAxMWZmZmQ3MTkzNiJ9fX0="
     }
 

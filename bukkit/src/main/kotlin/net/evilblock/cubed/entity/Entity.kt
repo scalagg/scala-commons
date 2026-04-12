@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity
 
@@ -29,46 +24,25 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class Entity(var location: Location)
 {
 
-    /**
-     * The ID of this entity.
-     */
     @Transient
     var id: Int = -1
 
-    /**
-     * The unique ID of this entity. Persistent across server restarts.
-     */
     val uuid: UUID = UUID.randomUUID()
 
     @Transient
     private var initialized: Boolean = false
 
-    /**
-     * If this entity is hidden or not.
-     */
     @Transient
     private var hidden: Boolean = false
 
-    /**
-     * If this entity is persistent across server restarts.
-     */
     @Transient
     var persistent: Boolean = true
 
-    /**
-     * If this entity is the root entity of a multi-part entity.
-     */
     @Transient
     var root: Boolean = true
 
-    /**
-     * This entity's animation.
-     */
     var animation: EntityAnimation? = null
 
-    /**
-     * The players currently viewing this entity.
-     */
     @Transient
     protected lateinit var currentWatchers: MutableSet<UUID>
 
@@ -84,13 +58,6 @@ abstract class Entity(var location: Location)
 
     abstract fun getTypeName(): String
 
-    /**
-     * Each transient field (fields that are not serialized) of an [Entity] implementation
-     * must be initialized in this method as GSON deserialization sets transient field values
-     * to null.
-     *
-     * Therefore, this method is called immediately after deserialization.
-     */
     open fun initializeData()
     {
         this.id = nextEntityId()
@@ -131,9 +98,6 @@ abstract class Entity(var location: Location)
         }
     }
 
-    /**
-     * Updates the [Entity.location] of this entity to the given [location] and sends updates to the current watchers.
-     */
     open fun updateLocation(location: Location)
     {
         this.location = location
@@ -155,17 +119,11 @@ abstract class Entity(var location: Location)
         }
     }
 
-    /**
-     * Gets a prepped location that's used to spawn/reposition an entity.
-     */
     open fun getAdjustedLocation(player: Player): Location
     {
         return location
     }
 
-    /**
-     *
-     */
     open fun getDebugViewLocation(): Location
     {
         return location.clone().subtract(0.0, 0.0, 0.0)
@@ -181,25 +139,16 @@ abstract class Entity(var location: Location)
         return initialized
     }
 
-    /**
-     * If this entity is visible.
-     */
     open fun isVisible(): Boolean
     {
         return !hidden
     }
 
-    /**
-     * If this entity is visible to the given [player].
-     */
     open fun isVisibleToPlayer(player: Player): Boolean
     {
         return !hidden && location.world == player.world && location.distance(player.location) <= EntityHooks.entityVisibilityDistance(player)
     }
 
-    /**
-     * Updates the visibility of this entity.
-     */
     open fun updateVisibility(hidden: Boolean)
     {
         val hasChanged = hidden != this.hidden
@@ -224,16 +173,10 @@ abstract class Entity(var location: Location)
         }
     }
 
-    /**
-     * Called when the given [player] left-clicks this entity.
-     */
     open fun onLeftClick(player: Player)
     {
     }
 
-    /**
-     * Called when the given [player] right-clicks this entity.
-     */
     open fun onRightClick(player: Player)
     {
         if (command != null)
@@ -330,9 +273,6 @@ abstract class Entity(var location: Location)
         return ::currentWatchers.isInitialized && currentWatchers.isNotEmpty()
     }
 
-    /**
-     * Gets a list of [Player] objects mapped from the [currentWatchers] list.
-     */
     fun getCurrentWatcherPlayers(): List<Player>
     {
         if (!::currentWatchers.isInitialized)
@@ -353,9 +293,6 @@ abstract class Entity(var location: Location)
         return currentWatchers.contains(playerUuid)
     }
 
-    /**
-     * Sends entity updates to all current watchers.
-     */
     open fun updateForCurrentWatchers()
     {
         for (player in getCurrentWatcherPlayers())
@@ -364,9 +301,6 @@ abstract class Entity(var location: Location)
         }
     }
 
-    /**
-     * Destroys the entity for all current watchers.
-     */
     open fun destroyForCurrentWatchers()
     {
         for (player in getCurrentWatcherPlayers())
@@ -437,6 +371,12 @@ abstract class Entity(var location: Location)
 
     open fun sendDestroyPackets(player: Player)
     {
+        if (MinecraftReflection.isModern())
+        {
+            MinecraftProtocol.send(player, MinecraftProtocol.buildModernRemoveEntitiesPacket(id))
+            return
+        }
+
         val destroyPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityDestroy")
         Reflection.setDeclaredFieldValue(destroyPacket, "a", intArrayOf(id))
 
@@ -449,15 +389,7 @@ abstract class Entity(var location: Location)
 
     open fun sendRepositionPackets(player: Player)
     {
-        val entityTeleportPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityTeleport")
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "a", id)
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "b", location.x)
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "c", location.y)
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "d", location.z)
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "e", AngleUtils.yawToBytes(location.yaw))
-        Reflection.setDeclaredFieldValue(entityTeleportPacket, "f", AngleUtils.yawToBytes(location.pitch))
-
-        MinecraftProtocol.send(player, entityTeleportPacket)
+        MinecraftProtocol.send(player, MinecraftProtocol.buildEntityTeleportPacket(id, location))
     }
 
     fun sendStatusPacket(status: Byte)

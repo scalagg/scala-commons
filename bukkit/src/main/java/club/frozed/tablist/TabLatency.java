@@ -1,11 +1,5 @@
 package club.frozed.tablist;
 
-/**
- * Created by Ryzeon
- * Project: Hatsur TabAPI
- * Date: 12/10/2020 @ 08:37
- */
-
 public enum TabLatency {
 
     FIVE_BARS(149),

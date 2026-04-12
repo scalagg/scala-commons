@@ -1,9 +1,5 @@
 package gg.scala.commons.config.annotations
 
-/**
- * @author GrowlyX
- * @since 10/12/2022
- */
 @Target(
     AnnotationTarget.CLASS
 )

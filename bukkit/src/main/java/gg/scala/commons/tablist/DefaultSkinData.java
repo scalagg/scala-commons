@@ -6,9 +6,6 @@ import io.github.nosequel.tab.shared.skin.SkinUtil;
 
 import javax.annotation.Nonnull;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class DefaultSkinData {
 
     private static SkinData DEFAULT_SKIN = new SkinData(

@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.nms
 
@@ -243,6 +238,67 @@ object MinecraftReflection
     }
 
     @JvmStatic
+    fun newGameProfile(uuid: UUID, name: String, textureValue: String, textureSignature: String): Any
+    {
+        val multimapClass = Reflection.getClassSuppressed("com.google.common.collect.HashMultimap")
+        val createMethod = multimapClass?.let {
+            Reflection.getMethodSuppressed(it, "create")
+        }
+        val backingMultimap = createMethod?.invoke(null)
+
+        val property = Reflection.callDeclaredConstructor(
+            getPropertyClass(),
+            "textures",
+            textureValue,
+            textureSignature
+        ) ?: Reflection.callConstructor(
+            getPropertyClass(),
+            "textures",
+            textureValue,
+            textureSignature
+        )
+
+        if (backingMultimap != null && property != null)
+        {
+            kotlin.runCatching {
+                val putMethod = backingMultimap.javaClass.methods.firstOrNull { method ->
+                    method.name == "put" && method.parameterTypes.size == 2
+                } ?: return@runCatching null
+
+                putMethod.invoke(backingMultimap, "textures", property)
+
+                val constructor = getPropertyMapClass().declaredConstructors.firstOrNull { it.parameterTypes.size == 1 }
+                    ?: return@runCatching null
+                constructor.isAccessible = true
+                val propertyMap = constructor.newInstance(backingMultimap)
+
+                Reflection.callDeclaredConstructor(
+                    getGameProfileClass(),
+                    uuid,
+                    name,
+                    propertyMap
+                ) ?: Reflection.callConstructor(
+                    getGameProfileClass(),
+                    uuid,
+                    name,
+                    propertyMap
+                )
+            }.getOrNull()?.let { constructed ->
+                return constructed
+            }
+        }
+
+        if (!isModern())
+        {
+            return newGameProfile(uuid, name).also {
+                setGameProfileTexture(it, textureValue, textureSignature)
+            }
+        }
+
+        return newGameProfile(uuid, name)
+    }
+
+    @JvmStatic
     fun getGameProfile(player: Player): Any
     {
         return ENTITY_HUMAN_GAME_PROFILE_FIELD!!.get(getHandle(player))
@@ -251,14 +307,16 @@ object MinecraftReflection
     @JvmStatic
     fun setGameProfileProperty(profile: Any, propertyName: String, property: Any)
     {
-        val properties = Reflection.getDeclaredFieldValue(profile, "properties")!!
+        val properties = Reflection.getDeclaredFieldValue(profile, "properties")
+            ?: Reflection.callMethod(profile, "properties")!!
         PROPERTY_MAP_PUT_METHOD.invoke(properties, propertyName, property)
     }
 
     @JvmStatic
     fun getGameProfileProperty(profile: Any, propertyName: String): Any
     {
-        val properties = Reflection.getDeclaredFieldValue(profile, "properties")!!
+        val properties = Reflection.getDeclaredFieldValue(profile, "properties")
+            ?: Reflection.callMethod(profile, "properties")!!
         return (PROPERTY_MAP_GET_METHOD.invoke(properties, propertyName) as Collection<*>).iterator().next()!!
     }
 
@@ -280,13 +338,15 @@ object MinecraftReflection
     @JvmStatic
     fun getGameProfileUUID(profile: Any): UUID
     {
-        return Reflection.getDeclaredFieldValue(profile, "id")!! as UUID
+        return (Reflection.getDeclaredFieldValue(profile, "id")
+            ?: Reflection.callMethod(profile, "id")) as UUID
     }
 
     @JvmStatic
     fun getGameProfileName(profile: Any): String
     {
-        return Reflection.getDeclaredFieldValue(profile, "name")!! as String
+        return (Reflection.getDeclaredFieldValue(profile, "name")
+            ?: Reflection.callMethod(profile, "name")) as String
     }
 
     @JvmStatic

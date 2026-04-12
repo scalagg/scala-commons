@@ -143,7 +143,6 @@ public class Matrix4x4 {
         return target;
     }
 
-
     public double determinant() {
         return (m00 * m11 - m01 * m10) * (m22 * m33 - m23 * m32)
              + (m02 * m10 - m00 * m12) * (m21 * m33 - m23 * m31)
@@ -152,7 +151,6 @@ public class Matrix4x4 {
              + (m03 * m11 - m01 * m13) * (m20 * m32 - m22 * m30)
              + (m02 * m13 - m03 * m12) * (m20 * m31 - m21 * m30);
     }
-
 
     public Matrix4x4 invert(@Nullable Matrix4x4 target) {
         if (target == null)
@@ -225,14 +223,11 @@ public class Matrix4x4 {
     }
 
     public Matrix4x4 rotate(Rotation rotation) {
-        //zyx - ryp
-        //yxz - ypr
+
+        
         return rotateYXZ(-Math.toRadians(rotation.yaw), Math.toRadians(rotation.pitch), Math.toRadians(rotation.roll));
     }
 
-    /* (non-Javadoc)
-     * @see org.joml.Matrix4fc#rotateYXZ(float, float, float, org.joml.Matrix4f)
-     */
     public Matrix4x4 rotateYXZ(double angleY, double angleX, double angleZ) {
 
         double sinX = Math.sin(angleX);
@@ -245,7 +240,6 @@ public class Matrix4x4 {
         double m_sinX = -sinX;
         double m_sinZ = -sinZ;
 
-        // rotateY
         double nm20 = m00 * sinY + m20 * cosY;
         double nm21 = m01 * sinY + m21 * cosY;
         double nm22 = m02 * sinY + m22 * cosY;
@@ -254,7 +248,7 @@ public class Matrix4x4 {
         double nm01 = m01 * cosY + m21 * m_sinY;
         double nm02 = m02 * cosY + m22 * m_sinY;
         double nm03 = m03 * cosY + m23 * m_sinY;
-        // rotateX
+
         double nm10 = m10 * cosX + nm20 * sinX;
         double nm11 = m11 * cosX + nm21 * sinX;
         double nm12 = m12 * cosX + nm22 * sinX;
@@ -264,7 +258,7 @@ public class Matrix4x4 {
         this.m21 = m11 * m_sinX + nm21 * cosX;
         this.m22 = m12 * m_sinX + nm22 * cosX;
         this.m23 = m13 * m_sinX + nm23 * cosX;
-        // rotateZ
+
         this.m00 = nm00 * cosZ + nm10 * sinZ;
         this.m01 = nm01 * cosZ + nm11 * sinZ;
         this.m02 = nm02 * cosZ + nm12 * sinZ;
@@ -273,18 +267,11 @@ public class Matrix4x4 {
         this.m11 = nm01 * m_sinZ + nm11 * cosZ;
         this.m12 = nm02 * m_sinZ + nm12 * cosZ;
         this.m13 = nm03 * m_sinZ + nm13 * cosZ;
-        // copy last column from 'this'
-        /*dest._m30(m30);
-        dest._m31(m31);
-        dest._m32(m32);
-        dest._m33(m33);*/
+
+        
         return this;
     }
 
-
-    /* (non-Javadoc)
-     * @see org.joml.Matrix4fc#rotateZYX(float, float, float, org.joml.Matrix4f)
-     */
     public Matrix4x4 rotateZYX(double angleZ, double angleY, double angleX) {
 
         double sinX = Math.sin(angleX);
@@ -297,7 +284,6 @@ public class Matrix4x4 {
         double m_sinY = -sinY;
         double m_sinX = -sinX;
 
-        // rotateZ
         double nm00 = m00 * cosZ + m10 * sinZ;
         double nm01 = m01 * cosZ + m11 * sinZ;
         double nm02 = m02 * cosZ + m12 * sinZ;
@@ -306,7 +292,7 @@ public class Matrix4x4 {
         double nm11 = m01 * m_sinZ + m11 * cosZ;
         double nm12 = m02 * m_sinZ + m12 * cosZ;
         double nm13 = m03 * m_sinZ + m13 * cosZ;
-        // rotateY
+
         double nm20 = nm00 * sinY + m20 * cosY;
         double nm21 = nm01 * sinY + m21 * cosY;
         double nm22 = nm02 * sinY + m22 * cosY;
@@ -315,7 +301,7 @@ public class Matrix4x4 {
         m01 = nm01 * cosY + m21 * m_sinY;
         m02 = nm02 * cosY + m22 * m_sinY;
         m03 = nm03 * cosY + m23 * m_sinY;
-        // rotateX
+
         m10 = nm10 * cosX + nm20 * sinX;
         m11 = nm11 * cosX + nm21 * sinX;
         m12 = nm12 * cosX + nm22 * sinX;
@@ -324,24 +310,19 @@ public class Matrix4x4 {
         m21 = nm11 * m_sinX + nm21 * cosX;
         m22 = nm12 * m_sinX + nm22 * cosX;
         m23 = nm13 * m_sinX + nm23 * cosX;
-        // copy last column from 'this'
-        /*dest._m30(m30);
-        dest._m31(m31);
-        dest._m32(m32);
-        dest._m33(m33);*/
+
+        
 
         return this;
     }
 
-
     public Matrix4x4 rotate(double yaw, double pitch, double roll) {
 
-        yaw = Math.toRadians(yaw);//adjust for idiot
-        pitch = Math.toRadians(pitch);//adjust for idiot
-        roll = Math.toRadians(roll);//adjust for idiot
+        yaw = Math.toRadians(yaw);
+        pitch = Math.toRadians(pitch);
+        roll = Math.toRadians(roll);
 
-        //yaw = circle line top down
-        //pitch =
+        
 
         double c1 = Math.cos(yaw);
         double c2 = Math.cos(pitch);
@@ -357,8 +338,6 @@ public class Matrix4x4 {
                 -s2, c2*s3, c2*c3, 0,
                 0,0,0,1
                 );
-
-        //NO NEED TO SET TRANSLATION COMPONENTS TO THEMSELVES
 
         return this.mul(rotationMatrix, this);
     }
@@ -414,7 +393,6 @@ public class Matrix4x4 {
             }
         }
 
-
         target.roll = Math.toDegrees(Math.atan2(2.0 * (x*w - y*z), 1.0 - 2.0 * (x*x + y*y)));
         target.yaw = Math.toDegrees(Math.asin(2.0 * (x*z + y*w)));
         target.pitch = Math.toDegrees(Math.atan2(2.0 * (z*w - x*y), 1.0 - 2.0 * (y*y + z*z)));
@@ -423,37 +401,6 @@ public class Matrix4x4 {
 
         return target;
     }
-    /*
-
-     voidid toEuler(double x,double y,double z,double angle) {
-        double s=Math.sin(angle);
-        double c=Math.cos(angle);
-        double t=1-c;
-        //  if axis is not already normalised then uncomment this
-        // double magnitude = Math.sqrt(x*x + y*y + z*z);
-        // if (magnitude==0) throw error;
-        // x /= magnitude;
-        // y /= magnitude;
-        // z /= magnitude;
-        if ((x*y*t + z*s) > 0.998) { // north pole singularity detected
-            heading = 2*atan2(x*Math.sin(angle/2),Math.cos(angle/2));
-            attitude = Math.PI/2;
-            bank = 0;
-            return;
-        }
-        if ((x*y*t + z*s) < -0.998) { // south pole singularity detected
-            heading = -2*atan2(x*Math.sin(angle/2),Math.cos(angle/2));
-            attitude = -Math.PI/2;
-            bank = 0;
-            return;
-        }
-        pitch = Math.atan2(y * s- x * z * t , 1 - (y*y+ z*z ) * t);
-        yaw = Math.asin(x * y * t + z * s) ;
-        roll = Math.atan2(x * s - y * z * t , 1 - (x*x + z*z) * t);
-    }
-
-
-     */
 
     final Matrix4x4 identity() {
         m00 = 1;
@@ -489,7 +436,7 @@ public class Matrix4x4 {
     static final double PI_INV = 1.0 / PI;
 
     private static double cosFromSinInternal(double sin, double angle) {
-        // sin(x)^2 + cos(x)^2 = 1
+
         double cos = Math.sqrt(1.0f - sin * sin);
         double a = angle + PIHalf_f;
         double b = a - (int)(a / PI2_f) * PI2_f;
@@ -554,78 +501,5 @@ public class Matrix4x4 {
 
         return target;
     }
-
-
-    /*
-
-    public Vector3f getScale(Vector3f dest) {
-        dest.x = (float) Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
-        dest.y = (float) Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
-        dest.z = (float) Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
-        return dest;
-    }
-
-    public AxisAngle4f set(Matrix4fc m) {
-        double cos = (m.m00() + m.m11() + m.m22() - 1.0)*0.5;
-        x = m.m12() - m.m21();
-        y = m.m20() - m.m02();
-        z = m.m01() - m.m10();
-        double sin = 0.5*Math.sqrt(x*x + y*y + z*z);
-        angle = (float) Math.atan2(sin, cos);
-        return this;
-    }
-
-    private Matrix4f rotateGeneric(Quaternionfc quat, Matrix4f dest) {
-        float w2 = quat.w() * quat.w();
-        float x2 = quat.x() * quat.x();
-        float y2 = quat.y() * quat.y();
-        float z2 = quat.z() * quat.z();
-        float zw = quat.z() * quat.w();
-        float xy = quat.x() * quat.y();
-        float xz = quat.x() * quat.z();
-        float yw = quat.y() * quat.w();
-        float yz = quat.y() * quat.z();
-        float xw = quat.x() * quat.w();
-        float rm00 = w2 + x2 - z2 - y2;
-        float rm01 = xy + zw + zw + xy;
-        float rm02 = xz - yw + xz - yw;
-        float rm10 = -zw + xy - zw + xy;
-        float rm11 = y2 - z2 + w2 - x2;
-        float rm12 = yz + yz + xw + xw;
-        float rm20 = yw + xz + xz + yw;
-        float rm21 = yz + yz - xw - xw;
-        float rm22 = z2 - y2 - x2 + w2;
-        float nm00 = m00 * rm00 + m10 * rm01 + m20 * rm02;
-        float nm01 = m01 * rm00 + m11 * rm01 + m21 * rm02;
-        float nm02 = m02 * rm00 + m12 * rm01 + m22 * rm02;
-        float nm03 = m03 * rm00 + m13 * rm01 + m23 * rm02;
-        float nm10 = m00 * rm10 + m10 * rm11 + m20 * rm12;
-        float nm11 = m01 * rm10 + m11 * rm11 + m21 * rm12;
-        float nm12 = m02 * rm10 + m12 * rm11 + m22 * rm12;
-        float nm13 = m03 * rm10 + m13 * rm11 + m23 * rm12;
-        dest._m20(m00 * rm20 + m10 * rm21 + m20 * rm22);
-        dest._m21(m01 * rm20 + m11 * rm21 + m21 * rm22);
-        dest._m22(m02 * rm20 + m12 * rm21 + m22 * rm22);
-        dest._m23(m03 * rm20 + m13 * rm21 + m23 * rm22);
-        dest._m00(nm00);
-        dest._m01(nm01);
-        dest._m02(nm02);
-        dest._m03(nm03);
-        dest._m10(nm10);
-        dest._m11(nm11);
-        dest._m12(nm12);
-        dest._m13(nm13);
-        dest._m30(m30);
-        dest._m31(m31);
-        dest._m32(m32);
-        dest._m33(m33);
-        dest._properties((byte) (properties & ~(PROPERTY_PERSPECTIVE | PROPERTY_IDENTITY | PROPERTY_TRANSLATION)));
-        return dest;
-    }
-
-
-     */
-
-
 
 }

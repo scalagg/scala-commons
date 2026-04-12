@@ -63,7 +63,6 @@ public class TabLayout {
         String prefix = text;
         String suffix = "";
 
-        //TODO: check prefix char to color code
         if (text.length() > 16) {
             prefix = text.substring(0, 16);
 
@@ -82,7 +81,7 @@ public class TabLayout {
             suffix = suffix.substring(0, 16);
         }
 
-        String teamName = "$" + getTeamAt(row, column); //TODO: create a new team
+        String teamName = "$" + getTeamAt(row, column); 
         PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
 
         Reflection.getField(packet.getClass(), "a", String.class).set(packet, teamName);
@@ -95,15 +94,13 @@ public class TabLayout {
         Reflection.getField(packet.getClass(), "e", String.class).set(packet, ("always"));
         Reflection.getField(packet.getClass(), "f", int.class).set(packet, -1);
 
-        //TODO: send player tab
         entityPlayer.playerConnection.sendPacket(packet);
 
         int index = row + column * 20;
         GameProfile gameProfile = profileMapping.get(index);
 
-        //TODO: updating tab ping
         fetchPing(index, gameProfile, ping);
-        //TODO: updating tab skin
+
         fetchSkin(index, gameProfile, skin);
     }
 
@@ -116,7 +113,6 @@ public class TabLayout {
         EntityPlayer entityPlayer = new EntityPlayer(minecraftServer, worldServer, gameProfile, playerInteractManager);
         entityPlayer.ping = ping;
 
-        //TODO: putting a new bars ping
         pingMapping.put(index, ping);
 
         PacketPlayOutPlayerInfo packetPlayOutPlayerInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, entityPlayer);
@@ -148,9 +144,8 @@ public class TabLayout {
         PacketPlayOutPlayerInfo addPacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entityPlayer);
         this.entityPlayer.playerConnection.sendPacket(addPacket);
 
-        //TODO: add new game profile modified
         profileMapping.put(index, newGameProfile);
-        //TODO: add skin to bars
+
         skinMapping.put(index, skin);
     }
 
@@ -172,7 +167,7 @@ public class TabLayout {
             for (int column = 0; column < 3; column++) {
                 int index = row + column * 20;
                 Skin defualtSkin = Skin.DEFAULT_SKIN;
-                //TODO: default skin bars
+
                 skinMapping.put(index, defualtSkin);
 
                 Property property = getSkinProperty(skinMapping.get(index));
@@ -182,16 +177,15 @@ public class TabLayout {
 
                 infoDatas.add(packetInfo.new PlayerInfoData(gameProfile, 0, WorldSettings.EnumGamemode.SURVIVAL, null));
 
-                //TODO: default skin bars
                 pingMapping.put(index, 0);
-                //TODO: defualt game profile to bars
+
                 profileMapping.put(index, gameProfile);
             }
         }
 
         for (int index = 60; index < 80; index++) {
             Skin defualtSkin = Skin.DEFAULT_SKIN;
-            //TODO: default skin bars
+
             skinMapping.put(index, defualtSkin);
 
             Property property = getSkinProperty(skinMapping.get(index));
@@ -201,15 +195,14 @@ public class TabLayout {
 
             infoDatas.add(packetInfo.new PlayerInfoData(gameProfile, 0, WorldSettings.EnumGamemode.SURVIVAL, null));
 
-            //TODO: default skin bars
             pingMapping.put(index, 0);
-            //TODO: defualt game profile to bars
+
             profileMapping.put(index, gameProfile);
         }
         entityPlayer.playerConnection.sendPacket(packetInfo);
 
         packet = new PacketPlayOutScoreboardTeam();
-        // TODO: modify values of class @{link PacketPlayOutScoreboardTeam}
+
         Reflection.getField(packet.getClass(), "a", String.class).set(packet, "tab");
         Reflection.getField(packet.getClass(), "b", String.class).set(packet, "tab");
 
@@ -225,10 +218,8 @@ public class TabLayout {
 
         Reflection.getField(packet.getClass(), "g", Object.class).set(packet, players);
 
-        //TODO: first packet to send
         this.entityPlayer.playerConnection.sendPacket(packet);
 
-        //TODO: to column + 1.8 rows 80
         for (int row = 0; row < 20; row++) {
             for (int column = 0; column < 4; column++) {
                 String teamName = "$" + getTeamAt(row, column);
@@ -244,11 +235,9 @@ public class TabLayout {
                 Reflection.getField(packet.getClass(), "e", String.class).set(packet, "always");
                 Reflection.getField(packet.getClass(), "g", Object.class).set(packet, Collections.singleton(getTeamAt(row, column)));
 
-                //TODO: final packet to send
                 this.entityPlayer.playerConnection.sendPacket(packet);
             }
         }
-
 
         PacketPlayOutScoreboardTeam scoreboardTeam = new PacketPlayOutScoreboardTeam();
         Reflection.getField(scoreboardTeam.getClass(), "a", String.class).set(scoreboardTeam, "tab");

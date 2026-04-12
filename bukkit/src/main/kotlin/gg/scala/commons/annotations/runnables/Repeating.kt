@@ -2,10 +2,6 @@ package gg.scala.commons.annotations.runnables
 
 import me.lucko.helper.promise.ThreadContext
 
-/**
- * @author GrowlyX
- * @since 4/14/2022
- */
 @Target(
     AnnotationTarget.CLASS
 )

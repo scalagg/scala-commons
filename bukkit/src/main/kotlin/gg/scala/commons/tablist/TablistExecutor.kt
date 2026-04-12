@@ -3,10 +3,6 @@ package gg.scala.commons.tablist
 import gg.scala.commons.tablist.adapter.TabElementProxy
 import gg.scala.commons.tablist.manage.TablistManager
 
-/**
- * @author GrowlyX
- * @since 8/8/2022
- */
 object TablistExecutor : Runnable
 {
     private val proxy = TabElementProxy()

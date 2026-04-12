@@ -5,9 +5,6 @@ import gg.scala.commons.tablist.util.data.SkinData;
 
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public abstract class TablistCell {
 
     protected final TablistHandle tablist;

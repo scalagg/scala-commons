@@ -2,10 +2,6 @@ package gg.scala.commons.scoping
 
 import gg.scala.commons.agnostic.sync.ServerSync
 
-/**
- * @author GrowlyX
- * @since 2/9/2025
- */
 interface ServerScoped
 {
     var scopes: Set<String>

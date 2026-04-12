@@ -8,9 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public final class DefaultPlayersProvider extends PlayersProvider {
 
     private static final DefaultPlayersProvider INSTANCE = new DefaultPlayersProvider();

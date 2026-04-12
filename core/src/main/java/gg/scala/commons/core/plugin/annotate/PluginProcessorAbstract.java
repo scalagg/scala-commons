@@ -102,7 +102,7 @@ public abstract class PluginProcessorAbstract extends AbstractProcessor {
                 properties.load(inputStream);
             }
         } catch (Exception exception) {
-            // this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Failed to load " + propertiesFileName + ". " + exception.getMessage());
+
         } finally {
             properties.put("execute_remote", "git remote");
             properties.put("execute_id", "git rev-parse --short HEAD");

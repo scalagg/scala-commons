@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity.menu
 
@@ -17,7 +12,7 @@ class EditEntityMenu(private val entity: Entity) : PaginatedMenu() {
     init
     {
         placeholdBorders = true
-        updateAfterClick = true
+        updateAfterClick = false
     }
 
     override fun size(buttons: Map<Int, Button>) = 36

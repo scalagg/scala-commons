@@ -12,9 +12,6 @@ import gg.scala.commons.tablist.util.data.TablistEntry;
 import java.util.Collections;
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistAdapterLegacy extends TablistAdapter {
 
     public TablistAdapterLegacy(TablistHandle handle) {
@@ -34,11 +31,6 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
                     handle.getCells()[columnIndex[currIndex++]++] = cell;
-//                    sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
-//                            TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
-//                    sendPacketToHolder(ScoreboardTeamUtil.createTeam(
-//                            cell.getCellBase(), cell.getPrefix(), cell.getSuffix(),
-//                            Collections.singletonList(cell.getCellBase()), PacketUtil.TEAM_PROP_SPEC_NONE));
 
                     if (currIndex == 3) {
                         currIndex = 0;
@@ -54,11 +46,7 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
                     handle.getCells()[i] = cell;
-//                    sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
-//                            TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
-//                    sendPacketToHolder(ScoreboardTeamUtil.createTeam(
-//                            cell.getCellBase(), cell.getPrefix(), cell.getSuffix(),
-//                            Collections.singletonList(cell.getCellBase()), PacketUtil.TEAM_PROP_SPEC_NONE));
+
                 }
             }
         }
@@ -76,7 +64,6 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
-//                    handle.getCells()[columnIndex[currIndex++]++] = cell;
                     sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
                             TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
                     sendPacketToHolder(ScoreboardTeamUtil.createTeam(
@@ -96,7 +83,6 @@ public class TablistAdapterLegacy extends TablistAdapter {
                     UUID fakeId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + base).getBytes());
                     TablistCellLegacy cell = new TablistCellLegacy(handle, fakeId, base);
 
-//                    handle.getCells()[i] = cell;
                     sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER,
                             TablistEntry.builder().userId(fakeId).name(cell.getCellBase()).ping(-1).build()));
                     sendPacketToHolder(ScoreboardTeamUtil.createTeam(

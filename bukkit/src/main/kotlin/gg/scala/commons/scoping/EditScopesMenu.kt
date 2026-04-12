@@ -4,10 +4,6 @@ import net.evilblock.cubed.menu.menus.TextEditorMenu
 import net.evilblock.cubed.util.CC
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 2/9/2025
- */
 class EditScopesMenu<T : ServerScoped>(
     private val scoped: T,
     private val onClose: (Player) -> Unit,

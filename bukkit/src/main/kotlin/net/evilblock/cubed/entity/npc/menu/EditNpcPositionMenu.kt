@@ -144,20 +144,6 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
                 }
             }
 
-//            when (Direction.getFromYaw(npc.location.yaw)) {
-//                Direction.NORTH -> {
-//                    npc.updateLocation(npc.location.clone().add())
-//                }
-//                Direction.EAST -> {
-//                    npc.updateLocation(npc.location.clone().add())
-//                }
-//                Direction.SOUTH -> {
-//                    npc.updateLocation(npc.location.clone().add())
-//                }
-//                Direction.WEST -> {
-//                    npc.updateLocation(npc.location.clone().add())
-//                }
-//            }
         }
     }
 
@@ -307,58 +293,5 @@ class EditNpcPositionMenu(private val npc: NpcEntity) : Menu() {
             }
         }
     }
-
-//    private inner class EditCoordButton(private val coord: Coord) : TexturedHeadButton() {
-//        override fun getName(player: Player): String {
-//            return "${CC.GREEN}Set ${coord.name} Coord"
-//        }
-//
-//        override fun getTexture(player: Player): String {
-//            return when (coord) {
-//                Coord.X -> {
-//                    Constants.WOOD_ARROW_X_TEXTURE
-//                }
-//                Coord.Y -> {
-//                    Constants.WOOD_ARROW_Y_TEXTURE
-//                }
-//                Coord.Z -> {
-//                    Constants.WOOD_ARROW_Z_TEXTURE
-//                }
-//            }
-//        }
-//
-//        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-//            if (clickType.isLeftClick) {
-//                NumberPrompt()
-//                    .withText("${CC.GREEN}Please input the new ${coord.name} value.")
-//                    .acceptInput { input ->
-//                        npc.updateLocation(coord.modify(npc.location, input.toDouble()))
-//                        this@EditNpcPositionMenu.openMenu(player)
-//                    }
-//                    .start(player)
-//            }
-//        }
-//    }
-//
-//    private enum class Coord {
-//        X,
-//        Y,
-//        Z;
-//
-//        fun modify(location: Location, value: Double): Location {
-//            when (this) {
-//                X -> {
-//                    location.add(value, 0.0, 0.0)
-//                }
-//                Y -> {
-//                    location.add(0.0, value, 0.0)
-//                }
-//                Z -> {
-//                    location.add(0.0, 0.0, value)
-//                }
-//            }
-//            return location
-//        }
-//    }
 
 }

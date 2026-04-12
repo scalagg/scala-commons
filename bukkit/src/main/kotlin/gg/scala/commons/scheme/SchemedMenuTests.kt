@@ -8,10 +8,6 @@ import net.evilblock.cubed.util.bukkit.Rainbow
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 8/1/2022
- */
 object SchemedMenuTests
 {
     fun test(player: Player)

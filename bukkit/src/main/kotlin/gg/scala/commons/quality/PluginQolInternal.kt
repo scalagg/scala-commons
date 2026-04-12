@@ -5,10 +5,6 @@ import gg.scala.commons.quality.contract.QualityOfLife
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.Constants
 
-/**
- * @author GrowlyX
- * @since 4/22/2022
- */
 class PluginQolInternal(
     val plugin: ExtendedScalaPlugin
 )

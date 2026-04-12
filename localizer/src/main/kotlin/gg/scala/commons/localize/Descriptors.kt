@@ -3,10 +3,6 @@ package gg.scala.commons.localize
 import gg.scala.commons.localize.annotate.Self
 import java.lang.reflect.Parameter
 
-/**
- * @author GrowlyX
- * @since 7/25/2023
- */
 data class MethodDescriptor(
     val id: String,
     val colorize: Boolean,

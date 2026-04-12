@@ -8,6 +8,8 @@ repositories {
 
     maven { url "https://repo.viaversion.com" }
     maven { url "https://jitpack.io" }
+    maven { url "https://repo.codemc.io/repository/maven-releases/" }
+    maven { url "https://repo.codemc.io/repository/maven-public/" }
 
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
     maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
@@ -23,8 +25,9 @@ dependencies {
     implementation project(":core")
 
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
+    implementation files("${System.properties['user.home']}/.gradle/caches/modules-2/files-2.1/com.github.retrooper/packetevents-spigot/2.11.2/69fbb3310cca52004d4b9a5af607cd80f379f7bc/packetevents-spigot-2.11.2.jar")
+    implementation files("${System.properties['user.home']}/.gradle/caches/modules-2/files-2.1/com.github.retrooper/packetevents-api/2.11.2/acb60a83fa6eb26746fabc7efe58fcfafe27eec5/packetevents-api-2.11.2.jar")
 
-    // todo: only api on standalone?
     compileOnly "org.jetbrains.kotlin:kotlin-reflect"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
 
@@ -35,25 +38,20 @@ dependencies {
 
     api fileTree(dir: "lib/TabAPI", include: "*.jar")
 
-    // helper
     implementation "me.lucko:helper:5.6.13"
     kapt "me.lucko:helper:5.6.10.2"
 
-    // sentry
     compileOnly "io.sentry:sentry:6.5.0"
 
-    // growly
     compileOnly "gg.scala.aware:aware:1.2.1"
     implementation "gg.scala.flavor:flavor:0.1.6"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
-    compileOnly "com.comphenix.protocol:ProtocolLib:5.0.0"
 
     implementation "org.apache.commons:commons-lang3:3.12.0"
     implementation "org.apache.commons:commons-pool2:2.11.1"
 
     implementation "org.reflections:reflections:0.10.2"
 
-    // adventure
     implementation "net.kyori:adventure-api:4.14.0"
     implementation "net.kyori:adventure-platform-bukkit:4.3.1"
 
@@ -62,28 +60,26 @@ dependencies {
 
     compileOnly "dev.cubxity.plugins:unifiedmetrics-api:0.3.6"
 
-    // google
     compileOnly "com.google.zxing:core:3.5.0"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
-    // other
     implementation "com.github.cryptomorin:XSeries:13.2.0"
     implementation "com.github.ben-manes.caffeine:caffeine:3.1.1"
 
     compileOnly "com.viaversion:viaversion-api:4.4.2"
+    api files("${System.properties['user.home']}/.gradle/caches/modules-2/files-2.1/de.tr7zw/item-nbt-api/2.13.2/4a5ad6cfe76c6e338a961e984412a255338accf2/item-nbt-api-2.13.2.jar")
 
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
     compileOnly "org.mongodb:mongodb-driver:3.12.11"
     implementation "com.github.mkotb:ConfigAPI:e1c8df3f13"
 
-    // scala
     compileOnly "gg.scala.spigot:server:1.1.2"
     compileOnly "gg.scala.store:spigot:0.1.9"
 
-    // reflekt
     implementation "com.github.GrowlyX:reflektion:a33bf04483"
 
-    // redis
+    implementation "de.rapha149.signgui:signgui:2.5.4"
+
     implementation "io.lettuce:lettuce-core:6.4.0.RELEASE"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
@@ -98,8 +94,12 @@ test {
 shadowJar {
     relocate "co.aikar.commands", "gg.scala.commons.acf"
     relocate "co.aikar.locales", "gg.scala.commons.locales"
+    relocate "com.github.retrooper.packetevents", "gg.scala.commons.protocol.api"
+    relocate "io.github.retrooper.packetevents", "gg.scala.commons.protocol.impl"
 
     relocate "org.reflections", "gg.scala.commons.reflections"
+
+    relocate "de.rapha149.signgui", "gg.scala.commons.libs.signgui"
 
     exclude "**/kotlin/**"
 }

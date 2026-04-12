@@ -3,9 +3,6 @@ package gg.scala.commons.tablist.util;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class ScoreboardTeamUtil {
 
     public static Object createTeam(String title, String prefix, String suffix, Collection<String> players,

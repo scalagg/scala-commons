@@ -7,7 +7,7 @@ import org.bukkit.entity.Projectile
 import org.bukkit.event.player.PlayerMoveEvent
 
 object EventUtils {
-    
+
     @JvmStatic
     fun hasPlayerMoved(event: PlayerMoveEvent): Boolean {
         return event.to.x != event.from.x || event.to.y != event.from.y || event.to.z != event.from.z

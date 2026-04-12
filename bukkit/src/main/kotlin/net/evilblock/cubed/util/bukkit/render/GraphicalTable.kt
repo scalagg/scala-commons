@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit.render
 
@@ -41,7 +36,6 @@ class GraphicalTable {
         return this
     }
 
-    // render top down
     fun render(): List<String> {
         return arrayListOf<String>().also { desc ->
             var firstColWidth = 0
@@ -109,9 +103,6 @@ class GraphicalTable {
         }
     }
 
-    /**
-     * Find a column's minimum width, which is the cell in the column with the most width.
-     */
     private fun findMinWidth(column: Int): Int {
         var minWidth = 0
         for (row in table.column(column)) {

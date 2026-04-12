@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu
 
@@ -239,7 +234,7 @@ abstract class Menu
         }
 
         val inventoryOpener = {
-            if (System.getenv("gg.scala.commons.menu.NoCustomInventories") != null)
+            if (MinecraftReflection.isModern() || System.getenv("gg.scala.commons.menu.NoCustomInventories") != null)
             {
                 player.openInventory(inventory)
             } else
@@ -324,10 +319,9 @@ abstract class Menu
 
     fun update(player: Player)
     {
-        // set open menu reference to this menu
+
         currentlyOpenedMenus[player.uniqueId] = this
 
-        // call abstract onOpen
         closed = false
         onOpen(player)
     }

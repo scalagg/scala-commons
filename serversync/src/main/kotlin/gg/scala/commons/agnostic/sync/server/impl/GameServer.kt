@@ -4,10 +4,6 @@ import gg.scala.commons.agnostic.sync.server.AbstractServer
 import gg.scala.commons.agnostic.sync.server.region.Region
 import java.util.UUID
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 class GameServer(
     override val id: String,
     override val groups: List<String>,

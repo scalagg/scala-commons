@@ -8,10 +8,6 @@ import net.evilblock.cubed.serializers.Serializers
 import java.util.logging.Level
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 interface ServerEvent
 {
     val id: String

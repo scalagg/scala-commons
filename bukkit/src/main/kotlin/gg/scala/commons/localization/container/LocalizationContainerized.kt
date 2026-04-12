@@ -4,10 +4,6 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.localization.container.annotations.Localized
 import gg.scala.commons.model.Containerized
 
-/**
- * @author GrowlyX
- * @since 4/17/2022
- */
 class LocalizationContainerized(
     val plugin: ExtendedScalaPlugin
 ) : Containerized

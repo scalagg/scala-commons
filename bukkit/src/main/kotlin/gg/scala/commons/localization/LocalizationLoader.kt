@@ -4,10 +4,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.InputStreamReader
 
-/**
- * @author GrowlyX
- * @since 3/30/2022
- */
 enum class LocalizationLoader(
     val load: (File) -> Map<String, Any>,
     val loadReader: (InputStreamReader) -> Map<String, Any>,

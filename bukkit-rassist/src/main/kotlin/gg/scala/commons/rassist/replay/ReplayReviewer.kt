@@ -1,13 +1,13 @@
 package gg.scala.commons.rassist.replay
 
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerAbstract
+import com.github.retrooper.packetevents.event.PacketListenerPriority
+import com.github.retrooper.packetevents.event.PacketSendEvent
 import gg.scala.commons.rassist.dao.Replay
 import gg.scala.commons.rassist.dao.packet.ReplayPacketWrapper
 import gg.scala.commons.rassist.packet.ReplayPacketBridge
 import me.lucko.helper.Schedulers
-import me.lucko.helper.protocol.Protocol
 import me.lucko.helper.scheduler.Task
 import me.lucko.helper.terminable.composite.CompositeTerminable
 import net.evilblock.cubed.ScalaCommonsSpigot
@@ -16,18 +16,10 @@ import java.util.logging.Level
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-/**
- * @author GrowlyX
- * @since 5/7/2022
- */
 class ReplayReviewer(
     private val replay: Replay,
     private val reviewers: List<Player>
-) : Runnable, PacketAdapter(
-    ScalaCommonsSpigot.instance,
-    ListenerPriority.LOWEST,
-    ReplayPacketBridge.packetTypesInternal
-)
+) : Runnable, PacketListenerAbstract(PacketListenerPriority.LOWEST)
 {
     private var currentTick = 1.0
     private var currentPacket = 2
@@ -51,20 +43,7 @@ class ReplayReviewer(
         this.terminable =
             CompositeTerminable.create()
 
-        Protocol
-            .subscribe(
-                ListenerPriority.LOWEST,
-                *ReplayPacketBridge
-                    .packetTypesInternal
-                    .toTypedArray()
-            )
-            .handler {
-//                if (this.playing)
-//                {
-//                    it.isCancelled = true
-//                }
-            }
-            .bindWith(terminable)
+        PacketEvents.getAPI().eventManager.registerListener(this)
 
         this.task = Schedulers.sync()
             .runRepeating(
@@ -88,6 +67,7 @@ class ReplayReviewer(
 
     fun stop()
     {
+        PacketEvents.getAPI().eventManager.unregisterListener(this)
         this.terminable
             .closeAndReportException()
 
@@ -137,10 +117,7 @@ class ReplayReviewer(
             for (reviewer in this.reviewers)
             {
                 kotlin.runCatching {
-                    Protocol.manager()
-                        .sendWirePacket(
-                            reviewer, packet
-                        )
+                    PacketEvents.getAPI().playerManager.sendPacket(reviewer, packet!!.toByteBuf())
                 }.onFailure {
                     ScalaCommonsSpigot.instance.logger
                         .log(Level.WARNING, "something went wong", it)
@@ -162,5 +139,17 @@ class ReplayReviewer(
     private fun getDurationTicks(): Double
     {
         return ceil((this.replay.metadata.timestamps.duration.toFloat() / 50).toDouble())
+    }
+
+    override fun onPacketSend(event: PacketSendEvent)
+    {
+        if (!playing) {
+            return
+        }
+
+        val player = event.getPlayer<Player>() ?: return
+        if (reviewers.any { it.uniqueId == player.uniqueId } && ReplayPacketBridge.packetTypesInternalPE.contains(event.packetType)) {
+            event.isCancelled = true
+        }
     }
 }

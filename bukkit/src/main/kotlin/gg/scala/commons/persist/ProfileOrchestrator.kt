@@ -13,13 +13,10 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/16/2022
- */
 abstract class ProfileOrchestrator<T : IDataStoreObject>
 {
     lateinit var controller: DataStoreObjectController<T>
+    private var readOnly = false
 
     fun find(player: Player): T? =
         controller.localCache()[player.uniqueId]
@@ -27,11 +24,16 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
     fun find(uniqueId: UUID): T? =
         controller.localCache()[uniqueId]
 
+    fun enableReadOnlyProfile()
+    {
+        readOnly = true
+    }
+
     fun subscribe()
     {
         try
         {
-            // we don't want to reinitialize the controller
+
             controller
             return
         } catch (_: Exception)
@@ -63,7 +65,8 @@ abstract class ProfileOrchestrator<T : IDataStoreObject>
                 preLogout(profile)
             }
             .thenComposeAsync {
-                controller.save(profile, DataStoreStorageType.MONGO)
+                if (readOnly) CompletableFuture.completedFuture(null)
+                else controller.save(profile, DataStoreStorageType.MONGO)
             }
             .thenRun {
                 controller.localCache().remove(uniqueId)

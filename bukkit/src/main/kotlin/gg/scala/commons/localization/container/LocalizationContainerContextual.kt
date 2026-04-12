@@ -5,10 +5,6 @@ import gg.scala.commons.localization.LocalizationLoader
 import java.io.File
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 3/30/2022
- */
 class LocalizationContainerContextual(
     val container: KClass<*>,
     val identifier: String,

@@ -9,10 +9,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 11/29/2021
- */
 @Service
 object CubedScheduler
 {

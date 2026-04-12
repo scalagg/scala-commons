@@ -11,10 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.messaging.Messenger
 import org.bukkit.scheduler.BukkitScheduler
 
-/**
- * @author GrowlyX
- * @since 9/6/2022
- */
 class DefaultPluginBinder(
     private val plugin: ExtendedScalaPlugin
 ) : FlavorBinderContainer()

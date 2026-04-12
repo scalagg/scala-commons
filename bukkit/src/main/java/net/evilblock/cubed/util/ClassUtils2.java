@@ -12,10 +12,6 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/**
- * @author GrowlyX
- * @since 11/4/2021
- */
 public class ClassUtils2 {
 
     public static Collection<Class<?>> getClassesInPackage(Plugin plugin, String packageName) {

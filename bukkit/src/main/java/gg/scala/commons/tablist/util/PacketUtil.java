@@ -17,9 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class PacketUtil {
 
     private static Field PPO_PLAYER_INFO_ACTION_FIELD;

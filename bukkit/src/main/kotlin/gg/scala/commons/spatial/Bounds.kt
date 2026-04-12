@@ -6,10 +6,6 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-/**
- * @author GrowlyX
- * @since 9/23/2023
- */
 data class Bounds(
     val lowerLeft: Position,
     val upperRight: Position
@@ -102,7 +98,16 @@ data class Bounds(
     {
         return position.x >= lowerLeft.x &&
             position.x <= upperRight.x &&
+            position.y >= lowerLeft.y &&
+            position.y <= upperRight.y &&
             position.z >= lowerLeft.z &&
             position.z <= upperRight.z
+    }
+
+    fun contains(x: Double, y: Double, z: Double): Boolean
+    {
+        return x >= lowerLeft.x && x <= upperRight.x &&
+            y >= lowerLeft.y && y <= upperRight.y &&
+            z >= lowerLeft.z && z <= upperRight.z
     }
 }

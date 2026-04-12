@@ -14,10 +14,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-/**
- * @author GrowlyX
- * @since 8/8/2022
- */
 @Service
 object TablistService : ScheduledExecutorService by Executors
     .newSingleThreadScheduledExecutor()
@@ -85,13 +81,5 @@ object TablistService : ScheduledExecutorService by Executors
     {
         this.populator = populator
 
-//        this.handler = TabHandler({
-//            if (it.uniqueId !in this.displaying)
-//            {
-//                return@TabHandler null
-//            }
-//
-//            this.cachedElements[it.uniqueId]
-//        }, commons, 2L)
     }
 }

@@ -10,10 +10,6 @@ import net.evilblock.cubed.statistic.ServerStatisticProvider
 import net.evilblock.cubed.statistic.ServerStatisticProviders
 import java.lang.management.ManagementFactory
 
-/**
- * @author GrowlyX
- * @since 10/8/2021
- */
 @Service
 @IgnoreAutoScan
 @SoftDependency("spark")

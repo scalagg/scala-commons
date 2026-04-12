@@ -63,7 +63,6 @@ public class TextTypingAnimation extends TextIterator {
     }
 
     public List<TextFrame> createAnimationFrames() {
-        // flick with cursor
 
         List<TextFrame> frames = new ArrayList<>();
 
@@ -75,8 +74,6 @@ public class TextTypingAnimation extends TextIterator {
         }
 
         flickWithCursor(idleTimeTicks, frames, text);
-
-        // erase text simulating backspace
 
         for (int i = text.length() - 1; i >= 0; i--) {
             String frame = text.substring(0, i);

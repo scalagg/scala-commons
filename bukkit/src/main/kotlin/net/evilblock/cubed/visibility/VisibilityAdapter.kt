@@ -6,4 +6,9 @@ interface VisibilityAdapter {
 
     fun getAction(toRefresh: Player, refreshFor: Player): VisibilityAction
 
+    fun getVirtualAppearanceBetween(viewer: Player, viewed: Player): VirtualVisibility
+    {
+        return VirtualVisibility.NEUTRAL
+    }
+
 }

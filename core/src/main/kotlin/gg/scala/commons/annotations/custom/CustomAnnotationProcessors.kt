@@ -2,10 +2,6 @@ package gg.scala.commons.annotations.custom
 
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 4/16/2022
- */
 object CustomAnnotationProcessors
 {
     val processors =

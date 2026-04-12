@@ -17,10 +17,6 @@ import net.evilblock.cubed.util.bukkit.ItemBuilder
 import net.minecraft.server.v1_8_R3.Material
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 5/22/2023
- */
 @AutoRegister
 @CommandAlias("toolkit")
 object DevToolkitCommand : ScalaCommand()

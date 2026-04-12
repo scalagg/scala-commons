@@ -3,10 +3,6 @@ package net.evilblock.cubed.config.serversync
 import gg.scala.commons.agnostic.sync.server.region.Region
 import xyz.mkotb.configapi.comment.Comment
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 @Comment(
     "This is the primary config for our ServerSync software.",
     "We recommend editing this file to prevent conflicts with other servers."

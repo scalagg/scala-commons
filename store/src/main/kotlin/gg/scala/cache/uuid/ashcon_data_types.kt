@@ -3,10 +3,6 @@ package gg.scala.cache.uuid
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
-/**
- * @author GrowlyX
- * @since 9/13/2022
- */
 data class AshconUsername(
     val username: String
 )
@@ -36,10 +32,9 @@ data class AshconResponse(
     val textures: AshconSkin,
     @SerializedName("created_at")
     val creationDate: String?,
-    // error responses
+
     val code: Int?,
     val error: String?,
     val reason: String?,
 )
-
 

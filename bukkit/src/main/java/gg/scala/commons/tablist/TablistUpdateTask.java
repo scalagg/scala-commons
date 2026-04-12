@@ -4,9 +4,6 @@ import gg.scala.commons.tablist.manage.TablistManager;
 import net.evilblock.cubed.util.bukkit.Tasks;
 import org.bukkit.scheduler.BukkitTask;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistUpdateTask {
 
     private static TablistUpdateTask INSTANCE;

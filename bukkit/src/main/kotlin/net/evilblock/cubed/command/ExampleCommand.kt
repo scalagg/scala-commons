@@ -11,10 +11,6 @@ import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.issuer.ScalaPlayer
 
-/**
- * @author GrowlyX
- * @since 10/10/2022
- */
 @AutoRegister
 @CommandAlias("test")
 @CommandPermission("sclib.command.example")

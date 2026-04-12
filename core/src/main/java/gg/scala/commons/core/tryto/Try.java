@@ -68,7 +68,6 @@ public class Try {
         return to(biFunction);
     }
 
-
     public static <T> Consumer<T> to(CheckedConsumer<T> consumer) {
         return (value) -> {
             try {

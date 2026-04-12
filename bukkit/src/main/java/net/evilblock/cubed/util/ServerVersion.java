@@ -3,15 +3,11 @@ package net.evilblock.cubed.util;
 import net.evilblock.cubed.ScalaCommonsSpigot;
 import org.bukkit.Bukkit;
 
-/**
- * @author GrowlyX
- * @since 4/15/2022
- */
 public enum ServerVersion {
     v1_7_10(5),
     v1_8(47), v1_8_R3(47), v1_8_8(47),
     v1_9(107), v1_9_R2(109), v1_9_R4(110),
-    //1.10 and 1.10.1 are redundant
+
     v1_10(210), v1_10_R1(210), v1_10_R2(210),
     v1_11(315), v1_11_R2(316),
     v1_12(335), v1_12_R1(338), v1_12_R2(340),
@@ -26,8 +22,7 @@ public enum ServerVersion {
     v1_21(767),
     ERROR(-1);
 
-    private static final String NMS_VERSION_SUFFIX = Bukkit.getServer().getClass().getPackage().getName()
-            .replace(".", ",").split(",")[3];
+    private static final String NMS_VERSION_SUFFIX = resolveNmsVersionSuffix();
 
     private static final ServerVersion[] VALUES = values();
 
@@ -50,7 +45,7 @@ public enum ServerVersion {
         );
 
         for (final ServerVersion val : reversedValues) {
-            // v1_19_R2 -> 1_19_R2 -> 1_19.2 -> 1.19.2
+
             final String valName = val.name()
                     .replace("v", "")
                     .replace("_R", ".")
@@ -71,13 +66,17 @@ public enum ServerVersion {
         return v1_8_R3;
     }
 
-    /**
-     * Get the server version.
-     * If PacketEvents has already attempted resolving, return the cached version.
-     * If PacketEvents hasn't already attempted resolving, it will resolve it, cache it and return the version.
-     *
-     * @return Server Version. (always cached)
-     */
+    private static String resolveNmsVersionSuffix() {
+        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        String[] split = packageName.replace(".", ",").split(",");
+
+        if (split.length > 3) {
+            return split[3];
+        }
+
+        return "";
+    }
+
     public static ServerVersion getVersion() {
         if (cachedVersion == null) {
             cachedVersion = getVersionNoCache();
@@ -86,11 +85,6 @@ public enum ServerVersion {
         return cachedVersion;
     }
 
-    /**
-     * The values in this enum in reverse.
-     *
-     * @return Reversed server version enum values.
-     */
     private static ServerVersion[] reverse() {
         ServerVersion[] array = values();
         int i = 0;
@@ -109,11 +103,11 @@ public enum ServerVersion {
     }
 
     public static String getNMSDirectory() {
-        return "net.minecraft.server." + getNMSSuffix();
+        return getNMSSuffix().isEmpty() ? "net.minecraft.server" : "net.minecraft.server." + getNMSSuffix();
     }
 
     public static String getOBCDirectory() {
-        return "org.bukkit.craftbukkit." + (getNMSSuffix());
+        return getNMSSuffix().isEmpty() ? "org.bukkit.craftbukkit" : "org.bukkit.craftbukkit." + getNMSSuffix();
     }
 
     public static ServerVersion getLatest() {
@@ -124,41 +118,16 @@ public enum ServerVersion {
         return values()[0];
     }
 
-    /**
-     * Get this server version's protocol version.
-     *
-     * @return Protocol version.
-     */
     public int getProtocolVersion() {
         return protocolVersion;
     }
 
-    /**
-     * Is this server version newer than the compared server version?
-     * This method simply checks if this server version's protocol version is greater than
-     * the compared server version's protocol version.
-     *
-     * @param target Compared server version.
-     * @return Is this server version newer than the compared server version.
-     */
     public boolean isNewerThan(ServerVersion target) {
-        /*
-         * Some server versions have the same protocol version in the minecraft protocol.
-         * We still need this method to work in such cases.
-         * We first check if this is the case, if the protocol versions aren't the same, we can just use the protocol versions
-         * to compare the server versions.
-         */
+
         if (target.protocolVersion != protocolVersion || this == target) {
             return protocolVersion > target.protocolVersion;
         }
 
-        /*
-         * The server versions unfortunately have the same protocol version.
-         * We need to look at this "reversedValues" variable.
-         * The reversed values variable is an array containing all enum constants in this enum but in a reversed order.
-         * I already made this variable a while ago for a different usage, you can check that out.
-         * The first one we find in the array is the newer version.
-         */
         for (ServerVersion version : reversedValues) {
             if (version == target) {
                 return false;
@@ -169,29 +138,12 @@ public enum ServerVersion {
         return false;
     }
 
-    /**
-     * Is this server version older than the compared server version?
-     * This method simply checks if this server version's protocol version is less than
-     * the compared server version's protocol version.
-     *
-     * @param target Compared server version.
-     * @return Is this server version older than the compared server version.
-     */
     public boolean isOlderThan(ServerVersion target) {
-        /*
-         * Some server versions have the same protocol version in the minecraft protocol.
-         * We still need this method to work in such cases.
-         * We first check if this is the case, if the protocol versions aren't the same, we can just use the protocol versions
-         * to compare the server versions.
-         */
+
         if (target.protocolVersion != protocolVersion || this == target) {
             return protocolVersion < target.protocolVersion;
         }
-        /*
-         * The server versions unfortunately have the same protocol version.
-         * We look at all enum constants in the ServerVersion enum in the order they have been defined in.
-         * The first one we find in the array is the newer version.
-         */
+
         for (ServerVersion version : VALUES) {
             if (version == this) {
                 return true;
@@ -202,73 +154,29 @@ public enum ServerVersion {
         return false;
     }
 
-    /**
-     * Is this server version newer than or equal to the compared server version?
-     * This method simply checks if this server version's protocol version is greater than or equal to
-     * the compared server version's protocol version.
-     *
-     * @param target Compared server version.
-     * @return Is this server version newer than or equal to the compared server version.
-     */
     public boolean isNewerThanOrEquals(ServerVersion target) {
         return this == target || isNewerThan(target);
     }
 
-    /**
-     * Is this server version older than or equal to the compared server version?
-     * This method simply checks if this server version's protocol version is older than or equal to
-     * the compared server version's protocol version.
-     *
-     * @param target Compared server version.
-     * @return Is this server version older than or equal to the compared server version.
-     */
     public boolean isOlderThanOrEquals(ServerVersion target) {
         return this == target || isOlderThan(target);
     }
 
-    /**
-     * Deprecated, please use {@link #isNewerThan(ServerVersion)}
-     *
-     * @param target Compared version.
-     * @return Is this server version newer than the compared server version.
-     * @deprecated Rename...
-     **/
     @Deprecated
     public boolean isHigherThan(final ServerVersion target) {
         return isNewerThan(target);
     }
 
-    /**
-     * Deprecated, Please use {@link #isNewerThanOrEquals(ServerVersion)}
-     *
-     * @param target Compared server version.
-     * @return Is this server version newer than or equal to the compared server version.
-     * @deprecated Rename...
-     */
     @Deprecated
     public boolean isHigherThanOrEquals(final ServerVersion target) {
         return isNewerThanOrEquals(target);
     }
 
-    /**
-     * Deprecated... Please use {@link #isOlderThan(ServerVersion)}
-     *
-     * @param target Compared server version.
-     * @return Is this server version older than the compared server version.
-     * @deprecated Rename....
-     */
     @Deprecated
     public boolean isLowerThan(final ServerVersion target) {
         return isOlderThan(target);
     }
 
-    /**
-     * Deprecated, please use {@link #isOlderThanOrEquals(ServerVersion)}
-     *
-     * @param target Compared server version.
-     * @return Is this server version older than or equal to the compared server version.
-     * @deprecated Rename...
-     */
     @Deprecated
     public boolean isLowerThanOrEquals(final ServerVersion target) {
         return isOlderThanOrEquals(target);

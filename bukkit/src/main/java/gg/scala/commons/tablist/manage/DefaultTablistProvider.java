@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class DefaultTablistProvider implements TablistProvider {
 
     private final Map<UUID, TablistHandle> registry = new HashMap<>();

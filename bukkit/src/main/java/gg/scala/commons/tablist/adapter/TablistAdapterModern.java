@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistAdapterModern extends TablistAdapter {
 
     public TablistAdapterModern(TablistHandle handle) {
@@ -27,7 +23,6 @@ public class TablistAdapterModern extends TablistAdapter {
     @Override
     public void initTablist() {
         final String emptyCellSpace = "{\"text\":\"" + handle.getCellLengthString() + "\"}";
-//        List<TablistEntry> packetEntries = new ArrayList<>(80);
 
         if (handle.getCellStacking() == CellStacking.VERTICAL) {
             int currentIndex = 0;
@@ -38,8 +33,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                     Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                             handle.getSkinMapping().getMappingFor(currentIndex));
-
-//                    packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
 
                     handle.getCells()[currentIndex++] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                 }
@@ -57,8 +50,6 @@ public class TablistAdapterModern extends TablistAdapter {
                         Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                                 handle.getSkinMapping().getMappingFor(currentIndex));
 
-//                        packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
-
                         handle.getCells()[currentIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                     }
                 }
@@ -70,8 +61,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                     Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                             handle.getSkinMapping().getMappingFor(nameIndex));
-
-//                    packetEntries.add(TablistEntryHelper.of(profile).displayName(shortEmptyCellSpace).build());
 
                     handle.getCells()[nameIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                 }
@@ -87,8 +76,6 @@ public class TablistAdapterModern extends TablistAdapter {
                         Profile profile = new Profile(UUID.nameUUIDFromBytes(name.getBytes()), name,
                                 handle.getSkinMapping().getMappingFor(currentIndex));
 
-//                        packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
-
                         handle.getCells()[currentIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                     }
                 }
@@ -96,7 +83,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
         }
 
-//        sendPacketToHolder(PacketUtil.createTablistPacket(PacketUtil.TablistPacketAction.ADD_PLAYER, packetEntries));
     }
 
     @Override
@@ -116,7 +102,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                     packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
 
-//                    handle.getCells()[currentIndex++] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                 }
             }
         } else {
@@ -134,7 +119,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                         packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
 
-//                        handle.getCells()[currentIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                     }
                 }
 
@@ -148,7 +132,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                     packetEntries.add(TablistEntryHelper.of(profile).displayName(shortEmptyCellSpace).build());
 
-//                    handle.getCells()[nameIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                 }
             } else {
                 for (int indexOffset = 0; indexOffset < 4; indexOffset++) {
@@ -164,7 +147,6 @@ public class TablistAdapterModern extends TablistAdapter {
 
                         packetEntries.add(TablistEntryHelper.of(profile).displayName(emptyCellSpace).build());
 
-//                        handle.getCells()[currentIndex] = new TablistCellModern(handle, profile.getId(), name, emptyCellSpace);
                     }
                 }
             }

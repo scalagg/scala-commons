@@ -17,9 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class PlayerTablistPopulator extends TablistPopulator {
 
     private PlayersProvider provider;
@@ -58,9 +55,6 @@ public class PlayerTablistPopulator extends TablistPopulator {
     }
 
     protected boolean canUpdate() {
-        /*if (!requiresUpdate || availableCells.isEmpty()) {
-            return false;
-        }*/
 
         return System.currentTimeMillis() >= nextListUpdate;
     }

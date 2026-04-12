@@ -45,13 +45,12 @@ public class Skin {
     public String signature;
 
     static {
-        // Default skin
+
         DEFAULT_SKIN = new Skin(
                 "eyJ0aW1lc3RhbXAiOjE0MTEyNjg3OTI3NjUsInByb2ZpbGVJZCI6IjNmYmVjN2RkMGE1ZjQwYmY5ZDExODg1YTU0NTA3MTEyIiwicHJvZmlsZU5hbWUiOiJsYXN0X3VzZXJuYW1lIiwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg0N2I1Mjc5OTg0NjUxNTRhZDZjMjM4YTFlM2MyZGQzZTMyOTY1MzUyZTNhNjRmMzZlMTZhOTQwNWFiOCJ9fX0=",
                 "u8sG8tlbmiekrfAdQjy4nXIcCfNdnUZzXSx9BE1X5K27NiUvE1dDNIeBBSPdZzQG1kHGijuokuHPdNi/KXHZkQM7OJ4aCu5JiUoOY28uz3wZhW4D+KG3dH4ei5ww2KwvjcqVL7LFKfr/ONU5Hvi7MIIty1eKpoGDYpWj3WjnbN4ye5Zo88I2ZEkP1wBw2eDDN4P3YEDYTumQndcbXFPuRRTntoGdZq3N5EBKfDZxlw4L3pgkcSLU5rWkd5UH4ZUOHAP/VaJ04mpFLsFXzzdU4xNZ5fthCwxwVBNLtHRWO26k/qcVBzvEXtKGFJmxfLGCzXScET/OjUBak/JEkkRG2m+kpmBMgFRNtjyZgQ1w08U6HHnLTiAiio3JswPlW5v56pGWRHQT5XWSkfnrXDalxtSmPnB5LmacpIImKgL8V9wLnWvBzI7SHjlyQbbgd+kUOkLlu7+717ySDEJwsFJekfuR6N/rpcYgNZYrxDwe4w57uDPlwNL6cJPfNUHV7WEbIU1pMgxsxaXe8WSvV87qLsR7H06xocl2C0JFfe2jZR4Zh3k9xzEnfCeFKBgGb4lrOWBu1eDWYgtKV67M2Y+B3W5pjuAjwAxn0waODtEn/3jKPbc/sxbPvljUCw65X+ok0UUN1eOwXV5l2EGzn05t3Yhwq19/GxARg63ISGE8CKw="
         );
 
-        // Social skins + 1.8
         DISCORD_SKIN = new Skin(
                 "ewogICJ0aW1lc3RhbXAiIDogMTYwNzkxMjY1Nzc4MywKICAicHJvZmlsZUlkIiA6ICI5MWZlMTk2ODdjOTA0NjU2YWExZmMwNTk4NmRkM2ZlNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJoaGphYnJpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84YzUzN2I0MjMwYjFmMjE2MDU0NTUyODgzYjU1MDQwODg3MDAwNDNmZTgzYmM5ZDY0MjlhMTIyMjUzZjQ3ZjJiIgogICAgfQogIH0KfQ==",
                 "as+ENbxPgtwc8Qwy6ek8yFZMsDrHWGhtuB5tfhIUnp0gmr30P3sPErHdLt3srS+mJ5yEv0k2uv5lGHCaynWfi18jkIyp/Q/X8WaN7qiKJpF5MpkHhA48ICkxX90C8dQBxpZ9JZjUXJ+oPuock3oYWpNYdJkDcheQUKGkp19b5G5QXkdb46mtnQlSBU7ZhD/kLUu7KN2jy2+kD5cxzn5Ef2VpRoMi8+WXp3mVq11za8bvg0yvWKyfc2ZiVRvMvVqxi4p6AG5AMbI4EJkYzgt5EW3thqKmg4qAlOCSCli0cmHRuRar0DApd5d73slKf1z7DzVNyG6ak0Y7FcDtkr2vf2j4Iwnxbvh4ksyoh27nJLNSgYXlKgrLOD5VFv4sf97L6LmevTlYRk0wLu+o4Ex1j8E6WJS6vhbYFbCAWpBygHG0KYHq/zq9XetparZFh09d66VpqJd5OdJD+AfTTBpVOTa+guQDkj8p9ReoIolgRz03GJiHqilPYT35jmH7kBNJsfdmGK+2jJnITHjPOF7tNprMyg7a4/Qj/pstR/gNbBq3c6q4/naChGHyEDSo835k8OpCMwUFlNg20bLstsjqJ4Png9RIqlN4AA7hUADm6O5Gz4lnB+mp5m8ZmXrbpBGv2mIEzuvhep/9dWFAJmCtLC+BUW/b/9FUTREqWhw0AXw="
@@ -92,7 +91,6 @@ public class Skin {
                 "o4FaybOL7mdipZfTYy5cBbUpgKMLIki7BauFcQwNuX9MvH33243bT7jPM5alZy5zNRIDOX91P+6LtZzSAmXiCBAgdsjlq2O2zCvBKz6cbtwW0QMkctMioSs1Yo33gQ/F9tWZNhehNPikNPrkmjGAqbaLZtbum48ZgqD3RHAnb8Gm8dYXGW+OO1oFKzk2eSqmUaDlPl48WaMbXn/lPMCPNBFUyvUA9yvV2BeOZutgjAjA/7Jmw2ornWwDgadXRmtl8ckSwak76RabUw0/sfgC6+hRQO3jyiuWlIwbBPI172539Olm4SmOEuFKj523xU68BTbsFT8VJdP3MeC3jgK+8TyJ7LbfncvbnE4e9v3qzov45tP3WzZUTOAUQEq213N+8GN1v4C2wqTTtclAQQq+elQbvrPVbFWDl88zGv9xrq/P0x+MR2nWv41lksHo3U0/fNt71GO1/P37f/Pd8+FGundO1FnaMRl6WCcSNEAattJKEjs3MAmP2iWNYPiIhup8GUXTpTwluQSV5CO2u2O0kPk2hhTtw3JAjEvOzufLmW+wZ3KVRgJgKmmKK19/dtk5lAB6b2bDUTN/tu7UgcnnhlIC5Tl+gHxLKhbDeaUPED0m8z5vQJ2uMpMjuLwJxv6oq6B8CAhSFg+aMAc8StCvvp862oJvvrLXDZNfsQuuNFo="
         );
 
-        // Miscellaneous skins
         STAR_SKIN = new Skin(
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5ODk5NjQzNzA0MSwKICAicHJvZmlsZUlkIiA6ICJhNzFjNTQ5MmQwNTE0ZDg3OGFiOTEwZmRmZmRmYzgyZiIsCiAgInByb2ZpbGVOYW1lIiA6ICJBcHBsZTU0NDciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmExYzQ4YmYwYTIyMzBhNDYxMDMwMDY1ZWI5NDFhZDU2MGQwOGZhZDUwYWU1NjM0OTczZTVhYWVjNDcwZTZiYiIKICAgIH0KICB9Cn0=",
                 "ljAxdmighg13rgsWrkIuLmtPF/cNi3nVccEQSJD2FSwGvF7avKDuh9xV1ybM4XdHQVusdFSsdEhofDktszyMauUOvF/GZPxGGG+6WDG1HSPD3JmbUckYdd0608unBP8atA7TThUyP3tncnHhn9MtUbVwdq6WCtSCWw0LejLyyOHz4mSzMjcfbZUkOKhRf6zZ3ZjvLx92UDMiOFJcZ+HBXMIrpFgO2RrJvxJpVQYCFZptdCcPyuwh5Di3LVmy01ZAp4hfxCVOIjpcNMd0UcgjYdmDvGSFkXZty2DaVFma3OeowNZS2ISjG4E3GbBmPBSnctiT60ugrSmFQk2/9oHYeO4cs9cuW4baYOY2yHrNwsTWYjIoqf84wzzlpYxwWNejXYa6ckc3iM9ycgaGeCes3pzG7U01M7qQl85xigg5c0CZFgrjMCdCMwG8cp4uTtNY3TZg+jK7PtYE1QCrq6uIwBeBAN0/Me3lNgKEVKDXrsvtmUvTp5eerlm1lpQGIdF+L6HLV9ZBDWRV+gPEjgeZPdQaq4QmV3/88xs0SGScwdJkT3dRy6fdVnseYLZhSWeqP9cy28vm32JcTcOZMEbc6JBrwmj0POoE8PlllaSotCqW/RGopSiDAzH/tGhKTDX8XDYwK4eQ8jj+8frK1Q8S13wKCpdpGRGpQtZQfG1ntxg="
@@ -158,8 +156,6 @@ public class Skin {
                 "DM0A0UlMTQz/2t8hqPczQQJWS5zTkybL1nb6MgXTeByMDEy3/+lw2kisIuBU5GELl7EdK2N6uD2MGsaH+WXUBp2CWgiPS/FUa0q0au8cIEMoO83g9+pOyinPZJRKdh7DJoGwN5JU33DpuUP6/w1UNuAYvM8Sj9EsB+NqhIw/ZqmB7lfVwfMUwRBncsvxz8kn75D0JfTDh/Nare7f0XNTpGGuNvoRrXFiDYWx8k1Zy7r7rOo+2M67LnNmnIo8Y7xIkRCRvHyEXI2AYaPGnBq1tIp2Jgve/Ff8iA507Gqs67kvYseqGAc0/Cemxk3UYH3+z12wv+8p4W7553XkhwHmZ+ehxCDWbJ4aqdWuIwwG0l4xniJ2IkumN483PErzNwOUyGbeGqtRsV8tziuZs53NZX63VQ3tBM9Enk5kyYG+TCuVwvewyycCOIhufB6/jze91/INWj8nI0j/7jWKma3+Z2528aKRsel3HG6IhuZMHo+nupA6/7Q5a7wS/niDMLYGmHhWZIdzOEJnR2rpVOXSaizvv4/gWMU5zOXyCEAKbc4Lxdadu91OWrEry/A4fRd5soz+9iAeY5mfRquPYJGlWCUfC/qFMAIOWkbGDelsETTqmb7m1M2PS/T+76rVoLsIN5a2jI6z/umRw7HC7uQFo5aJRn+0HT+kOkE1m0jU74Y="
         );
 
-
-        //TODO: Circle dots for minecraft player + 1.8
         DOT_SKINS.add(
                 new Skin(
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc0NTY5MDEsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85ZjcxNTBkM2U1ZGY3ZjIxNzEyODlmM2M1ODYzYzkyYzJjODkwOGMzMmFkZGM4NmVhN2Y2MWVkODQ3YjY5ZCJ9fX0=",
@@ -258,7 +254,6 @@ public class Skin {
                 )
         );
 
-        //TODO: Mob entities for minecraft players + 1.8
         MOB_SKINS.put(EntityType.PIG,
                 new Skin(
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1MzAwNDAsInByb2ZpbGVJZCI6IjhiNTcwNzhiZjFiZDQ1ZGY4M2M0ZDg4ZDE2NzY4ZmJlIiwicHJvZmlsZU5hbWUiOiJNSEZfUGlnIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82MjE2NjhlZjdjYjc5ZGQ5YzIyY2UzZDFmM2Y0Y2I2ZTI1NTk4OTNiNmRmNGE0Njk1MTRlNjY3YzE2YWE0In19fQ==",
@@ -420,23 +415,10 @@ public class Skin {
         return (false);
     }
 
-    /**
-     * Get a skin from an entity type.
-     *
-     * @param type the entity type
-     * @return An skin instanced
-     */
     public static Skin getMob(EntityType type) {
         return getMob(type, 0);
     }
 
-    /**
-     * Get a skin from an entity type and alternate form number.
-     *
-     * @param type the entity type
-     * @param alternateForm Used if multiple versions of this mob exist (wither skeleton = 1, ender guardian = 1)
-     * @return An skin instanced
-     */
     public static Skin getMob(EntityType type, int alternateForm) {
         List<Skin> skins = MOB_SKINS.get(type);
 
@@ -451,12 +433,6 @@ public class Skin {
         return (skins.get(alternateForm));
     }
 
-    /**
-     * Get a cool skin based on a chat color (grey square with a colored dot).
-     *
-     * @param color the color
-     * @return An skin instanced
-     */
     public static Skin getDot(ChatColor color) {
         return (DOT_SKINS.get(color.ordinal()));
     }

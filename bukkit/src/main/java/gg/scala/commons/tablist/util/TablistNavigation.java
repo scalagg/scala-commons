@@ -2,9 +2,6 @@ package gg.scala.commons.tablist.util;
 
 import gg.scala.commons.tablist.TablistHandle;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistNavigation {
 
     private static final int ENTRIES_PER_COLUMN = 20;

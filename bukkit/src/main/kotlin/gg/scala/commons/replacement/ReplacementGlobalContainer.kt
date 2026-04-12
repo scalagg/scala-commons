@@ -6,10 +6,6 @@ import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 
-/**
- * @author GrowlyX
- * @since 5/2/2022
- */
 @Service
 @IgnoreAutoScan
 object ReplacementGlobalContainer : ReplacementContainer

@@ -9,10 +9,6 @@ import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileOutputStream
 
-/**
- * @author GrowlyX
- * @since 3/30/2022
- */
 @Suppress("UNCHECKED_CAST")
 class LocalizationContainer(
     private val contextual: LocalizationContainerContextual,

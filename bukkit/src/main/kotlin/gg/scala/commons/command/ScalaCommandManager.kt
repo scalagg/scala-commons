@@ -25,11 +25,6 @@ import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-/**
- * @author GrowlyX, puugz
- * @since 10/08/2021 20:38
- */
 class ScalaCommandManager(
     plugin: ExtendedScalaPlugin,
     primary: ChatColor = ChatColor.GOLD,

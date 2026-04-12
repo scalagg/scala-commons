@@ -7,10 +7,6 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 7/25/2023
- */
 object Localizer
 {
     val registry = mutableMapOf<KClass<*>, Any>()

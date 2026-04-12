@@ -4,10 +4,6 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
 import java.util.*
 
-/**
- * @author puugz
- * @since 23/08/2021 21:58
- */
 abstract class ScoreboardAdapter {
 
     abstract fun getTitle(player: Player): String

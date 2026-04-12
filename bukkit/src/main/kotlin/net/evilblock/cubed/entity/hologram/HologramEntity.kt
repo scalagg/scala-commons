@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity.hologram
 
@@ -18,6 +13,7 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.util.Reflection
 import net.evilblock.cubed.util.nms.MinecraftProtocol
+import net.evilblock.cubed.util.nms.MinecraftReflection
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -77,11 +73,7 @@ open class HologramEntity(private var text: String, location: Location, @Transie
     override fun getAdjustedLocation(player: Player): Location
     {
         return (adjustedLocation ?: location).clone()
-//        return (adjustedLocation ?: location).clone().also { location ->
-//            if (offset) {
-//                location.add(0.0, 0.4, 0.0)
-//            }
-//        }
+
     }
 
     fun setFloatingItem(floatingItem: FloatingItem)
@@ -127,7 +119,6 @@ open class HologramEntity(private var text: String, location: Location, @Transie
         val originalLocation: Location? = adjustedLocation?.clone()
         adjustedLocation = startLocation.clone()
 
-        // we will need to send reposition packet if adjustedLocation has changed
         if (originalLocation != adjustedLocation)
         {
             for (watcher in getCurrentWatcherPlayers())
@@ -146,7 +137,7 @@ open class HologramEntity(private var text: String, location: Location, @Transie
             childHologram.parent = this
             childHologram.updateLocation(
                 startLocation.subtract(0.0, 0.24, 0.0).clone()
-            ) // each iteration subtracts 0.24 from startLoc
+            ) 
         }
 
         if (floatingItem != null)
@@ -178,6 +169,12 @@ open class HologramEntity(private var text: String, location: Location, @Transie
 
     override fun sendDestroyPackets(player: Player)
     {
+        if (MinecraftReflection.isModern())
+        {
+            MinecraftProtocol.send(player, MinecraftProtocol.buildModernRemoveEntitiesPacket(id, witherSkullId))
+            return
+        }
+
         val destroyPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityDestroy")
         Reflection.setDeclaredFieldValue(destroyPacket, "a", intArrayOf(id, witherSkullId))
 
@@ -280,9 +277,6 @@ open class HologramEntity(private var text: String, location: Location, @Transie
         }
     }
 
-    /**
-     * Processes and updates this hologram's children entities text attribute using the given [lines].
-     */
     private fun updateLinesRaw(lines: List<String>)
     {
         val addedChildren = arrayListOf<HologramEntity>()

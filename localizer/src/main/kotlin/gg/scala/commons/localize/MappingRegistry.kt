@@ -2,10 +2,6 @@ package gg.scala.commons.localize
 
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 7/26/2023
- */
 object MappingRegistry
 {
     const val DEFAULT_LABEL = "__default__"

@@ -13,10 +13,6 @@ import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
-/**
- * @author GrowlyX
- * @since 7/12/2022
- */
 class ConvertedConfig(
     plugin: ExtendedScalaPlugin,
     model: KClass<*>,

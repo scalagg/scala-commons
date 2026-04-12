@@ -9,10 +9,6 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import java.lang.reflect.Type
 
-/**
- * @author GrowlyX
- * @since 8/30/2022
- */
 class AbstractClassSerializer : JsonSerializer<Any?>, JsonDeserializer<Any?>
 {
     @Throws(JsonParseException::class)

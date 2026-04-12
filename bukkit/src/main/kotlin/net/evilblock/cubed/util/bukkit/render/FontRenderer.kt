@@ -20,7 +20,6 @@ object FontRenderer {
         calculateCharWidths(fontTexture, width, height)
     }
 
-    // Calculates width and offset of every character, to space characters correctly.
     private fun calculateCharWidths(fontTexture: BufferedImage, width: Int, height: Int) {
         val fontData = IntArray(width * height)
         fontTexture.getRGB(0, 0, width, height, fontData, 0, width)
@@ -31,11 +30,11 @@ object FontRenderer {
             val row = character / 16
             val offset = col * maxCharWidth + row * maxCharHeight * width
             if (character == 32) {
-                // Space is always 33% width
+
                 charWidths[32] = maxCharWidth / 3
             } else {
-                // Other chars' width is determined by examining pixels
-                // First, find start of character (left-most non-empty column)
+
+                
                 var chStart = 0
                 for (c in 0 until maxCharWidth) {
                     chStart = c
@@ -43,7 +42,7 @@ object FontRenderer {
                         break
                     }
                 }
-                // Next, find end of character (right-most non-empty column)
+
                 var chEnd = maxCharWidth - 1
                 for (c in maxCharWidth - 1 downTo chStart) {
                     chEnd = c
@@ -88,11 +87,11 @@ object FontRenderer {
     }
 
     private fun isColEmpty(imgData: IntArray, offset: Int, imageWidth: Int, maxCharHeight: Int): Boolean {
-        // Checks if a column of pixels contains any non-transparent pixels
+
         for (row in 0 until maxCharHeight) {
             val rowOffset = offset + row * imageWidth
             if (imgData[rowOffset] shr 24 and 0xFF > 128) {
-                // Non-transparent pixel found in column!
+
                 return false
             }
         }

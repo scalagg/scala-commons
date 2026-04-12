@@ -7,10 +7,6 @@ import me.lucko.helper.Helper
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
-/**
- * @author GrowlyX
- * @since 2/19/2024
- */
 object BuiltInV2TablistSystemProvider : TablistSystemProvider
 {
     private var frozedTablist: FrozedTablist? = null

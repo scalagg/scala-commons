@@ -66,11 +66,6 @@ open class VillagerEntity(private var lines: List<String>, location: Location) :
     fun calculateHologramLocation(): Location {
         return location.clone().add(0.0, 0.75, 0.0)
 
-//        return if (lines.size > 1) {
-//            location.clone().add(0.0, 2.21, 0.0)
-//        } else {
-//            location.clone()
-//        }
     }
 
     open fun createHologram() {
@@ -79,15 +74,15 @@ open class VillagerEntity(private var lines: List<String>, location: Location) :
 
     override fun sendSpawnPackets(player: Player) {
         val dataWatcher = DataWatcherUtil.new()
-        DataWatcherUtil.register(dataWatcher, 0, 0.toByte()) // flag
-        DataWatcherUtil.register(dataWatcher, 1, 300.toShort()) // air ticks
-        DataWatcherUtil.register(dataWatcher, 2, "") // custom name
-        DataWatcherUtil.register(dataWatcher, 3, 0.toByte()) // custom name visible
-        DataWatcherUtil.register(dataWatcher, 4, 1.toByte()) // silent
-        DataWatcherUtil.register(dataWatcher, 6, 1.toFloat()) // health
-        DataWatcherUtil.register(dataWatcher, 10, 2.toByte()) // gravity
-        DataWatcherUtil.register(dataWatcher, 12, 0.toByte()) // age
-        DataWatcherUtil.register(dataWatcher, 16, 0) // profession
+        DataWatcherUtil.register(dataWatcher, 0, 0.toByte()) 
+        DataWatcherUtil.register(dataWatcher, 1, 300.toShort()) 
+        DataWatcherUtil.register(dataWatcher, 2, "") 
+        DataWatcherUtil.register(dataWatcher, 3, 0.toByte()) 
+        DataWatcherUtil.register(dataWatcher, 4, 1.toByte()) 
+        DataWatcherUtil.register(dataWatcher, 6, 1.toFloat()) 
+        DataWatcherUtil.register(dataWatcher, 10, 2.toByte()) 
+        DataWatcherUtil.register(dataWatcher, 12, 0.toByte()) 
+        DataWatcherUtil.register(dataWatcher, 16, 0) 
 
         val spawnEntityPacket = MinecraftProtocol.newPacket("PacketPlayOutSpawnEntityLiving")
         Reflection.setDeclaredFieldValue(spawnEntityPacket, "a", id)

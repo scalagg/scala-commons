@@ -12,16 +12,11 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 object ServerSync : ScheduledExecutorService by Executors
     .newSingleThreadScheduledExecutor()
 {
     lateinit var local: AbstractServer
 
-    // default casts
     fun getLocalGameServer() = this.local as GameServer
     fun getLocalProxyServer() = this.local as ProxyServer
 

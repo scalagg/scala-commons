@@ -5,9 +5,6 @@ import gg.scala.commons.tablist.util.data.SkinData;
 
 import java.util.Map;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class MultiSkinDataMapping implements SkinDataMapping {
 
     private final Map<Integer, SkinData> mappings;

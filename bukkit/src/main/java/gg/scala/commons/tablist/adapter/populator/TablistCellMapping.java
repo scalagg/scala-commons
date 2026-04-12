@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistCellMapping {
 
     public static final List<Integer> LEGACY, MODERN;

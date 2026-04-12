@@ -9,10 +9,6 @@ import java.util.Date
 import java.util.Properties
 import kotlin.reflect.KClass
 
-/**
- * @author GrowlyX
- * @since 7/26/2023
- */
 class PropertiesResourceBucket(
     private val type: KClass<*>,
     private val file: File = File("${
@@ -34,7 +30,7 @@ class PropertiesResourceBucket(
 
         properties.stringPropertyNames()
             .forEach {
-                // TODO: no support for proper string lists?
+
                 mappings[it] = listOf(properties.getProperty(it))
             }
     }

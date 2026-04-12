@@ -2,10 +2,6 @@ package gg.scala.cache.uuid.resolver
 
 import java.util.UUID
 
-/**
- * @author GrowlyX
- * @since 9/13/2022
- */
 interface DataResolver
 {
     fun assignedTo(): ResolverType

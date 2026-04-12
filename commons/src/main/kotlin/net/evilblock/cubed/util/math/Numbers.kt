@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.math
 
@@ -100,6 +95,11 @@ object Numbers {
         }
 
         return NumberFormat.getInstance().format(number)
+    }
+
+    @JvmStatic
+    fun format(value: Int, forceAbbreviation: Boolean = false): String {
+        return format(value.toLong(), forceAbbreviation)
     }
 
     @JvmStatic
@@ -218,7 +218,7 @@ object Numbers {
                 n1.toLong() - n2.toLong()
             }
         } else {
-            return BigDecimal(n1.toString()).add(BigDecimal(n2.toString())) // just to be safe
+            return BigDecimal(n1.toString()).add(BigDecimal(n2.toString())) 
         }
     }
 
@@ -242,44 +242,5 @@ object Numbers {
             }
         }
     }
-
-//    @JvmStatic
-//    fun numberToBigDecimal(number: Number): BigDecimal {
-//        return when (number) {
-//            is BigInteger -> {
-//                return number.toBigDecimal()
-//            }
-//            is BigDecimal -> {
-//                return number
-//            }
-//            is Float -> {
-//                BigDecimal(number.toString())
-//            }
-//            is Double -> {
-//                BigDecimal(number)
-//            }
-//            else -> {
-//                BigDecimal(number.toString())
-//            }
-//        }
-//    }
-//
-//    @JvmStatic
-//    fun sum(col: Collection<BigInteger>): BigInteger {
-//        var sum = BigInteger.ZERO
-//        for (i in col) {
-//            sum += i
-//        }
-//        return sum
-//    }
-//
-//    @JvmStatic
-//    fun sum(col: Collection<BigDecimal>): BigDecimal {
-//        var sum = BigDecimal.ZERO
-//        for (i in col) {
-//            sum += i
-//        }
-//        return sum
-//    }
 
 }

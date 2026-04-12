@@ -1,6 +1,5 @@
 package gg.scala.commons.tablist;
 
-
 import gg.scala.commons.tablist.adapter.TablistAdapter;
 import gg.scala.commons.tablist.adapter.TablistAdapterLegacy;
 import gg.scala.commons.tablist.adapter.TablistAdapterModern;
@@ -17,9 +16,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistHandle {
 
     private final Player holder;
@@ -32,8 +28,6 @@ public class TablistHandle {
     public Player getHolder() {
         return holder;
     }
-
-    // ======================================================================================================== //
 
     private boolean enabled;
     private boolean cancelVanillaPackets;
@@ -48,8 +42,6 @@ public class TablistHandle {
 
     private SkinDataMapping skinMapping = DefaultSkinData.getDefaultSkinMapping();
     private gg.scala.commons.tablist.adapter.TablistPopulator tablistPopulator;
-
-    // ======================================================================================================== //
 
     public boolean isEnabled() {
         return enabled;
@@ -181,8 +173,6 @@ public class TablistHandle {
     public void setTablistPopulator(gg.scala.commons.tablist.adapter.TablistPopulator tablistPopulator) {
         this.tablistPopulator = tablistPopulator;
     }
-
-    // ======================================================================================================== //
 
     public boolean cancelVanillaPackets() {
         return cancelVanillaPackets;

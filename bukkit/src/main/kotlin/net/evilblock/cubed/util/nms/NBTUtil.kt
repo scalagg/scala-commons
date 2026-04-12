@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.nms
 
@@ -14,7 +9,7 @@ object NBTUtil {
 
     private val NBT_BASE_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTBase")!!
     private val NBT_NUMBER_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTBase\$NBTNumber")!!
-//    private val NBT_NUMBER_CLASS_1_12: Class<*> = MinecraftReflection.getNMSClass("NBTNumber")!! // 1.12 class
+
     private val NBT_INT_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagInt")!!
     private val NBT_LONG_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagLong")!!
     private val NBT_DOUBLE_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagDouble")!!
@@ -25,7 +20,6 @@ object NBTUtil {
 
     private val NBT_TAG_STRING_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagString")!!
     private val NBT_TAG_STRING_READ_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "a_")!!
-//    private val NBT_TAG_STRING_READ_METHOD_1_12: Method = Reflection.getDeclaredMethod(NBT_TAG_STRING_CLASS, "c_")!! // 1.12 method
 
     private val NBT_TAG_COMPOUND_CLASS: Class<*> = MinecraftReflection.getNMSClass("NBTTagCompound")!!
     private val HAS_KEY_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "hasKey", String::class.java)!!
@@ -34,8 +28,7 @@ object NBTUtil {
     private val SET_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "set", String::class.java, NBT_BASE_CLASS)!!
     private val GET_STRING_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getString", String::class.java)!!
     private val SET_STRING_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setString", String::class.java, String::class.java)!!
-//    private val GET_UUID_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getUUID", String::class.java)!!
-//    private val SET_UUID_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setUUID", String::class.java, UUID::class.java)!!
+
     private val GET_INT_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getInt", String::class.java)!!
     private val SET_INT_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "setInt", String::class.java, Int::class.java)!!
     private val GET_DOUBLE_METHOD: Method = Reflection.getDeclaredMethod(NBT_TAG_COMPOUND_CLASS, "getDouble", String::class.java)!!
@@ -125,16 +118,6 @@ object NBTUtil {
     fun convertString(nbtString: Any): String {
         return NBT_TAG_STRING_READ_METHOD.invoke(nbtString) as String
     }
-
-//    @JvmStatic
-//    fun setUUID(tag: Any, key: String, uuid: UUID) {
-//        SET_UUID_METHOD.invoke(tag, key, uuid)
-//    }
-
-//    @JvmStatic
-//    fun getUUID(tag: Any, key: String): UUID {
-//        return GET_UUID_METHOD.invoke(tag, key) as UUID
-//    }
 
     @JvmStatic
     fun getInt(tag: Any, key: String): Int {

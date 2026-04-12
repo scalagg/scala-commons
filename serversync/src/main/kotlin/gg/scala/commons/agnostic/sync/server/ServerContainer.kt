@@ -5,10 +5,6 @@ import gg.scala.commons.agnostic.sync.ServerSyncPipeline
 import net.evilblock.cubed.serializers.Serializers
 import java.util.concurrent.TimeUnit
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 object ServerContainer : Runnable
 {
     val container = ServerSyncPipeline

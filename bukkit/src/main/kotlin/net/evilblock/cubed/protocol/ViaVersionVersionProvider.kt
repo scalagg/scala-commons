@@ -10,10 +10,6 @@ import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 8/14/2022
- */
 @Service
 @IgnoreAutoScan
 @SoftDependency("ViaVersion")

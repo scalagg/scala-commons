@@ -11,12 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Simple text animation with 3 colors.
- * Just like on Hypixel server sidebars title.
- *
- * @author CatCoder
- */
 public class TextFadeAnimation extends TextIterator {
 
     private final String text;
@@ -27,7 +21,6 @@ public class TextFadeAnimation extends TextIterator {
     private final String colorCodes;
 
     private final FrameIterator frameIterator;
-
 
     public TextFadeAnimation(
             @NotNull String text,
@@ -73,7 +66,7 @@ public class TextFadeAnimation extends TextIterator {
 
     @Override
     protected void end(List<TextFrame> frames) {
-        // flick
+
         TextFrame secondary = TextFrame.of(secondaryColor + colorCodes + text, 8);
         TextFrame primary = TextFrame.of(primaryColor + colorCodes + text, 8);
 
@@ -95,7 +88,6 @@ public class TextFadeAnimation extends TextIterator {
 
             int offset = 0;
 
-            // put secondary color in front if fadeColor was used
             if (i > 0) {
                 builder.insert(0, secondaryColor);
 
@@ -105,18 +97,14 @@ public class TextFadeAnimation extends TextIterator {
                 offset += primaryColorLength;
             }
 
-
-            // fadeColor + colorCodes
             builder.insert(i + offset, colorCodes);
             builder.insert(i + 1 + offset + colorCodes.length(), primaryColor);
 
-            // primaryColor + colorCodes
             builder.insert(i + offset + primaryColorLength + colorCodes.length() + 1, colorCodes);
             builder.insert(i + offset, fadeColor);
 
-
             if (i + 1 == text.length()) {
-                // remove primary color and other color codes from the end
+
                 builder.setLength(builder.length() - primaryColorLength - colorCodes.length());
             }
 

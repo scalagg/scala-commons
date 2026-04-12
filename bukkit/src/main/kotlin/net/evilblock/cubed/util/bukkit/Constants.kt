@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.bukkit
 
@@ -106,11 +101,6 @@ object Constants {
     @JvmStatic
     val ANCHOR_SYMBOL = "${ChatColor.BOLD}⚓"
 
-    /**
-     * Example omitted - Solid line which almost entirely spans the
-     * (default) Minecraft chat box. 53 is chosen for no reason other than its width
-     * being almost equal to that of the chat box.
-     */
     @JvmStatic
     val LONG_LINE = ChatColor.STRIKETHROUGH.toString() + StringUtils.repeat("-", 53)
 

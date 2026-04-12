@@ -8,10 +8,6 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.key.KeyedValue
 import java.util.concurrent.CopyOnWriteArrayList
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 abstract class AbstractServer : AbstractTypeSerializable
 {
     abstract val id: String

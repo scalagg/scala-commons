@@ -4,10 +4,6 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 8/1/2022
- */
 abstract class AbstractCompositeSchemedMenu<T : Menu>
 {
     protected val pattern = mutableListOf<String>()

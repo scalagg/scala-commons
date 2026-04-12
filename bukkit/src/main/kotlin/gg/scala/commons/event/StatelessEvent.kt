@@ -4,10 +4,6 @@ import gg.scala.commons.sentry.SentryService
 import net.evilblock.cubed.ScalaCommonsSpigot
 import java.util.logging.Level
 
-/**
- * @author GrowlyX
- * @since 7/30/2022
- */
 abstract class StatelessEvent : AbstractEvent<Unit>()
 {
     override fun postPushCompute()

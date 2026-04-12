@@ -1,6 +1,7 @@
 package net.evilblock.cubed
 
-import com.comphenix.protocol.ProtocolLibrary
+import com.github.retrooper.packetevents.PacketEvents
+import de.tr7zw.changeme.nbtapi.NBT
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
 import gg.scala.aware.message.AwareMessage
@@ -20,12 +21,13 @@ import gg.scala.commons.agnostic.sync.server.region.Region
 import gg.scala.commons.agnostic.sync.server.state.ServerState
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
+import gg.scala.commons.annotations.container.ContainerPreEnable
 import gg.scala.commons.config.annotations.ContainerConfig
 import gg.scala.commons.persist.ProfileOrchestratorService
 import gg.scala.commons.persist.datasync.DataSyncService
 import gg.scala.commons.preconfigure.PreConfigureSubTypeProcessor
 import gg.scala.commons.protocol.ProtocolVersion
-import gg.scala.commons.protocol.impl.ProtocolLibVersionProvider
+import gg.scala.commons.protocol.impl.PacketEventsVersionProvider
 import gg.scala.commons.proxy.Plugins
 import gg.scala.commons.replacement.ReplacementGlobalContainer
 import gg.scala.commons.replacement.Replacements
@@ -35,6 +37,7 @@ import gg.scala.commons.sign.Signs
 import gg.scala.commons.tablist.TablistService
 import gg.scala.commons.terminable.PlayerCompositeTerminable
 import gg.scala.commons.util.Players
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import me.lucko.helper.Commands
 import me.lucko.helper.internal.HelperImplementationPlugin
 import me.lucko.helper.internal.LoaderUtils
@@ -75,12 +78,10 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import kotlin.system.exitProcess
 
-// plugin meta
 @Plugin(
     name = "scala-commons",
     apiVersion = "1.19",
     depends = [
-        PluginDependency("ProtocolLib"),
         PluginDependency("store-spigot"),
         PluginDependency("Vault", soft = true),
         PluginDependency("ViaVersion", soft = true),
@@ -88,13 +89,13 @@ import kotlin.system.exitProcess
         PluginDependency("UnifiedMetrics", soft = true)
     ]
 )
-// configs
+
 @ContainerConfig("sentry", SentryConfig::class)
 @ContainerConfig("settings", CommonsGeneralConfig::class)
 @ContainerConfig("tablist", CommonsTablistConfig::class)
 @ContainerConfig("nametags", CommonsNametagConfig::class)
 @ContainerConfig("scoreboard", CommonsScoreboardConfig::class)
-// serversync
+
 @ContainerConfig("serversync", ServerSyncConfig::class)
 @HelperImplementationPlugin
 class ScalaCommonsSpigot : ExtendedScalaPlugin()
@@ -117,7 +118,14 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         aware.internal().connect()
     }
 
-    var versionProvider: ProtocolVersion = ProtocolLibVersionProvider
+    var versionProvider: ProtocolVersion = PacketEventsVersionProvider
+
+    @ContainerPreEnable
+    fun preEnable()
+    {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
+        PacketEvents.getAPI().load()
+    }
 
     @ContainerEnable
     fun containerEnable()
@@ -125,6 +133,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         kotlin.runCatching {
             val config = config<CommonsGeneralConfig>()
             Reflection.DEBUG = config.debug
+
+            PacketEvents.getAPI().init()
 
             createInfoCommand()
 
@@ -146,6 +156,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
             }
 
             TimeZone.setDefault(default)
+            NBT.preloadApi()
 
             this.configureRedisServices()
             ProfileOrchestratorService.configureEventHandlers(this)
@@ -163,13 +174,8 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 registerTypeAdapter(MenuTemplateButton::class.java, AbstractTypeSerializer<MenuTemplateButton>())
             }
 
-            listOf(
-                InventoryPacketAdapter,
-                MenuPacketAdapter,
-            ).forEach {
-                ProtocolLibrary.getProtocolManager()
-                    .addPacketListener(it)
-            }
+            InventoryPacketAdapter.configure()
+            MenuPacketAdapter.configure()
 
             Bukkit.getLogger().setFilter {
                 !it.message.contains("Command Dispatched Async") &&
@@ -247,7 +253,7 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         this.serverSync = ServerSync.configure(
             GameServer(config.serverId, config.serverGroups, Region.valueOf(config.region))
         ) {
-            // server metadata
+
             kotlin.runCatching {
                 setMetadata("server", "tps", ServerStatisticProviders.provider().ticksPerSecond())
                 setMetadata("server", "cpu", ServerStatisticProviders.provider().cpuUsage())
@@ -261,18 +267,15 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
 
             setMetadata("server", "software", server.version)
 
-            // online player metadata
             setMetadata("server", "online", server.onlinePlayers.size)
             setMetadata("server", "online-list", server.onlinePlayers.map { it.uniqueId })
             setMetadata("server", "online-max", server.maxPlayers)
 
-            // whitelist
             setMetadata("server", "whitelisted", server.hasWhitelist())
             setMetadata("server", "whitelisted-players", server.whitelistedPlayers.map { it.uniqueId })
         }
 
-        // There is no need to bind these to a local CompositeTerminable as we're
-        // configuring this for the platform itself, not our plugin.
+        
         EventBus.subscribe<ServerConnectedEvent>()
             .listen {
                 Players.operators().filter { operator ->
@@ -311,7 +314,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
                 }
             }
 
-        // configures this once the server's started up completely
         object : BukkitRunnable() {
             override fun run()
             {
@@ -371,12 +373,6 @@ class ScalaCommonsSpigot : ExtendedScalaPlugin()
         ServerSync.awaitTermination(1L, TimeUnit.SECONDS)
     }
 
-    /**
-     * Runs important checks to ensure this server instance is properly setup.
-     * If any check fails, the server automatically shuts down.
-     *
-     * @return true if checks are passed, otherwise false
-     */
     private fun runSetupCheck(): Boolean
     {
         if (this.config<CommonsGeneralConfig>().ignoreServerCheck)

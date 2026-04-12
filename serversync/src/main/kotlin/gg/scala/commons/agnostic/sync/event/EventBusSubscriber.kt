@@ -4,10 +4,6 @@ import gg.scala.aware.annotation.Subscribe
 import gg.scala.aware.message.AwareMessage
 import net.evilblock.cubed.serializers.Serializers
 
-/**
- * @author GrowlyX
- * @since 8/29/2022
- */
 object EventBusSubscriber
 {
     @Subscribe("event-bus")

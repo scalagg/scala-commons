@@ -5,10 +5,6 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 2/9/2025
- */
 fun <T : ServerScoped> Player.editScopesButton(
     scoped: T,
     onClose: (Player) -> Unit,

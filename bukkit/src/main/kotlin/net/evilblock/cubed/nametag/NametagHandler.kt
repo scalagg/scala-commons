@@ -1,5 +1,7 @@
 package net.evilblock.cubed.nametag
 
+import com.github.retrooper.packetevents.wrapper.PacketWrapper
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -7,7 +9,8 @@ import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsNametagConfig
 import net.evilblock.cubed.nametag.update.NametagUpdate
 import net.evilblock.cubed.nametag.update.NametagUpdateEvent
-import net.evilblock.cubed.scoreboard.ScoreboardTeamPacketMod
+import net.evilblock.cubed.scoreboard.MultiVersionScoreboardTeamPackets
+import net.evilblock.cubed.scoreboard.send
 import net.evilblock.cubed.services.CommonsServiceExecutor
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
@@ -16,7 +19,8 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @Service
 object NametagHandler
@@ -30,6 +34,7 @@ object NametagHandler
     private var teamCreateIndex = 0
 
     private var providers = CopyOnWriteArrayList<NametagProvider>()
+    val providerLock = ReentrantLock()
 
     private var isNametagRestrictionEnabled: Boolean = false
     private var nametagRestrictBypass: String = ""
@@ -40,10 +45,8 @@ object NametagHandler
     @Configure
     fun configure()
     {
-        val nametagConfig = this.plugin
-            .config<CommonsNametagConfig>()
-
-        if (nametagConfig.enabled)
+        val nametagConfig = this.plugin.config<CommonsNametagConfig>()
+        if (!nametagConfig.enabled)
         {
             plugin.logger.info("Auto-updating nametags are disabled by config")
             return
@@ -55,34 +58,45 @@ object NametagHandler
         isNametagRestrictionEnabled = nametagConfig.packetRestriction
         nametagRestrictBypass = nametagConfig.packetRestrictionPrefix
 
-        CommonsServiceExecutor
-            .scheduleAtFixedRate(
-                NametagThread(),
-                0L,
-                updateInterval * 50L,
-                TimeUnit.MILLISECONDS
-            )
+        if (async)
+        {
+            CommonsServiceExecutor
+                .scheduleAtFixedRate(
+                    NametagThread(),
+                    0L,
+                    updateInterval * 50L,
+                    TimeUnit.MILLISECONDS
+                )
+        }
 
         registerProvider(NametagProvider.DefaultNametagProvider())
     }
 
     fun registerProvider(newProvider: NametagProvider)
     {
-        providers.add(newProvider)
-        providers.sortByDescending { it.weight }
+        providerLock.withLock {
+            providers.add(newProvider)
+            providers.sortByDescending { it.weight }
+        }
     }
 
     fun reloadPlayer(toRefresh: Player)
     {
         val update = NametagUpdate(toRefresh)
 
-        if (async)
+        if (async && !org.bukkit.Bukkit.isPrimaryThread())
         {
             NametagThread.pendingUpdates[update] = true
         } else
         {
-            Tasks.sync {
+            if (org.bukkit.Bukkit.isPrimaryThread())
+            {
                 applyUpdate(update)
+            } else
+            {
+                Tasks.sync {
+                    applyUpdate(update)
+                }
             }
         }
     }
@@ -103,19 +117,26 @@ object NametagHandler
     {
         val update = NametagUpdate(toRefresh, refreshFor)
 
-        if (async)
+        if (async && !org.bukkit.Bukkit.isPrimaryThread())
         {
             NametagThread.pendingUpdates[update] = true
         } else
         {
-            applyUpdate(update)
+            if (org.bukkit.Bukkit.isPrimaryThread())
+            {
+                applyUpdate(update)
+            } else
+            {
+                Tasks.sync {
+                    applyUpdate(update)
+                }
+            }
         }
     }
 
     internal fun applyUpdate(nametagUpdate: NametagUpdate)
     {
-        val toRefreshPlayer = Bukkit.getPlayerExact(nametagUpdate.toRefresh) ?: return
-
+        val toRefreshPlayer = Bukkit.getPlayer(nametagUpdate.toRefresh) ?: return
         if (nametagUpdate.refreshFor == null)
         {
             for (refreshFor in Bukkit.getOnlinePlayers())
@@ -124,7 +145,7 @@ object NametagHandler
             }
         } else
         {
-            val refreshForPlayer = Bukkit.getPlayerExact(nametagUpdate.refreshFor)
+            val refreshForPlayer = Bukkit.getPlayer(nametagUpdate.refreshFor)
             if (refreshForPlayer != null)
             {
                 reloadPlayerInternal(toRefreshPlayer, refreshForPlayer)
@@ -176,7 +197,13 @@ object NametagHandler
             teamInfoMap = teamMap[refreshFor.uniqueId]!!
         }
 
-        ScoreboardTeamPacketMod(provided.name, arrayListOf(toRefresh.name), 3).send(refreshFor)
+        MultiVersionScoreboardTeamPackets(provided.name)
+            .newTeamMemberUpdatePacket(
+                toRefresh.name,
+                WrapperPlayServerTeams.TeamMode.ADD_ENTITIES
+            )
+            .send(refreshFor)
+
         teamInfoMap[toRefresh.uniqueId] = provided
         teamMap[refreshFor.uniqueId] = teamInfoMap
     }
@@ -185,7 +212,7 @@ object NametagHandler
     {
         for (teamInfo in registeredTeams)
         {
-            teamInfo.teamAddPacket.send(player)
+            (teamInfo.teamAddPacket as PacketWrapper<*>).send(player)
         }
     }
 
@@ -208,7 +235,7 @@ object NametagHandler
         val addPacket = newTeam.teamAddPacket
         for (player in Bukkit.getOnlinePlayers())
         {
-            addPacket.send(player)
+            (addPacket as PacketWrapper<*>).send(player)
         }
 
         return newTeam

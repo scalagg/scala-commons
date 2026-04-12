@@ -8,10 +8,6 @@ import gg.scala.flavor.binder.FlavorBinderContainer
 import gg.scala.flavor.inject.condition.Named
 import org.bukkit.Bukkit
 
-/**
- * @author GrowlyX
- * @since 9/6/2022
- */
 class CommandPluginBinder(
     private val plugin: ExtendedScalaPlugin
 ) : FlavorBinderContainer()

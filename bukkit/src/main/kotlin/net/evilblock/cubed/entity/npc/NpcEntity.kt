@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.entity.npc
 
@@ -46,6 +41,8 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Livi
 
     private var textureValue: String? = null
     private var textureSignature: String? = null
+
+    var personalizedSkin: Boolean = false
 
     var nextPhrase: Long = randomTime()
     var phrases: List<List<String>> = arrayListOf()
@@ -161,13 +158,12 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Livi
             0.0
         }
 
-        return location.clone().add(0.0, 0.75 + helmetOffset, 0.0)
+        return if (MinecraftReflection.isModern()) {
+            location.clone().add(0.0, 1.92 + helmetOffset, 0.0)
+        } else {
+            location.clone().add(0.0, 0.75 + helmetOffset, 0.0)
+        }
 
-//        return if (lines.size > 1) {
-//            location.clone().add(0.0, 2.06 + helmetOffset, 0.0)
-//        } else {
-//            location.clone().add(0.0, helmetOffset, 0.0)
-//        }
     }
 
     fun updateLines(lines: List<String>) {
@@ -183,13 +179,21 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Livi
         this.textureValue = value
         this.textureSignature = signature
 
-        profile = MinecraftReflection.newGameProfile(
-            MinecraftReflection.getGameProfileUUID(profile),
-            MinecraftReflection.getGameProfileName(profile)
-        )
+        val profileUuid = MinecraftReflection.getGameProfileUUID(profile)
+        val profileName = MinecraftReflection.getGameProfileName(profile)
 
-        if (textureValue != null && textureSignature != null) {
-            MinecraftReflection.setGameProfileTexture(profile, textureValue!!, textureSignature!!)
+        profile = if (textureValue != null && textureSignature != null) {
+            MinecraftReflection.newGameProfile(
+                profileUuid,
+                profileName,
+                textureValue!!,
+                textureSignature!!
+            )
+        } else {
+            MinecraftReflection.newGameProfile(
+                profileUuid,
+                profileName
+            )
         }
 
         for (player in getCurrentWatcherPlayers()) {
@@ -213,6 +217,17 @@ open class NpcEntity(private var lines: List<String>, location: Location) : Livi
         } catch (e: Exception) {
             e.printStackTrace()
             onComplete(false, e)
+        }
+    }
+
+    fun togglePersonalizedSkin() {
+        this.personalizedSkin = !this.personalizedSkin
+
+        for (player in getCurrentWatcherPlayers()) {
+            if (isVisibleToPlayer(player)) {
+                destroy(player)
+                spawn(player)
+            }
         }
     }
 

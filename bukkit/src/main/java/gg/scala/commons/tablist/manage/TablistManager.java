@@ -6,9 +6,6 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.Optional;
 
-/**
- * @author Reximian9k (https://github.com/reximian9k)
- */
 public class TablistManager {
 
     private static TablistManager INSTANCE;

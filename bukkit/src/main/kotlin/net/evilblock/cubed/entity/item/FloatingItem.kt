@@ -53,11 +53,11 @@ class FloatingItem(var itemStack: ItemStack, location: Location) : Entity(locati
         Reflection.setDeclaredFieldValue(itemPacket, "i", 0.toByte())
 
         val itemDataWatcher = DataWatcherUtil.new()
-        DataWatcherUtil.register(itemDataWatcher, 0, 0.toByte()) // flag
-        DataWatcherUtil.register(itemDataWatcher, 1, 0.toShort()) // air ticks
-        DataWatcherUtil.register(itemDataWatcher, 2, "") // custom name
-        DataWatcherUtil.register(itemDataWatcher, 3, 0.toByte()) // custom name visible
-        DataWatcherUtil.register(itemDataWatcher, 4, 0.toByte()) // silent
+        DataWatcherUtil.register(itemDataWatcher, 0, 0.toByte()) 
+        DataWatcherUtil.register(itemDataWatcher, 1, 0.toShort()) 
+        DataWatcherUtil.register(itemDataWatcher, 2, "") 
+        DataWatcherUtil.register(itemDataWatcher, 3, 0.toByte()) 
+        DataWatcherUtil.register(itemDataWatcher, 4, 0.toByte()) 
         DataWatcherUtil.setFlag(itemDataWatcher, 5, false)
 
         val itemMetadataPacket = MinecraftProtocol.newPacket("PacketPlayOutEntityMetadata")
@@ -65,16 +65,16 @@ class FloatingItem(var itemStack: ItemStack, location: Location) : Entity(locati
         Reflection.setDeclaredFieldValue(itemMetadataPacket, "b", DataWatcherUtil.getWatchedObjects(itemDataWatcher) as Any)
 
         val armorStandDataWatcher = DataWatcherUtil.new()
-        DataWatcherUtil.register(armorStandDataWatcher, 0, 0.toByte()) // flag
-        DataWatcherUtil.register(armorStandDataWatcher, 1, 0.toShort()) // air ticks
-        DataWatcherUtil.register(armorStandDataWatcher, 2, "") // custom name
-        DataWatcherUtil.register(armorStandDataWatcher, 3, 0.toByte()) // custom name visible
-        DataWatcherUtil.register(armorStandDataWatcher, 4, 0.toByte()) // silent
+        DataWatcherUtil.register(armorStandDataWatcher, 0, 0.toByte()) 
+        DataWatcherUtil.register(armorStandDataWatcher, 1, 0.toShort()) 
+        DataWatcherUtil.register(armorStandDataWatcher, 2, "") 
+        DataWatcherUtil.register(armorStandDataWatcher, 3, 0.toByte()) 
+        DataWatcherUtil.register(armorStandDataWatcher, 4, 0.toByte()) 
         DataWatcherUtil.setFlag(armorStandDataWatcher, 5, true)
-        DataWatcherUtil.register(armorStandDataWatcher, 6, 1.toFloat()) // health
+        DataWatcherUtil.register(armorStandDataWatcher, 6, 1.toFloat()) 
         DataWatcherUtil.register(armorStandDataWatcher, 7, 0)
         DataWatcherUtil.register(armorStandDataWatcher, 8, 0.toByte())
-        DataWatcherUtil.register(armorStandDataWatcher, 9, 0.toByte()) // arrow count
+        DataWatcherUtil.register(armorStandDataWatcher, 9, 0.toByte()) 
         DataWatcherUtil.register(armorStandDataWatcher, 10, 0.toByte())
         DataWatcherUtil.setTypeFlag(armorStandDataWatcher, 10, 1, true)
         DataWatcherUtil.setTypeFlag(armorStandDataWatcher, 10, 4, false)

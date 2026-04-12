@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.util.nms
 
@@ -114,9 +109,7 @@ object DataWatcherUtil
     {
         if (MinecraftReflection.isModern())
         {
-//            DATA_WATCHER_REGISTER_METHOD.invoke(
-//                dataWatcher, DataWatcherObject<Any>(key, null /** idk what to do for serializer, will look later. */), value
-//            )
+
             return
         }
 
@@ -187,7 +180,6 @@ object DataWatcherUtil
             set(dataWatcher, key, mask or i.inv())
         }
     }
-
 
     @JvmStatic
     fun isWatchedObjectDirty(watchedObject: Any): Boolean

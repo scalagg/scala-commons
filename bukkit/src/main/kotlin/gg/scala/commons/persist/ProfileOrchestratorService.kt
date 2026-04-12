@@ -10,16 +10,11 @@ import net.evilblock.cubed.util.Reflection
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 12/24/2023
- */
 object ProfileOrchestratorService
 {
     private val registry = mutableMapOf<Class<*>, ProfileOrchestrator<*>>()
@@ -51,22 +46,17 @@ object ProfileOrchestratorService
                         }).toTypedArray()
                     )
                     .join()
-            }
-            .bindWith(plugin)
 
-        Events
-            .subscribe(PlayerLoginEvent::class.java)
-            .handler {
                 val profilesNotLoaded = registry.values
                     .filterNot { orchestrator ->
                         orchestrator.controller.localCache()
-                            .containsKey(it.player.uniqueId)
+                            .containsKey(it.uniqueId)
                     }
 
                 if (profilesNotLoaded.isNotEmpty())
                 {
                     it.disallow(
-                        PlayerLoginEvent.Result.KICK_OTHER,
+                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                         "${CC.RED}Sorry! One or more of your profiles failed to load:\n${
                             profilesNotLoaded
                                 .joinToString("\n") { orchestrator ->

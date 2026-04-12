@@ -2,10 +2,6 @@ package gg.scala.commons.replacement
 
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 5/2/2022
- */
 class ReplacementBuilder
 {
     companion object

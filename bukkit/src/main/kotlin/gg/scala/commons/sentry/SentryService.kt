@@ -8,10 +8,6 @@ import io.sentry.Sentry
 import io.sentry.protocol.SentryId
 import java.util.concurrent.Executors
 
-/**
- * @author GrowlyX
- * @since 4/22/2022
- */
 object SentryService
 {
     private val hintProviders =

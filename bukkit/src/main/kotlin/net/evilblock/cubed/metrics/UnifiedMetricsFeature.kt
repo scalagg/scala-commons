@@ -11,10 +11,6 @@ import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import net.evilblock.cubed.ScalaCommonsSpigot
 
-/**
- * @author GrowlyX
- * @since 8/24/2022
- */
 @Service
 @IgnoreAutoScan
 @SoftDependency("UnifiedMetrics")

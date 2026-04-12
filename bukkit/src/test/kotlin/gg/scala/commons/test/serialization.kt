@@ -4,10 +4,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.LongSerializationPolicy
 import org.junit.jupiter.api.Test
 
-/**
- * @author GrowlyX
- * @since 9/9/2022
- */
 class SerializationTests
 {
     data class `Original model`(

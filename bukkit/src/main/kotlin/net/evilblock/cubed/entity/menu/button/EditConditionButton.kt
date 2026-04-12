@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
 
 /**
- * @author Topu
  * @date 3/8/2025
  */
 class EditConditionButton(

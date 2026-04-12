@@ -4,10 +4,6 @@ import net.evilblock.cubed.event.PluginEvent
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 
-/**
- * @author GrowlyX
- * @since 9/25/2021
- */
 class NametagUpdateEvent(
     val player: Player
 ) : PluginEvent() {

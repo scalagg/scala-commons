@@ -2,10 +2,6 @@ package net.evilblock.cubed.config
 
 import xyz.mkotb.configapi.comment.Comment
 
-/**
- * @author GrowlyX
- * @since 4/27/2022
- */
 @Comment(
     "You're viewing the primary config for scala-commons."
 )

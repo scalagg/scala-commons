@@ -10,11 +10,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
-
-/**
- * @author GrowlyX
- * @since 9/13/2022
- */
 object MojangDataResolver : DataResolver
 {
     private val invalidCache = Caffeine.newBuilder()
@@ -24,10 +19,6 @@ object MojangDataResolver : DataResolver
 
     override fun assignedTo() = ResolverType.Mojang
 
-    /**
-     * Fetches a UUID and Username pair from the Mojang API.
-     * Should not be called very often as the server could be rate-limited which will cause more issues.
-     */
     @JvmStatic
     @Suppress("DEPRECATION")
     fun fetchFromMojang(username: String): Pair<UUID, String>?

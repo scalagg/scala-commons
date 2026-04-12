@@ -13,10 +13,6 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.commons.issuer.ScalaPlayer
 import net.evilblock.cubed.util.CC
 
-/**
- * @author GrowlyX
- * @since 8/30/2022
- */
 @AutoRegister
 @CommandAlias("serversync")
 @CommandPermission("commons.command.serversync")

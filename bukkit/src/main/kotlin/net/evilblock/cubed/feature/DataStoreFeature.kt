@@ -6,10 +6,6 @@ import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import gg.scala.store.serializer.serializers.GsonSerializer
 import net.evilblock.cubed.serializers.Serializers
 
-/**
- * @author GrowlyX
- * @since 8/23/2022
- */
 @Service
 @IgnoreAutoScan
 object DataStoreFeature

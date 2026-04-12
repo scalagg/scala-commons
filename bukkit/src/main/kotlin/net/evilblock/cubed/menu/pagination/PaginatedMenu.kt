@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.pagination
 
@@ -126,7 +121,6 @@ abstract class PaginatedMenu : Menu()
             }
         }
 
-        // insert global buttons AFTER inserting entry buttons
         val global = getGlobalButtons(player)
         if (global != null)
         {

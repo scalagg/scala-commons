@@ -6,10 +6,6 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 
-/**
- * @author GrowlyX
- * @since 9/15/2021
- */
 class FancyMessage
 {
     val components = mutableListOf<SerializableComponent>()

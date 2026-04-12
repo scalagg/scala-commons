@@ -24,10 +24,6 @@ import org.bukkit.inventory.Inventory
 import java.util.logging.Level
 import java.util.logging.Logger
 
-/**
- * @author GrowlyX
- * @since 12/30/2021
- */
 @AutoRegister
 @CommandAlias("scala-commons-demo")
 @CommandPermission("commons.command.demo")

@@ -1,16 +1,13 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
+
 
 package net.evilblock.cubed.menu.protocol
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.EnumWrappers
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerAbstract
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClientStatus
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientCloseWindow
 import io.netty.util.internal.ConcurrentSet
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.menu.protocol.event.PlayerCloseInventoryEvent
@@ -19,23 +16,25 @@ import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import java.util.*
 
-object InventoryPacketAdapter : PacketAdapter(
-    AdapterParameteters()
-        .plugin(ScalaCommonsSpigot.instance)
-        .types(
-            PacketType.Play.Client.CLIENT_COMMAND,
-            PacketType.Play.Client.CLOSE_WINDOW
-        )
-) {
+object InventoryPacketAdapter : PacketListenerAbstract() {
+    private var registered = false
 
-    override fun onPacketReceiving(event: PacketEvent) {
-        val player = event.player
-        val packet = event.packet
+    fun configure()
+    {
+        if (registered) {
+            return
+        }
+
+        PacketEvents.getAPI().eventManager.registerListener(this)
+        registered = true
+    }
+
+    override fun onPacketReceive(event: PacketReceiveEvent) {
+        val player = event.getPlayer<org.bukkit.entity.Player>() ?: return
 
         if (
-            packet.type === PacketType.Play.Client.CLIENT_COMMAND &&
-            packet.clientCommands.size() != 0
-            && packet.clientCommands.read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT
+            event.packetType === PacketType.Play.Client.CLIENT_STATUS &&
+            WrapperPlayClientClientStatus(event).action == WrapperPlayClientClientStatus.Action.OPEN_INVENTORY_ACHIEVEMENT
         ) {
             if (!currentlyOpen.contains(player.uniqueId)) {
                 Tasks.sync {
@@ -47,7 +46,8 @@ object InventoryPacketAdapter : PacketAdapter(
             }
 
             currentlyOpen.add(player.uniqueId)
-        } else if (packet.type === PacketType.Play.Client.CLOSE_WINDOW) {
+        } else if (event.packetType === PacketType.Play.Client.CLOSE_WINDOW) {
+            WrapperPlayClientCloseWindow(event)
             if (currentlyOpen.contains(player.uniqueId)) {
                 Tasks.sync {
                     Bukkit.getPluginManager()
