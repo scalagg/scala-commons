@@ -1,25 +1,30 @@
 package gg.scala.commons.rassist.dao.packet
 
-import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.injector.netty.WirePacket
-import gg.scala.commons.rassist.packet.ReplayPacketBridge
+import com.github.retrooper.packetevents.event.ProtocolPacketEvent
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 
-/**
- * @author GrowlyX
- * @since 5/7/2022
- */
 class ReplayPacketWrapper(
     val time: Int,
-    id: Int, data: ByteArray
-) : WirePacket(id, data)
+    val packetId: Int,
+    val data: ByteArray
+)
 {
-    constructor(
-        time: Int,
-        container: PacketContainer
-    ) : this(
-        time,
-        ReplayPacketBridge.converter()
-            .getPacketID(container.type),
-        bytesFromPacket(container)
-    )
+    fun toByteBuf(): ByteBuf
+    {
+        val idBytes = gg.scala.commons.rassist.util.ReplayPacketUtils.toVarInt(packetId)
+        return Unpooled.wrappedBuffer(idBytes, data)
+    }
+
+    companion object
+    {
+        fun fromPacketEvent(time: Int, event: ProtocolPacketEvent): ReplayPacketWrapper
+        {
+            val byteBuf = event.byteBuf as ByteBuf
+            val duplicate = byteBuf.duplicate()
+            val bytes = ByteArray(duplicate.readableBytes())
+            duplicate.readBytes(bytes)
+            return ReplayPacketWrapper(time, event.packetId, bytes)
+        }
+    }
 }

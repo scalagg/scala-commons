@@ -1,13 +1,11 @@
 package gg.scala.commons.tablist
 
-import com.comphenix.packetwrapper.MultiVersionWrapperPlayServerPlayerInfo
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.EnumWrappers
-import com.comphenix.protocol.wrappers.PlayerInfoData
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerAbstract
+import com.github.retrooper.packetevents.event.PacketListenerPriority
+import com.github.retrooper.packetevents.event.PacketSendEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo
 import gg.scala.commons.tablist.adapter.populator.DefaultPlayersProvider
 import gg.scala.commons.tablist.adapter.populator.PlayerTablistPopulator
 import gg.scala.commons.tablist.cell.CellStacking
@@ -15,52 +13,56 @@ import gg.scala.commons.tablist.manage.TablistManager
 import gg.scala.commons.tablist.util.Util
 import net.evilblock.cubed.ScalaCommonsSpigot
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.Collections
 
-/**
- * @author GrowlyX
- * @since 2/19/2024
- */
-object BuiltInV1TablistSystemProvider : TablistSystemProvider, PacketAdapter(
-    AdapterParameteters()
-        .plugin(ScalaCommonsSpigot.instance)
-        .types(PacketType.Play.Server.PLAYER_INFO)
-        .listenerPriority(ListenerPriority.HIGHEST)
-)
+object BuiltInV1TablistSystemProvider : TablistSystemProvider, PacketListenerAbstract(PacketListenerPriority.HIGHEST)
 {
+    private var registered = false
 
-    override fun onPacketSending(event: PacketEvent)
+    override fun onPacketSend(event: PacketSendEvent)
     {
-
-        if (Util.getClientVersion(event.player) > 5)
-        {
+        if (event.packetType != PacketType.Play.Server.PLAYER_INFO) {
             return
         }
 
-        val wrapped = MultiVersionWrapperPlayServerPlayerInfo(event.packet)
-        val data = wrapped.data[0]
+        val player = event.getPlayer<Player>() ?: return
+        if (Util.getClientVersion(player) > 5) {
+            return
+        }
 
-        if (wrapped.action == EnumWrappers.PlayerInfoAction.ADD_PLAYER && data.latency != -1)
+        val wrapped = WrapperPlayServerPlayerInfo(event)
+        val data = wrapped.playerDataList.firstOrNull() ?: return
+
+        if (wrapped.action == WrapperPlayServerPlayerInfo.Action.ADD_PLAYER && data.ping != -1)
         {
-            wrapped.data = Collections.singletonList(
-                PlayerInfoData(
-                    data.profileId, data.latency, false, data.gameMode, data.profile, data.displayName
+            wrapped.playerDataList = Collections.singletonList(
+                WrapperPlayServerPlayerInfo.PlayerData(
+                    data.displayName,
+                    data.userProfile,
+                    data.gameMode,
+                    -1
                 )
             )
             event.isCancelled = true
             return
         }
 
-        wrapped.data = Collections.singletonList(
-            PlayerInfoData(
-                data.profileId, 0, data.isListed, data.gameMode, data.profile, data.displayName
+        wrapped.playerDataList = Collections.singletonList(
+            WrapperPlayServerPlayerInfo.PlayerData(
+                data.displayName,
+                data.userProfile,
+                data.gameMode,
+                0
             )
         )
     }
 
     override fun configure()
     {
-        ProtocolLibrary.getProtocolManager().addPacketListener(this)
+        if (!registered) {
+            PacketEvents.getAPI().eventManager.registerListener(this)
+            registered = true
+        }
         kotlin.runCatching {
             TablistManager.init()
         }
@@ -79,8 +81,7 @@ object BuiltInV1TablistSystemProvider : TablistSystemProvider, PacketAdapter(
 
         if (handle.tablistPopulator == null)
         {
-            handle.tablistPopulator =
-                PlayerTablistPopulator(handle, DefaultPlayersProvider.getInstance())
+            handle.tablistPopulator = PlayerTablistPopulator(handle, DefaultPlayersProvider.getInstance())
         }
 
         if (display)

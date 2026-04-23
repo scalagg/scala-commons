@@ -1,0 +1,188 @@
+/*
+ * Copyright (c) 2020. Joel Evans
+ *
+ * Use and or redistribution of compiled JAR file and or source code is permitted only if given
+ * explicit permission from original author: Joel Evans
+ */
+
+package net.evilblock.cubed.menu.template.menu
+
+import com.cryptomorin.xseries.XMaterial
+import net.evilblock.cubed.menu.Button
+import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.menu.buttons.AddButton
+import net.evilblock.cubed.menu.menus.ConfirmMenu
+import net.evilblock.cubed.menu.pagination.PaginatedMenu
+import net.evilblock.cubed.util.bukkit.prompt.EzPrompt
+import net.evilblock.cubed.menu.template.MenuTemplate
+import net.evilblock.cubed.menu.template.MenuTemplateFactory
+import net.evilblock.cubed.menu.template.MenuTemplateHandler
+import net.evilblock.cubed.util.CC
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.InventoryView
+
+class TemplateEditorMenu : PaginatedMenu() {
+
+    companion object
+    {
+        @JvmStatic
+        val SLOTS = listOf(
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+        )
+    }
+
+    init {
+        updateAfterClick = true
+    }
+
+    override fun getPrePaginatedTitle(player: Player): String {
+        return "Menu Template Editor"
+    }
+
+    override fun getGlobalButtons(player: Player): Map<Int, Button>
+    {
+        val buttons = hashMapOf<Int, Button>()
+        buttons[4] = CreateTemplateButton()
+
+        return buttons
+    }
+
+    override fun getAllPagesButtonSlots(): List<Int> = SLOTS
+
+    override fun getAllPagesButtons(player: Player): Map<Int, Button> {
+        val buttons = hashMapOf<Int, Button>()
+
+        for (menuTemplate in MenuTemplateHandler.getTemplates()) {
+            buttons[buttons.size] = TemplateButton(menuTemplate)
+        }
+
+        return buttons
+    }
+
+    override fun getMaxItemsPerPage(player: Player): Int {
+        return 27
+    }
+
+    override fun size(buttons: Map<Int, Button>): Int {
+        return 45
+    }
+
+    private inner class CreateTemplateButton : AddButton() {
+        override fun getName(player: Player): String {
+            return "${CC.GREEN}Create New Template"
+        }
+
+        override fun getDescription(player: Player): List<String> {
+            return listOf(
+                "${CC.GRAY}Create a new template by completing",
+                "${CC.GRAY}the setup procedure.",
+                "",
+                "${CC.YELLOW}Click to create a new template."
+            )
+        }
+
+        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+            if (clickType.isLeftClick) {
+                PickFactoryMenu { factory ->
+                    EzPrompt.Builder()
+                        .promptText(EzPrompt.IDENTIFIER_PROMPT)
+                        .charLimit(16)
+                        .regex(EzPrompt.IDENTIFIER_REGEX)
+                        .acceptInput { input ->
+                            if (MenuTemplateHandler.findTemplate(input) != null) {
+                                player.sendMessage("${CC.RED}A template's ID must be unique, and a template with the ID `$input` already exists.")
+                                return@acceptInput
+                            }
+
+                            factory.startProcedure(input) { template ->
+                                MenuTemplateHandler.trackTemplate(template)
+                                MenuTemplateHandler.close()
+
+                                player.sendMessage("${CC.GREEN}Successfully created a new template.")
+
+                                openMenu(player)
+                            }
+                        }
+                        .build()
+                        .start(player)
+                }.openMenu(player)
+            }
+        }
+    }
+
+    private inner class TemplateButton(private val template: MenuTemplate<*>) : Button() {
+        override fun getName(player: Player): String {
+            return "${CC.YELLOW}${template.getName()}"
+        }
+
+        override fun getDescription(player: Player): List<String> {
+            val description = arrayListOf<String>()
+
+            description.add("${CC.GRAY}Edit the layout of the template by")
+            description.add("${CC.GRAY}painting buttons into the menu, and")
+            description.add("${CC.GRAY}then binding actions to the buttons.")
+            description.add("")
+            description.add("${CC.GREEN}Left-Click to edit template.")
+            description.add("${CC.RED}Right-Click to delete template.")
+
+            return description
+        }
+
+        override fun getMaterial(player: Player): XMaterial {
+            return XMaterial.ITEM_FRAME
+        }
+
+        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+            if (clickType.isLeftClick) {
+                EditTemplateLayoutMenu(template).openMenu(player)
+            }
+
+            if (clickType.isRightClick) {
+                ConfirmMenu("Are you sure?") { confirmed ->
+                    if (confirmed) {
+                        MenuTemplateHandler.forgetTemplate(template)
+                        MenuTemplateHandler.close()
+
+                        TemplateEditorMenu().openMenu(player)
+                    }
+                }.openMenu(player)
+            }
+        }
+    }
+
+    private inner class PickFactoryMenu(private val onSelect: (MenuTemplateFactory) -> Unit) : Menu() {
+        override fun getTitle(player: Player): String {
+            return "Pick Template Type"
+        }
+
+        override fun getButtons(player: Player): Map<Int, Button> {
+            val buttons = hashMapOf<Int, Button>()
+
+            for (factory in MenuTemplateHandler.getFactories()) {
+                buttons[buttons.size] = FactoryButton(factory)
+            }
+
+            return buttons
+        }
+
+        private inner class FactoryButton(private val factory: MenuTemplateFactory) : Button() {
+            override fun getName(player: Player): String {
+                return "${CC.GREEN}${factory.getName()}"
+            }
+
+            override fun getMaterial(player: Player): XMaterial {
+                return XMaterial.ITEM_FRAME
+            }
+
+            override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+                if (clickType.isLeftClick) {
+                    onSelect.invoke(factory)
+                }
+            }
+        }
+    }
+
+}

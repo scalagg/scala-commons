@@ -19,7 +19,7 @@ class EditNpcGearMenu(private val npc: NpcEntity) : Menu() {
     }
 
     init {
-        updateAfterClick = true
+        updateAfterClick = false
     }
 
     override fun getTitle(player: Player): String {

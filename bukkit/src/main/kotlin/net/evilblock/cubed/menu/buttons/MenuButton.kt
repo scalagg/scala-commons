@@ -43,7 +43,7 @@ open class MenuButton : Button() {
     }
 
     fun texturedIcon(texture: String): MenuButton {
-        this.icon = ItemUtils.applySkullTexture(ItemStack(Material.SKULL_ITEM, 1, 3), texture)
+        this.icon = ItemUtils.makeTexturedSkull(texture)
         return this
     }
 

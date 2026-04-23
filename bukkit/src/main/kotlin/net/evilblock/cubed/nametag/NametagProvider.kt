@@ -27,5 +27,12 @@ abstract class NametagProvider(val name: String, val weight: Int)
         {
             return NametagHandler.getOrCreate(prefix, suffix)
         }
+
+        @JvmStatic
+        fun createNametag(prefix: String, suffix: String, priority: Int): NametagInfo
+        {
+            val info = NametagHandler.getOrCreate(prefix, suffix)
+            return NametagInfo(info.name, info.prefix, info.suffix, priority)
+        }
     }
 }

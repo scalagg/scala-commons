@@ -1,18 +1,10 @@
-/*
- * Copyright (c) 2020. Joel Evans
- *
- * Use and or redistribution of compiled JAR file and or source code is permitted only if given
- * explicit permission from original author: Joel Evans
- */
-
 package net.evilblock.cubed.entity.packet
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.WrappedWatchableObject
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerAbstract
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.flavor.inject.Inject
 import gg.scala.flavor.service.Configure
@@ -20,213 +12,138 @@ import gg.scala.flavor.service.Service
 import me.lucko.helper.Events
 import net.evilblock.cubed.ScalaCommonsSpigot
 import net.evilblock.cubed.config.CommonsGeneralConfig
+import net.evilblock.cubed.entity.Entity
 import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.event.PlayerDamageEntityEvent
 import net.evilblock.cubed.entity.event.PlayerRightClickEntityEvent
-import net.evilblock.cubed.entity.hologram.HologramEntity
 import net.evilblock.cubed.entity.menu.EditEntityMenu
 import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
 import net.evilblock.cubed.entity.tool.EntityPortTool
-import net.evilblock.cubed.util.Reflection
-import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-object EntityPacketAdapter : PacketAdapter(
-    AdapterParameteters()
-        .plugin(ScalaCommonsSpigot.instance)
-        .types(
-            PacketType.Play.Client.USE_ENTITY,
-            if (ServerVersion.getVersion().isNewerThan(ServerVersion.v1_16))
-            {
-                PacketType.Play.Server.SPAWN_ENTITY
-            } else
-            {
-                PacketType.Play.Server.SPAWN_ENTITY_LIVING
-            }
-        )
-        .listenerPriority(ListenerPriority.NORMAL)
-        .optionAsync()
-)
+object EntityPacketAdapter : PacketListenerAbstract()
 {
     @Inject
     lateinit var injected: ExtendedScalaPlugin
 
     private val useEntitySpamTimings = ConcurrentHashMap<UUID, Long>()
     private val lastRightClick = ConcurrentHashMap<UUID, Long>()
+    private var registered = false
 
     @Configure
     fun configure()
     {
-        Events
-            .subscribe(PlayerQuitEvent::class.java)
+        Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
                 useEntitySpamTimings.remove(it.player.uniqueId)
                 lastRightClick.remove(it.player.uniqueId)
             }
             .bindWith(injected)
 
-        val config = ScalaCommonsSpigot.instance
-            .config<CommonsGeneralConfig>()
-
-        if (ServerVersion.getVersion().isOlderThanOrEquals(ServerVersion.v1_8_8))
+        val config = ScalaCommonsSpigot.instance.config<CommonsGeneralConfig>()
+        if (config.enableEntityPacketAdapters && !registered)
         {
-            if (config.enableEntityPacketAdapters)
-            {
-                ProtocolLibrary.getProtocolManager()
-                    .addPacketListener(this)
-            }
+            PacketEvents.getAPI().eventManager.registerListener(this)
+            registered = true
         }
     }
 
-    /**
-     * Handles protocol changes for holograms.
-     */
-    override fun onPacketSending(event: PacketEvent)
+    override fun onPacketReceive(event: PacketReceiveEvent)
     {
-        if (!NpcProtocol.tropicSpigotEnabled)
-        {
-            if (event.packetType == PacketType.Play.Server.SPAWN_ENTITY_LIVING)
-            {
-                val entityId = event.packet.integers.read(0)
-                val entity = EntityHandler.getEntityById(entityId) ?: return
-
-                if (entity is HologramEntity)
-                {
-                    val dataWatcher = event.packet.dataWatcherModifier.read(0)
-                    dataWatcher.watchableObjects.add(WrappedWatchableObject(12, -1700000))
-                    event.packet.dataWatcherModifier.write(0, dataWatcher)
-                }
-            }
+        if (event.packetType != PacketType.Play.Client.INTERACT_ENTITY) {
+            return
         }
+
+        val player = event.getPlayer<org.bukkit.entity.Player>() ?: return
+        if (!Bukkit.isPrimaryThread())
+        {
+            val cloned = event.clone()
+            Bukkit.getScheduler().runTask(ScalaCommonsSpigot.instance) {
+                handleUseEntity(player, WrapperPlayClientInteractEntity(cloned))
+            }
+            return
+        }
+
+        handleUseEntity(player, WrapperPlayClientInteractEntity(event))
     }
 
-    override fun onPacketReceiving(event: PacketEvent)
+    private fun handleUseEntity(player: org.bukkit.entity.Player, packet: WrapperPlayClientInteractEntity)
     {
-        if (event.packetType == PacketType.Play.Client.USE_ENTITY)
-        {
-            val entityId = event.packet.integers.read(0)
-
-            val entity = EntityHandler.getEntityById(entityId) ?: return
-            if (entity.location.world != event.player.world || entity.location.distanceSquared(event.player.location) > 8.0)
-            {
+        kotlin.runCatching {
+            val entityId = packet.entityId
+            val entity = findEntityById(entityId) ?: return
+            if (entity.location.world != player.world || entity.location.distanceSquared(player.location) > 64.0) {
                 return
             }
 
-            if (useEntitySpamTimings.containsKey(event.player.uniqueId))
-            {
-                val lastTime = useEntitySpamTimings[event.player.uniqueId]!!
-                if (System.currentTimeMillis() - lastTime < 25)
-                {
-                    event.isCancelled = true
-                    return
-                }
+            val lastUseTime = useEntitySpamTimings[player.uniqueId]
+            if (lastUseTime != null && System.currentTimeMillis() - lastUseTime < 25) {
+                return
             }
+            useEntitySpamTimings[player.uniqueId] = System.currentTimeMillis()
 
-            useEntitySpamTimings[event.player.uniqueId] = System.currentTimeMillis()
-
-            // ProtocolLib on 1.7 server doesn't recognize 1.8 client INTERACT_AT action, so the action will be null
-            val useAction = Reflection.getDeclaredFieldValue(event.packet.handle, "action") as Enum<*>?
-            when (useAction?.name)
-            {
-                null, INTERACT, INTERACT_AT ->
-                {
-                    val rightClickEvent = PlayerRightClickEntityEvent(event.player, entity)
+            when (packet.action) {
+                WrapperPlayClientInteractEntity.InteractAction.INTERACT,
+                WrapperPlayClientInteractEntity.InteractAction.INTERACT_AT -> {
+                    val rightClickEvent = PlayerRightClickEntityEvent(player, entity)
                     Bukkit.getPluginManager().callEvent(rightClickEvent)
 
-                    if (rightClickEvent.spamProtection)
-                    {
-                        if (lastRightClick.contains(event.player.uniqueId))
-                        {
-                            val lastRightClick = lastRightClick[event.player.uniqueId]!!
-
-                            if (System.currentTimeMillis() < lastRightClick + 500)
-                            {
-                                return
-                            }
+                    if (rightClickEvent.spamProtection) {
+                        val lastClick = lastRightClick[player.uniqueId]
+                        if (lastClick != null && System.currentTimeMillis() < lastClick + 500) {
+                            return
                         }
                     }
 
-                    lastRightClick[event.player.uniqueId] = System.currentTimeMillis()
+                    lastRightClick[player.uniqueId] = System.currentTimeMillis()
 
-                    if (!rightClickEvent.isCancelled)
-                    {
-                        // if export tool is enabled, mark/un-mark entity for export
-                        if (event.player.hasPermission("commons.entity.export") && EntityPortTool.isTracking(event.player))
-                        {
-                            if (EntityPortTool.isTrackingEntity(event.player, entity))
-                            {
-                                EntityPortTool.removeTrackedEntity(event.player, entity)
-                                event.player.sendMessage(
-                                    "${ChatColor.YELLOW}Entity #${entity.id} is no longer marked for export! ${ChatColor.GRAY}(${
-                                        EntityPortTool.getTrackedEntities(
-                                            event.player
-                                        ).size
-                                    } selected)"
-                                )
-                            } else
-                            {
-                                EntityPortTool.addTrackedEntity(event.player, entity)
-                                event.player.sendMessage(
-                                    "${ChatColor.GREEN}Entity #${entity.id} is now marked for export! ${ChatColor.GRAY}(${
-                                        EntityPortTool.getTrackedEntities(
-                                            event.player
-                                        ).size
-                                    } selected)"
-                                )
+                    if (!rightClickEvent.isCancelled) {
+                        if (player.hasPermission("commons.entity.export") && EntityPortTool.isTracking(player)) {
+                            if (EntityPortTool.isTrackingEntity(player, entity)) {
+                                EntityPortTool.removeTrackedEntity(player, entity)
+                                player.sendMessage("${ChatColor.YELLOW}Entity #${entity.id} is no longer marked for export! ${ChatColor.GRAY}(${EntityPortTool.getTrackedEntities(player).size} selected)")
+                            } else {
+                                EntityPortTool.addTrackedEntity(player, entity)
+                                player.sendMessage("${ChatColor.GREEN}Entity #${entity.id} is now marked for export! ${ChatColor.GRAY}(${EntityPortTool.getTrackedEntities(player).size} selected)")
                             }
-
                             return
                         }
 
-                        // automatically open entity management menu if player is in fast edit mode
-                        if (event.player.gameMode == GameMode.CREATIVE && event.player.hasMetadata("EntityFastEdit"))
-                        {
+                        if (player.gameMode == GameMode.CREATIVE && player.hasMetadata("EntityFastEdit")) {
                             Tasks.delayed(1L) {
-                                EditEntityMenu(entity).openMenu(event.player)
+                                EditEntityMenu(entity).openMenu(player)
                             }
-
                             return
                         }
 
-                        entity.onRightClick(event.player)
+                        entity.onRightClick(player)
                     }
                 }
 
-                ATTACK ->
-                {
-                    entity.onLeftClick(event.player)
+                WrapperPlayClientInteractEntity.InteractAction.ATTACK -> {
+                    entity.onLeftClick(player)
 
-                    if (entity.isDamageable())
-                    {
-                        val damageEvent = PlayerDamageEntityEvent(event.player, entity)
+                    if (entity.isDamageable()) {
+                        val damageEvent = PlayerDamageEntityEvent(player, entity)
                         Bukkit.getPluginManager().callEvent(damageEvent)
-
-                        if (!damageEvent.isCancelled)
-                        {
-                            // work later
-                        }
                     }
-                }
-
-                else ->
-                {
                 }
             }
+        }.onFailure {
+            ScalaCommonsSpigot.instance.logger.warning("Failed to handle use-entity packet: ${it.message}")
+            it.printStackTrace()
         }
     }
 
-    /**
-     * Use constant string names in place of the EntityUseAction enum for compatibility.
-     */
-    private const val INTERACT = "INTERACT"
-    private const val INTERACT_AT = "INTERACT_AT"
-    private const val ATTACK = "ATTACK"
-
+    private fun findEntityById(entityId: Int): Entity?
+    {
+        return EntityHandler.getEntityById(entityId)
+    }
 }

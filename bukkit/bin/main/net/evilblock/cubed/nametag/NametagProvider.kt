@@ -1,0 +1,38 @@
+package net.evilblock.cubed.nametag
+
+import org.bukkit.entity.Player
+
+abstract class NametagProvider(val name: String, val weight: Int)
+{
+    abstract fun fetchNametag(toRefresh: Player, refreshFor: Player): NametagInfo?
+
+    class DefaultNametagProvider : NametagProvider("Default Provider", 0)
+    {
+        override fun fetchNametag(toRefresh: Player, refreshFor: Player): NametagInfo
+        {
+            return createNametag("", "")
+        }
+    }
+
+    companion object
+    {
+        @JvmStatic
+        fun createNametag(prefix: String, suffix: String, name: String): NametagInfo
+        {
+            return NametagHandler.getOrCreate(prefix, suffix, name)
+        }
+
+        @JvmStatic
+        fun createNametag(prefix: String, suffix: String): NametagInfo
+        {
+            return NametagHandler.getOrCreate(prefix, suffix)
+        }
+
+        @JvmStatic
+        fun createNametag(prefix: String, suffix: String, priority: Int): NametagInfo
+        {
+            val info = NametagHandler.getOrCreate(prefix, suffix)
+            return NametagInfo(info.name, info.prefix, info.suffix, priority)
+        }
+    }
+}

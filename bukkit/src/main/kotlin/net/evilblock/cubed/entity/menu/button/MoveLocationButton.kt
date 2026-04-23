@@ -51,7 +51,7 @@ class MoveLocationButton(private val entity: Entity) : Button() {
         )
 
         player.updateInventory()
-        player.sendMessage("${CC.GREEN}Place the mob egg wherever you'd like to move the NPC.")
+        player.sendMessage("${CC.GREEN}Place the mob egg wherever you'd like to move the ${entity.getTypeName()}.")
     }
 
 }

@@ -5,6 +5,7 @@ import net.evilblock.cubed.entity.EntityHandler
 import net.evilblock.cubed.entity.npc.NpcEntity
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.ServerVersion
 import net.evilblock.cubed.util.text.TextSplitter
 import net.evilblock.cubed.util.bukkit.ConversationUtil
 import net.evilblock.cubed.util.bukkit.Tasks
@@ -27,24 +28,49 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
         return arrayListOf<String>().also { desc ->
             desc.addAll(TextSplitter.split(text = "Update this NPC's skin by fetching a real Minecraft player's skin by their username."))
             desc.add("")
-            desc.add("${CC.YELLOW}Left-Click to update skin.")
+
+            if (npc.personalizedSkin) {
+                desc.add("${CC.GREEN}${CC.BOLD}Personalized ${CC.GRAY}(each player sees their own skin)")
+            } else {
+                desc.add("${CC.GRAY}Personalized is disabled.")
+            }
+
+            desc.add("")
+            desc.add("${CC.YELLOW}Left-Click to set skin.")
+            desc.add("${CC.YELLOW}Right-Click to make personalized.")
         }
     }
 
     override fun getMaterial(player: Player): XMaterial
     {
-        return XMaterial.SKELETON_SKULL
+        return XMaterial.PLAYER_HEAD
     }
 
     override fun getDamageValue(player: Player): Byte {
-        return 3.toByte()
+        return if (ServerVersion.getVersion().isNewerThanOrEquals(ServerVersion.v1_13)) 0.toByte() else 3.toByte()
     }
 
     override fun applyMetadata(player: Player, itemMeta: ItemMeta): ItemMeta? {
-        return (itemMeta as SkullMeta).also { meta -> meta.owner = player.name }
+        return itemMeta
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+        if (clickType.isRightClick) {
+            npc.togglePersonalizedSkin()
+
+            Tasks.sync {
+                EntityHandler.close()
+            }
+
+            if (npc.personalizedSkin) {
+                player.sendMessage("${CC.GREEN}Personalized skin has been enabled. Each player will now see their own skin on this NPC.")
+            } else {
+                player.sendMessage("${CC.YELLOW}Personalized skin has been disabled.")
+            }
+
+            return
+        }
+
         player.closeInventory()
 
         ConversationUtil.startConversation(player, object : StringPrompt() {
@@ -66,7 +92,7 @@ class UpdateSkinButton(private val npc: NpcEntity, private val complete: (Boolea
                         if (success) {
                             context.forWhom.sendRawMessage("${CC.GREEN}Successfully updated texture!")
 
-                            Tasks.async {
+                            Tasks.sync {
                                 EntityHandler.close()
                             }
                         } else {

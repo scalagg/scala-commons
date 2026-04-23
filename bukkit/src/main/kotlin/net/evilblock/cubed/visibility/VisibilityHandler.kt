@@ -1,18 +1,31 @@
 package net.evilblock.cubed.visibility
 
-import net.evilblock.cubed.entity.npc.protocol.NpcProtocol
-import net.evilblock.cubed.util.Reflection
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.protocol.player.GameMode
+import com.github.retrooper.packetevents.protocol.player.TextureProperty
+import com.github.retrooper.packetevents.protocol.player.UserProfile
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoRemove
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.util.nms.MinecraftProtocol
-import net.evilblock.cubed.util.nms.MinecraftReflection
+import gg.scala.commons.tablist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode as BukkitGameMode
 import org.bukkit.entity.Player
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import java.util.LinkedHashMap
 
 object VisibilityHandler {
+    private val legacySerializer = LegacyComponentSerializer.legacySection().toBuilder()
+        .useUnusualXRepeatedCharacterHexFormat()
+        .build()
 
     private val adapters = LinkedHashMap<String, VisibilityAdapter>()
     private val overrideHandlers = LinkedHashMap<String, OverrideHandler>()
+    private var playerListPolicy: PlayerListVisibilityPolicy? = null
+    private var selectivePolicyProvider: ((Player) -> PlayerListVisibilityPolicy)? = null
 
     fun registerAdapter(identifier: String, adapter: VisibilityAdapter) {
         adapters[identifier] = adapter
@@ -22,15 +35,25 @@ object VisibilityHandler {
         overrideHandlers[identifier] = handler
     }
 
+    fun setPlayerListVisibilityPolicy(policy: PlayerListVisibilityPolicy) {
+        playerListPolicy = policy
+    }
+
+    fun selectivelySetPolicy(provider: (Player) -> PlayerListVisibilityPolicy) {
+        selectivePolicyProvider = provider
+    }
+
+    fun getPolicyFor(player: Player): PlayerListVisibilityPolicy {
+        return selectivePolicyProvider?.invoke(player) ?: playerListPolicy ?: PlayerListVisibilityPolicy.Global
+    }
+
     fun update(player: Player) {
-        if (!Bukkit.isPrimaryThread())
-        {
+        if (!Bukkit.isPrimaryThread()) {
             Tasks.sync {
                 updateAllTo(player)
                 updateToAll(player)
             }
-        } else
-        {
+        } else {
             updateAllTo(player)
             updateToAll(player)
         }
@@ -58,32 +81,98 @@ object VisibilityHandler {
 
     fun removePlayer(player: Player, other: Player)
     {
-        if (player.hasMetadata("vanished"))
-        {
-            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
-                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "REMOVE_PLAYER")!!,
-                arrayListOf(MinecraftReflection.getHandle(player))
-            )
+        if (!player.hasMetadata("vanished")) {
+            return
+        }
 
-            Tasks.delayed(1L)
-            {
-                MinecraftProtocol.send(other, playerInfoAddPacket)
+        Tasks.delayed(1L) {
+            if (net.evilblock.cubed.util.ServerVersion.getVersion().isOlderThan(net.evilblock.cubed.util.ServerVersion.v1_19)) {
+                PacketEvents.getAPI().playerManager.sendPacket(
+                    other,
+                    WrapperPlayServerPlayerInfo(
+                        WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER,
+                        WrapperPlayServerPlayerInfo.PlayerData(null, UserProfile(player.uniqueId, player.name), null, -1)
+                    )
+                )
+            } else {
+                PacketEvents.getAPI().playerManager.sendPacket(other, WrapperPlayServerPlayerInfoRemove(player.uniqueId))
             }
         }
     }
 
+    private fun Player.constructLegacyData(): WrapperPlayServerPlayerInfo.PlayerData
+    {
+        val profile = Util.getPlayerProfile(this)
+        val userProfile = UserProfile(profile.id, profile.name).apply {
+            val skin = profile.skinData
+            if (skin != null) {
+                textureProperties.add(TextureProperty("textures", skin.value, skin.signature))
+            }
+        }
+
+        val component = GsonComponentSerializer.gson().deserialize(
+            GsonComponentSerializer.gson().serialize(
+                legacySerializer.deserialize(displayName)
+            )
+        )
+
+        return WrapperPlayServerPlayerInfo.PlayerData(
+            component,
+            userProfile,
+            GameMode.valueOf(BukkitGameMode.SURVIVAL.name),
+            ping
+        )
+    }
+
+    private fun Player.constructModernData(): WrapperPlayServerPlayerInfoUpdate.PlayerInfo
+    {
+        val profile = Util.getPlayerProfile(this)
+        val userProfile = UserProfile(profile.id, profile.name).apply {
+            val skin = profile.skinData
+            if (skin != null) {
+                textureProperties.add(TextureProperty("textures", skin.value, skin.signature))
+            }
+        }
+
+        val component = GsonComponentSerializer.gson().deserialize(
+            GsonComponentSerializer.gson().serialize(
+                legacySerializer.deserialize(displayName)
+            )
+        )
+
+        return WrapperPlayServerPlayerInfoUpdate.PlayerInfo(
+            userProfile,
+            true,
+            ping,
+            GameMode.valueOf(BukkitGameMode.SURVIVAL.name),
+            component,
+            null
+        )
+    }
+
     fun addPlayer(player: Player, other: Player)
     {
-        if (player.hasMetadata("vanished"))
-        {
-            val playerInfoAddPacket = NpcProtocol.PACKET_PLAY_OUT_PLAYER_INFO_CONSTRUCTOR.newInstance(
-                Reflection.getEnum(NpcProtocol.ENUM_PLAYER_INFO_ACTION_CLASS, "ADD_PLAYER")!!,
-                arrayListOf(MinecraftReflection.getHandle(player))
-            )
+        if (!player.hasMetadata("vanished")) {
+            return
+        }
 
-            Tasks.delayed(1L)
-            {
-                MinecraftProtocol.send(other, playerInfoAddPacket)
+        Tasks.delayed(1L) {
+            if (net.evilblock.cubed.util.ServerVersion.getVersion().isOlderThan(net.evilblock.cubed.util.ServerVersion.v1_19)) {
+                PacketEvents.getAPI().playerManager.sendPacket(
+                    other,
+                    WrapperPlayServerPlayerInfo(
+                        WrapperPlayServerPlayerInfo.Action.ADD_PLAYER,
+                        player.constructLegacyData()
+                    )
+                )
+            } else {
+                PacketEvents.getAPI().playerManager.sendPacket(
+                    other,
+                    WrapperPlayServerPlayerInfoUpdate(
+                        WrapperPlayServerPlayerInfoUpdate.Action.ADD_PLAYER,
+                        player.constructModernData()
+                    )
+                )
             }
         }
     }
@@ -144,5 +233,4 @@ object VisibilityHandler {
 
         return debug
     }
-
 }

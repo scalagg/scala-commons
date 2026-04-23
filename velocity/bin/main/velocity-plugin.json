@@ -1,0 +1,9 @@
+{
+  "id": "scala-commons",
+  "name": "Scala Commons",
+  "version": "0.1.0",
+  "main": "gg.scala.commons.velocity.ScalaCommonsVelocity",
+  "authors": [
+    "Scala"
+  ]
+}
